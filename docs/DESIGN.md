@@ -6,7 +6,7 @@ Canvas: https://claude.ai/artifact/M5TbevikF4q3dyGEh2S7XH (v2), board
 "A — Night Owl Arcade (Glass, Build 0)". Sources:
 `design-src/Proposal-A-Night-Owl-Arcade.dc.html`, `design-src/canvas.json`.
 
-**Approval: pending — Justin adds his approval line here.**
+Approved by Justin: 2026-09-24
 
 This is the rulebook. Bella builds from it. Ruby enforces it against every
 Build. No one-off values outside `src/ui/tokens.ts` — if a value isn't in
