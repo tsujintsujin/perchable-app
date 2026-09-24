@@ -11,3 +11,4 @@
 - 2026-09-24 — Dianne: 3 proposals rendered + checked by Manager. Justin picked A (Night Owl Arcade) + glassmorphism; Roulette/tiers/lounge as UI-only shells. Dianne now on Build 0 (docs/DESIGN.md).
 - 2026-09-24 — Dianne Build 0: docs/DESIGN.md + board A (glass). Manager checked render, expo-blur Android claims vs Expo docs, TMDB notice vs TMDB terms; round 1 fixed notice wording + src/ folder layout. Waiting: Justin's approval line in docs/DESIGN.md (line 9).
 - 2026-09-24 — Justin signed docs/DESIGN.md. Stage A complete; lock open. Next: Build 1 (dev build boots) on module/foundation.
+- 2026-09-24 — Build 1 DONE (dev build boots): Bella 3526c6a, Queenie PASS, Ruby PASS (1 should-fix, fixed), Manager spot re-run PASS. Google OAuth clients created + Supabase Google provider enabled (secret paste pending Justin). Next: Build 2 (Supabase connected).

@@ -23,6 +23,18 @@ npx expo lint
 npx expo install <pkg>  # never plain npm install for Expo packages
 ```
 
+## Native Android builds — Gradle gotcha (found in Build 1)
+This PC has a machine-wide `GRADLE_USER_HOME` pointing at Engagia's folder
+(`C:\Users\justi\AppData\Local\EngagiaLocal\gradle`), whose init script
+adds a `local` build type to every Gradle build → Expo builds fail with
+"BuildType with name 'local' not found". For every native build, override it
+for that command only (gitignored `.gradle-home/` in the repo):
+```bash
+GRADLE_USER_HOME="$PWD/.gradle-home" npx expo run:android
+```
+`npx expo run:android` leaves Metro running after install — it never exits on
+its own; stop it when done. Debug keystore SHA-1 is in `logs/build-01-dev-build.md`.
+
 ## Lock
 `.claude/hooks/gate.js` blocks app code until `PLAN.md` and `docs/DESIGN.md`
 both contain a line starting "Approved by Justin:" — which only Justin types.

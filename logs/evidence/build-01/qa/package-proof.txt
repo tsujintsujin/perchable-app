@@ -1,0 +1,11 @@
+--- mCurrentFocus ---
+  mCurrentFocus=Window{53b9632 u0 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity}
+--- packages ---
+package:com.tsujintsujin.perchable
+package:host.exp.exponent
+--- expo go running? (empty = not running) ---
+--- resolve-activity ---
+priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=false
+com.tsujintsujin.perchable/.MainActivity
+--- versionName ---
+    versionName=1.0.0
