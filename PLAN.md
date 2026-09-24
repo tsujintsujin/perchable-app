@@ -3,7 +3,7 @@
 Planner: Priya. Date: 2026-09-24 (Round 1 revision — Ruby + Manager).
 Based on `docs/VISION.md` and the approved `docs/RESEARCH.md`.
 
-Approval: pending — Justin adds his approval line here.
+Approved by Justin: 2026-09-24
 
 ---
 
