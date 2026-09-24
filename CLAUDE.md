@@ -13,7 +13,7 @@ State: `TIMELINE.md` and `logs/`.
 ## Stack
 Expo SDK 57, Expo Router, TypeScript (empty template — no screens yet).
 Routes live in `src/app/`; non-route code goes outside it. Expo's own agent
-notes: `AGENTS.md`. Backend: not decided — Rose researches it in Stage A.
+notes: `AGENTS.md`. Backend: Supabase (Auth, Postgres+RLS, Realtime, Storage, Edge Functions); TMDB via Edge Function proxy. Credentials: `D:\AIO Freelance\Credentials\perchable\.env`.
 
 ## Commands
 ```bash
@@ -28,4 +28,4 @@ npx expo install <pkg>  # never plain npm install for Expo packages
 both contain a line starting "Approved by Justin:" — which only Justin types.
 
 ## Current Build
-None. Phase 0 done; next is Stage A (Rose → research brief).
+Build 1 — dev build boots (Module 1 Foundation, branch `module/foundation`). Stage A done 2026-09-24: RESEARCH.md, PLAN.md, DESIGN.md all signed. Stack decided: Supabase + TMDB proxy (see PLAN.md §2).
