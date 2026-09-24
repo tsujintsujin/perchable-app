@@ -28,12 +28,18 @@ Until 2026-09-25 this PC had a machine-wide `GRADLE_USER_HOME` pointing at
 Engagia's folder, whose init script broke Expo builds ("BuildType with name
 'local' not found"). **Justin deleted that variable on 2026-09-25**, so fresh
 shells build normally. Shells started before then may still carry it — if the
-error comes back, override for that one command (gitignored `.gradle-home/`):
+error comes back, override it for that one command with a **short** path
+(a path inside the repo pushes native build paths past Windows' 260-char
+limit — "Filename longer than 260 characters", found in Build 2):
 ```bash
-GRADLE_USER_HOME="$PWD/.gradle-home" npx expo run:android
+GRADLE_USER_HOME="C:/g/perchable" timeout 1500 npx expo run:android --no-bundler
 ```
-`npx expo run:android` leaves Metro running after install — it never exits on
-its own; stop it when done. Debug keystore SHA-1 is in `logs/build-01-dev-build.md`.
+Run builds in the foreground (or the tool's own background mode) — a manual
+shell `&` gets its Gradle daemon killed when the tool call returns.
+`--no-bundler` makes the command exit after install; start Metro separately
+with a time limit (`npx expo start --dev-client`).
+Without `--no-bundler`, `npx expo run:android` leaves Metro running and never
+exits; stop it when done. Debug keystore SHA-1 is in `logs/build-01-dev-build.md`.
 
 ## Lock
 `.claude/hooks/gate.js` blocks app code until `PLAN.md` and `docs/DESIGN.md`
