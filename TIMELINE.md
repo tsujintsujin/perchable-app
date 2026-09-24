@@ -9,3 +9,4 @@
 - 2026-09-24 — Setup steps 2+3 done: Sentry project `perchable` (org tsujin-it-solutions) DSN and TMDB API key (free personal/non-commercial plan, tested 200) saved to Credentials/perchable/.env. Only step 4 (Google OAuth) left, after Build 1. Waiting: Justin's approval line in PLAN.md.
 - 2026-09-24 — Justin signed PLAN.md. Merged stage-a/plan. Next: Dianne → 3 design proposals on stage-a/design.
 - 2026-09-24 — Dianne: 3 proposals rendered + checked by Manager. Justin picked A (Night Owl Arcade) + glassmorphism; Roulette/tiers/lounge as UI-only shells. Dianne now on Build 0 (docs/DESIGN.md).
+- 2026-09-24 — Dianne Build 0: docs/DESIGN.md + board A (glass). Manager checked render, expo-blur Android claims vs Expo docs, TMDB notice vs TMDB terms; round 1 fixed notice wording + src/ folder layout. Waiting: Justin's approval line in docs/DESIGN.md (line 9).
