@@ -8,3 +8,6 @@
 - 2026-09-24 — Setup step 1 done by Manager in Chrome: Supabase project `perchable` (tsujin's workspace, Free, Asia-Pacific, auto-RLS on, auto-expose off); URL + publishable key in Credentials/perchable/.env. Steps 2 (TMDB) and 3 (Sentry) blocked: Justin not signed in to either — needs to log in (or sign up) once, then Manager continues.
 - 2026-09-24 — Setup steps 2+3 done: Sentry project `perchable` (org tsujin-it-solutions) DSN and TMDB API key (free personal/non-commercial plan, tested 200) saved to Credentials/perchable/.env. Only step 4 (Google OAuth) left, after Build 1. Waiting: Justin's approval line in PLAN.md.
 - 2026-09-24 — Justin signed PLAN.md. Merged stage-a/plan. Next: Dianne → 3 design proposals on stage-a/design.
+- 2026-09-24 — Dianne: 3 proposals rendered + checked by Manager. Justin picked A (Night Owl Arcade) + glassmorphism; Roulette/tiers/lounge as UI-only shells. Dianne now on Build 0 (docs/DESIGN.md).
+- 2026-09-24 — Dianne Build 0: docs/DESIGN.md + board A (glass). Manager checked render, expo-blur Android claims vs Expo docs, TMDB notice vs TMDB terms; round 1 fixed notice wording + src/ folder layout. Waiting: Justin's approval line in docs/DESIGN.md (line 9).
+- 2026-09-24 — Justin signed docs/DESIGN.md. Stage A complete; lock open. Next: Build 1 (dev build boots) on module/foundation.
