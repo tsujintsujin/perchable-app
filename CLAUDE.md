@@ -24,11 +24,11 @@ npx expo install <pkg>  # never plain npm install for Expo packages
 ```
 
 ## Native Android builds — Gradle gotcha (found in Build 1)
-This PC has a machine-wide `GRADLE_USER_HOME` pointing at Engagia's folder
-(`C:\Users\justi\AppData\Local\EngagiaLocal\gradle`), whose init script
-adds a `local` build type to every Gradle build → Expo builds fail with
-"BuildType with name 'local' not found". For every native build, override it
-for that command only (gitignored `.gradle-home/` in the repo):
+Until 2026-09-25 this PC had a machine-wide `GRADLE_USER_HOME` pointing at
+Engagia's folder, whose init script broke Expo builds ("BuildType with name
+'local' not found"). **Justin deleted that variable on 2026-09-25**, so fresh
+shells build normally. Shells started before then may still carry it — if the
+error comes back, override for that one command (gitignored `.gradle-home/`):
 ```bash
 GRADLE_USER_HOME="$PWD/.gradle-home" npx expo run:android
 ```
