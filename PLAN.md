@@ -98,7 +98,7 @@ Build 1 — Expo dev build boots          Module: Foundation
 Done means: `npx expo run:android` installs a custom dev-client APK on td_emu
   and launches to the default Expo Router screen (not Expo Go).
 Test on: emulator
-Needs from Justin: nothing (uses existing Android SDK/emulator per app CLAUDE.md)
+Needs: nothing (uses existing Android SDK/emulator per app CLAUDE.md)
 Phases: 0 skip (no UI) · 1 Bella build · 2 Bella gates (tsc, expo lint) ·
         3 Queenie QA · 4 Ruby review · 5 Manager ships
 ```
@@ -108,8 +108,8 @@ Build 2 — Supabase project connected     Module: Foundation
 Done means: app reads a Supabase env var and a debug screen shows
   "Supabase: connected" (a trivial `select 1`-style ping succeeds) on device.
 Test on: emulator
-Needs from Justin: create the Supabase project + give Priya/Bella the URL and
-  anon key (manual step #1, see section 6)
+Needs (Manager sets up, section 6): Supabase project URL and
+  anon key (setup step #1, see section 6)
 Phases: 0 skip · 1 Bella build · 2 Bella gates · 3 Queenie QA · 4 Ruby review ·
         5 Manager ships
 ```
@@ -121,7 +121,7 @@ Done means: a Supabase Edge Function calls TMDB `/movie/popular` server-side
   (Queenie/Ruby check the bundle/network tab for it); response includes the
   required TMDB attribution string.
 Test on: emulator (network call), Ruby checks the bundle for the leaked key
-Needs from Justin: TMDB API key (manual step #2)
+Needs (Manager sets up, section 6): TMDB API key (setup step #2)
 Phases: 0 skip · 1 Bella build · 2 Bella gates · 3 Queenie QA · 4 Ruby review ·
         5 Manager ships
 ```
@@ -133,7 +133,7 @@ Done means: `npx jest` runs with the `jest-expo` preset and one passing
   on (added to Bella's Phase 2 checklist); Sentry SDK is wired and a
   deliberately-thrown test error appears in the Sentry dashboard.
 Test on: emulator (Sentry event) + unit test run
-Needs from Justin: Sentry account + project DSN (manual step #3)
+Needs (Manager sets up, section 6): Sentry account + project DSN (setup step #3)
 Phases: 0 skip · 1 Bella build · 2 Bella gates (tsc, lint, jest) ·
         3 Queenie QA · 4 Ruby review · 5 Manager ships
 ```
@@ -148,10 +148,10 @@ Done means: user taps "Sign in with Google," completes the Google account
 Test on: emulator — Google APIs image; UNTESTABLE if Google sign-in requires
   Play Services beyond what the current `td_emu` image provides (flag to
   Justin immediately if the sign-in screen fails to load Google's picker —
-  see manual step #6, may need a Google Play image swap)
-Needs from Justin: Google Cloud OAuth client IDs — Android client (SHA-1 of
+  see setup step #6, may need a Google Play image swap)
+Needs (Manager sets up, section 6): Google Cloud OAuth client IDs — Android client (SHA-1 of
   the Build-1 dev build's debug keystore, via `keytool`/`gradlew
-  signingReport`) + Web client (for Supabase Auth) (manual step #4)
+  signingReport`) + Web client (for Supabase Auth) (setup step #4)
 Phases: 0 Dianne mockup · 1 Bella build · 2 Bella gates · 3 Queenie QA ·
         4 Ruby review · 5 Manager ships
 ```
@@ -161,7 +161,7 @@ Build 6 — Profile created on first sign-in   Module: Auth/Profile
 Done means: first sign-in auto-creates a `profiles` row (id, google name,
   default avatar, empty usertag); visiting "My Profile" shows that data.
 Test on: emulator
-Needs from Justin: nothing
+Needs: nothing
 Phases: 0 Dianne mockup · 1 Bella build · 2 Bella gates · 3 Queenie QA ·
         4 Ruby review · 5 Manager ships
 ```
@@ -172,7 +172,7 @@ Done means: user changes usertag text and uploads a photo (Supabase Storage);
   both persist after app restart; usertag uniqueness enforced (no two users
   same tag) with a visible error on collision.
 Test on: emulator
-Needs from Justin: nothing
+Needs: nothing
 Phases: 0 Dianne mockup · 1 Bella build · 2 Bella gates · 3 Queenie QA ·
         4 Ruby review · 5 Manager ships
 ```
@@ -183,7 +183,7 @@ Done means: "Sign out" clears the session and returns to the sign-in screen;
   a signed-out app never shows profile/collection data (regression check on
   Builds 5–7).
 Test on: emulator
-Needs from Justin: nothing
+Needs: nothing
 Phases: 0 skip · 1 Bella build · 2 Bella gates · 3 Queenie QA · 4 Ruby review ·
         5 Manager ships
 ```
@@ -197,7 +197,7 @@ Done means: "Delete my account" button in-app deletes the `profiles` row and
   deletion the user is signed out and cannot sign back in as the same
   account without a fresh Google sign-up.
 Test on: emulator
-Needs from Justin: nothing
+Needs: nothing
 Phases: 0 Dianne mockup · 1 Bella build · 2 Bella gates · 3 Queenie QA ·
         4 Ruby review · 5 Manager ships
 ```
@@ -213,7 +213,7 @@ Done means: `reports` (reporter_id, target_type, target_id, reason) and
   Justin (as admin) can remove content or ban a user via a direct Supabase
   query — documented as the admin action path, no admin panel needed for v1.
 Test on: emulator
-Needs from Justin: nothing
+Needs: nothing
 ```
 
 ```
@@ -223,7 +223,7 @@ Done means: a terms screen (defines objectionable content) must be accepted
   acceptance; RLS on comments/DMs INSERT rejects rows where
   terms_accepted_at is null.
 Test on: emulator
-Needs from Justin: nothing
+Needs: nothing
 ```
 
 ```
@@ -369,28 +369,31 @@ Test on: emulator + Supabase dashboard check
 
 ---
 
-## 6. Justin's manual steps — in order, grouped for one sitting
+## 6. Service setup — the Manager does it, in Justin's Chrome
 
-Checked against `Credentials/README.md` (2026-09-24) — **no existing
-Perchable/Supabase/TMDB/Google-for-this-app/Sentry credential found**, all of
-these are new. Save each under `Credentials/perchable/` and add a line to
-`Credentials/README.md` (name only — never the secret value) once issued.
+The Manager does every setup step below in real Chrome, using Justin's
+logged-in sessions: creating projects, API keys, OAuth clients, and saving
+each value to `D:\AIO Freelance\Credentials\perchable\` plus a README line
+(name only). Credentials never go in the repo. Checked against
+`Credentials/README.md` (2026-09-24): nothing exists yet for this app.
 
-| # | Step | Needed for Build | When |
-|---|---|---|---|
-| 1 | Create a Supabase project (new org or existing), grab project URL + anon key | Build 2 | Before Module 1 starts |
-| 2 | Get a TMDB API key (themoviedb.org account → API settings) | Build 3 | Before Module 1 starts |
-| 3 | Sentry account + project, grab DSN | Build 4 | Before Module 1 starts (same sitting as 1–2) |
-| 4 | Google Cloud Console: OAuth client IDs — (a) Android client with the Build-1 dev build's debug keystore SHA-1, (b) Web client for Supabase Auth's Google provider | Build 5 | **After Build 1 completes** (SHA-1 only exists once the dev build is built), before Build 5 starts |
-| 5 | `eas login` (Expo/EAS account) — needed once EAS Build is used for the dev client or any store build | Build 1 (if using EAS Build) or later store builds | Before first EAS build, whenever that lands |
-| 6 | Confirm Google sign-in works on `td_emu`'s current Google-APIs-only image; if it doesn't, download/swap to a Google Play image (per MobileDev/CLAUDE.md "Environment") | Build 5 | Only if Build 5 QA hits a Play Services error |
-| 7 | Decide TMDB non-commercial vs commercial timing (email TMDB sales before any ads Build) | the future ads Build (out of v1 scope) | Not needed for v1 — flag on TIMELINE only |
-| 8 | Decide Supabase Pro plan ($25/mo) vs manual un-pause, before any real-user launch | pre-launch, not v1 | Not needed for v1 — flag on TIMELINE only |
+Justin only steps in where team rules forbid an agent: **signing up for a
+brand-new account, typing a password, accepting terms/consent screens,
+payment, or UAC.** The Manager stops at that exact screen and tells him.
 
-Steps 1–3 are pure account-creation and can be done together in one sitting
-before Module 1 starts. Step 4 is separate and later — it depends on the
-Android debug keystore that only exists after Build 1 is built, so it cannot
-be bundled with 1–3.
+| # | Step (Manager, in Chrome) | Needed for Build | When | Justin only if… |
+|---|---|---|---|---|
+| 1 | Supabase: create project, save URL + anon key | Build 2 | Before Module 1 | no Supabase account yet |
+| 2 | TMDB: request API key, save it | Build 3 | Before Module 1 | no TMDB account yet; API terms acceptance |
+| 3 | Sentry: create project, save DSN | Build 4 | Before Module 1 | no Sentry account yet |
+| 4 | Google Cloud: OAuth consent screen + Android client (Build-1 debug keystore SHA-1) + Web client for Supabase Auth; enter them in Supabase's Google provider | Build 5 | **After Build 1** (SHA-1 only exists then), before Build 5 | consent-screen terms |
+| 5 | `eas login` | first EAS build | when it lands | password prompt |
+| 6 | Swap `td_emu` to a Google Play image if Google sign-in fails on the Google APIs image | Build 5 | only if Build 5 QA fails | — (Justin's OK first, per MobileDev rules) |
+| 7 | Email TMDB sales before any ads Build | future ads Build | not v1 | Justin decides |
+| 8 | Supabase Pro ($25/mo) vs manual un-pause | pre-launch | not v1 | Justin decides (payment) |
+
+Steps 1–3 happen together before Module 1. Step 4 waits for Build 1's
+debug keystore.
 
 ---
 
@@ -444,7 +447,7 @@ approve this plan.
   gone a week without touching the DB (RESEARCH.md §13.1).
 - **Google sign-in on `td_emu`'s Google-APIs-only image** is unverified —
   Build 5 is the first real test; if it fails, emulator swap needs Justin's
-  OK before Module 2 can finish (manual step #6).
+  OK before Module 2 can finish (setup step #6).
 - **Moderation (Module 3) touches nearly every later table's RLS** — if it's
   skipped or rushed, Modules 9–10 (comments, DMs) need rework. This plan
   schedules it third specifically to avoid that (RESEARCH.md §13.3).
@@ -500,3 +503,4 @@ Build numbering, the milestones table, and the manual-steps table were all
 updated to match. No feature was added or removed — every item above is a
 sequencing/process fix inside the already-approved feature set, so none of
 this is marked NEEDS JUSTIN.
+- 2026-09-24 (Manager): section 6 reframed at Justin's request — service setup is done by the Manager in Justin's Chrome; Justin only for new-account signup, passwords, terms acceptance, payment.
