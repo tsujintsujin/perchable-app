@@ -1,0 +1,2 @@
+--------- beginning of main
+09-25 00:13:41.500  9083  9152 E chromium: [0925/001341.500527:ERROR:variations_seed_loader.cc(37)] Seed missing signature.

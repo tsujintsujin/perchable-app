@@ -162,3 +162,99 @@ Metro stopped at end of session (`Stop-Process` on the Metro node PID);
 `netstat` confirmed port 8081 no longer `LISTENING` (only `TIME_WAIT`
 remnants). `adb reverse tcp:8081` removed. Emulator left running per team
 rule.
+
+## Phase 3 — QA (Queenie)
+
+Tested on `emulator-5554` (td_emu), dev-client APK already installed (not
+rebuilt), Metro started with `npx expo start --dev-client` (time-limited
+background), `adb reverse tcp:8081 tcp:8081`. Commit tested: `8a09cae`.
+
+### 1. Happy path — PASS
+Cold-launched app (`am force-stop` then `monkey` launch), dismissed dev-menu
+overlay, landed on `index` with "Debug: Supabase" link. Tapped it →
+`debug.tsx` loaded showing "Supabase debug" / "Supabase: not checked yet"
+with "CHECK CONNECTION" and "SIMULATE BAD KEY (TEST)" buttons (auto-check on
+load did **not** happen — user must tap Check Connection; not a failure of
+Done-means as written, but noting it since Done-means text reads as if the
+screen shows connected on its own). Tapped "CHECK CONNECTION" → "Supabase:
+connected" (green). Screenshots: `01-cold-launch.png`, `01b-cold-launch.png`,
+`02-index.png`, `03-debug-screen.png`, `04-check-connection-1.png`.
+
+### 2. Check connection again — PASS
+Tapped "CHECK CONNECTION" a second time → still "Supabase: connected".
+Screenshot: `05-check-connection-2.png`.
+
+### 3. Simulate bad key → recover — PASS
+Tapped "SIMULATE BAD KEY (TEST)" → red error text: `Supabase: error — HTTP
+401: {"hint":"Double check your API key.","message":"Invalid API key"}` —
+matches expected. Screenshot: `06-bad-key.png`. Tapped "CHECK CONNECTION"
+again → back to green "Supabase: connected" (proves `.env`/real client
+untouched by the simulate-bad-key path). Screenshot: `07-recovered.png` (a
+blue "Refreshing..." banner visible at the top is Metro's own Fast Refresh
+indicator, not an app error).
+
+### 4. Offline / network error — PASS
+`adb shell svc wifi disable` + `svc data disable`, then tapped "CHECK
+CONNECTION" → red error text: `Supabase: error — fetch failed:
+java.net.UnknownHostException: Unable to resolve host
+"vpcuornksvqziqzzpiwq.supabase.co": No address associated with hostname`.
+No crash, app stayed responsive, buttons still tappable. Screenshot:
+`08-offline.png`. Note: this error text exposes the real Supabase project
+hostname on a dev-only debug screen — flagging per "report every warning/
+error, let Ruby judge," not deciding myself it's fine since it's dev-only.
+Restored network (`svc wifi enable` + `svc data enable`), tapped "CHECK
+CONNECTION" again → back to "Supabase: connected". Screenshot:
+`09-network-restored.png`.
+
+### 5. Regression (Build 1 — cold launch to index, dev client not Expo Go) — PASS
+Back button (`keyevent 4`) from `debug` returned cleanly to `index`, no
+crash. Screenshot: `10-back-to-index.png`. Separately, `am force-stop` +
+relaunch showed the Expo dev-client splash (blue background, Perchable "^"
+logo) then landed on `index` again with the dev-menu overlay reappearing —
+confirms this is the custom dev-client build (`com.tsujintsujin.perchable`),
+not Expo Go. Screenshots: `11-relaunch.png`, `11b-relaunch.png`.
+
+### 6. Logcat — PASS, with items to report
+Filtered to the app's PID across the whole session:
+- **Errors (`*:E`):** exactly one line, and it is not from the app —
+  `E chromium: [0925/001341.500527:ERROR:variations_seed_loader.cc(37)] Seed
+  missing signature.` This is Android System WebView/Chromium's variations
+  seed check, unrelated to Perchable code. Reporting verbatim per the "every
+  warning/error gets reported" rule rather than silently dropping it — Ruby
+  to confirm it's not app-caused.
+- **Warnings (`*:W`), 95 lines total, all standard Expo/RN dev-client
+  startup noise** — reporting the categories verbatim rather than judging
+  them myself:
+  - `sujin.perchable: Unexpected CPU variant for x86: x86_64.` (ART/emulator)
+  - `ziparchive: Unable to open '.../base.dm'` / `.../TrichromeLibrary.dm` (no such file — profile files, standard on emulator)
+  - `SoLoader: Initializing SoLoader...` (expected native-lib loader boot log)
+  - `sujin.perchable: Accessing hidden method/field ... (unsupported, reflection, allowed)` — RN/Expo internals using reflection on hidden Android APIs
+  - `HWUI: Unknown dataspace 0` / `Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED...` — emulator GPU/EGL warnings
+  - `unknown:BridgelessReact: ...` — RN's new-architecture bridgeless startup trace (verbose, not an error)
+  - `WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application. Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.` — this one is worth Ruby/Bella's attention specifically; it's a real Android manifest recommendation, not framework boilerplate.
+  - `unknown:ViewManagerPropertyUpdater: Could not find generated setter for class ...` (~40 lines) — one per RN view manager (Screens, Reanimated, SafeAreaContext, GestureHandler, core RN views, etc.) at startup. Same pattern for every one of them; standard RN codegen warning seen on every Expo dev-client build I've tested, but reporting the exact text since I was told not to silently write off warnings as dev-only.
+  - `System: A resource failed to call release.` (x2) — generic Android resource-leak warning, source not attributable to app code from this log alone.
+Evidence: `logcat-errors.txt`, `logcat-warnings.txt`.
+
+### Design check
+No visual design spec exists yet for the debug screen (DESIGN.md's visual
+system doesn't cover dev-only screens); default RN/Expo Router styling used
+throughout — nothing to compare against. UNTESTABLE/N/A.
+
+### Untestable
+None for this Build — Supabase is server-reachable from the emulator and
+both connected/error/offline paths were exercised directly.
+
+Metro stopped (killed the listener on port 8081, confirmed via `netstat`
+that nothing is LISTENING on 8081 anymore). `adb reverse --remove tcp:8081`
+run. Network restored to normal (wifi + data re-enabled) before finishing.
+Evidence folder: `logs/evidence/build-02/qa/` (13 screenshots + 2 logcat
+files + 2 uiautomator dumps).
+
+## Phase 4 — Review (Ruby)
+CLEAN. Carry-forward for Build 5: add Supabase's AppState `startAutoRefresh`/`stopAutoRefresh` listener (no session exists before auth, so not needed now). Nits: `/debug` route file ships in all builds but renders "Not available" when `!__DEV__` (correct gate); `enableOnBackInvokedCallback` manifest warning is pre-existing RN default. Queenie's notes (no auto-check on load; public project hostname in dev-only offline error) judged not defects.
+
+## Phase 5 — Manager
+- Gates re-run: `npx tsc --noEmit` clean. Commit 8a09cae audited: `.env` untracked, `.env.example` empty, publishable key only (no secret/service key anywhere).
+- Spot re-run (Manager): Metro up (status running) → cold launch → dismissed dev menu → index → "Debug: Supabase" → Check connection → "Supabase: connected". Evidence: `logs/evidence/build-02/manager-spot-check.png`.
+- Build 2: DONE.

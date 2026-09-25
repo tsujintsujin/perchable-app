@@ -1,0 +1,95 @@
+--------- beginning of main
+09-25 00:13:33.660  9083  9083 W sujin.perchable: Unexpected CPU variant for x86: x86_64.
+09-25 00:13:33.660  9083  9083 W sujin.perchable: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+09-25 00:13:33.831  9083  9083 W ziparchive: Unable to open '/data/app/~~tE7Ocqjy46b5Z0UezSbn5A==/com.tsujintsujin.perchable-lzd60BIL5mERbGEAsOZvYA==/base.dm': No such file or directory
+09-25 00:13:33.831  9083  9083 W ziparchive: Unable to open '/data/app/~~tE7Ocqjy46b5Z0UezSbn5A==/com.tsujintsujin.perchable-lzd60BIL5mERbGEAsOZvYA==/base.dm': No such file or directory
+09-25 00:13:34.755  9083  9083 W SoLoader: Initializing SoLoader: 0
+09-25 00:13:34.761  9083  9083 W SoLoader: Recording new base apk path: /data/app/~~tE7Ocqjy46b5Z0UezSbn5A==/com.tsujintsujin.perchable-lzd60BIL5mERbGEAsOZvYA==/base.apk
+09-25 00:13:34.761  9083  9083 W SoLoader: Previously recorded 0 base apk paths.
+09-25 00:13:34.915  9083  9083 W SoLoader: SoLoader initialized: 8
+09-25 00:13:36.591  9083  9083 W sujin.perchable: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (unsupported, reflection, allowed)
+09-25 00:13:36.663  9083  9083 W sujin.perchable: Accessing hidden field Ljava/lang/reflect/Field;->accessFlags:I (unsupported, reflection, allowed)
+09-25 00:13:36.794  9083  9083 W HWUI    : Unknown dataspace 0
+09-25 00:13:36.939  9083  9110 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+09-25 00:13:36.941  9083  9110 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+09-25 00:13:37.607  9083  9083 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Schedule
+09-25 00:13:37.611  9083  9083 W unknown:BridgelessReact: ReactHost{0}.attachSurface(surfaceId = 0)
+09-25 00:13:37.615  9083  9128 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask()
+09-25 00:13:37.615  9083  9128 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Start
+09-25 00:13:37.615  9083  9128 W unknown:BridgelessReact: ReactHost{0}.getJSBundleLoader()
+09-25 00:13:37.616  9083  9128 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning()
+09-25 00:13:37.649  9083  9129 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning(): Async result = true
+09-25 00:13:37.651  9083  9128 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro()
+09-25 00:13:37.851  9083  9083 W unknown:BridgelessReact: ReactHost{0}.onHostResume(activity)
+09-25 00:13:38.751  9083  9083 W sujin.perchable: Accessing hidden method Landroid/os/SystemProperties;->addChangeCallback(Ljava/lang/Runnable;)V (unsupported, reflection, allowed)
+09-25 00:13:38.921  9083  9129 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro(): Creating BundleLoader
+09-25 00:13:38.937  9083  9128 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating BridgelessReactContext
+09-25 00:13:38.943  9083  9128 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating ReactInstance
+09-25 00:13:39.827  9083  9128 W sujin.perchable: Verification of expo.modules.kotlin.modules.ModuleDefinitionData expo.modules.filesystem.FileSystemModule.definition() took 135.243ms (166248.29 bytecodes/s) (545232B approximate peak alloc)
+09-25 00:13:39.953  9083  9083 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@60c8c53
+09-25 00:13:40.004  9083  9083 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@fb5f6e4
+09-25 00:13:40.326  9083  9128 W sujin.perchable: Verification of expo.modules.kotlin.modules.ModuleDefinitionData expo.modules.image.ExpoImageModule.definition() took 205.642ms (40682.19 bytecodes/s) (196808B approximate peak alloc)
+09-25 00:13:40.605  9083  9128 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Loading JS Bundle
+09-25 00:13:40.607  9083  9128 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): DevSupportManager.onNewReactContextCreated()
+09-25 00:13:40.625  9083  9083 W unknown:ReactNative: Packager connection already open, nooping.
+09-25 00:13:40.626  9083  9128 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Execute
+09-25 00:13:40.637  9083  9083 W unknown:BridgelessReact: ReactHost{0}.ReactContext.onHostResume()
+09-25 00:13:40.659  9083  9083 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Executing ReactInstanceEventListeners
+09-25 00:13:40.856  9083  9083 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+09-25 00:13:40.856  9083  9083 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+09-25 00:13:41.313  9083  9132 W ziparchive: Unable to open '/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.dm': No such file or directory
+09-25 00:13:41.313  9083  9132 W ziparchive: Unable to open '/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.dm': No such file or directory
+09-25 00:13:41.313  9083  9132 W sujin.perchable: Entry not found
+09-25 00:13:41.500  9083  9152 E chromium: [0925/001341.500527:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+09-25 00:13:41.631  9083  9131 W BridgelessReactContext: [WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of the new architecture is not encouraged usage.
+09-25 00:13:42.124  9083  9092 W System  : A resource failed to call release. 
+09-25 00:13:42.125  9083  9092 W System  : A resource failed to call release. 
+09-25 00:13:42.126  9083  9092 W sujin.perchable: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk' with 2 weak references
+09-25 00:13:42.142  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.GroupViewManagerWrapper
+09-25 00:13:42.159  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.uimanager.LayoutShadowNode
+09-25 00:13:42.170  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContainerViewManager
+09-25 00:13:42.181  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.reanimated.view.REASharedTransitionBoundaryManager
+09-25 00:13:42.198  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.host.TabsHostViewManager
+09-25 00:13:42.205  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderConfigViewManager
+09-25 00:13:42.216  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderSubviewManager
+09-25 00:13:42.220  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetHostViewManager
+09-25 00:13:42.237  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.scrollviewmarker.ScrollViewMarkerViewManager
+09-25 00:13:42.242  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetContentWrapperViewManager
+09-25 00:13:42.256  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContentWrapperManager
+09-25 00:13:42.285  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.screen.StackScreenViewManager
+09-25 00:13:42.301  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewManager
+09-25 00:13:42.316  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewShadowNode
+09-25 00:13:42.336  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenViewManager
+09-25 00:13:42.342  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.config.StackHeaderConfigViewManager
+09-25 00:13:42.346  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaProviderManager
+09-25 00:13:42.348  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.SearchBarManager
+09-25 00:13:42.357  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.host.StackHostViewManager
+09-25 00:13:42.364  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenFooterManager
+09-25 00:13:42.372  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ModalScreenViewManager
+09-25 00:13:42.380  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.safearea.SafeAreaViewManager
+09-25 00:13:42.388  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackViewManager
+09-25 00:13:42.406  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.subview.StackHeaderSubviewViewManager
+09-25 00:13:42.408  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class org.reactnative.maskedview.RNCMaskedViewManager
+09-25 00:13:42.423  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.screen.TabsScreenViewManager
+09-25 00:13:42.876  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager
+09-25 00:13:42.884  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+09-25 00:13:42.890  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
+09-25 00:13:42.897  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.modal.ReactModalHostManager
+09-25 00:13:42.903  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.progressbar.ReactProgressBarViewManager
+09-25 00:13:42.913  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+09-25 00:13:42.923  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.image.ReactImageManager
+09-25 00:13:42.933  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactTextViewManager
+09-25 00:13:42.938  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
+09-25 00:13:42.946  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
+09-25 00:13:42.954  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactScrollViewManager
+09-25 00:13:42.961  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.view.ReactViewManager
+09-25 00:13:42.967  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.drawer.ReactDrawerLayoutManager
+09-25 00:13:42.977  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.switchview.ReactSwitchManager
+09-25 00:13:42.983  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
+09-25 00:13:42.999  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.textinput.ReactTextInputManager
+09-25 00:13:43.008  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.SelectableTextViewManager
+09-25 00:13:43.012  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
+09-25 00:13:43.017  9083  9131 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.virtual.view.ReactVirtualViewManager
+09-25 00:13:50.201  9083  9083 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@e0b6148
+09-25 00:13:50.881  9083  9083 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@89f38b7
+09-25 00:13:57.925  9083  9083 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@a93daf6

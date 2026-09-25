@@ -13,3 +13,4 @@
 - 2026-09-24 — Justin signed docs/DESIGN.md. Stage A complete; lock open. Next: Build 1 (dev build boots) on module/foundation.
 - 2026-09-24 — Build 1 DONE (dev build boots): Bella 3526c6a, Queenie PASS, Ruby PASS (1 should-fix, fixed), Manager spot re-run PASS. Google OAuth clients created + Supabase Google provider enabled (secret paste pending Justin). Next: Build 2 (Supabase connected).
 - 2026-09-25 — Justin pasted the Google client secret into Supabase (Manager verified saved: enabled, 2 client IDs, secret set). Justin deleted the machine-wide GRADLE_USER_HOME (Engagia) — brief updated. Setup steps 1–4 all done.
+- 2026-09-25 — Build 2 DONE (Supabase connected): Bella 8a09cae (3 rebuild attempts, env causes, fixed in brief), Queenie PASS, Ruby CLEAN, Manager spot re-run PASS. Carry-forward to Build 5: AppState auto-refresh. Next: Build 3 (TMDB proxy Edge Function).
