@@ -7,7 +7,45 @@
 ## Phase log
 - Phase 0 — skipped (no UI design; debug screen only).
 - Phase 1–2 — Bella: done.
+- Manager review round 1 — Bug found and fixed (see below).
 - Deploy blocker (Manager, 2026-09-25): Supabase CLI has no access token; creating one via the dashboard was blocked by the permission system → waiting on Justin. Everything below is built and locally verified; nothing is deployed.
+
+## Build 3 · Bug 1 — network-error catch could leak the TMDB key
+
+**Cause:** the `catch (err)` around `fetch(tmdbUrl)` in
+`supabase/functions/tmdb/index.ts` returned
+`` `TMDB request failed: ${err.message}` `` straight to the client. Deno's
+fetch throws network errors (DNS/TLS/connection failures) whose `message`
+commonly embeds the full failed request URL — e.g. `error sending request
+for url (https://api.themoviedb.org/3/movie/popular?api_key=XXXX&page=1)`
+— and that URL contains `api_key`. A DNS/TLS/network hiccup (not a bad key,
+just a bad connection) would have sent the real TMDB key straight to
+whoever made the request.
+
+**Fix:** the catch block now returns a fixed, keyless message
+(`"TMDB request failed (network)"`, still 502) to the caller, and
+`console.error`s a redacted version instead
+(`message.replaceAll(apiKey, "***")`) so the actual failure detail only
+ever lands in the function's own logs, never the HTTP response. Checked the
+other two error paths in the same file for the same pattern: the
+misconfiguration branch (`!apiKey`) never touches the key at all, and the
+TMDB-non-2xx branch only forwards `body.status_message` (TMDB's own error
+text, confirmed in Verification not to echo request URLs) — neither needed
+a change.
+
+**Files touched outside scope:** none — the fix is entirely inside
+`supabase/functions/tmdb/index.ts`, the file this Bug was reported against.
+
+**Reverified:** replayed the fixed catch block in a throwaway Node script
+(scratchpad, deleted after) against a simulated Deno network-error message
+containing the real key (read from `.env`, never printed):
+```
+client-facing response: {"error":"TMDB request failed (network)"}
+response contains key: CLEAN
+redacted log line: error sending request for url (https://api.themoviedb.org/3/movie/popular?api_key=***&page=1)
+redacted log contains key: CLEAN
+```
+`npx tsc --noEmit` and `npx expo lint` rerun clean after the fix.
 
 ## What was built
 

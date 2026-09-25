@@ -58,7 +58,13 @@ Deno.serve(async (req) => {
   try {
     tmdbRes = await fetch(tmdbUrl);
   } catch (err) {
-    return json({ error: `TMDB request failed: ${err instanceof Error ? err.message : String(err)}` }, 502);
+    // Deno's fetch network errors (DNS/TLS/connection failures) often embed
+    // the request URL in err.message — which contains api_key. Never put
+    // that in the response; log a redacted version for diagnostics and
+    // return a fixed, keyless message to the caller.
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("TMDB fetch failed:", message.replaceAll(apiKey, "***"));
+    return json({ error: "TMDB request failed (network)" }, 502);
   }
 
   const body = await tmdbRes.json().catch(() => null);
