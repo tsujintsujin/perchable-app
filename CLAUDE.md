@@ -20,6 +20,7 @@ notes: `AGENTS.md`. Backend: Supabase (Auth, Postgres+RLS, Realtime, Storage, Ed
 npx expo start          # dev server (stop it when done; port 8081)
 npx tsc --noEmit        # typecheck gate
 npx expo lint
+npx jest                # test gate (jest-expo preset) — required from Build 4 on
 npx expo install <pkg>  # never plain npm install for Expo packages
 ```
 

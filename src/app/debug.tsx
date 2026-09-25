@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { ActivityIndicator, Button, StyleSheet, Text, View } from "react-native";
 import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase";
 import { getPopularMovies, type Movie } from "@/modules/movies";
+import { Sentry } from "@/lib/sentry";
 
 // Importing from "@/lib/supabase" above runs its module-level check that
 // throws if the env vars are missing, so getting this far already proves
@@ -35,9 +36,24 @@ type TmdbStatus =
   | { state: "loaded"; movies: Movie[]; attribution: string }
   | { state: "error"; message: string };
 
+type SentryStatus =
+  | { state: "idle" }
+  | { state: "sent"; eventId: string; sentAt: string };
+
 export default function Debug() {
   const [status, setStatus] = useState<Status>({ state: "idle" });
   const [tmdbStatus, setTmdbStatus] = useState<TmdbStatus>({ state: "idle" });
+  const [sentryStatus, setSentryStatus] = useState<SentryStatus>({ state: "idle" });
+
+  const sendTestError = useCallback(() => {
+    let eventId: string;
+    try {
+      throw new Error("Perchable Build 4 test error — debug screen button");
+    } catch (err) {
+      eventId = Sentry.captureException(err);
+    }
+    setSentryStatus({ state: "sent", eventId, sentAt: new Date().toISOString() });
+  }, []);
 
   const runTmdbCheck = useCallback(async () => {
     setTmdbStatus({ state: "loading" });
@@ -112,6 +128,15 @@ export default function Debug() {
         </View>
       )}
       {tmdbStatus.state === "idle" && <Text>TMDB: not checked yet</Text>}
+
+      <Text style={styles.title}>Sentry debug</Text>
+      <Button title="Send test error to Sentry" onPress={sendTestError} />
+      {sentryStatus.state === "sent" && (
+        <Text style={styles.ok}>
+          Sent — event {sentryStatus.eventId} at {sentryStatus.sentAt}
+        </Text>
+      )}
+      {sentryStatus.state === "idle" && <Text>Sentry: no test error sent yet</Text>}
     </View>
   );
 }
