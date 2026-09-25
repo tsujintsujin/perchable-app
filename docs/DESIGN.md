@@ -328,6 +328,137 @@ Layout inside the About `glass.card`:
 
 ---
 
+## Build 5 — Sign-in screen (Module 2: Auth)
+
+Board: canvas https://claude.ai/artifact/M5TbevikF4q3dyGEh2S7XH, board
+"Build 5 — Sign-in (Google)" (v5). Source: `design-src/build-05-sign-in.dc.html`.
+4 states: idle, signing-in, error, signed-in landing.
+
+**Route:** `src/app/(auth)/sign-in.tsx` (per §3's route tree — the group is
+`(auth)`, not a bare `src/app/sign-in.tsx`). Root `_layout.tsx`'s auth gate
+redirects here when there's no session, and away from here into `(tabs)`
+once signed in.
+
+**Component:** `src/modules/auth/components/GoogleSignInButton/` (`.tsx` +
+`index.ts`) — the only new shared-looking component this Build adds, and it
+stays inside `modules/auth/` (not `src/ui/`) because its exact look is fixed
+by Google's brand rules, not by our token system; nothing else should copy
+its styling. Screen composes it plus `ui/GlassBackdrop` and an inline error
+card styled like `GlassCard` (§ Error state below).
+
+### Layout (idle / signing-in / error — same shell)
+- `GlassBackdrop` (existing component, `blobs: ['purple','gold']`, dimmer than
+  Home's — the mock uses two small 260px/220px blurred circles at ~0.2–0.35
+  opacity, not full-screen halos) on `bg.base` (`#121016`).
+- Centered column, horizontal padding 28px.
+- Wordmark: "🦉 perchable" — `hero` (38/800/Poppins), `accent.gold` (`#B8860B`).
+- Tagline directly under, 12px gap: "Track what you watch.\nRate it your
+  way." — `body` size but `text.secondary` color, centered, `line-height:1.4`.
+- 56px gap, then the Google button (spec below).
+- 16px gap under the button: a small status caption, `caption` size,
+  `text.disabled` (`#5C5666`), centered — dev/QA-only text in the mock
+  labelling the state; **not required in the shipped screen**, drop it in
+  the real build.
+
+### Google Sign-In button — exact spec (Google's official branding rules; this is a deliberate exception to §7's "no one-off colors" rule — do not pull these values from `tokens.ts`)
+- Width: fill container. Height: `48px`. Radius: `12px` (`radius.sm` —
+  Google permits any radius from square to full pill; we use our own `sm`
+  token so it still reads as "this app" without touching Google's mandated
+  colors/logo/text).
+- Fill: `#131314` (Google's "dark" neutral theme background — do not
+  substitute `ink.950`/`bg.base` even though they're close; use this exact
+  hex, it's Google's asset color).
+- Stroke: `#8E918F`, `1px`, **inside** the button's border-box (per Google's
+  dark-theme spec — the dark button is filled *and* stroked, unlike a plain
+  fill-only button).
+- Logo: Google's official multicolor "G" mark, 18×18px, on a transparent/white
+  ground, left-aligned with 10px gap to the label. Never recolor, outline, or
+  simplify the logo.
+- Label: "Sign in with Google" — **exact string**, no paraphrase ("Sign in",
+  "Sign in via Google", etc. are not among Google's permitted labels; "Sign
+  up with Google" and "Continue with Google" are also permitted strings for
+  other flows, but this screen always uses "Sign in with Google").
+  Color `#E3E3E3` (not pure white). **Google Sans Medium, 14px/20px
+  line-height** — not Roboto, not Inter/Poppins; this is the one place in the
+  app that doesn't use the type scale (§1.6), because Google's button-text
+  spec requires Google Sans. Bella loads it as an `expo-font` asset from
+  Google Fonts (`@expo-google-fonts/google-sans` if published, otherwise the
+  static Google Sans `.ttf`/`.otf` from Google Fonts bundled under
+  `assets/fonts/` and loaded via `useFonts()` alongside Poppins/Inter in
+  §1.6). **Fallback:** if Google Sans can't be bundled for Android for some
+  reason, fall back to the system default sans (Roboto on Android) rather
+  than substituting Inter/Poppins — never brand this button with the app's
+  own type family.
+- States: idle (as above) · pressed (Google allows a subtle overlay —
+  `rgba(255,255,255,.08)` on top of the fill) · loading (see below) ·
+  disabled (`opacity: .5`, no interaction).
+- No shadow, gradient, or glow on this button beyond the fill + stroke
+  specified above — Google's guidelines prohibit added chrome (the stroke
+  above is the one exception, it's part of Google's own dark-theme spec, not
+  added chrome).
+
+### Signing-in state
+- Button: logo replaced by an 18px spinner (`border: 2px solid
+  rgba(255,255,255,.3)`, top border `#fff`, animate `rotate`), label replaced
+  by "Signing in…", whole button `opacity:.7`, disabled to taps.
+- Rest of the screen: unchanged, `opacity:.85` (mirrors `ui/Button`'s
+  `loading` convention — dim, don't hide).
+- The Google account picker itself is native OS/Play-services UI — nothing
+  to mock, it renders on top of this screen.
+
+### Error state
+- Inline error card above the button, 16px gap below tagline: `GlassCard`
+  tier `card` (`rgba(76,29,149,.28)`, `blur(20px)`) but with
+  `border: 1px solid rgba(255,138,138,.35)` (danger-tinted border — the one
+  allowed variation on `glass.card`'s border color, since this is an error).
+  Copy: **"⚠ Couldn't sign in. Check your connection and try again."**
+  `text: danger (#FF8A8A)`, `body` weight 600, `line-height:1.4`.
+  This copy string covers both cancel and network failure — don't branch UI
+  text per error type in v1; log the real error to Sentry instead.
+  16px gap, then the Google button again, still reading **"Sign in with
+  Google"** — same idle state, same label, no "Try again" text on the button
+  itself. Google's permitted button labels are "Sign in with Google",
+  "Sign up with Google", "Continue with Google"; "Try again" isn't one of
+  them, so the retry affordance lives entirely in the error card above ("...
+  try again"), and re-tapping the unchanged Google button is the retry
+  action. No new component/variant needed — it's the same
+  `GoogleSignInButton` idle render.
+- No `Toast` here — the error is persistent inline, not a transient toast,
+  because sign-in failure needs a visible retry, not a message that
+  disappears.
+
+### Signed-in landing (minimal, Build 5 scope only — full Home is later Builds)
+- Reuses the existing Home screen shell/header from the Build-0 mock
+  (`(tabs)/index.tsx`) — don't build a separate screen for this.
+- Only addition this Build needs: a small signed-in indicator chip in the
+  header, right side, replacing/alongside the placeholder trophy chip —
+  `GlassCard` tier `chip` equivalent: `rgba(76,29,149,.35)`, `blur(20px)`,
+  `border.hairline`, `radius: pill`, padding `6px 10px`, containing an 18px
+  circular avatar placeholder (`linear-gradient(135deg, purple.700,
+  gold.500)` — same gradient `ui/Avatar`'s `ringGradient` uses) + `caption`
+  text "Signed in ✓", `text.primary`.
+- Everything else on this screen is placeholder/empty — Home's real content
+  (roulette, have-you-watched, friend activity) is out of scope for Build 5;
+  Bella should not build those sections now just because they're in the
+  Build-0 mock.
+
+### Copy strings (verbatim, for Bella and Queenie)
+| Where | Text |
+|---|---|
+| Wordmark | 🦉 perchable |
+| Tagline | Track what you watch.\nRate it your way. |
+| Google button (idle/error) | Sign in with Google |
+| Google button (loading) | Signing in… |
+| Error message | ⚠ Couldn't sign in. Check your connection and try again. |
+| Signed-in chip | Signed in ✓ |
+
+### States checklist (§2's "every data screen ships all four states" rule)
+Sign-in isn't a data-fetch screen but the same discipline applies: idle
+(=filled equivalent), signing-in (=loading), error, done (=the signed-in
+landing, standing in for "success" since there's no empty case here).
+
+---
+
 ## 8. Decisions (Manager, Build 0 round 1)
 
 - **Light theme — no light theme in v1.** §1.3's light tokens stay in this
