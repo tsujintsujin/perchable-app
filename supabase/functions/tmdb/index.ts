@@ -40,10 +40,19 @@ Deno.serve(async (req) => {
 
   const url = new URL(req.url);
   const endpoint = url.searchParams.get("endpoint");
-  const page = url.searchParams.get("page") ?? "1";
+  const pageParam = url.searchParams.get("page") ?? "1";
 
   if (endpoint !== "popular") {
     return json({ error: "Unsupported endpoint. Only 'popular' is allowed." }, 400);
+  }
+
+  // TMDB's own /movie/popular caps pages at 500 (confirmed against the live
+  // API: page=500 -> 200, page=501 -> TMDB's own 400 "Pages start at 1 and
+  // max at 500"). Validate here so a bad/huge/non-numeric page never
+  // reaches TMDB as an unclear upstream error.
+  const page = Number(pageParam);
+  if (!Number.isInteger(page) || page < 1 || page > 500) {
+    return json({ error: "Invalid page" }, 400);
   }
 
   const apiKey = Deno.env.get("TMDB_API_KEY");
@@ -52,7 +61,7 @@ Deno.serve(async (req) => {
     return json({ error: "Server misconfiguration: TMDB_API_KEY not set." }, 500);
   }
 
-  const tmdbUrl = `${TMDB_BASE}/movie/popular?api_key=${apiKey}&page=${encodeURIComponent(page)}`;
+  const tmdbUrl = `${TMDB_BASE}/movie/popular?api_key=${apiKey}&page=${page}`;
 
   let tmdbRes: Response;
   try {

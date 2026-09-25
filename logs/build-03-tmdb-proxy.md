@@ -7,7 +7,8 @@
 ## Phase log
 - Phase 0 — skipped (no UI design; debug screen only).
 - Phase 1–2 — Bella: done.
-- Manager review round 1 — Bug found and fixed (see below).
+- Manager review round 1 — Bug 1 (key leak) found and fixed (see below).
+- Ruby review, confirmed by Manager — Bug 2 (unvalidated page param) found and fixed (see below).
 - Deploy blocker (Manager, 2026-09-25): Supabase CLI has no access token; creating one via the dashboard was blocked by the permission system → waiting on Justin. Everything below is built and locally verified; nothing is deployed.
 
 ## Build 3 · Bug 1 — network-error catch could leak the TMDB key
@@ -46,6 +47,38 @@ redacted log line: error sending request for url (https://api.themoviedb.org/3/m
 redacted log contains key: CLEAN
 ```
 `npx tsc --noEmit` and `npx expo lint` rerun clean after the fix.
+
+## Build 3 · Bug 2 — `page` forwarded to TMDB unvalidated
+
+**Cause:** `supabase/functions/tmdb/index.ts` read `page` straight off the
+query string and interpolated it into the TMDB URL with no checks —
+`page=abc`, `page=-1`, or a huge page number all reached TMDB as-is, coming
+back as whatever unclear error TMDB happened to return for that input
+rather than a clean 400 from this function.
+
+**Fix:** `page` is now parsed with `Number(...)` and validated as an
+integer in `[1, 500]` before being used; anything outside that returns this
+function's own `400 { error: "Invalid page" }` without ever calling TMDB.
+Absent `page` still defaults to `1` (unchanged — the default is applied via
+`?? "1"` before validation runs, so it passes through as a valid case, not
+a special-cased skip).
+
+**Upper bound confirmed against the live TMDB API, not assumed:** called
+`/movie/popular` directly with the real key at `page=500` (200 OK, 20
+results) and `page=501` (TMDB's own 400: `"Invalid page: Pages start at 1
+and max at 500. They are expected to be an integer."`) — 500 is genuinely
+TMDB's cap for this endpoint, confirmed empirically rather than from a
+half-remembered docs figure.
+
+**Files touched outside scope:** none — contained to
+`supabase/functions/tmdb/index.ts`, the file this Bug was reported against.
+
+**Reverified:** replayed the exact validation branch in a throwaway Node
+script (scratchpad, deleted after) against `"abc"`, `"-1"`, `"0"`, `"501"`,
+`"1.5"`, `""`, `"1"`, `"500"`, `"50"`, and the absent-defaults-to-`"1"`
+case — every out-of-range/non-integer input returned the 400 `Invalid
+page` shape, every valid input passed through unchanged. `npx tsc --noEmit`
+and `npx expo lint` rerun clean after the fix.
 
 ## What was built
 
