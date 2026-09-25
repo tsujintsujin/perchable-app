@@ -47,5 +47,6 @@ example
 
 # MobileDev team
 .env*
+!.env.example
 design-src/
 *.keystore
