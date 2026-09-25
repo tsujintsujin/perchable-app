@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { ActivityIndicator, Button, StyleSheet, Text, View } from "react-native";
 import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase";
+import { getPopularMovies, type Movie } from "@/modules/movies";
 
 // Importing from "@/lib/supabase" above runs its module-level check that
 // throws if the env vars are missing, so getting this far already proves
@@ -28,8 +29,28 @@ async function pingSupabase(url: string, apikey: string) {
   }
 }
 
+type TmdbStatus =
+  | { state: "idle" }
+  | { state: "loading" }
+  | { state: "loaded"; movies: Movie[]; attribution: string }
+  | { state: "error"; message: string };
+
 export default function Debug() {
   const [status, setStatus] = useState<Status>({ state: "idle" });
+  const [tmdbStatus, setTmdbStatus] = useState<TmdbStatus>({ state: "idle" });
+
+  const runTmdbCheck = useCallback(async () => {
+    setTmdbStatus({ state: "loading" });
+    try {
+      const { results, attribution } = await getPopularMovies();
+      setTmdbStatus({ state: "loaded", movies: results.slice(0, 5), attribution });
+    } catch (err) {
+      setTmdbStatus({
+        state: "error",
+        message: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }, []);
 
   const runCheck = useCallback(async (useBadKey: boolean) => {
     if (!SUPABASE_URL || !SUPABASE_KEY) {
@@ -74,6 +95,23 @@ export default function Debug() {
         <Button title="Check connection" onPress={() => runCheck(false)} />
         <Button title="Simulate bad key (test)" onPress={() => runCheck(true)} />
       </View>
+
+      <Text style={styles.title}>TMDB proxy debug</Text>
+      <Button title="Fetch popular movies" onPress={runTmdbCheck} />
+
+      {tmdbStatus.state === "loading" && <ActivityIndicator />}
+      {tmdbStatus.state === "error" && (
+        <Text style={styles.err}>TMDB: error — {tmdbStatus.message}</Text>
+      )}
+      {tmdbStatus.state === "loaded" && (
+        <View>
+          {tmdbStatus.movies.map((movie) => (
+            <Text key={movie.id}>{movie.title}</Text>
+          ))}
+          <Text style={styles.attribution}>{tmdbStatus.attribution}</Text>
+        </View>
+      )}
+      {tmdbStatus.state === "idle" && <Text>TMDB: not checked yet</Text>}
     </View>
   );
 }
@@ -90,4 +128,5 @@ const styles = StyleSheet.create({
   ok: { color: "green", fontSize: 16 },
   err: { color: "red", fontSize: 14, textAlign: "center" },
   buttons: { gap: 12, marginTop: 16 },
+  attribution: { color: "gray", fontSize: 11, marginTop: 8, textAlign: "center" },
 });
