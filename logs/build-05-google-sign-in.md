@@ -246,7 +246,7 @@ plus uiautomator dumps `ui-*.xml` and `logcat-app-full.txt` /
 **Note on the KNOWN LIMIT in my brief:** I was told the emulator has no
 Google account and that completing the picker / session persistence would be
 UNTESTABLE. That was true as of Bella's Phase 1-2 session, but a Google
-account (justin.masiga.94@gmail.com) has since been added to `td_emu`
+account (Justin's Google account) has since been added to `td_emu`
 (Bella's log recommended this). So I was able to test the full flow,
 including the two items flagged untestable — see below, now both PASS.
 
@@ -373,3 +373,113 @@ are flagged for Ruby to judge cause, not treated as blocking.
 Metro stopped at end of session; confirmed port 8081 free (verified via
 `netstat`, killed only this session's own `node.exe` PID 23344, matched by
 command line to `expo/bin/cli start --dev-client` in this app's folder).
+
+## Bug 1 re-test (Queenie)
+
+Re-tested commit `66973ae` (JS-only fix, no native rebuild needed — the
+already-installed dev-client APK was used as-is). Emulator had just been
+rebooted by Bella; ran a fresh `timeout 1800 npx expo start --dev-client`
+for this session. Evidence: `logs/evidence/build-05/qa/bug1/` (screenshots
+00-15, `ui-signin-idle.xml`, `ui-debug.xml`, `logcat-cancel.txt`,
+`logcat-full.txt`).
+
+Note: on this fresh emulator boot, the first native-flow attempt showed
+Google's "Sign in / Create account" form rather than the account picker
+directly — one extra Back press was needed to fully exit the native flow
+back to the app. The `Justin's Google account` account was still present
+underneath (confirmed on the second attempt, which went straight to the
+picker), so this looks like an emulator/Play-Services UI quirk on cold boot,
+not related to Bug 1's fix.
+
+### Item 1 — Cancel via Back → same error card, no Sentry send; /debug Sentry test still works
+PASS.
+- Tapped "Sign in with Google" → native flow opened (Sign-in form, then
+  Back → account picker, then Back again to fully exit) → app returned to
+  the sign-in screen showing the same error card, copy verbatim "⚠ Couldn't
+  sign in. Check your connection and try again.", button reset to idle.
+  `05-back-cancel-error.png`, `06-back-cancel-error2.png`.
+- Logcat captured with `logcat -c` right before the tap, then a `--pid`
+  filtered dump right after cancelling: **zero lines mentioning Sentry**
+  (no `Sentry.captureException`, no outgoing envelope, no
+  `RNSentry`/`sentry.io` traffic) in `logcat-cancel.txt` — confirms the
+  cancelled sign-in was not reported. The file does show the Metro dev
+  websocket dropping (`ReconnectingWebSocket`/`Software caused connection
+  abort`) from the app losing focus during the native flow — expected
+  dev-only noise, unrelated to Sentry reporting.
+- Confirmed the Sentry debug test itself still works (proving Sentry isn't
+  just silently broken): reached `/debug` via a deep link
+  (`adb shell am start -a android.intent.action.VIEW -d
+  "perchable://debug"`, since the route is unguarded even while signed out)
+  → "SEND TEST ERROR TO SENTRY" → "Sent — event 8c309357f18a464d8fa1ccf78ed50c51
+  at 2026-09-25T21:42:29.970Z". `09-sentry-result.png`.
+
+### Item 2 — Pressed state: faint white overlay, not whole-button dim
+PASS, verified by pixel sampling (not just eyeballing — the overlay is
+subtle).
+- Held a press (`adb shell input swipe 540 1469 540 1469 1500` backgrounded,
+  screencap mid-swipe) and compared pixel colors at six points inside the
+  button between the idle screenshot and the pressed screenshot using PIL
+  (`py -3`, since the button's own visual delta is too subtle to be certain
+  of from a screenshot alone):
+  - Idle button fill: `(19, 19, 20)` — exactly `#131314`, Google's spec'd
+    dark fill.
+  - Pressed button fill: `(38, 38, 38)` at all six sampled points.
+  - `rgba(255,255,255,.08)` over `(19,19,20)` computes to
+    `19×0.92 + 255×0.08 ≈ 37.9` per channel — matches the measured `(38,38,38)`
+    exactly. This is the overlay math from DESIGN.md, confirming the fix.
+  - Sampled three points **outside** the button (background halo, tagline
+    area, wordmark) — pixel values identical between idle and pressed
+    screenshots (e.g. `(34,20,57)` → `(34,20,57)`), confirming only the
+    button changed, not a whole-screen or whole-button opacity dim.
+  `02-pressed-state.png` vs `01-signin-idle.png`.
+
+### Item 3 — Regression: sign in → force-stop → relaunch → still signed in
+PASS.
+- Completed a real sign-in (account picker → selected
+  `Justin's Google account`) → landed on "Signed in ✓". `12-signed-in.png`.
+- `adb shell am force-stop com.tsujintsujin.perchable`, relaunched via
+  `am start` → dev-client launcher → tapped through → dev-menu overlay
+  dismissed → app landed straight on the signed-in Home screen, no sign-in
+  screen shown. `15-persist-final.png`.
+
+### Logcat (full session)
+`--pid`-filtered dump for the whole re-test session
+(`logcat-full.txt`), reporting exactly what appeared:
+- Same `E unknown:ReactHost: Unhandled SoftException` /
+  `ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus
+  = "true")): Tried to access onWindowFocusChange while context is not
+  ready` seen in my original Build 5 QA pass — recurred once again here
+  (21:43:46.889), same signature, still not tied to any visible break.
+- Same `W HWUI: Failed to initialize 101010-2 format, error = EGL_SUCCESS`
+  and `W BridgelessReactContext: [WARNING] Bridgeless doesn't support
+  CatalystInstance...` warnings, also seen before.
+- New this session: `E chromium: [...] Seed missing signature.` (Play
+  Services' embedded WebView/Chromium component, part of the native Google
+  sign-in flow, not app code) and `W ReactNativeJS: Cannot connect to Expo
+  CLI. ... Error: undefined` — this one fired at 21:44:19, within seconds of
+  me killing Metro to end the session, so it's the dev-client's own
+  "lost the CLI connection" message, not a runtime bug in the app.
+- No `DEVELOPER_ERROR`, no `ApiException`, no `FATAL`, no crash/ANR.
+Flagging the recurring `ReactHost` SoftException again for Ruby/Bella —
+same as my original QA note, it persisted through this fix and I'm not
+deciding its cause myself.
+
+### Verdict
+**PASS** — all three re-test items confirmed. Bug 1's fix holds: cancelled
+sign-ins are not reported to Sentry (confirmed by an empty logcat capture,
+not just absence of a visible error), the real Sentry path is unaffected,
+the pressed-state overlay matches DESIGN.md's exact `rgba(255,255,255,.08)`
+math (confirmed by pixel sampling, not eyeballing), and session persistence
+across a force-stop still works.
+
+App was left **signed in** at the end of this session per instruction (no
+`pm clear` run after the item-3 sign-in). Metro stopped; confirmed port
+8081 free (`netstat` showed no LISTENING socket after killing this
+session's own `node.exe` PID 29068, matched by command line to
+`expo/bin/cli start --dev-client` in this app's folder before killing it).
+
+## Phase 5 — Manager close (2026-09-26)
+- Manager checks: reran tsc + jest (5/5), secret scan of commits (no credential values, no JWTs in logs), Supabase auth.users shows the google-provider user, own spot re-run sign-in → force-stop → relaunch stays signed in (`manager-spot-persist.png`).
+- Ruby re-review PASS; Queenie Bug 1 re-test PASS (pixel-sampled pressed overlay).
+- Carry-forward: `BridgelessReactContext` CatalystInstance warning — watch as native modules are added (Ruby).
+- BUILD 5 DONE.

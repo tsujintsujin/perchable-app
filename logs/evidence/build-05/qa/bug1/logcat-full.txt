@@ -1,0 +1,361 @@
+--------- beginning of main
+09-25 21:43:27.749  4580  4580 I sujin.perchable: Late-enabling -Xcheck:jni
+09-25 21:43:27.793  4580  4580 I sujin.perchable: Using CollectorTypeCMC GC.
+09-25 21:43:27.795  4580  4580 W sujin.perchable: Unexpected CPU variant for x86: x86_64.
+09-25 21:43:27.795  4580  4580 W sujin.perchable: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+09-25 21:43:27.816  4580  4580 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+09-25 21:43:27.908  4580  4580 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+09-25 21:43:27.908  4580  4580 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+09-25 21:43:27.913  4580  4580 W ziparchive: Unable to open '/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.dm': No such file or directory
+09-25 21:43:27.913  4580  4580 W ziparchive: Unable to open '/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.dm': No such file or directory
+09-25 21:43:28.665  4580  4580 D nativeloader: Configuring clns-7 for other apk /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/lib/x86_64:/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.tsujintsujin.perchable
+09-25 21:43:28.695  4580  4580 V GraphicsEnvironment: Currently set values for:
+09-25 21:43:28.696  4580  4580 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+09-25 21:43:28.696  4580  4580 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+09-25 21:43:28.697  4580  4580 V GraphicsEnvironment: Global.Settings values are invalid: number of packages: 0, number of values: 0
+09-25 21:43:28.697  4580  4580 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+09-25 21:43:28.856  4580  4580 D Sentry  : io.sentry.auto-init read: false
+09-25 21:43:28.960  4580  4580 W SoLoader: Initializing SoLoader: 0
+09-25 21:43:28.965  4580  4580 W SoLoader: Recording new base apk path: /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk
+09-25 21:43:28.965  4580  4580 W SoLoader: Previously recorded 0 base apk paths.
+09-25 21:43:28.972  4580  4580 I SoLoader: Preparing SO source: DirectorySoSource[root = /vendor/lib64 flags = 2]
+09-25 21:43:28.973  4580  4580 I SoLoader: Preparing SO source: DirectorySoSource[root = /system/lib64 flags = 2]
+09-25 21:43:28.973  4580  4580 I SoLoader: Preparing SO source: DirectApkSoSource[root = [/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64]]
+09-25 21:43:29.056  4580  4580 I SoLoader: Preparing SO source: ApplicationSoSource[DirectorySoSource[root = /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/lib/x86_64 flags = 0]]
+09-25 21:43:29.057  4580  4580 I SoLoader: init finish: 4 SO sources prepared
+09-25 21:43:29.059  4580  4580 W SoLoader: SoLoader initialized: 8
+09-25 21:43:29.110  4580  4580 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libc++_shared.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:29.119  4580  4580 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libjsi.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:29.127  4580  4580 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libfbjni.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:29.137  4580  4580 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libreactnative.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:29.137  4580  4580 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-25 21:43:29.137  4580  4580 D jni_lib_merge: Preparing 13 pre-merged libs (including stub)
+09-25 21:43:29.137  4580  4580 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7d7cbda83530
+09-25 21:43:29.137  4580  4580 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7d7cbdccf110
+09-25 21:43:29.137  4580  4580 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7d7cbdce19a0
+09-25 21:43:29.138  4580  4580 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7d7cbdd8a560
+09-25 21:43:29.138  4580  4580 D jni_lib_merge: Preparing to register libreact_tracingjni_so.  onload_func: 0x7d7cbe08cbb0
+09-25 21:43:29.138  4580  4580 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7d7cbe09fb00
+09-25 21:43:29.138  4580  4580 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7d7cbe0c2d70
+09-25 21:43:29.138  4580  4580 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7d7cbe0c8860
+09-25 21:43:29.139  4580  4580 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7d7cbe145590
+09-25 21:43:29.139  4580  4580 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7d7cbe2a83b0
+09-25 21:43:29.139  4580  4580 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7d7cbe2be780
+09-25 21:43:29.139  4580  4580 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7d7cbe2cd780
+09-25 21:43:29.139  4580  4580 D jni_lib_merge: About to register 12 actual methods.
+09-25 21:43:29.160  4580  4580 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libreact_codegen_rnscreens.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:29.161  4580  4580 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-25 21:43:29.161  4580  4580 D jni_lib_merge: Preparing 13 pre-merged libs (including stub)
+09-25 21:43:29.161  4580  4580 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7d7cbda83530
+09-25 21:43:29.161  4580  4580 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7d7cbdccf110
+09-25 21:43:29.161  4580  4580 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7d7cbdce19a0
+09-25 21:43:29.161  4580  4580 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7d7cbdd8a560
+09-25 21:43:29.161  4580  4580 D jni_lib_merge: Preparing to register libreact_tracingjni_so.  onload_func: 0x7d7cbe08cbb0
+09-25 21:43:29.162  4580  4580 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7d7cbe09fb00
+09-25 21:43:29.162  4580  4580 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7d7cbe0c2d70
+09-25 21:43:29.162  4580  4580 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7d7cbe0c8860
+09-25 21:43:29.162  4580  4580 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7d7cbe145590
+09-25 21:43:29.162  4580  4580 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7d7cbe2a83b0
+09-25 21:43:29.162  4580  4580 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7d7cbe2be780
+09-25 21:43:29.162  4580  4580 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7d7cbe2cd780
+09-25 21:43:29.163  4580  4580 D jni_lib_merge: About to register 12 actual methods.
+09-25 21:43:29.170  4580  4580 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libreact_codegen_safeareacontext.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:29.174  4580  4580 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libappmodules.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:29.863  4580  4601 D TrafficStats: tagSocket(91) with statsTag=0xffffffff, statsUid=-1
+09-25 21:43:30.448  4580  4580 I Choreographer: Skipped 89 frames!  The application may be doing too much work on its main thread.
+09-25 21:43:30.605  4580  4580 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+09-25 21:43:30.708  4580  4580 W sujin.perchable: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (unsupported, reflection, allowed)
+09-25 21:43:30.786  4580  4580 W sujin.perchable: Accessing hidden field Ljava/lang/reflect/Field;->accessFlags:I (unsupported, reflection, allowed)
+09-25 21:43:30.923  4580  4580 W HWUI    : Unknown dataspace 0
+09-25 21:43:31.246  4580  4580 D VRI[MainActivity]: visibilityChanged oldVisibility=true newVisibility=false
+09-25 21:43:31.576  4580  4585 I sujin.perchable: Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
+09-25 21:43:31.983  4580  4580 W sujin.perchable: Accessing hidden method Landroid/os/SystemProperties;->addChangeCallback(Ljava/lang/Runnable;)V (unsupported, reflection, allowed)
+09-25 21:43:33.077  4580  4614 D TrafficStats: tagSocket(110) with statsTag=0xffffffff, statsUid=-1
+09-25 21:43:33.677  4580  4607 I EGL_emulation: Opening libGLESv1_CM_emulation.so
+09-25 21:43:33.680  4580  4607 I EGL_emulation: Opening libGLESv2_emulation.so
+09-25 21:43:33.725  4580  4607 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+09-25 21:43:33.725  4580  4607 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+09-25 21:43:33.752  4580  4585 I sujin.perchable: Compiler allocated 5417KB to compile void android.view.ViewRootImpl.performTraversals()
+09-25 21:43:33.827  4580  4607 I Gralloc4: mapper 4.x is not supported
+09-25 21:43:34.064  4580  4593 I HWUI    : Davey! duration=2798ms; Flags=1, FrameTimelineVsyncId=252662, IntendedVsync=697258728228, Vsync=697258728228, InputEventId=0, HandleInputStart=697261079300, AnimationStart=697261117500, PerformTraversalsStart=697261161400, DrawStart=699940527600, FrameDeadline=697275394894, FrameInterval=697261040200, FrameStartTime=16666666, SyncQueued=699998237300, SyncStart=700001165800, IssueDrawCommandsStart=700003269700, SwapBuffers=700044734900, FrameCompleted=700060140500, DequeueBufferDuration=30400, QueueBufferDuration=413800, GpuCompleted=700060140500, SwapBuffersCompleted=700048901200, DisplayPresentTime=16960825855817, CommandSubmissionCompleted=700044734900, 
+09-25 21:43:34.168  4580  4580 I Choreographer: Skipped 160 frames!  The application may be doing too much work on its main thread.
+09-25 21:43:34.278  4580  4590 I HWUI    : Davey! duration=2760ms; Flags=0, FrameTimelineVsyncId=252684, IntendedVsync=697508728218, Vsync=700175394778, InputEventId=0, HandleInputStart=700178922200, AnimationStart=700178955700, PerformTraversalsStart=700210778500, DrawStart=700217789500, FrameDeadline=700092061448, FrameInterval=700178049700, FrameStartTime=16666666, SyncQueued=700221008400, SyncStart=700223055000, IssueDrawCommandsStart=700223219700, SwapBuffers=700245288300, FrameCompleted=700270792000, DequeueBufferDuration=41800, QueueBufferDuration=23946400, GpuCompleted=700270303100, SwapBuffersCompleted=700270792000, DisplayPresentTime=20611548058296, CommandSubmissionCompleted=700245288300, 
+09-25 21:43:34.461  4580  4580 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@630a374
+09-25 21:43:35.263  4580  4607 D EGL_emulation: app_time_stats: avg=20.17ms min=3.33ms max=221.51ms count=43
+09-25 21:43:35.744  4580  4624 D ProfileInstaller: Installing profile for com.tsujintsujin.perchable
+09-25 21:43:36.268  4580  4607 D EGL_emulation: app_time_stats: avg=4.25ms min=2.34ms max=8.37ms count=60
+09-25 21:43:37.288  4580  4607 D EGL_emulation: app_time_stats: avg=9.18ms min=3.15ms max=25.77ms count=55
+09-25 21:43:38.295  4580  4607 D EGL_emulation: app_time_stats: avg=4.43ms min=2.76ms max=13.61ms count=61
+09-25 21:43:39.297  4580  4607 D EGL_emulation: app_time_stats: avg=3.64ms min=2.56ms max=7.81ms count=60
+09-25 21:43:40.311  4580  4607 D EGL_emulation: app_time_stats: avg=3.73ms min=2.52ms max=9.36ms count=61
+09-25 21:43:41.328  4580  4607 D EGL_emulation: app_time_stats: avg=3.53ms min=2.41ms max=8.48ms count=61
+09-25 21:43:42.330  4580  4607 D EGL_emulation: app_time_stats: avg=3.44ms min=2.43ms max=8.47ms count=60
+09-25 21:43:43.345  4580  4607 D EGL_emulation: app_time_stats: avg=3.43ms min=2.38ms max=9.84ms count=61
+09-25 21:43:44.353  4580  4607 D EGL_emulation: app_time_stats: avg=6.15ms min=2.48ms max=16.17ms count=57
+09-25 21:43:45.357  4580  4607 D EGL_emulation: app_time_stats: avg=8.50ms min=2.86ms max=100.31ms count=52
+09-25 21:43:45.489  4580  4614 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-25 21:43:45.531  4580  4601 D TrafficStats: tagSocket(91) with statsTag=0xffffffff, statsUid=-1
+09-25 21:43:45.797  4580  4580 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Schedule
+09-25 21:43:45.798  4580  4580 W unknown:BridgelessReact: ReactHost{0}.attachSurface(surfaceId = 0)
+09-25 21:43:45.802  4580  4640 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask()
+09-25 21:43:45.802  4580  4640 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Start
+09-25 21:43:45.804  4580  4640 W unknown:BridgelessReact: ReactHost{0}.getJSBundleLoader()
+09-25 21:43:45.805  4580  4640 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning()
+09-25 21:43:45.836  4580  4641 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning(): Async result = true
+09-25 21:43:45.839  4580  4640 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro()
+09-25 21:43:45.889  4580  4580 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libhermesvm.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:45.892  4580  4580 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libhermestooling.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:45.892  4580  4580 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-25 21:43:45.892  4580  4580 D jni_lib_merge: Preparing 4 pre-merged libs (including stub)
+09-25 21:43:45.892  4580  4580 D jni_lib_merge: Preparing to register libhermes_executor_so.  onload_func: 0x7d7dc98676e0
+09-25 21:43:45.892  4580  4580 D jni_lib_merge: Preparing to register libhermesinstancejni_so.  onload_func: 0x7d7dc9893b60
+09-25 21:43:45.893  4580  4580 D jni_lib_merge: Preparing to register libjsijniprofiler_so.  onload_func: 0x7d7dc9895900
+09-25 21:43:45.893  4580  4580 D jni_lib_merge: About to register 3 actual methods.
+09-25 21:43:45.921  4580  4580 W unknown:BridgelessReact: ReactHost{0}.onHostResume(activity)
+09-25 21:43:45.939  4580  4642 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-25 21:43:45.969  4580  4580 D AutofillManager: Fill dialog is enabled:false, hints=[password, passwordAuto, creditCardNumber, creditCardSecurityCode, creditCardExpirationDate]
+09-25 21:43:46.392  4580  4590 I HWUI    : Davey! duration=732ms; Flags=1, FrameTimelineVsyncId=258216, IntendedVsync=711608727654, Vsync=711942060974, InputEventId=0, HandleInputStart=711951044000, AnimationStart=711951082000, PerformTraversalsStart=711965229100, DrawStart=712223920200, FrameDeadline=711625394320, FrameInterval=711949787400, FrameStartTime=16666666, SyncQueued=712239020800, SyncStart=712290302200, IssueDrawCommandsStart=712291041400, SwapBuffers=712382887400, FrameCompleted=712392682400, DequeueBufferDuration=277200, QueueBufferDuration=1366500, GpuCompleted=712392682400, SwapBuffersCompleted=712386956600, DisplayPresentTime=72904454231359566, CommandSubmissionCompleted=712382887400, 
+09-25 21:43:46.397  4580  4580 D VRI[DevLauncherActivity]: visibilityChanged oldVisibility=true newVisibility=false
+09-25 21:43:46.412  4580  4607 D EGL_emulation: app_time_stats: avg=124.56ms min=5.07ms max=756.15ms count=8
+09-25 21:43:46.415  4580  4590 I HWUI    : Davey! duration=810ms; Flags=1, FrameTimelineVsyncId=258216, IntendedVsync=711608727654, Vsync=711942060974, InputEventId=0, HandleInputStart=711951044000, AnimationStart=711951082000, PerformTraversalsStart=711965229100, DrawStart=712397378900, FrameDeadline=711708727650, FrameInterval=711949787400, FrameStartTime=16666666, SyncQueued=712398179000, SyncStart=712403400700, IssueDrawCommandsStart=712403588500, SwapBuffers=712405632400, FrameCompleted=712424802100, DequeueBufferDuration=797400, QueueBufferDuration=15494800, GpuCompleted=712410287000, SwapBuffersCompleted=712424802100, DisplayPresentTime=0, CommandSubmissionCompleted=712405632400, 
+09-25 21:43:46.521  4580  4580 I Choreographer: Skipped 34 frames!  The application may be doing too much work on its main thread.
+09-25 21:43:46.673  4580  4585 I sujin.perchable: Compiler allocated 4219KB to compile void android.widget.TextView.<init>(android.content.Context, android.util.AttributeSet, int, int)
+09-25 21:43:46.700  4580  4590 I HWUI    : Davey! duration=702ms; Flags=1, FrameTimelineVsyncId=258324, IntendedVsync=711958727640, Vsync=712525394284, InputEventId=0, HandleInputStart=712535300600, AnimationStart=712535339100, PerformTraversalsStart=712539318800, DrawStart=712644072000, FrameDeadline=711975394306, FrameInterval=712531618400, FrameStartTime=16666666, SyncQueued=712644812600, SyncStart=712670321300, IssueDrawCommandsStart=712670515300, SwapBuffers=712681514000, FrameCompleted=712686621100, DequeueBufferDuration=40200, QueueBufferDuration=834300, GpuCompleted=712686454900, SwapBuffersCompleted=712686621100, DisplayPresentTime=0, CommandSubmissionCompleted=712681514000, 
+09-25 21:43:46.713  4580  4580 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@ae5df01
+09-25 21:43:46.786  4580  4580 D SplashScreenView: Building from parcel drawable: android.graphics.drawable.BitmapDrawable@76bd23b
+09-25 21:43:46.867  4580  4580 D SplashScreenView: Build android.window.SplashScreenView{ae2ceb1 V.E...... ......ID 0,0-0,0}
+09-25 21:43:46.867  4580  4580 D SplashScreenView: Icon: view: androidx.appcompat.widget.AppCompatImageView{b721f96 V.ED..... ......I. 0,0-0,0 #1020504 android:id/splashscreen_icon_view} drawable: android.graphics.drawable.BitmapDrawable@76bd23b size: 504
+09-25 21:43:46.867  4580  4580 D SplashScreenView: Branding: view: android.view.View{93b5717 G.ED..... ......I. 0,0-0,0 #1020503 android:id/splashscreen_branding_view} drawable: null size w: 0 h: 0
+09-25 21:43:46.882  4580  4580 W unknown:BridgelessReact: ReactHost{0}.raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: Unhandled SoftException
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: com.facebook.react.bridge.ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException(ReactHostImpl.kt:919)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException$default(ReactHostImpl.kt:910)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.onWindowFocusChange(ReactHostImpl.kt:682)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at com.facebook.react.ReactDelegate.onWindowFocusChanged(ReactDelegate.kt:229)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at com.facebook.react.ReactActivityDelegate.onWindowFocusChanged(ReactActivityDelegate.java:235)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invokeSuspend(ReactActivityDelegateWrapper.kt:320)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:8)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:4)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$launchLifecycleScopeWithLock$1.invokeSuspend(ReactActivityDelegateWrapper.kt:452)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at kotlinx.coroutines.internal.DispatchedContinuationKt.resumeCancellableWith(DispatchedContinuation.kt:375)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at kotlinx.coroutines.intrinsics.CancellableKt.startCoroutineCancellable(Cancellable.kt:26)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at kotlinx.coroutines.CoroutineStart.invoke(CoroutineStart.kt:358)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at kotlinx.coroutines.AbstractCoroutine.start(AbstractCoroutine.kt:134)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch(Builders.common.kt:53)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch(Unknown Source:1)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch$default(Builders.common.kt:44)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch$default(Unknown Source:1)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock(ReactActivityDelegateWrapper.kt:450)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock$default(ReactActivityDelegateWrapper.kt:446)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.onWindowFocusChanged(ReactActivityDelegateWrapper.kt:318)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at com.facebook.react.ReactActivity.onWindowFocusChanged(ReactActivity.java:161)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at androidx.appcompat.view.WindowCallbackWrapper.onWindowFocusChanged(WindowCallbackWrapper.java:124)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at expo.modules.devmenu.detectors.InterceptingWindowCallback.onWindowFocusChanged(Unknown Source:2)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at com.android.internal.policy.DecorView.onWindowFocusChanged(DecorView.java:1772)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.view.View.dispatchWindowFocusChanged(View.java:16743)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.view.ViewGroup.dispatchWindowFocusChanged(ViewGroup.java:1505)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.view.ViewRootImpl.dispatchFocusEvent(ViewRootImpl.java:4697)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.view.ViewRootImpl.handleWindowFocusChanged(ViewRootImpl.java:4601)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged(Unknown Source:0)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl(ViewRootImpl.java:6773)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessage(ViewRootImpl.java:6683)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.os.Looper.loopOnce(Looper.java:232)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.os.Looper.loop(Looper.java:317)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at java.lang.reflect.Method.invoke(Native Method)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+09-25 21:43:46.889  4580  4580 E unknown:ReactHost: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+09-25 21:43:47.156  4580  4580 D SplashScreenView: remove starting view
+09-25 21:43:47.788  4580  4586 W sujin.perchable: Cleared Reference was only reachable from finalizer (only reported once)
+09-25 21:43:47.862  4580  4586 I sujin.perchable: Background concurrent mark compact GC freed 4562KB AllocSpace bytes, 7(364KB) LOS objects, 49% free, 13MB/27MB, paused 3.463ms,6.699ms total 169.615ms
+09-25 21:43:47.904  4580  4588 W System  : A resource failed to call release. 
+09-25 21:43:49.545  4580  4641 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro(): Creating BundleLoader
+09-25 21:43:49.546  4580  4580 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@b6b263c
+09-25 21:43:49.551  4580  4640 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating BridgelessReactContext
+09-25 21:43:49.567  4580  4640 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating ReactInstance
+09-25 21:43:50.420  4580  4640 I ExpoModulesCore: ✅ AppContext was initialized
+09-25 21:43:50.504  4580  4640 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Loading JS Bundle
+09-25 21:43:50.506  4580  4640 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): DevSupportManager.onNewReactContextCreated()
+09-25 21:43:50.518  4580  4580 W unknown:ReactNative: Packager connection already open, nooping.
+09-25 21:43:50.520  4580  4640 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Execute
+09-25 21:43:50.524  4580  4580 W unknown:BridgelessReact: ReactHost{0}.ReactContext.onHostResume()
+09-25 21:43:50.531  4580  4580 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Executing ReactInstanceEventListeners
+09-25 21:43:50.544  4580  4641 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-25 21:43:50.649  4580  4580 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+09-25 21:43:50.649  4580  4580 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+09-25 21:43:51.051  4580  4607 D EGL_emulation: app_time_stats: avg=461.23ms min=4.10ms max=3872.12ms count=10
+09-25 21:43:51.070  4580  4586 I sujin.perchable: NativeAlloc concurrent mark compact GC freed 13MB AllocSpace bytes, 4(144KB) LOS objects, 49% free, 11MB/22MB, paused 2.689ms,6.280ms total 131.240ms
+09-25 21:43:51.291  4580  4649 I WebViewFactory: Loading com.google.android.webview version 124.0.6367.219 (code 636771938)
+--------- beginning of system
+09-25 21:43:51.292  4580  4649 W ResourcesManager: Found a null ResourcesImpl, skipped.
+09-25 21:43:51.298  4580  4649 V ResourcesManager: The following library key has been added: ResourcesKey{ mHash=b428ef4d mResDir=null mSplitDirs=[] mOverlayDirs=[/product/overlay/EmulationPixel7/EmulationPixel7Overlay.apk,/product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk,/data/resource-cache/com.android.systemui-neutral-mj57.frro,/data/resource-cache/com.android.systemui-accent-E6e4.frro,/data/resource-cache/com.android.systemui-dynamic-DJhv.frro] mLibDirs=[/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk,/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk,/system_ext/framework/androidx.window.extensions.jar] mDisplayId=0 mOverrideConfig=v35 mCompatInfo={420dpi always-compat} mLoaders=[]}
+09-25 21:43:51.303  4580  4649 W ziparchive: Unable to open '/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.dm': No such file or directory
+09-25 21:43:51.304  4580  4649 W ziparchive: Unable to open '/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.dm': No such file or directory
+09-25 21:43:51.304  4580  4649 W sujin.perchable: Entry not found
+09-25 21:43:51.305  4580  4649 D nativeloader: Configuring clns-8 for other apk /data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/lib/x86_64:/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+09-25 21:43:51.313  4580  4649 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+09-25 21:43:51.329  4580  4649 D nativeloader: Configuring clns-9 for other apk /data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/lib/x86_64:/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+09-25 21:43:51.399  4580  4649 I cr_WVCFactoryProvider: Loaded version=124.0.6367.219 minSdkVersion=29 isBundle=false multiprocess=true packageId=2
+09-25 21:43:51.417  4580  4649 D nativeloader: Load /data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk!/lib/x86_64/libmonochrome_64.so using ns clns-9 from class loader (caller=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk): ok
+09-25 21:43:51.423  4580  4649 D nativeloader: Load /system/lib64/libwebviewchromium_plat_support.so using ns clns-9 from class loader (caller=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk): ok
+09-25 21:43:51.434  4580  4657 E chromium: [0925/214351.434552:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+09-25 21:43:51.435  4580  4657 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.tsujintsujin.perchable/app_webview/variations_seed_new"
+09-25 21:43:51.436  4580  4657 I chromium: [0925/214351.435948:INFO:variations_seed_loader.cc(66)] Failed to open file for reading.: No such file or directory (2)
+09-25 21:43:51.436  4580  4657 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.tsujintsujin.perchable/app_webview/variations_seed"
+09-25 21:43:51.454  4580  4649 I cr_LibraryLoader: Successfully loaded native library
+09-25 21:43:51.456  4580  4649 I cr_CachingUmaRecorder: Flushed 6 samples from 6 histograms, 0 samples were dropped.
+09-25 21:43:51.468  4580  4661 D TrafficStats: tagSocket(186) with statsTag=0xffffffff, statsUid=-1
+09-25 21:43:51.474  4580  4648 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libworklets.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:51.477  4580  4648 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libexpo-modules-core.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:51.481  4580  4648 W BridgelessReactContext: [WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of the new architecture is not encouraged usage.
+09-25 21:43:51.522  4580  4648 I ExpoModulesCore: ✅ JSI interop was installed
+09-25 21:43:51.540  4580  4648 I ExpoModulesCore: ✅ Constants were exported
+09-25 21:43:51.932  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.GroupViewManagerWrapper
+09-25 21:43:51.940  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.uimanager.LayoutShadowNode
+09-25 21:43:51.945  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContainerViewManager
+09-25 21:43:51.948  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.reanimated.view.REASharedTransitionBoundaryManager
+09-25 21:43:51.951  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.SimpleViewManagerWrapper
+09-25 21:43:51.958  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.host.TabsHostViewManager
+09-25 21:43:51.959  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderConfigViewManager
+09-25 21:43:51.962  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.reactnativegooglesignin.RNGoogleSigninButtonViewManager
+09-25 21:43:51.964  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderSubviewManager
+09-25 21:43:51.967  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetHostViewManager
+09-25 21:43:51.976  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.scrollviewmarker.ScrollViewMarkerViewManager
+09-25 21:43:51.977  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetContentWrapperViewManager
+09-25 21:43:51.979  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContentWrapperManager
+09-25 21:43:51.983  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.screen.StackScreenViewManager
+09-25 21:43:51.989  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewManager
+09-25 21:43:51.990  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewShadowNode
+09-25 21:43:51.992  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenViewManager
+09-25 21:43:51.994  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.config.StackHeaderConfigViewManager
+09-25 21:43:51.995  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.RNSentryOnDrawReporterManager
+09-25 21:43:51.996  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaProviderManager
+09-25 21:43:51.997  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.SearchBarManager
+09-25 21:43:51.999  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.host.StackHostViewManager
+09-25 21:43:52.001  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.replay.RNSentryReplayMaskManager
+09-25 21:43:52.004  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenFooterManager
+09-25 21:43:52.006  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.replay.RNSentryReplayUnmaskManager
+09-25 21:43:52.006  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ModalScreenViewManager
+09-25 21:43:52.008  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.safearea.SafeAreaViewManager
+09-25 21:43:52.010  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackViewManager
+09-25 21:43:52.013  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.subview.StackHeaderSubviewViewManager
+09-25 21:43:52.015  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class org.reactnative.maskedview.RNCMaskedViewManager
+09-25 21:43:52.020  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.screen.TabsScreenViewManager
+09-25 21:43:52.447  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager
+09-25 21:43:52.455  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+09-25 21:43:52.461  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
+09-25 21:43:52.468  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.modal.ReactModalHostManager
+09-25 21:43:52.475  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.progressbar.ReactProgressBarViewManager
+09-25 21:43:52.485  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+09-25 21:43:52.494  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.image.ReactImageManager
+09-25 21:43:52.503  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactTextViewManager
+09-25 21:43:52.509  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
+09-25 21:43:52.514  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
+09-25 21:43:52.524  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactScrollViewManager
+09-25 21:43:52.529  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.view.ReactViewManager
+09-25 21:43:52.538  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.drawer.ReactDrawerLayoutManager
+09-25 21:43:52.546  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.switchview.ReactSwitchManager
+09-25 21:43:52.553  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
+09-25 21:43:52.565  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.textinput.ReactTextInputManager
+09-25 21:43:52.573  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.SelectableTextViewManager
+09-25 21:43:52.580  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
+09-25 21:43:52.586  4580  4648 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.virtual.view.ReactVirtualViewManager
+09-25 21:43:52.633  4580  4662 D TrafficStats: tagSocket(141) with statsTag=0xffffffff, statsUid=-1
+09-25 21:43:52.951  4580  4648 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/librnscreens.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes2.dex): ok
+09-25 21:43:53.042  4580  4648 I ReactNativeJS: Running "main" with {"rootTag":1,"initialProps":{},"fabric":true}
+09-25 21:43:53.083  4580  4663 D TrafficStats: tagSocket(125) with statsTag=0xffffffff, statsUid=-1
+09-25 21:43:53.161  4580  4588 W sujin.perchable: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk' with 2 weak references
+09-25 21:43:53.349  4580  4580 I ExpoModulesCore: ✅ JSI interop was installed
+09-25 21:43:54.188  4580  4649 I RNSentry: FrameMetricsAggregator installed.
+09-25 21:43:54.369  4580  4607 D EGL_emulation: app_time_stats: avg=368.42ms min=13.72ms max=2716.04ms count=9
+09-25 21:43:54.445  4580  4649 W sujin.perchable: Accessing hidden field Landroid/view/Choreographer;->mLastFrameTimeNanos:J (unsupported, reflection, allowed)
+09-25 21:43:54.476  4580  4674 D nativeloader: Load /system/lib64/liblog.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:54.484  4580  4674 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libsentry.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:54.490  4580  4674 D nativeloader: Load /data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!/lib/x86_64/libsentry-android.so using ns clns-7 from class loader (caller=/data/app/~~a85CyvaAOIYdAH3ZduNb4A==/com.tsujintsujin.perchable-CSJdSDBrvKwgRrUSpjgJjA==/base.apk!classes7.dex): ok
+09-25 21:43:54.523  4580  4649 I RNSentry: Starting with DSN: 'https://53d0bae748b6e27b4b8835e08e2f793f@o4512141240762368.ingest.us.sentry.io/4512141251313664'
+09-25 21:43:54.526  4580  4649 I RNSentry: Native Integrations '[io.sentry.UncaughtExceptionHandlerIntegration@f1c8c6e, io.sentry.ShutdownHookIntegration@d057f0f, io.sentry.SpotlightIntegration@ca7db9c, io.sentry.android.core.SendCachedEnvelopeIntegration@f0a39a5, io.sentry.android.core.NdkIntegration@f89017a, io.sentry.android.core.TombstoneIntegration@a24fd2b, io.sentry.android.core.EnvelopeFileObserverIntegration$OutboxEnvelopeFileObserverIntegration@1251588, io.sentry.android.core.SendCachedEnvelopeIntegration@889cb21, io.sentry.android.core.AppLifecycleIntegration@b15bb46, io.sentry.android.core.AnrV2Integration@5744107, io.sentry.android.core.ActivityLifecycleIntegration@ba0234, io.sentry.android.core.ActivityBreadcrumbsIntegration@416f85d, io.sentry.android.core.UserInteractionIntegration@26245d2, io.sentry.android.core.AppComponentsBreadcrumbsIntegration@789e6a3, io.sentry.android.core.SystemEventsBreadcrumbsIntegration@f0f0da0, io.sentry.android.core.NetworkBreadcrumbsIntegration@94fbd59, io.sentry.android.replay.ReplayIntegration@e7aed1e]'
+09-25 21:43:54.616  4580  4580 W pool-6-thread-1: type=1400 audit(0.0:41): avc:  denied  { read } for  name="version" dev="proc" ino=4026532032 scontext=u:r:untrusted_app:s0:c211,c256,c512,c768 tcontext=u:object_r:proc_version:s0 tclass=file permissive=0 app=com.tsujintsujin.perchable
+09-25 21:43:54.909  4580  4679 D TrafficStats: tagSocket(196) with statsTag=0xf001, statsUid=-1
+09-25 21:43:55.001  4580  4586 I sujin.perchable: NativeAlloc concurrent mark compact GC freed 2073KB AllocSpace bytes, 16(320KB) LOS objects, 49% free, 13MB/26MB, paused 2.823ms,5.165ms total 150.662ms
+09-25 21:43:55.277  4580  4679 D TrafficStats: tagSocket(160) with statsTag=0xf001, statsUid=-1
+09-25 21:43:55.679  4580  4607 D EGL_emulation: app_time_stats: avg=654.55ms min=199.43ms max=1109.66ms count=2
+09-25 21:43:56.692  4580  4607 D EGL_emulation: app_time_stats: avg=70.22ms min=4.16ms max=800.74ms count=13
+09-25 21:44:01.630  4580  4607 D EGL_emulation: app_time_stats: avg=2131.28ms min=19.91ms max=10460.77ms count=5
+09-25 21:44:01.679  4580  4607 D EGL_emulation: app_time_stats: avg=1653.73ms min=4.31ms max=4949.79ms count=3
+09-25 21:44:01.812  4580  4580 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@8653c1d
+09-25 21:44:05.728  4580  4580 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@8729dfe
+09-25 21:44:07.312  4580  4607 D EGL_emulation: app_time_stats: avg=135.41ms min=2.14ms max=4916.95ms count=39
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: java.net.SocketException: Connection reset
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:191)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-25 21:44:19.059  4580  4641 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+09-25 21:44:19.059  4580  4641 W unknown:ReconnectingWebSocket: Couldn't connect to "ws://192.168.254.102:8081/inspector/network", will silently retry
+09-25 21:44:19.061  4580  4580 I ReactNativeJNI: Error occurred, shutting down websocket connection: WebSocket exception Connection reset
+09-25 21:44:19.061  4580  4580 W ReactNativeJNI: Couldn't connect to packager, will silently retry
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: java.net.SocketException: Connection reset
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:191)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-25 21:44:19.062  4580  4642 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+09-25 21:44:19.063  4580  4642 W unknown:ReconnectingWebSocket: Couldn't connect to "ws://192.168.254.102:8081/message?device=sdk_gphone64_x86_64%20-%2015%20-%20API%2035&app=com.tsujintsujin.perchable&clientid=DevLauncherBridgelessDevSupportManager", will silently retry
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: java.net.SocketException: Connection reset
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:191)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-25 21:44:19.063  4580  4614 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: Cannot connect to Expo CLI.
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: 
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: Try the following to fix the issue:
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: - Ensure that Expo dev server is running and available on the same network
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: - Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: - If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: 
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: URL: 192.168.254.102:8081
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: 
+09-25 21:44:19.596  4580  4648 W ReactNativeJS: Error: undefined
+09-25 21:44:21.080  4580  4614 D TrafficStats: tagSocket(91) with statsTag=0xffffffff, statsUid=-1
+09-25 21:44:21.084  4580  4663 D TrafficStats: tagSocket(125) with statsTag=0xffffffff, statsUid=-1
+09-25 21:44:21.094  4580  4662 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-25 21:44:23.148  4580  4580 I ReactNativeJNI: Error occurred, shutting down websocket connection: WebSocket exception Failed to connect to /192.168.254.102:8081
+09-25 21:44:25.149  4580  4614 D TrafficStats: tagSocket(91) with statsTag=0xffffffff, statsUid=-1
+09-25 21:44:25.155  4580  4662 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
