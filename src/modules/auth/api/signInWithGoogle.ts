@@ -1,5 +1,20 @@
-import { GoogleSignin, isSuccessResponse } from "@react-native-google-signin/google-signin";
+import {
+  GoogleSignin,
+  isCancelledResponse,
+  isSuccessResponse,
+} from "@react-native-google-signin/google-signin";
 import { supabase } from "@/lib/supabase";
+
+/** Thrown when the user dismisses the Google picker themselves — DESIGN.md
+ * still shows the same generic error card for this (Build 5 spec), but it's
+ * not a real failure, so the sign-in screen tells this apart from other
+ * thrown errors to skip the Sentry report (Build 5 · Bug 1). */
+export class GoogleSignInCancelledError extends Error {
+  constructor() {
+    super("Google sign-in was cancelled");
+    this.name = "GoogleSignInCancelledError";
+  }
+}
 
 let configured = false;
 
@@ -24,13 +39,17 @@ function ensureConfigured() {
  * token for a Supabase session (`signInWithIdToken`). Throws on cancel,
  * missing Play Services, or a Supabase error alike — the sign-in screen
  * shows one generic error state for all of these per DESIGN.md's Build 5
- * spec ("don't branch UI text per error type") and logs the real error to
- * Sentry itself.
+ * spec ("don't branch UI text per error type"). A cancel throws the typed
+ * `GoogleSignInCancelledError` specifically so the screen can skip reporting
+ * it to Sentry (Build 5 · Bug 1) while still reporting every other failure.
  */
 export async function signInWithGoogle(): Promise<void> {
   ensureConfigured();
   await GoogleSignin.hasPlayServices();
   const response = await GoogleSignin.signIn();
+  if (isCancelledResponse(response)) {
+    throw new GoogleSignInCancelledError();
+  }
   if (!isSuccessResponse(response) || !response.data.idToken) {
     throw new Error("Google sign-in did not return an ID token");
   }

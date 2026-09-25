@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Animated, Easing, Pressable, StyleSheet, Text } from "react-native";
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
+import { radius } from "@/ui/tokens";
 
 type Props = {
   loading?: boolean;
@@ -10,10 +11,12 @@ type Props = {
 
 /**
  * Google's official dark-theme "Sign in with Google" button — exact colors,
- * logo and copy per Google's branding rules (DESIGN.md Build 5 spec). These
- * values are a deliberate exception to the app's own token system (§7) —
+ * logo and copy per Google's branding rules (DESIGN.md Build 5 spec). The
+ * *colors* are a deliberate exception to the app's own token system (§7) —
  * never pull them from `ui/tokens.ts`, and never restyle this button to
- * match the app's own type family or palette.
+ * match the app's own type family or palette. The corner radius isn't part
+ * of Google's spec (DESIGN.md: "Google permits any radius") so it does come
+ * from `ui/tokens.ts` (`radius.sm`), same as every other component.
  */
 export function GoogleSignInButton({ loading = false, disabled = false, onPress }: Props) {
   // useState (not useRef) for the stable Animated.Value — the React
@@ -48,19 +51,26 @@ export function GoogleSignInButton({ loading = false, disabled = false, onPress 
         styles.button,
         isDisabled && !loading && styles.disabled,
         loading && styles.loadingOpacity,
-        pressed && !isDisabled && styles.pressed,
       ]}
     >
-      {loading ? (
-        <Animated.View style={[styles.spinner, { transform: [{ rotate }] }]} />
-      ) : (
-        <Image
-          source={require("../../../../../assets/images/google-g-logo.png")}
-          style={styles.logo}
-          contentFit="contain"
-        />
+      {({ pressed }) => (
+        <>
+          {/* Google's permitted press feedback — a translucent white overlay
+           * on top of the fill (DESIGN.md), not a whole-button opacity dip
+           * (Build 5 · Bug 1). */}
+          {pressed && !isDisabled && <View style={styles.pressedOverlay} pointerEvents="none" />}
+          {loading ? (
+            <Animated.View style={[styles.spinner, { transform: [{ rotate }] }]} />
+          ) : (
+            <Image
+              source={require("../../../../../assets/images/google-g-logo.png")}
+              style={styles.logo}
+              contentFit="contain"
+            />
+          )}
+          <Text style={styles.label}>{loading ? "Signing in…" : "Sign in with Google"}</Text>
+        </>
       )}
-      <Text style={styles.label}>{loading ? "Signing in…" : "Sign in with Google"}</Text>
     </Pressable>
   );
 }
@@ -71,17 +81,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 48,
-    borderRadius: 12,
+    borderRadius: radius.sm,
     backgroundColor: "#131314",
     borderWidth: 1,
     borderColor: "#8E918F",
+    overflow: "hidden",
   },
-  pressed: {
-    backgroundColor: "#131314",
-    // Google-permitted subtle press overlay, layered via a translucent white
-    // background since RN has no separate overlay layer here.
-    borderColor: "#8E918F",
-    opacity: 0.92,
+  pressedOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderRadius: radius.sm,
   },
   disabled: {
     opacity: 0.5,

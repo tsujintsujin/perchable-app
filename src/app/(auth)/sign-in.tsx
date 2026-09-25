@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { colors } from "@/ui/tokens";
-import { GoogleSignInButton, signInWithGoogle } from "@/modules/auth";
+import { GoogleSignInButton, GoogleSignInCancelledError, signInWithGoogle } from "@/modules/auth";
 import { Sentry } from "@/lib/sentry";
 
 type Status = { state: "idle" } | { state: "signing-in" } | { state: "error" };
@@ -26,8 +26,12 @@ export default function SignIn() {
     } catch (err) {
       // Same generic error card for cancel, missing Play Services, or a
       // Supabase failure — DESIGN.md says don't branch copy per error type.
-      // The real cause still goes to Sentry.
-      Sentry.captureException(err);
+      // A user-initiated cancel isn't a real failure though (Build 5 · Bug 1)
+      // — skip the Sentry report for that one case; every other cause still
+      // goes to Sentry.
+      if (!(err instanceof GoogleSignInCancelledError)) {
+        Sentry.captureException(err);
+      }
       setStatus({ state: "error" });
     }
   }, []);
