@@ -1,0 +1,4 @@
+09-25 04:22:52.609   616 12222 E ActivityManager: ANR in com.tsujintsujin.perchable
+09-25 04:22:52.609   616 12222 E ActivityManager: Reason: Process ProcessRecord{3461804 12206:com.tsujintsujin.perchable/u0a211} failed to complete startup
+09-25 04:22:52.692   616 12222 I ActivityManager: Killing 12206:com.tsujintsujin.perchable/u0a211 (adj 0): bg anr
+09-25 04:22:53.016   398   398 I Zygote  : Process 12206 exited due to signal 9 (Killed)

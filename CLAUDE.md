@@ -42,6 +42,13 @@ with a time limit (`npx expo start --dev-client`).
 Without `--no-bundler`, `npx expo run:android` leaves Metro running and never
 exits; stop it when done. Debug keystore SHA-1 is in `logs/build-01-dev-build.md`.
 
+## Emulator health (found in Build 4)
+If a cold launch ANRs ("failed to complete startup") and logcat shows
+`Verification of … took 100+ms` at tiny bytecodes/s rates, the emulator is
+degraded (long uptime, stray `dex2oat64`), not the app: `adb reboot`, wait for
+`sys.boot_completed=1` and for load to settle, then retest. Dismiss any
+"System UI isn't responding" dialog with Wait.
+
 ## Supabase CLI — what may touch the live project
 `supabase/config.toml` is the CLI's **local-dev** config (localhost site_url,
 open signup, etc.). Never push it to the live project: only use

@@ -149,3 +149,105 @@ Build 4 file it was reported against.
 JS-only change — no native rebuild, emulator untouched (Queenie was using
 it).
 
+
+## Phase 3 — QA (Queenie)
+
+Tested on commit `07c087d`, branch `module/foundation`, emulator `emulator-5554`
+(`td_emu`, Android 15, Google APIs image). Dev client was already rebuilt with
+`@sentry/react-native` per the brief — not rebuilt again. Metro started with
+`npx expo start --android`, confirmed `packager-status:running` before any
+device interaction, `adb reverse tcp:8081 tcp:8081` set.
+
+### 1. `npx jest` — PASS
+```
+PASS __tests__/index-test.tsx (6.969 s)
+  Home route
+    √ renders the default index screen (41 ms)
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+```
+Full output: `logs/evidence/build-04/qa/jest-run.txt`.
+
+### 2. Cold launch to index — **FAIL (Build 4 · Bug 1)**
+Force-stopped the app, cleared logcat, `adb shell am start -n
+com.tsujintsujin.perchable/.MainActivity`. Reproduced **3 times in a row**,
+same result every time: the app shows the Expo dev-client splash screen
+(blue background, white arrow logo) for roughly 25–30 seconds, then Android
+kills it with an ANR ("failed to complete startup") and drops back to the
+home screen. It never becomes interactive; no red-screen JS error, because
+JS never gets a chance to run.
+
+Exact logcat (saved at `logs/evidence/build-04/qa/07-anr-logcat-excerpt.txt`):
+```
+ActivityManager: ANR in com.tsujintsujin.perchable
+ActivityManager: Reason: Process ProcessRecord{3461804 12206:com.tsujintsujin.perchable/u0a211} failed to complete startup
+ActivityManager: Killing 12206:com.tsujintsujin.perchable/u0a211 (adj 0): bg anr
+Zygote: Process 12206 exited due to signal 9 (Killed)
+```
+Metro's own log (`logs/evidence/build-04/qa/metro-log.txt`) never shows a
+bundle request from the device across any of the 3 attempts — the process is
+killed before it ever reaches out to Metro, i.e. before any JS (including the
+root-layout Sentry.init() call) runs at all.
+
+Screenshots:
+- `01-cold-launch.png`, `02-cold-launch-loaded.png`, `03-cold-launch-final.png`,
+  `04-index-screen.png` — all show the same stuck splash screen across
+  multiple launches.
+- `06-anr-back-to-home.png` — device kicked back to the Android home screen
+  after the ANR kill.
+
+Logcat around the failure shows a long run of `Verification of
+io.sentry.android.core.*` and `AndroidOptionsInitializer` / kotlin-reflect
+class-verification lines each taking 100–900ms, all happening synchronously
+on the main thread before the ANR fires. I'm not the one to conclude that
+Sentry's native init is the root cause — flagging exactly what's on screen
+in logcat for Bella/Ruby to judge — but it is the most recent change in this
+Build and the timing lines up with the main-thread work logged immediately
+before every kill.
+
+**Build 4 · Bug 1 — Cold launch ANRs and the app is killed before it becomes interactive**
+- Steps: force-stop app → `adb shell am start -n com.tsujintsujin.perchable/.MainActivity` → wait ~30s.
+- Expected: app reaches the index screen (or at minimum shows a JS red-screen if something in JS is broken).
+- Actual: Android kills the process with "ANR ... failed to complete startup" every time (3/3), before Metro ever receives a bundle request. App returns to the home screen.
+- Evidence: `logs/evidence/build-04/qa/01-cold-launch.png` … `06-anr-back-to-home.png`, `07-anr-logcat-excerpt.txt`.
+
+### 3. Debug → "Send test error to Sentry" — **BLOCKED by Bug 1**
+Could not reach the debug screen at all — the app never becomes interactive
+on this device. Cannot test the button, cannot observe an event ID/timestamp
+on screen. The Manager's separate confirmation that event `PERCHABLE-1`
+reached the Sentry dashboard stands (server-side), but the **app-side**
+half of this Build's done-means — the button working and showing an event ID
+on screen — is unverified and currently unreachable.
+
+### 4. Break it (offline) — **NOT RUN**, blocked by Bug 1 (nothing to break; app never opens).
+
+### 5. Regression (Build 1 cold launch / Build 2 Supabase / Build 3 popular movies) — **FAIL, same root cause**
+All three regression checks require the app to reach the index/debug screen.
+Since cold launch never gets past the ANR (item 2), none of Builds 1–3's
+features could be re-verified. This is a full regression failure, not a
+partial one — the whole app is currently unusable on a cold start on this
+emulator/build.
+
+### 6. Logcat — errors reported as seen
+- `ActivityManager: ANR in com.tsujintsujin.perchable` / `Reason: Process ... failed to complete startup` — see item 2, this is the blocking issue.
+- `ziparchive: Unable to open '.../base.dm': No such file or directory` (×2 per launch) — seen on every launch attempt, exact text as shown, not evaluated for cause.
+- `TapAndPay: java.lang.NullPointerException: NfcAdapter is null` — seen once during one launch attempt, exact text as shown; likely emulator-environment noise (no NFC hardware) but reporting per the "always report" rule rather than deciding myself.
+- No Sentry-specific warning or error text appeared on screen or in logcat besides the `[@sentry/react-native/expo] Missing config for organization, project. Environment variables will be used as a fallback during the build.` line Metro printed once at startup (`logs/evidence/build-04/qa/metro-log.txt`) — reporting it verbatim since Sentry is this Build's subject, not deciding whether it matters.
+
+### Design check — not applicable (no UI reached; Build 4 is testing/Sentry infra, no new screens per DESIGN.md).
+
+### Cleanup
+- Metro stopped, port 8081 confirmed free (`netstat -ano | grep 8081` → no output).
+- `adb reverse --remove tcp:8081` run, confirmed rc=0.
+- No app code edited, no commits made.
+
+### Verdict: **FAIL** — Build 4 · Bug 1 blocks everything downstream of cold launch.
+
+## Phase 4 — Review (Ruby)
+PASS with 1 should-fix → Bug 1: no Sentry `environment` → fixed bb64087 (`__DEV__ ? "development" : "production"`). Confirmed: source-map upload task only exists for non-debug variants; `sendDefaultPii` unset (false); expo-router `renderRouter` doesn't await RNTL 14's async render (real version skew — route tests render components directly for now). Future work: Sentry auth token + org/project before the first release build.
+
+## Phase 5 — Manager
+- Queenie's FAIL (cold-launch ANR 3/3) diagnosed as **environment, not app**: logcat showed ART class verification at 40–175 bytecodes/s and 8–13 s gaps between trivial startup steps; emulator load avg 9–23, a leftover `dex2oat64` burning CPU for 9+ min, emulator up since the previous day (qemu ~45k CPU-s). Sentry native auto-init is off (`io.sentry.auto-init read: false`). After `adb reboot` of td_emu: app Displayed in 4.8 s, bundle served (1847 modules), no ANR.
+- Spot re-run (Manager, after reboot): Send test error → "Sent — event c73004ff… at 2026-09-25T04:51:45Z" (arrived in Sentry, PERCHABLE-1 now 2 events); Supabase "connected"; TMDB 5 titles + exact attribution. Evidence `logs/evidence/build-04/manager-spot-check.png`.
+- Gates re-run: tsc clean, jest 1/1 PASS.
+- Build 4: DONE. Module 1 (Foundation) complete.
