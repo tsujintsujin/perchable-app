@@ -283,3 +283,88 @@ item above.
 - `supabase secrets set --env-file supabase/functions/.env` → secret `TMDB_API_KEY` present (name only listed).
 - `supabase functions deploy tmdb --use-api` → deployed (commit 94c07e4 code).
 - Live smoke test (curl, publishable key as apikey + Bearer): popular → page 1/1001, 20 results, exact attribution; `page=abc` → 400 "Invalid page"; `endpoint=search` → 400; no auth header → 401 UNAUTHORIZED_NO_AUTH_HEADER.
+
+## Phase 3 — QA (Queenie)
+
+Tested against the deployed `tmdb` Edge Function on emulator `emulator-5554`
+(td_emu), Metro started locally, `adb reverse tcp:8081 tcp:8081`, dev-client
+app relaunched via `am start`. Evidence: `logs/evidence/build-03/qa/`.
+
+**1. Happy path — PASS.** index → tapped "Debug: Supabase" → debug screen →
+tapped "Fetch popular movies" → 5 titles rendered (Spider-Man: Brand New Day,
+Resident Evil, The End of Oak Street, Coyote vs. Acme, The Odyssey) plus the
+exact attribution string: "This application uses TMDB and the TMDB APIs but
+is not endorsed, certified, or otherwise approved by TMDB." Matches DESIGN.md
+§6 verbatim. Screenshots: `02-debug-screen.png`, `04-tmdb-loaded.png`.
+
+**2. Loading state — PASS.** `ActivityIndicator` spinner visible immediately
+after tap, before the response lands. Screenshot: `03-tmdb-loading.png`. No
+dedicated "refresh" control — tapping "Fetch popular movies" again re-runs
+the same request and reloads correctly (same TMDB page-1 result set).
+Screenshot: `05-tmdb-reload.png`.
+
+**3. Offline — PASS.** `svc wifi disable` + `svc data disable`, confirmed
+offline via `adb shell ping` ("Network is unreachable"), tapped "Fetch
+popular movies": clean error, no crash — `TMDB: error — Failed to send a
+request to the Edge Function`. No key, no TMDB URL, no stack trace in the
+error text. Screenshot: `08-offline-error.png`. Re-enabled network, confirmed
+`ping 8.8.8.8` succeeded, tapped fetch again: loaded 5 titles + attribution
+normally. Screenshot: `09-recovered.png`.
+
+**4. Key never reaches the device — PASS.** Manager gave no key value.
+Grepped full `adb logcat -d` for the literal strings `api_key` and
+`themoviedb.org/3` across the whole session (happy path, loading, offline
+error, reload, recovery): **0 matches for either string.** Output file:
+`logcat-keygrep.txt` (0 bytes of matches). Confirms the offline error text
+and all logs are clean — the key/TMDB request URL never appears client-side.
+
+**5. Regression — PASS.**
+- Build 2 (Supabase ping): tapped "Check connection" on the same debug
+  screen → "Supabase: connected" (green). Screenshot:
+  `10-regression-supabase.png`.
+- Build 1 (cold launch to index): app relaunch landed cleanly on the `index`
+  route ("Edit src/app/index.tsx to edit this screen." + "Debug: Supabase"
+  link), no error banner, no reload loop. Screenshot: `01-index.png`.
+
+**6. Logcat — app errors found, reported as required (not dismissed).**
+`adb logcat -d *:E`, filtered to the app's PID (9202, `com.tsujintsujin.
+perchable`, 241 of 467 total E-level lines): two distinct messages, both
+around a relaunch (`am start` on an already-running instance):
+```
+E unknown:ReactNative: Tried to remove non-existent frame callback
+E unknown:ReactHost: com.facebook.react.bridge.ReactNoCrashSoftException:
+  raiseSoftException(onNewIntent(intent = "Intent { flg=0x10000000
+  cmp=com.tsujintsujin.perchable/.MainActivity }")): Tried to access
+  onNewIntent while context is not ready
+```
+Full file: `logcat-errors.txt`. Flagging per the "always report" rule —
+these did not visibly break anything in this session (app continued to
+function normally after), but they are real logged errors from React
+Native's bridge/host layer on the relaunch path, not confirmed cosmetic by
+me. Ruby/Manager to judge cause.
+
+**Testing note (not an app bug):** during my own offline test I initially
+mis-tapped twice — the debug screen's `justifyContent: "center"` container
+re-centers vertically as content grows (movie list + attribution added ~250px),
+so button Y-coordinates captured before a fetch are stale after one. Fixed
+by re-dumping `uiautomator` bounds before each tap. Noting only because a
+real user scrolling/tapping quickly after a result loads could plausibly
+mis-tap a button that just moved — not tested as a UX issue here since I
+was reproducing my own tooling mistake, but worth Ruby/Dianne being aware of
+for any screen where content pushes buttons around a centered layout.
+
+**UNTESTABLE:** none for this Build — Edge Function is deployed and live,
+fully exercised end to end on-device.
+
+**Metro/adb cleanup:** Metro (PID 13852) killed, port 8081 confirmed free
+(`netstat` no LISTENING entry). `adb reverse tcp:8081 tcp:8081` removed.
+Wifi/data re-enabled on emulator, confirmed via live ping (220ms RTT to
+8.8.8.8).
+
+## Phase 5 — Manager
+- Ruby (pre-deploy): PASS with 2 low findings → Bug 2 (page validation, 94c07e4) fixed; config.toml `[auth]` push risk → rule added to app CLAUDE.md (eb4c38e).
+- Bug 1 (key could leak via fetch error message) found by Manager review → fixed 5af5f6b.
+- Queenie's two logcat E lines (`non-existent frame callback`, `onNewIntent while context is not ready`) occur when `am start` hits an already-running dev-client instance; RN-internal, no app code handles intents yet — not a defect.
+- Gates re-run: tsc clean. No key in git (`git log --all -p` clean per Ruby) or bundle (Bella's export grep).
+- Spot re-run (Manager): cold launch → index → Debug → Fetch popular movies → 5 titles + exact attribution. Evidence: `logs/evidence/build-03/manager-spot-check.png`.
+- Build 3: DONE.
