@@ -277,3 +277,9 @@ npx supabase functions deploy tmdb
 After deploy, re-run the `debug.tsx` "Fetch popular movies" check on the
 emulator against the real deployed function to close out the PENDING DEPLOY
 item above.
+
+## Deploy (Manager, 2026-09-25)
+- Supabase CLI via `SUPABASE_ACCESS_TOKEN` (Justin created it; stored in Credentials). No `link` (avoids the DB-password prompt): `--project-ref vpcuornksvqziqzzpiwq` on each command.
+- `supabase secrets set --env-file supabase/functions/.env` → secret `TMDB_API_KEY` present (name only listed).
+- `supabase functions deploy tmdb --use-api` → deployed (commit 94c07e4 code).
+- Live smoke test (curl, publishable key as apikey + Bearer): popular → page 1/1001, 20 results, exact attribution; `page=abc` → 400 "Invalid page"; `endpoint=search` → 400; no auth header → 401 UNAUTHORIZED_NO_AUTH_HEADER.
