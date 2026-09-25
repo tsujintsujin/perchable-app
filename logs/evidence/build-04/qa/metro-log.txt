@@ -1,0 +1,15 @@
+env: load .env
+env: export EXPO_PUBLIC_SENTRY_DSN EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY EXPO_PUBLIC_SUPABASE_URL
+Starting project at D:\AIO Freelance\MobileDev\perchable_app
+Logs: D:\AIO Freelance\MobileDev\perchable_app\.expo\dev\logs\start.log
+[33m› [1m[@sentry/react-native/expo][22m Missing config for [1morganization, project[22m. Environment variables will be used as a fallback during the build. https://docs.sentry.io/platforms/react-native/manual-setup/[0m
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Starting Metro Bundler
+
+› Opening exp+perchable://expo-development-client/?url=http%3A%2F%2F192.168.254.102%3A8081 on td_emu
+Waiting on http://localhost:8081
+
+An update for expo is available: 57.0.24 → ~57.0.25
+4 other packages may need updating. Run npx expo install --check for details.
+Logs for your project will appear below.

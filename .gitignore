@@ -42,7 +42,11 @@ example
 /ios
 /android
 
+# local Gradle home override (workaround for machine-wide GRADLE_USER_HOME conflict)
+.gradle-home/
+
 # MobileDev team
 .env*
+!.env.example
 design-src/
 *.keystore
