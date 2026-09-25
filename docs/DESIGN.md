@@ -325,6 +325,27 @@ Layout inside the About `glass.card`:
 - Routes (`src/app/**`) contain no Supabase calls and no business logic —
   if a screen file is doing more than composing `src/ui/` + a module's exported
   hook, that logic belongs in the module.
+- **Dev-client gear zone — nothing important in the top-right 64×64px corner
+  of any screen** (added Build 6 mockup round). Expo dev-client builds render
+  their own dev-menu gear/status affordance there; anything Perchable puts in
+  that exact corner gets covered or fought over on dev builds. This applies
+  to every screen, not just Builds 6–9 — mocks from here on show the reserved
+  zone as a dashed outline so Bella and Queenie can check against it. Nav
+  icons, chips, or buttons that would naturally sit top-right (settings
+  entry, signed-in indicator, etc.) get inset left of that zone or moved to a
+  list-row/body position instead — see Build 6 and the Home fix below.
+  - **Home screen fix:** Build 5's mock put a "Signed in ✓" text chip
+    top-right on the signed-in landing, which sits inside this reserved zone
+    (that mock predates this rule). Don't build it as drawn. Replace it with
+    the small circular `Avatar` (same one `ui/Avatar` renders elsewhere, ~28–
+    32px, `fallback-initials` or Google photo) inset left of the corner zone,
+    tappable → Profile tab. This both signals "signed in" and gives a useful
+    shortcut, in less space than a text chip, without touching the reserved
+    corner. The existing "🏆 342 Watched" trophy chip stays where it is, just
+    shifted to make room — exact positions get finalized when Home itself is
+    mocked (it's UI-only content, out of scope through Build 9). No change to
+    the Build 5 canvas board itself; this is a forward note for whoever mocks
+    Home.
 
 ---
 
@@ -430,13 +451,11 @@ card styled like `GlassCard` (§ Error state below).
 ### Signed-in landing (minimal, Build 5 scope only — full Home is later Builds)
 - Reuses the existing Home screen shell/header from the Build-0 mock
   (`(tabs)/index.tsx`) — don't build a separate screen for this.
-- Only addition this Build needs: a small signed-in indicator chip in the
-  header, right side, replacing/alongside the placeholder trophy chip —
-  `GlassCard` tier `chip` equivalent: `rgba(76,29,149,.35)`, `blur(20px)`,
-  `border.hairline`, `radius: pill`, padding `6px 10px`, containing an 18px
-  circular avatar placeholder (`linear-gradient(135deg, purple.700,
-  gold.500)` — same gradient `ui/Avatar`'s `ringGradient` uses) + `caption`
-  text "Signed in ✓", `text.primary`.
+- **Superseded:** the board still shows a "Signed in ✓" text chip top-right;
+  don't build it as drawn — it sits inside the dev-client gear zone added
+  after this board shipped. Follow §7's "Dev-client gear zone" rule instead:
+  a small circular `Avatar` inset left of the reserved corner, tappable to
+  Profile, replaces this chip.
 - Everything else on this screen is placeholder/empty — Home's real content
   (roulette, have-you-watched, friend activity) is out of scope for Build 5;
   Bella should not build those sections now just because they're in the
@@ -456,6 +475,255 @@ card styled like `GlassCard` (§ Error state below).
 Sign-in isn't a data-fetch screen but the same discipline applies: idle
 (=filled equivalent), signing-in (=loading), error, done (=the signed-in
 landing, standing in for "success" since there's no empty case here).
+
+---
+
+## Build 6 — My Profile screen (Module: Auth/Profile)
+
+Board: canvas https://claude.ai/artifact/M5TbevikF4q3dyGEh2S7XH, board
+"Build 6 — My Profile" (v6). Source: `design-src/build-06-my-profile.dc.html`.
+3 states: loading, loaded, load-error.
+
+**Route:** `(tabs)/profile/index.tsx` (already in §3's route tree — no route
+change this Build).
+
+**Decision — default avatar:** use the Google account's photo when the
+Google Sign-In SDK returns one; when it doesn't (declined/absent), fall back
+to `ui/Avatar`'s existing `fallback-initials` state (first letter of the
+Google display name, on the `linear-gradient(135deg, purple.700, gold.500)`
+background already defined for `ringGradient`). **Not** a separate Perchable
+placeholder image/asset. Reasoning: `Avatar` already has this exact
+loaded/fallback-initials contract (§2) — reusing it means zero new asset
+pipeline, zero new component state, and it reads better than a blank/generic
+icon while never fabricating a photo the user didn't provide.
+
+### Layout (loaded state)
+- Header row: "My Profile" (`subhead`, `text.secondary`) left; **Settings
+  entry** as a 36×36 `GlassCard`-chip icon button (`rgba(76,29,149,.3)`,
+  `border.hairline`, `radius: sm`) inset with `margin-right: 44px` so it sits
+  left of the reserved 64×64 dev-client gear corner (§7) — never a bare
+  top-right icon.
+- Centered avatar block: `Avatar size: lg` (88px in the mock — treat as the
+  large end of `Avatar`'s `lg` size), `title` weight name below (Google
+  display name, verbatim, no truncation logic beyond normal text overflow),
+  then the usertag row.
+- **Empty usertag state:** a `pill`-radius chip (`rgba(76,29,149,.28)`,
+  `border.hairline`) reading "No usertag yet — **add a usertag**" — the bold
+  part is a tap target that pushes `(tabs)/profile/edit.tsx` (Build 7) with
+  the usertag field focused. Once a usertag exists, this chip is replaced by
+  `@usertag` in the same visual slot (no separate component needed, same
+  chip re-purposed).
+- Two entry rows below, both `GlassCard` tier `card` list-row style (matches
+  Settings screen's existing row pattern, §6): "✏️ Edit profile" → pushes
+  `(tabs)/profile/edit.tsx`; "⚙ Settings" → pushes
+  `(tabs)/profile/settings.tsx`. (The header icon and this row are two
+  different entry points to the same Settings screen — keep both; the header
+  icon is the fast path, the row is the discoverable one for anyone who
+  misses the icon.)
+- Below: "`N` movies watched" (`caption`, `text.secondary`) + the same
+  3-column collection grid pattern as the Build-0 `My Collection` mock
+  (reuses `PosterCard`/grid, not a new layout) — `N` is 0 at first sign-in
+  per Build 6's actual scope (`profiles` row just created); the grid itself
+  is empty at this Build (Collection module ships later) but the row count
+  and grid container render now so the screen isn't bare.
+
+### Loading state
+- Shimmer placeholders in the exact shape of the loaded layout: circular
+  avatar shimmer, two text-bar shimmers (name, usertag), two row shimmers.
+  Same shimmer treatment `PosterCard` already uses for its `loading` state —
+  no new shimmer component.
+
+### Load-error state
+- `EmptyState` component (§2), `icon: 🦉`, `title: "Couldn't load your
+  profile"`, `body: "Check your connection and try again."`,
+  `action: {label: "Retry", onPress: refetch}`.
+
+### Copy strings (verbatim)
+| Where | Text |
+|---|---|
+| Empty usertag chip | No usertag yet — add a usertag |
+| Edit profile row | ✏️ Edit profile |
+| Settings row | ⚙ Settings |
+| Error title | Couldn't load your profile |
+| Error body | Check your connection and try again. |
+| Error action | Retry |
+
+---
+
+## Build 7 — Edit profile screen (Module: Profile)
+
+Board: canvas https://claude.ai/artifact/M5TbevikF4q3dyGEh2S7XH, board
+"Build 7 — Edit profile" (v6). Source:
+`design-src/build-07-edit-profile.dc.html`. 5 states: idle, uploading photo,
+upload-error, usertag-taken, saving.
+
+**Route (new):** `(tabs)/profile/edit.tsx` — add this line to §3's route
+tree under `profile/`, pushed from `profile/index.tsx`'s "Edit profile" row
+or its usertag chip. Not a `formSheet` — a normal pushed screen (back arrow
+header), consistent with `movie/[id].tsx`'s pattern, since this is a
+full-attention task, not a quick popover.
+
+**Decision — usertag rules:** `3–20` characters, lowercase `a–z`, `0–9`,
+underscore `_` only, **must start with a letter**. Stored lowercase, without
+a leading `@`; displayed everywhere in the app with a leading `@` (view-only
+formatting, never part of the stored value). Reasoning: lowercase-only
+storage makes the uniqueness check (§ below) a trivial case-insensitive
+comparison with no normalization step; letter-start avoids ambiguous
+all-numeric tags; underscore-only (no hyphen/dot) keeps the allowed set
+small and easy to validate client- and server-side with the same regex
+(`^[a-z][a-z0-9_]{2,19}$`).
+
+### Layout (idle state)
+- Header: back arrow + "Edit profile" (`subhead`).
+- Avatar (same `Avatar size: lg` as Build 6) with a small circular camera
+  badge overlay, bottom-right of the avatar, 30px, `accent.gold` fill,
+  `text.onGold` icon, `2px solid bg.base` ring so it reads as attached to
+  the avatar. Tapping the avatar (not just the badge) opens the OS image
+  picker — badge is a visual affordance, not a separate hit target.
+  Caption below: "Tap to change photo" (`caption`, `text.secondary`).
+- Usertag field: label "USERTAG" (`caption`, `text.secondary`, uppercase,
+  letter-spacing), then a `GlassCard`-styled input row with a static `@`
+  prefix (`accent.gold`) + the editable text (`text.primary`), 14px/`body`.
+  Helper text under it, always visible (not just on error): "3–20
+  characters · lowercase letters, numbers, underscore · must start with a
+  letter" (`caption`, `text.disabled`).
+- Save/Cancel: two `Button`s, `secondary-glass` (Cancel) + `primary-gold`
+  (Save), side by side, equal width. **Save is disabled** until the usertag
+  passes the regex above **and** differs from the currently-saved value (or
+  a new photo was picked) — there's nothing to save otherwise.
+
+### Uploading-photo state
+- Avatar circle replaced by a determinate progress ring (`accent.gold`
+  stroke over a `border.hairline`-opacity track, 6px stroke) driven by
+  Supabase Storage's upload progress event, percentage centered in
+  `caption`/`text.primary`. Caption changes to "Uploading photo…".
+- The rest of the form (usertag field + both buttons) is disabled/dimmed
+  (`opacity: .5` on the field, Save visually disabled) — a photo upload and
+  a usertag save are two different network calls; don't let a usertag save
+  race an in-flight upload. Cancel stays tappable (cancels the upload too).
+
+### Upload-error state
+- Photo reverts to its pre-upload state (old photo unchanged — Perchable
+  never leaves a broken/blank avatar). Inline error card directly under the
+  avatar block, same visual pattern as Build 5's error card (`GlassCard`
+  tier `card` + `rgba(255,138,138,.35)` border): "⚠ Photo upload failed.
+  Your old photo is unchanged — tap the photo to try again."
+- **This never blocks the usertag half of the form** — Save stays available
+  for a usertag-only change even while the photo upload has failed; photo
+  and usertag are independent fields with independent save outcomes (a
+  single Supabase update can still batch both when both succeed, but the UI
+  contract is: photo failure alone doesn't disable usertag saving).
+
+### Usertag-taken state
+- Input row border turns `rgba(255,138,138,.5)` (danger-tinted, same pattern
+  as Build 5/6's other error borders). Inline text under the field: "That
+  usertag is already taken." (`caption`, `danger`). Save stays disabled.
+- **Live check:** debounce the uniqueness query (≈400–500ms after the user
+  stops typing) rather than checking on every keystroke or only on submit —
+  Bella's call on the exact debounce constant, not a hard design value.
+
+### Saving state
+- Same convention as `ui/Button`'s `loading` state (§2): Save's label
+  replaced by a spinner + "Saving", button stays `primary-gold`-colored but
+  non-interactive; Cancel becomes disabled too (no cancelling mid-write).
+  Avatar/usertag field both dim to `opacity: .5`.
+
+### Copy strings (verbatim)
+| Where | Text |
+|---|---|
+| Photo caption (idle) | Tap to change photo |
+| Photo caption (uploading) | Uploading photo… |
+| Usertag helper (always-on) | 3–20 characters · lowercase letters, numbers, underscore · must start with a letter |
+| Upload error | ⚠ Photo upload failed. Your old photo is unchanged — tap the photo to try again. |
+| Usertag-taken error | That usertag is already taken. |
+| Save (saving state) | Saving |
+
+---
+
+## Build 9 — Settings screen: Sign out + Delete account (Module: Auth)
+
+Board: canvas https://claude.ai/artifact/M5TbevikF4q3dyGEh2S7XH, board
+"Build 9 — Settings (Sign out + Delete account)" (v6). Source:
+`design-src/build-09-settings.dc.html`. 4 states: settings idle,
+delete-confirmation, deleting, post-delete landing. **Also covers Build 8**
+(Sign out) — Build 8 has no mockup phase of its own per PLAN.md, its one UI
+element (the "Sign out" row) is drawn on this board instead.
+
+**Route:** `(tabs)/profile/settings.tsx` (already in §3's route tree — no
+route change).
+
+### Settings idle
+- Same screen as the Build-0 Settings mock (§6, TMDB attribution — unchanged,
+  still required), with two additions:
+  - **Account section** gets a third row: "🚪 Sign out" — same `card`
+    list-row style as the existing rows, `text.primary`, no danger styling
+    (signing out is reversible and low-stakes, doesn't need the danger
+    treatment). Tapping it clears the Supabase session immediately (no
+    confirmation dialog — Build 8's done-means only requires the session to
+    clear and redirect to sign-in; a confirm step isn't specified and adds
+    friction for a reversible action).
+  - **New "Danger zone" section**, below About: "🗑 Delete my account" row,
+    styled as `Button` variant `destructive` would be (§2) — fill
+    `rgba(255,138,138,.1)`, `border: 1px solid rgba(255,138,138,.35)`, text
+    `danger` (`#FF8A8A`), weight 700. Tapping it opens the delete
+    confirmation sheet below — it does **not** delete anything itself.
+
+### Delete-confirmation state
+- `GlassCard` tier `sheet` bottom sheet (same glass/shadow spec as
+  `ProfileSheet`, §1.4's `glass.sheet`), drag-handle bar, but with a
+  danger-tinted glow (`0 0 40px rgba(255,138,138,.15)` in place of the
+  purple glow) so it visually reads as the one dangerous sheet in the app.
+- Title: "Delete your account?" (`title`-ish weight, `danger` color).
+- **Explicit list of what's deleted** (required by this Build's brief) —
+  render as a plain bulleted list, `body`/`text.primary`:
+  "Your profile, photo and usertag" · "Your watched collection and
+  captions" · "Your comments, DMs and follow graph" · "Your Google sign-in
+  link to Perchable". Followed by: "This can't be undone. You'd need a
+  fresh Google sign-up to use Perchable again." (`caption`,
+  `text.secondary`).
+- **Decision — confirmation mechanism: type "DELETE".** Not a second-tap.
+  A text input, placeholder/label "Type DELETE to confirm:", and the red
+  confirm button (`Button` variant `destructive`, label "Delete my account")
+  stays disabled until the typed text is an **exact case-sensitive match**
+  for `DELETE`. Reasoning: this is the one truly irreversible action in the
+  app (cascades through every module's data, per PLAN.md Build 9's
+  `ON DELETE CASCADE` design) — a second tap is too easy to fire by
+  muscle-memory double-tap; typing a specific word is the standard
+  high-friction pattern for destructive-irreversible actions and matches
+  what the explicit list above is already asking the user to read
+  carefully.
+- Cancel (`secondary-glass`) dismisses the sheet, no state change.
+
+### Deleting state
+- Sheet content collapses to a short status line: "Deleting your data —
+  this may take a moment." Confirm button becomes the same spinner+label
+  loading convention used elsewhere ("Deleting…"), Cancel becomes disabled
+  — once the delete call has actually started, there's nothing to safely
+  cancel mid-cascade.
+
+### Post-delete landing
+- **Reuses Build 5's sign-in idle screen exactly** — same route
+  (`(auth)/sign-in.tsx`), same component, no new screen. The only addition:
+  a `Toast` (variant: `info`, per §2's existing `Toast` variants — no new
+  variant needed) reading "✓ Your account was deleted.", shown once on
+  arrival and auto-dismissing. This is the natural landing anyway, since
+  deleting the Supabase Auth user invalidates the session and the root
+  layout's auth gate (§3) redirects here regardless.
+
+### Copy strings (verbatim)
+| Where | Text |
+|---|---|
+| Sign out row | 🚪 Sign out |
+| Delete row | 🗑 Delete my account |
+| Sheet title | Delete your account? |
+| Deletion list intro | This permanently deletes: |
+| Deletion list items | Your profile, photo and usertag / Your watched collection and captions / Your comments, DMs and follow graph / Your Google sign-in link to Perchable |
+| Irreversibility note | This can't be undone. You'd need a fresh Google sign-up to use Perchable again. |
+| Confirm-input prompt | Type DELETE to confirm: |
+| Confirm button (idle) | Delete my account |
+| Confirm button (deleting) | Deleting… |
+| Deleting status line | Deleting your data — this may take a moment. |
+| Post-delete toast | ✓ Your account was deleted. |
 
 ---
 
