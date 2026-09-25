@@ -17,6 +17,9 @@ export function initSentry() {
     // Send in dev too: Build 4's done-means is a dev-only test button whose
     // event must reach the dashboard, and there's no separate prod build yet.
     enabled: true,
+    // Build 4 · Bug 1 (Ruby/Manager): without this, dev and prod errors land
+    // in one undistinguishable stream. __DEV__ is Metro's dev/release flag.
+    environment: __DEV__ ? "development" : "production",
     // No SENTRY_AUTH_TOKEN available yet (Manager hasn't created one) — skip
     // source map upload rather than fail the build. See logs/build-04-testing-sentry.md
     // for the SENTRY_DISABLE_AUTO_UPLOAD=true env var this relies on (also a

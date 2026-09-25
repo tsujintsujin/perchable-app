@@ -1,0 +1,9 @@
+PASS __tests__/index-test.tsx (6.396 s)
+  Home route
+    √ renders the default index screen (46 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        6.96 s, estimated 7 s
+Ran all test suites.

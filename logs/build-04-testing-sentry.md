@@ -129,3 +129,23 @@ the shell env for that command.
   (this Build's native change needs `expo run:android`, not just
   `expo start`; the dev client boots and serves via Metro like Builds 1–3).
 
+## Build 4 · Bug 1 (Ruby, confirmed by Manager)
+
+**Cause:** `Sentry.init()` had `enabled: true` but no `environment` — dev
+errors (from the debug-screen test button, and any future local testing)
+and real production crashes would land in the same undifferentiated
+Sentry stream, with no way to filter one from the other on the dashboard.
+
+**Fix:** `src/lib/sentry.ts` — added `environment: __DEV__ ? "development" : "production"`
+to the `Sentry.init()` call. `__DEV__` is the same Metro dev/release flag
+`debug.tsx` already uses to hide itself in production; no new source of
+truth introduced. `enabled: true` and `tracesSampleRate: 0` unchanged.
+
+**Files touched outside scope:** none — the fix is entirely inside the
+Build 4 file it was reported against.
+
+**Gates rerun:** `npx tsc --noEmit` clean · `npx expo lint` clean ·
+`npx jest` 1/1 PASS (`logs/evidence/build-04/jest-output-bug1.txt`).
+JS-only change — no native rebuild, emulator untouched (Queenie was using
+it).
+
