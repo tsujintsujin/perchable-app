@@ -41,6 +41,14 @@ with a time limit (`npx expo start --dev-client`).
 Without `--no-bundler`, `npx expo run:android` leaves Metro running and never
 exits; stop it when done. Debug keystore SHA-1 is in `logs/build-01-dev-build.md`.
 
+## Supabase CLI — what may touch the live project
+`supabase/config.toml` is the CLI's **local-dev** config (localhost site_url,
+open signup, etc.). Never push it to the live project: only use
+`npx supabase secrets set`, `npx supabase functions deploy <name>`, and
+migrations reviewed per Build. Anything that syncs `[auth]` config would
+overwrite the dashboard's Google sign-in setup (found in Build 3 review).
+The CLI needs `SUPABASE_ACCESS_TOKEN` (from `Credentials/perchable/.env`).
+
 ## Lock
 `.claude/hooks/gate.js` blocks app code until `PLAN.md` and `docs/DESIGN.md`
 both contain a line starting "Approved by Justin:" — which only Justin types.
