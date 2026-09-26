@@ -1,3 +1,9 @@
 export { getOwnProfile } from "./api/getOwnProfile";
+export { pickAvatar } from "./pickAvatar";
+export { updateProfile } from "./api/updateProfile";
+export { uploadAvatar } from "./api/uploadAvatar";
+export { checkUsertagAvailable } from "./api/checkUsertagAvailable";
 export { useOwnProfile } from "./hooks/useOwnProfile";
+export { useUsertagAvailability } from "./hooks/useUsertagAvailability";
+export type { UsertagAvailability } from "./hooks/useUsertagAvailability";
 export type { Profile } from "./types";
