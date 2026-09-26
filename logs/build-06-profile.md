@@ -496,3 +496,96 @@ Files touched, all inside Bug 1's own scope: `src/ui/TabBar/TabBar.tsx`,
 `src/ui/GlassCard/GlassCard.tsx`, `src/app/(tabs)/profile/index.tsx`,
 `src/app/(tabs)/index.tsx`, `__tests__/home-test.tsx`, this log. No files
 outside Bug 1's scope.
+
+## Bug 1 re-test (Queenie)
+
+Re-tested commit 5d885f0 (JS-only fix). Own time-limited Metro
+(`timeout 1800 npx expo start --dev-client`), stopped at end, port 8081
+confirmed free. App left signed in as Justin throughout (no `pm clear`, no
+sign-out). Evidence: `logs/evidence/build-06/qa/bug1/` (screenshots 00-44,
+`ui-*.xml` dumps, `logcat-home-offline.txt`).
+
+Note on environment: this session needed unusually persistent retries to get
+a genuinely fresh JS mount while offline (airplane mode) for item 3 below,
+because the dev-client's cached "last used" server is a WiFi IP
+(`192.168.254.x:8081`), and both bundle loading AND reload attempts over that
+route fail under airplane mode the same way a real network outage would.
+Worked around it by manually connecting to `http://localhost:8081` (routed
+through `adb reverse`, which tunnels over the ADB/USB bridge rather than the
+emulator's simulated WiFi radio) — that connection succeeded even with
+airplane mode on, giving a true "JS loads, but Supabase/API calls fail"
+scenario instead of "nothing loads at all."
+
+### Item 1 — Tab bar background: pixel-sample ≈ rgb(25-30,22-26,31-38)
+PASS. Sampled 4 points across the tab bar (Home and Profile) with PIL:
+all four points read exactly `rgb(30,26,38)` — the upper bound of the
+expected range, and an exact match for `bg.elevatedFlat` (`#1E1A26`).
+This is `glass.nav`'s translucent tint composited over the new opaque
+`bg.elevatedFlat` base layer Bella added — since both colors are
+numerically identical, the composite is stable at exactly `(30,26,38)`
+regardless of the fill's alpha. Confirms the fix: no more flat unrelated
+grey (previously measured `rgb(105,103,108)`).
+`00-launch.png`, `01-home.png`.
+
+### Item 2 — Settings header chip: rgba(76,29,149,.3) + hairline border
+PASS. Chip bounds (uiautomator) `[818,147][912,242]` = 94x95px / 2.625
+≈ 36x36dp, matching spec size. Pixel-sampled 6 points inside the chip fill
+(avoiding the rounded corners and the gear glyph itself): all 6 read exactly
+`rgb(36,20,60)`, matching the computed `rgba(76,29,149,.3)` over `bg.base`
+(`≈ rgb(35,20,60)`) almost exactly — same as Bella's own log entry. Confirms
+the fix: the chip now has a real visible purple pill background, not a bare
+floating glyph. `00-launch.png` (crop reference from original QA still
+applies visually; re-confirmed numerically this session).
+
+### Item 3 — Home avatar via useOwnProfile + airplane-mode error path
+PASS, both halves:
+- **Avatar still shows Justin's photo (online):** confirmed on every normal
+  launch this session — Home's avatar briefly shows the fallback-initials
+  "?" gradient circle for roughly 1-3 seconds while `useOwnProfile` fetches,
+  then resolves to Justin's real Google photo. `10-home-resolved.png`,
+  `44-persist-loaded.png`.
+- **Load-error path doesn't crash (airplane mode):** forced a genuinely
+  fresh JS mount while offline (via the `localhost:8081`/`adb reverse`
+  route described above, airplane mode on). Home rendered normally —
+  backdrop, "Debug: Supabase" link, tab bar — with the avatar staying on
+  the fallback-initials "?" gradient circle (the same placeholder used
+  while loading) instead of ever showing a photo, since the fetch never
+  resolved. No crash, no error banner, no broken layout; every other part
+  of the screen (nav, debug link) stayed fully interactive.
+  `36-loaded-localhost.png`, `37-home-error-avatar.png`.
+- Logcat captured for this whole offline window (`logcat-home-offline.txt`):
+  same recurring `ReactHost: Unhandled SoftException` seen in every prior
+  Build 5/6 session (not new, not tied to this fix), one `HWUI` warning, one
+  Chromium "Seed missing signature" (Play Services internal). No
+  `DEVELOPER_ERROR`, no `FATAL`, no crash/ANR.
+
+### Quick regression
+- **Profile states:** loading shimmer (circle + bars + rows) → loaded state
+  with Justin's real data (photo, name, empty-usertag chip, both rows,
+  "0 movies watched" placeholder) — both confirmed this session on a fresh
+  mount. `38-profile-check.png` (shimmer), `39-profile-loaded.png` (loaded).
+  PASS.
+- **Build 5 (sign-in persistence):** force-stopped the app and relaunched via
+  the dev-client launcher → landed straight on Home signed in as Justin, no
+  sign-in screen shown, real photo loaded. PASS. `44-persist-loaded.png`.
+
+### Verdict
+**PASS** — both Bug 1 fixes confirmed by pixel sampling (not eyeballing):
+tab bar now `rgb(30,26,38)` matching `glass.nav`/`bg.elevatedFlat` exactly,
+Settings chip now `rgb(36,20,60)` matching `rgba(76,29,149,.3)` over
+`bg.base`. Home's `useOwnProfile` switch verified both online (real photo
+loads) and under a genuine offline fresh-mount (graceful fallback-initials
+avatar, no crash). Profile states and Build 5 persistence regression both
+still PASS.
+
+App left signed in as Justin at the end of this session, on Home, per
+instruction. Metro stopped; port 8081 confirmed free (`netstat` showed no
+LISTENING socket after killing this session's own `node.exe` PID 14420,
+matched by command line to `expo/bin/cli start --dev-client` in this app's
+folder before killing it).
+
+## Phase 5 — Manager close (2026-09-26)
+- Manager: applied + tested the migration (supabase/tests/profiles_rls.sql, 12/12, rolled back); reran tsc/jest (9/9); secret scan clean; own spot re-run on device — Profile tab pixel-sampled tab bar rgb(30,26,38), settings chip rgb(36,20,60) (`manager-spot-profile.png`).
+- Ruby re-review PASS; Queenie Bug 1 re-test PASS.
+- Carry-forward (Ruby): Home and Profile each fetch the profile (no shared cache) — revisit when Build 12 adds TanStack Query.
+- BUILD 6 DONE.

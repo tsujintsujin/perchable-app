@@ -1,0 +1,574 @@
+--------- beginning of main
+09-26 07:05:27.593 15391 15391 I sujin.perchable: Late-enabling -Xcheck:jni
+09-26 07:05:27.644 15391 15391 I sujin.perchable: Using CollectorTypeCMC GC.
+09-26 07:05:27.644 15391 15391 W sujin.perchable: Unexpected CPU variant for x86: x86_64.
+09-26 07:05:27.644 15391 15391 W sujin.perchable: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+09-26 07:05:27.703 15391 15391 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+09-26 07:05:27.920 15391 15391 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+09-26 07:05:27.921 15391 15391 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+09-26 07:05:27.938 15391 15391 W ziparchive: Unable to open '/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.dm': No such file or directory
+09-26 07:05:27.939 15391 15391 W ziparchive: Unable to open '/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.dm': No such file or directory
+09-26 07:05:28.777 15391 15391 D nativeloader: Configuring clns-7 for other apk /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/lib/x86_64:/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.tsujintsujin.perchable
+09-26 07:05:28.808 15391 15391 V GraphicsEnvironment: Currently set values for:
+09-26 07:05:28.808 15391 15391 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+09-26 07:05:28.808 15391 15391 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+09-26 07:05:28.808 15391 15391 V GraphicsEnvironment: Global.Settings values are invalid: number of packages: 0, number of values: 0
+09-26 07:05:28.809 15391 15391 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+09-26 07:05:28.966 15391 15391 D Sentry  : io.sentry.auto-init read: false
+09-26 07:05:29.078 15391 15391 W SoLoader: Initializing SoLoader: 0
+09-26 07:05:29.082 15391 15391 W SoLoader: Recording new base apk path: /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk
+09-26 07:05:29.082 15391 15391 W SoLoader: Previously recorded 0 base apk paths.
+09-26 07:05:29.093 15391 15391 I SoLoader: Preparing SO source: DirectorySoSource[root = /vendor/lib64 flags = 2]
+09-26 07:05:29.094 15391 15391 I SoLoader: Preparing SO source: DirectorySoSource[root = /system/lib64 flags = 2]
+09-26 07:05:29.095 15391 15391 I SoLoader: Preparing SO source: DirectApkSoSource[root = [/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64]]
+09-26 07:05:29.192 15391 15391 I SoLoader: Preparing SO source: ApplicationSoSource[DirectorySoSource[root = /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/lib/x86_64 flags = 0]]
+09-26 07:05:29.193 15391 15391 I SoLoader: init finish: 4 SO sources prepared
+09-26 07:05:29.198 15391 15391 W SoLoader: SoLoader initialized: 8
+09-26 07:05:29.252 15391 15391 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libc++_shared.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:05:29.262 15391 15391 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libjsi.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:05:29.268 15391 15391 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libfbjni.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:05:29.279 15391 15391 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libreactnative.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:05:29.279 15391 15391 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-26 07:05:29.279 15391 15391 D jni_lib_merge: Preparing 13 pre-merged libs (including stub)
+09-26 07:05:29.280 15391 15391 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7d7d4284a530
+09-26 07:05:29.280 15391 15391 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7d7d42a96110
+09-26 07:05:29.280 15391 15391 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7d7d42aa89a0
+09-26 07:05:29.280 15391 15391 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7d7d42b51560
+09-26 07:05:29.280 15391 15391 D jni_lib_merge: Preparing to register libreact_tracingjni_so.  onload_func: 0x7d7d42e53bb0
+09-26 07:05:29.280 15391 15391 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7d7d42e66b00
+09-26 07:05:29.280 15391 15391 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7d7d42e89d70
+09-26 07:05:29.281 15391 15391 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7d7d42e8f860
+09-26 07:05:29.281 15391 15391 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7d7d42f0c590
+09-26 07:05:29.281 15391 15391 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7d7d4306f3b0
+09-26 07:05:29.281 15391 15391 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7d7d43085780
+09-26 07:05:29.281 15391 15391 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7d7d43094780
+09-26 07:05:29.281 15391 15391 D jni_lib_merge: About to register 12 actual methods.
+09-26 07:05:29.300 15391 15391 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libreact_codegen_rnscreens.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:05:29.300 15391 15391 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-26 07:05:29.300 15391 15391 D jni_lib_merge: Preparing 13 pre-merged libs (including stub)
+09-26 07:05:29.300 15391 15391 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7d7d4284a530
+09-26 07:05:29.300 15391 15391 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7d7d42a96110
+09-26 07:05:29.301 15391 15391 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7d7d42aa89a0
+09-26 07:05:29.301 15391 15391 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7d7d42b51560
+09-26 07:05:29.301 15391 15391 D jni_lib_merge: Preparing to register libreact_tracingjni_so.  onload_func: 0x7d7d42e53bb0
+09-26 07:05:29.301 15391 15391 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7d7d42e66b00
+09-26 07:05:29.301 15391 15391 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7d7d42e89d70
+09-26 07:05:29.301 15391 15391 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7d7d42e8f860
+09-26 07:05:29.301 15391 15391 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7d7d42f0c590
+09-26 07:05:29.301 15391 15391 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7d7d4306f3b0
+09-26 07:05:29.302 15391 15391 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7d7d43085780
+09-26 07:05:29.302 15391 15391 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7d7d43094780
+09-26 07:05:29.302 15391 15391 D jni_lib_merge: About to register 12 actual methods.
+09-26 07:05:29.312 15391 15391 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libreact_codegen_safeareacontext.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:05:29.316 15391 15391 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libappmodules.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:05:30.028 15391 15410 D TrafficStats: tagSocket(91) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:30.043 15391 15410 W unknown:ReconnectingWebSocket: Couldn't connect to "ws://10.0.2.2:8081/message?device=sdk_gphone64_x86_64%20-%2015%20-%20API%2035&app=com.tsujintsujin.perchable&clientid=BridgelessDevSupportManager", will silently retry
+09-26 07:05:30.614 15391 15391 I Choreographer: Skipped 93 frames!  The application may be doing too much work on its main thread.
+09-26 07:05:30.866 15391 15391 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+09-26 07:05:31.022 15391 15391 W sujin.perchable: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (unsupported, reflection, allowed)
+09-26 07:05:31.248 15391 15391 W sujin.perchable: Accessing hidden field Ljava/lang/reflect/Field;->accessFlags:I (unsupported, reflection, allowed)
+09-26 07:05:31.357 15391 15391 W HWUI    : Unknown dataspace 0
+09-26 07:05:31.679 15391 15414 I EGL_emulation: Opening libGLESv1_CM_emulation.so
+09-26 07:05:31.681 15391 15414 I EGL_emulation: Opening libGLESv2_emulation.so
+09-26 07:05:31.735 15391 15414 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+09-26 07:05:31.736 15391 15414 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+09-26 07:05:31.930 15391 15414 I Gralloc4: mapper 4.x is not supported
+09-26 07:05:32.217 15391 15400 I HWUI    : Davey! duration=752ms; Flags=1, FrameTimelineVsyncId=8451646, IntendedVsync=34417390712756, Vsync=34417440712754, InputEventId=0, HandleInputStart=34417444207500, AnimationStart=34417444235800, PerformTraversalsStart=34417444285600, DrawStart=34418029459000, FrameDeadline=34417407379422, FrameInterval=34417444157900, FrameStartTime=16666666, SyncQueued=34418031324600, SyncStart=34418075632300, IssueDrawCommandsStart=34418101835700, SwapBuffers=34418149144400, FrameCompleted=34418187083100, DequeueBufferDuration=66500, QueueBufferDuration=10697500, GpuCompleted=34418186705200, SwapBuffersCompleted=34418187083100, DisplayPresentTime=16960825855817, CommandSubmissionCompleted=34418149144400, 
+09-26 07:05:32.363 15391 15391 D VRI[MainActivity]: visibilityChanged oldVisibility=true newVisibility=false
+09-26 07:05:32.380 15391 15410 D TrafficStats: tagSocket(119) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:32.953 15391 15395 I sujin.perchable: Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
+09-26 07:05:33.643 15391 15391 W sujin.perchable: Accessing hidden method Landroid/os/SystemProperties;->addChangeCallback(Ljava/lang/Runnable;)V (unsupported, reflection, allowed)
+09-26 07:05:35.839 15391 15395 I sujin.perchable: Compiler allocated 5417KB to compile void android.view.ViewRootImpl.performTraversals()
+09-26 07:05:36.002 15391 15401 I HWUI    : Davey! duration=3593ms; Flags=1, FrameTimelineVsyncId=8451909, IntendedVsync=34418374046050, Vsync=34418374046050, InputEventId=0, HandleInputStart=34418387922700, AnimationStart=34418387965500, PerformTraversalsStart=34418388012800, DrawStart=34421776821100, FrameDeadline=34418390712716, FrameInterval=34418387908500, FrameStartTime=16666666, SyncQueued=34421868102900, SyncStart=34421871556500, IssueDrawCommandsStart=34421872340600, SwapBuffers=34421924679100, FrameCompleted=34421970563700, DequeueBufferDuration=70500, QueueBufferDuration=44749300, GpuCompleted=34421970322500, SwapBuffersCompleted=34421970563700, DisplayPresentTime=0, CommandSubmissionCompleted=34421924679100, 
+09-26 07:05:36.114 15391 15391 I Choreographer: Skipped 192 frames!  The application may be doing too much work on its main thread.
+09-26 07:05:36.254 15391 15410 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:36.309 15391 15400 I HWUI    : Davey! duration=3360ms; Flags=0, FrameTimelineVsyncId=8451927, IntendedVsync=34418924046028, Vsync=34422124045900, InputEventId=0, HandleInputStart=34422162318700, AnimationStart=34422163524600, PerformTraversalsStart=34422213669000, DrawStart=34422219075000, FrameDeadline=34421990712572, FrameInterval=34422124047700, FrameStartTime=16666666, SyncQueued=34422224874700, SyncStart=34422232357000, IssueDrawCommandsStart=34422232547100, SwapBuffers=34422267118500, FrameCompleted=34422291906600, DequeueBufferDuration=39100, QueueBufferDuration=505000, GpuCompleted=34422291906600, SwapBuffersCompleted=34422281464300, DisplayPresentTime=0, CommandSubmissionCompleted=34422267118500, 
+09-26 07:05:36.331 15391 15391 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@9b2f76b
+09-26 07:05:36.490 15391 15432 D ProfileInstaller: Installing profile for com.tsujintsujin.perchable
+09-26 07:05:37.290 15391 15414 D EGL_emulation: app_time_stats: avg=27.98ms min=3.21ms max=310.43ms count=31
+09-26 07:05:37.921 15391 15396 I sujin.perchable: Background concurrent mark compact GC freed 8311KB AllocSpace bytes, 22(1240KB) LOS objects, 49% free, 9065KB/17MB, paused 1.127ms,9.567ms total 73.810ms
+09-26 07:05:38.290 15391 15410 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:38.309 15391 15414 D EGL_emulation: app_time_stats: avg=12.90ms min=2.90ms max=34.00ms count=40
+09-26 07:05:39.309 15391 15414 D EGL_emulation: app_time_stats: avg=14.78ms min=2.42ms max=42.00ms count=31
+09-26 07:05:40.313 15391 15410 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:40.314 15391 15414 D EGL_emulation: app_time_stats: avg=18.16ms min=3.13ms max=43.66ms count=29
+09-26 07:05:41.334 15391 15414 D EGL_emulation: app_time_stats: avg=12.15ms min=2.70ms max=30.06ms count=37
+09-26 07:05:42.368 15391 15414 D EGL_emulation: app_time_stats: avg=14.72ms min=2.93ms max=30.30ms count=38
+09-26 07:05:42.380 15391 15410 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:43.373 15391 15414 D EGL_emulation: app_time_stats: avg=13.50ms min=3.16ms max=25.42ms count=39
+09-26 07:05:44.406 15391 15414 D EGL_emulation: app_time_stats: avg=11.58ms min=2.48ms max=27.07ms count=39
+09-26 07:05:44.415 15391 15410 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:45.438 15391 15414 D EGL_emulation: app_time_stats: avg=12.74ms min=2.55ms max=28.24ms count=39
+09-26 07:05:46.436 15391 15410 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:46.445 15391 15414 D EGL_emulation: app_time_stats: avg=14.45ms min=2.42ms max=40.56ms count=34
+09-26 07:05:47.485 15391 15414 D EGL_emulation: app_time_stats: avg=38.27ms min=4.14ms max=115.11ms count=21
+09-26 07:05:48.513 15391 15410 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:48.526 15391 15414 D EGL_emulation: app_time_stats: avg=23.13ms min=3.09ms max=58.62ms count=26
+09-26 07:05:49.564 15391 15414 D EGL_emulation: app_time_stats: avg=13.19ms min=2.52ms max=29.53ms count=39
+09-26 07:05:50.578 15391 15414 D EGL_emulation: app_time_stats: avg=12.72ms min=2.47ms max=42.81ms count=35
+09-26 07:05:50.579 15391 15410 D TrafficStats: tagSocket(146) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:51.594 15391 15414 D EGL_emulation: app_time_stats: avg=14.66ms min=2.83ms max=47.94ms count=35
+09-26 07:05:52.604 15391 15414 D EGL_emulation: app_time_stats: avg=13.74ms min=2.71ms max=30.89ms count=37
+09-26 07:05:52.617 15391 15410 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:53.629 15391 15414 D EGL_emulation: app_time_stats: avg=12.24ms min=2.60ms max=32.85ms count=38
+09-26 07:05:54.677 15391 15414 D EGL_emulation: app_time_stats: avg=14.82ms min=3.00ms max=61.31ms count=35
+09-26 07:05:54.693 15391 15410 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:55.690 15391 15414 D EGL_emulation: app_time_stats: avg=15.96ms min=2.66ms max=52.47ms count=32
+09-26 07:05:56.718 15391 15414 D EGL_emulation: app_time_stats: avg=28.50ms min=3.25ms max=80.37ms count=25
+09-26 07:05:56.738 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:57.727 15391 15414 D EGL_emulation: app_time_stats: avg=24.20ms min=3.05ms max=88.96ms count=25
+09-26 07:05:58.727 15391 15414 D EGL_emulation: app_time_stats: avg=14.11ms min=2.71ms max=38.04ms count=32
+09-26 07:05:58.792 15391 15410 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 07:05:59.755 15391 15414 D EGL_emulation: app_time_stats: avg=11.91ms min=2.58ms max=24.07ms count=38
+09-26 07:06:00.766 15391 15414 D EGL_emulation: app_time_stats: avg=26.28ms min=2.95ms max=70.29ms count=27
+09-26 07:06:00.921 15391 15410 D TrafficStats: tagSocket(120) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:01.776 15391 15414 D EGL_emulation: app_time_stats: avg=19.62ms min=3.86ms max=44.77ms count=27
+09-26 07:06:02.798 15391 15414 D EGL_emulation: app_time_stats: avg=13.07ms min=2.38ms max=31.98ms count=38
+09-26 07:06:02.996 15391 15410 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:03.805 15391 15414 D EGL_emulation: app_time_stats: avg=11.74ms min=2.82ms max=27.20ms count=39
+09-26 07:06:04.822 15391 15414 D EGL_emulation: app_time_stats: avg=12.41ms min=2.82ms max=32.31ms count=35
+09-26 07:06:05.047 15391 15410 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:05.824 15391 15414 D EGL_emulation: app_time_stats: avg=13.00ms min=2.60ms max=30.07ms count=35
+09-26 07:06:06.848 15391 15414 D EGL_emulation: app_time_stats: avg=15.00ms min=2.76ms max=32.82ms count=37
+09-26 07:06:07.099 15391 15410 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:07.862 15391 15414 D EGL_emulation: app_time_stats: avg=14.04ms min=2.95ms max=28.88ms count=36
+09-26 07:06:08.874 15391 15414 D EGL_emulation: app_time_stats: avg=15.40ms min=3.15ms max=31.33ms count=36
+09-26 07:06:09.179 15391 15410 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:09.880 15391 15414 D EGL_emulation: app_time_stats: avg=23.00ms min=3.27ms max=70.61ms count=23
+09-26 07:06:10.908 15391 15414 D EGL_emulation: app_time_stats: avg=18.41ms min=2.93ms max=41.07ms count=31
+09-26 07:06:11.226 15391 15410 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:11.944 15391 15414 D EGL_emulation: app_time_stats: avg=14.65ms min=2.67ms max=34.89ms count=37
+09-26 07:06:12.951 15391 15414 D EGL_emulation: app_time_stats: avg=16.29ms min=2.78ms max=95.58ms count=33
+09-26 07:06:13.263 15391 15410 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:13.956 15391 15414 D EGL_emulation: app_time_stats: avg=16.06ms min=2.86ms max=42.10ms count=35
+09-26 07:06:14.980 15391 15414 D EGL_emulation: app_time_stats: avg=23.25ms min=3.10ms max=49.57ms count=27
+09-26 07:06:15.359 15391 15410 D TrafficStats: tagSocket(120) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:15.978 15391 15414 D EGL_emulation: app_time_stats: avg=14.70ms min=2.76ms max=35.85ms count=31
+09-26 07:06:16.978 15391 15414 D EGL_emulation: app_time_stats: avg=11.61ms min=2.62ms max=40.07ms count=37
+09-26 07:06:17.423 15391 15410 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:18.027 15391 15414 D EGL_emulation: app_time_stats: avg=15.76ms min=2.67ms max=56.91ms count=35
+09-26 07:06:19.081 15391 15414 D EGL_emulation: app_time_stats: avg=14.02ms min=2.57ms max=41.26ms count=39
+09-26 07:06:19.474 15391 15410 D TrafficStats: tagSocket(145) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:20.103 15391 15414 D EGL_emulation: app_time_stats: avg=11.99ms min=2.60ms max=40.52ms count=38
+09-26 07:06:21.122 15391 15414 D EGL_emulation: app_time_stats: avg=12.66ms min=2.65ms max=29.84ms count=39
+09-26 07:06:21.495 15391 15410 D TrafficStats: tagSocket(139) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:22.127 15391 15414 D EGL_emulation: app_time_stats: avg=13.51ms min=2.39ms max=36.94ms count=37
+09-26 07:06:23.151 15391 15414 D EGL_emulation: app_time_stats: avg=12.34ms min=2.57ms max=21.89ms count=38
+09-26 07:06:23.505 15391 15410 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:24.218 15391 15414 D EGL_emulation: app_time_stats: avg=12.70ms min=2.62ms max=31.24ms count=39
+09-26 07:06:25.271 15391 15414 D EGL_emulation: app_time_stats: avg=23.29ms min=3.64ms max=45.44ms count=27
+09-26 07:06:25.658 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:25.792 15391 15391 D InsetsController: show(ime(), fromIme=false)
+09-26 07:06:25.814 15391 15391 I ImeTracker: com.tsujintsujin.perchable:2292bc45: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT_BY_INSETS_API fromUser false
+09-26 07:06:25.821 15391 15391 D InputMethodManager: showSoftInput() view=androidx.compose.ui.platform.AndroidComposeView{58b11da VFED..... .F....ID 0,0-1080,2400 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT_BY_INSETS_API
+09-26 07:06:25.864 15391 15391 I AssistStructure: Flattened final assist data: 940 bytes, containing 1 windows, 5 views
+09-26 07:06:25.956 15391 15391 I ImeTracker: com.tsujintsujin.perchable:bf0e3d37: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+09-26 07:06:25.958 15391 15391 D InputMethodManager: showSoftInput() view=androidx.compose.ui.platform.AndroidComposeView{58b11da VFED..... .F...... 0,0-1080,2400 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+09-26 07:06:26.295 15391 15414 D EGL_emulation: app_time_stats: avg=43.86ms min=3.40ms max=277.78ms count=18
+09-26 07:06:27.335 15391 15414 D EGL_emulation: app_time_stats: avg=25.32ms min=2.91ms max=72.79ms count=27
+09-26 07:06:27.384 15391 15391 D Autofill Status: Autofill popup isn't shown because autofill is not available.
+09-26 07:06:27.384 15391 15391 D Autofill Status: 
+09-26 07:06:27.384 15391 15391 D Autofill Status: Did you set up autofill?
+09-26 07:06:27.384 15391 15391 D Autofill Status: 1. Go to Settings > System > Languages&input > Advanced > Autofill Service
+09-26 07:06:27.384 15391 15391 D Autofill Status: 2. Pick a service
+09-26 07:06:27.384 15391 15391 D Autofill Status: 
+09-26 07:06:27.384 15391 15391 D Autofill Status: Did you add an account?
+09-26 07:06:27.384 15391 15391 D Autofill Status: 1. Go to Settings > System > Languages&input > Advanced
+09-26 07:06:27.384 15391 15391 D Autofill Status: 2. Click on the settings icon next to the Autofill Service
+09-26 07:06:27.384 15391 15391 D Autofill Status: 3. Add your account
+09-26 07:06:27.738 15391 15410 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:28.370 15391 15414 D EGL_emulation: app_time_stats: avg=54.55ms min=3.63ms max=269.43ms count=17
+09-26 07:06:28.542 15391 15391 D InsetsController: show(ime(), fromIme=true)
+09-26 07:06:28.653 15391 15391 W InteractionJankMonitor: Initializing without READ_DEVICE_CONFIG permission. enabled=true, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.tsujintsujin.perchable
+09-26 07:06:28.785 15391 15391 D InsetsController: show(ime(), fromIme=true)
+09-26 07:06:28.787 15391 15391 I ImeTracker: com.tsujintsujin.perchable:bf0e3d37: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+09-26 07:06:28.894 15391 15391 I ImeTracker: com.tsujintsujin.perchable:2292bc45: onShown
+09-26 07:06:29.509 15391 15414 D EGL_emulation: app_time_stats: avg=53.94ms min=4.36ms max=138.67ms count=18
+09-26 07:06:29.795 15391 15410 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:30.519 15391 15414 D EGL_emulation: app_time_stats: avg=28.04ms min=3.66ms max=72.99ms count=27
+09-26 07:06:31.532 15391 15414 D EGL_emulation: app_time_stats: avg=16.24ms min=2.39ms max=48.22ms count=36
+09-26 07:06:31.809 15391 15410 D TrafficStats: tagSocket(140) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:32.558 15391 15414 D EGL_emulation: app_time_stats: avg=15.31ms min=2.72ms max=44.05ms count=33
+09-26 07:06:33.562 15391 15414 D EGL_emulation: app_time_stats: avg=16.36ms min=3.16ms max=45.31ms count=26
+09-26 07:06:33.892 15391 15410 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:34.604 15391 15414 D EGL_emulation: app_time_stats: avg=15.36ms min=2.68ms max=36.79ms count=34
+09-26 07:06:35.614 15391 15414 D EGL_emulation: app_time_stats: avg=12.59ms min=2.79ms max=30.59ms count=37
+09-26 07:06:35.961 15391 15410 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:36.656 15391 15414 D EGL_emulation: app_time_stats: avg=16.45ms min=2.60ms max=61.96ms count=34
+09-26 07:06:37.684 15391 15414 D EGL_emulation: app_time_stats: avg=12.72ms min=2.58ms max=38.17ms count=40
+09-26 07:06:38.031 15391 15410 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:38.691 15391 15414 D EGL_emulation: app_time_stats: avg=13.10ms min=2.56ms max=32.10ms count=36
+09-26 07:06:39.405 15391 15391 E FrameTracker: force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@1@com.tsujintsujin.perchable>
+09-26 07:06:39.714 15391 15414 D EGL_emulation: app_time_stats: avg=16.86ms min=2.62ms max=37.20ms count=30
+09-26 07:06:40.102 15391 15410 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:40.770 15391 15414 D EGL_emulation: app_time_stats: avg=19.17ms min=3.38ms max=42.91ms count=27
+09-26 07:06:41.840 15391 15414 D EGL_emulation: app_time_stats: avg=33.95ms min=3.57ms max=108.26ms count=19
+09-26 07:06:42.194 15391 15410 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:42.873 15391 15414 D EGL_emulation: app_time_stats: avg=30.76ms min=3.35ms max=67.99ms count=19
+09-26 07:06:42.970 15391 15391 D InsetsController: show(ime(), fromIme=false)
+09-26 07:06:42.972 15391 15391 I ImeTracker: com.tsujintsujin.perchable:3a05b7bc: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT_BY_INSETS_API fromUser false
+09-26 07:06:42.973 15391 15391 I ImeTracker: com.tsujintsujin.perchable:3a05b7bc: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+09-26 07:06:43.219 15391 15391 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+09-26 07:06:43.219 15391 15391 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+09-26 07:06:43.500 15391 15391 I ImeTracker: com.tsujintsujin.perchable:a9759287: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+09-26 07:06:43.501 15391 15391 D InputMethodManager: showSoftInput() view=androidx.compose.ui.platform.AndroidComposeView{58b11da VFED..... .F....ID 0,0-1080,2400 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+09-26 07:06:43.611 15391 15391 D InsetsController: show(ime(), fromIme=true)
+09-26 07:06:43.612 15391 15391 I ImeTracker: com.tsujintsujin.perchable:a9759287: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+09-26 07:06:43.874 15391 15414 D EGL_emulation: app_time_stats: avg=67.63ms min=2.72ms max=312.18ms count=12
+09-26 07:06:44.259 15391 15410 D TrafficStats: tagSocket(155) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:44.909 15391 15414 D EGL_emulation: app_time_stats: avg=12.60ms min=2.59ms max=32.78ms count=38
+09-26 07:06:45.946 15391 15414 D EGL_emulation: app_time_stats: avg=13.19ms min=2.61ms max=34.74ms count=38
+09-26 07:06:46.285 15391 15410 D TrafficStats: tagSocket(135) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:46.953 15391 15414 D EGL_emulation: app_time_stats: avg=12.47ms min=2.47ms max=33.29ms count=39
+09-26 07:06:47.982 15391 15414 D EGL_emulation: app_time_stats: avg=12.03ms min=2.49ms max=23.53ms count=38
+09-26 07:06:48.336 15391 15410 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:48.983 15391 15414 D EGL_emulation: app_time_stats: avg=14.74ms min=2.93ms max=37.23ms count=34
+09-26 07:06:49.989 15391 15414 D EGL_emulation: app_time_stats: avg=14.71ms min=2.65ms max=35.14ms count=35
+09-26 07:06:50.371 15391 15410 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:50.665 15391 15396 I sujin.perchable: Background concurrent mark compact GC freed 8768KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 9321KB/18MB, paused 1.628ms,6.161ms total 90.513ms
+09-26 07:06:51.031 15391 15414 D EGL_emulation: app_time_stats: avg=13.14ms min=2.71ms max=27.70ms count=39
+09-26 07:06:52.054 15391 15414 D EGL_emulation: app_time_stats: avg=20.31ms min=2.92ms max=47.46ms count=26
+09-26 07:06:52.487 15391 15410 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:53.075 15391 15414 D EGL_emulation: app_time_stats: avg=19.43ms min=3.44ms max=43.32ms count=28
+09-26 07:06:54.090 15391 15414 D EGL_emulation: app_time_stats: avg=15.09ms min=2.95ms max=34.25ms count=31
+09-26 07:06:54.552 15391 15410 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:55.102 15391 15414 D EGL_emulation: app_time_stats: avg=12.35ms min=2.48ms max=30.31ms count=39
+09-26 07:06:56.133 15391 15414 D EGL_emulation: app_time_stats: avg=12.92ms min=2.59ms max=34.89ms count=35
+09-26 07:06:56.598 15391 15410 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:57.131 15391 15414 D EGL_emulation: app_time_stats: avg=14.05ms min=4.08ms max=36.60ms count=36
+09-26 07:06:58.184 15391 15414 D EGL_emulation: app_time_stats: avg=11.92ms min=2.62ms max=23.58ms count=37
+09-26 07:06:58.622 15391 15410 D TrafficStats: tagSocket(135) with statsTag=0xffffffff, statsUid=-1
+09-26 07:06:59.192 15391 15414 D EGL_emulation: app_time_stats: avg=11.82ms min=2.56ms max=23.09ms count=39
+09-26 07:07:00.208 15391 15414 D EGL_emulation: app_time_stats: avg=13.42ms min=2.57ms max=38.17ms count=35
+09-26 07:07:00.672 15391 15410 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:01.243 15391 15414 D EGL_emulation: app_time_stats: avg=14.30ms min=2.50ms max=60.69ms count=34
+09-26 07:07:02.309 15391 15414 D EGL_emulation: app_time_stats: avg=20.33ms min=3.81ms max=54.84ms count=28
+09-26 07:07:02.688 15391 15410 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:03.310 15391 15414 D EGL_emulation: app_time_stats: avg=16.06ms min=2.89ms max=70.56ms count=30
+09-26 07:07:04.121 15391 15391 D InsetsController: show(ime(), fromIme=false)
+09-26 07:07:04.146 15391 15391 I ImeTracker: com.tsujintsujin.perchable:17e73bd5: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT_BY_INSETS_API fromUser false
+09-26 07:07:04.148 15391 15391 I ImeTracker: com.tsujintsujin.perchable:17e73bd5: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+09-26 07:07:04.211 15391 15391 I ImeTracker: com.tsujintsujin.perchable:d66a87d4: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+09-26 07:07:04.215 15391 15391 D InputMethodManager: showSoftInput() view=androidx.compose.ui.platform.AndroidComposeView{58b11da VFED..... .F...... 0,0-1080,2400 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+09-26 07:07:04.269 15391 15391 D InsetsController: show(ime(), fromIme=true)
+09-26 07:07:04.270 15391 15391 I ImeTracker: com.tsujintsujin.perchable:d66a87d4: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+09-26 07:07:04.335 15391 15414 D EGL_emulation: app_time_stats: avg=18.58ms min=2.77ms max=57.19ms count=29
+09-26 07:07:04.738 15391 15410 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:05.343 15391 15414 D EGL_emulation: app_time_stats: avg=13.57ms min=2.69ms max=40.44ms count=36
+09-26 07:07:06.370 15391 15414 D EGL_emulation: app_time_stats: avg=16.21ms min=2.77ms max=42.47ms count=36
+09-26 07:07:06.774 15391 15410 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:07.372 15391 15414 D EGL_emulation: app_time_stats: avg=14.31ms min=2.95ms max=28.40ms count=38
+09-26 07:07:08.375 15391 15414 D EGL_emulation: app_time_stats: avg=13.77ms min=2.59ms max=37.17ms count=36
+09-26 07:07:08.791 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:09.398 15391 15414 D EGL_emulation: app_time_stats: avg=12.08ms min=3.03ms max=20.81ms count=38
+09-26 07:07:10.417 15391 15414 D EGL_emulation: app_time_stats: avg=12.81ms min=2.69ms max=25.04ms count=37
+09-26 07:07:10.810 15391 15410 D TrafficStats: tagSocket(135) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:11.461 15391 15414 D EGL_emulation: app_time_stats: avg=11.70ms min=2.66ms max=21.88ms count=36
+09-26 07:07:12.469 15391 15414 D EGL_emulation: app_time_stats: avg=14.01ms min=2.98ms max=29.06ms count=36
+09-26 07:07:12.854 15391 15410 D TrafficStats: tagSocket(148) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:13.504 15391 15414 D EGL_emulation: app_time_stats: avg=19.86ms min=2.96ms max=67.94ms count=28
+09-26 07:07:14.544 15391 15414 D EGL_emulation: app_time_stats: avg=21.35ms min=3.30ms max=74.34ms count=26
+09-26 07:07:14.916 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:15.548 15391 15414 D EGL_emulation: app_time_stats: avg=14.94ms min=3.24ms max=37.24ms count=30
+09-26 07:07:16.583 15391 15414 D EGL_emulation: app_time_stats: avg=13.77ms min=2.57ms max=33.12ms count=36
+09-26 07:07:16.987 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:17.608 15391 15414 D EGL_emulation: app_time_stats: avg=15.40ms min=3.20ms max=40.95ms count=34
+09-26 07:07:18.613 15391 15414 D EGL_emulation: app_time_stats: avg=13.18ms min=2.85ms max=32.73ms count=37
+09-26 07:07:19.029 15391 15410 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:19.618 15391 15414 D EGL_emulation: app_time_stats: avg=13.72ms min=2.71ms max=29.00ms count=38
+09-26 07:07:20.641 15391 15414 D EGL_emulation: app_time_stats: avg=11.09ms min=2.45ms max=24.19ms count=35
+09-26 07:07:21.086 15391 15410 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:21.645 15391 15414 D EGL_emulation: app_time_stats: avg=14.06ms min=2.38ms max=38.52ms count=35
+09-26 07:07:22.666 15391 15414 D EGL_emulation: app_time_stats: avg=14.40ms min=2.69ms max=30.98ms count=37
+09-26 07:07:23.174 15391 15410 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:23.709 15391 15414 D EGL_emulation: app_time_stats: avg=15.67ms min=2.71ms max=33.94ms count=28
+09-26 07:07:24.711 15391 15414 D EGL_emulation: app_time_stats: avg=19.26ms min=3.39ms max=45.23ms count=27
+09-26 07:07:24.758 15391 15391 D InsetsController: hide(ime(), fromIme=true)
+09-26 07:07:25.086 15391 15391 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@b61f040
+09-26 07:07:25.226 15391 15396 W sujin.perchable: Suspending all threads took: 95.218ms
+09-26 07:07:25.233 15391 15391 I ImeTracker: com.tsujintsujin.perchable:b4668863: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+09-26 07:07:25.350 15391 15391 I ImeTracker: com.google.android.inputmethod.latin:81b268c7: onHidden
+09-26 07:07:25.446 15391 15410 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:25.695 15391 15391 D VRI[DevLauncherActivity]: visibilityChanged oldVisibility=true newVisibility=false
+09-26 07:07:25.719 15391 15414 D EGL_emulation: app_time_stats: avg=63.49ms min=8.41ms max=326.42ms count=14
+09-26 07:07:25.875 15391 15391 D AutofillManager: onActivityFinishing(): calling cancelLocked()
+09-26 07:07:25.876 15391 15391 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@25a5b83
+09-26 07:07:25.973 15391 15391 I ImeTracker: com.tsujintsujin.perchable:5f1042fd: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+09-26 07:07:25.974 15391 15391 I ImeTracker: com.tsujintsujin.perchable:5f1042fd: onFailed at PHASE_CLIENT_VIEW_SERVED
+09-26 07:07:27.520 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:29.542 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:31.555 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:33.564 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:35.576 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:35.780 15391 15391 E FrameTracker: force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.tsujintsujin.perchable>
+09-26 07:07:35.781 15391 15391 W FrameTracker: Missed SF frame:UNKNOWN: 66, 8480939, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.tsujintsujin.perchable>
+09-26 07:07:35.786 15391 15391 W FrameTracker: Missed App frame:UNKNOWN: 74, 8480976, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.tsujintsujin.perchable>
+09-26 07:07:35.786 15391 15391 W FrameTracker: Missed SF frame:UNKNOWN: 74, 8480976, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.tsujintsujin.perchable>
+09-26 07:07:35.786 15391 15391 W FrameTracker: Missed SF frame:UNKNOWN: 66, 8480984, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.tsujintsujin.perchable>
+09-26 07:07:35.788 15391 15500 V PerfettoTrigger: Triggering /system/bin/trigger_perfetto com.android.telemetry.interaction-jank-monitor-81
+09-26 07:07:44.444 15391 15410 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:44.829 15391 15414 I EGL_emulation: Opening libGLESv1_CM_emulation.so
+09-26 07:07:44.830 15391 15414 I EGL_emulation: Opening libGLESv2_emulation.so
+09-26 07:07:44.874 15391 15414 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+09-26 07:07:44.875 15391 15414 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+09-26 07:07:45.474 15391 15391 D VRI[MainActivity]: visibilityChanged oldVisibility=true newVisibility=false
+09-26 07:07:45.522 15391 15391 D AutofillManager: Fill dialog is enabled:false, hints=[password, passwordAuto, creditCardNumber, creditCardSecurityCode, creditCardExpirationDate]
+09-26 07:07:46.089 15391 15391 I Choreographer: Skipped 32 frames!  The application may be doing too much work on its main thread.
+09-26 07:07:46.467 15391 15391 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@d7a8c9f
+09-26 07:07:46.484 15391 15410 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:47.187 15391 15414 D EGL_emulation: app_time_stats: avg=18.95ms min=3.20ms max=119.88ms count=33
+09-26 07:07:48.193 15391 15414 D EGL_emulation: app_time_stats: avg=13.62ms min=4.82ms max=32.20ms count=37
+09-26 07:07:48.509 15391 15410 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:49.234 15391 15414 D EGL_emulation: app_time_stats: avg=12.63ms min=4.16ms max=28.09ms count=37
+09-26 07:07:50.239 15391 15414 D EGL_emulation: app_time_stats: avg=20.28ms min=3.04ms max=119.83ms count=27
+09-26 07:07:50.596 15391 15410 D TrafficStats: tagSocket(105) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:51.293 15391 15414 D EGL_emulation: app_time_stats: avg=18.35ms min=3.40ms max=56.92ms count=28
+09-26 07:07:52.298 15391 15414 D EGL_emulation: app_time_stats: avg=17.56ms min=2.85ms max=73.02ms count=31
+09-26 07:07:52.628 15391 15410 D TrafficStats: tagSocket(121) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:53.319 15391 15414 D EGL_emulation: app_time_stats: avg=13.76ms min=3.09ms max=22.60ms count=37
+09-26 07:07:54.338 15391 15414 D EGL_emulation: app_time_stats: avg=16.62ms min=5.65ms max=29.85ms count=33
+09-26 07:07:54.658 15391 15410 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:55.391 15391 15414 D EGL_emulation: app_time_stats: avg=15.13ms min=2.93ms max=32.22ms count=36
+09-26 07:07:56.393 15391 15414 D EGL_emulation: app_time_stats: avg=15.01ms min=5.37ms max=33.45ms count=36
+09-26 07:07:56.729 15391 15410 D TrafficStats: tagSocket(118) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:57.399 15391 15414 D EGL_emulation: app_time_stats: avg=12.82ms min=2.90ms max=31.44ms count=35
+09-26 07:07:58.400 15391 15414 D EGL_emulation: app_time_stats: avg=12.44ms min=2.76ms max=31.95ms count=34
+09-26 07:07:58.796 15391 15410 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 07:07:59.426 15391 15414 D EGL_emulation: app_time_stats: avg=13.43ms min=3.04ms max=39.13ms count=35
+09-26 07:08:00.436 15391 15414 D EGL_emulation: app_time_stats: avg=13.75ms min=2.68ms max=34.32ms count=34
+09-26 07:08:00.821 15391 15410 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:01.522 15391 15414 D EGL_emulation: app_time_stats: avg=13.84ms min=3.00ms max=30.88ms count=36
+09-26 07:08:02.557 15391 15414 D EGL_emulation: app_time_stats: avg=22.62ms min=4.31ms max=58.81ms count=25
+09-26 07:08:02.858 15391 15410 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:03.022 15391 15391 D InsetsController: show(ime(), fromIme=false)
+09-26 07:08:03.024 15391 15391 I ImeTracker: com.tsujintsujin.perchable:c8f633a3: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT_BY_INSETS_API fromUser false
+09-26 07:08:03.025 15391 15391 D InputMethodManager: showSoftInput() view=androidx.compose.ui.platform.AndroidComposeView{72bcc0 VFED..... .F....ID 0,0-1080,2400 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT_BY_INSETS_API
+09-26 07:08:03.073 15391 15391 I AssistStructure: Flattened final assist data: 940 bytes, containing 1 windows, 5 views
+09-26 07:08:03.111 15391 15391 I ImeTracker: com.tsujintsujin.perchable:6a816f58: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+09-26 07:08:03.112 15391 15391 D InputMethodManager: showSoftInput() view=androidx.compose.ui.platform.AndroidComposeView{72bcc0 VFED..... .F...... 0,0-1080,2400 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+09-26 07:08:03.422 15391 15391 D Autofill Status: Autofill popup isn't shown because autofill is not available.
+09-26 07:08:03.422 15391 15391 D Autofill Status: 
+09-26 07:08:03.422 15391 15391 D Autofill Status: Did you set up autofill?
+09-26 07:08:03.422 15391 15391 D Autofill Status: 1. Go to Settings > System > Languages&input > Advanced > Autofill Service
+09-26 07:08:03.422 15391 15391 D Autofill Status: 2. Pick a service
+09-26 07:08:03.422 15391 15391 D Autofill Status: 
+09-26 07:08:03.422 15391 15391 D Autofill Status: Did you add an account?
+09-26 07:08:03.422 15391 15391 D Autofill Status: 1. Go to Settings > System > Languages&input > Advanced
+09-26 07:08:03.422 15391 15391 D Autofill Status: 2. Click on the settings icon next to the Autofill Service
+09-26 07:08:03.422 15391 15391 D Autofill Status: 3. Add your account
+09-26 07:08:03.601 15391 15414 D EGL_emulation: app_time_stats: avg=32.71ms min=3.18ms max=162.16ms count=23
+09-26 07:08:03.674 15391 15391 D InsetsController: show(ime(), fromIme=true)
+09-26 07:08:03.694 15391 15391 D InsetsController: show(ime(), fromIme=true)
+09-26 07:08:03.694 15391 15391 I ImeTracker: com.tsujintsujin.perchable:6a816f58: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+09-26 07:08:03.916 15391 15391 I ImeTracker: com.tsujintsujin.perchable:c8f633a3: onShown
+09-26 07:08:04.631 15391 15414 D EGL_emulation: app_time_stats: avg=17.93ms min=3.04ms max=46.38ms count=27
+09-26 07:08:04.926 15391 15410 D TrafficStats: tagSocket(105) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:05.639 15391 15414 D EGL_emulation: app_time_stats: avg=14.58ms min=3.25ms max=34.80ms count=33
+09-26 07:08:06.680 15391 15414 D EGL_emulation: app_time_stats: avg=15.03ms min=2.95ms max=32.22ms count=34
+09-26 07:08:06.979 15391 15410 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:07.694 15391 15414 D EGL_emulation: app_time_stats: avg=14.29ms min=2.87ms max=29.59ms count=36
+09-26 07:08:08.272 15391 15410 D TrafficStats: tagSocket(148) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:08.715 15391 15414 D EGL_emulation: app_time_stats: avg=28.63ms min=3.51ms max=162.68ms count=23
+09-26 07:08:08.918 15391 15391 D InsetsController: show(ime(), fromIme=true)
+09-26 07:08:08.919 15391 15391 I ImeTracker: com.tsujintsujin.perchable:3c035499: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+09-26 07:08:09.033 15391 15410 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:09.102 15391 15410 D TrafficStats: tagSocket(118) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:09.642 15391 15391 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Schedule
+09-26 07:08:09.642 15391 15391 W unknown:BridgelessReact: ReactHost{0}.attachSurface(surfaceId = 0)
+09-26 07:08:09.644 15391 15602 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask()
+09-26 07:08:09.645 15391 15602 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Start
+09-26 07:08:09.645 15391 15602 W unknown:BridgelessReact: ReactHost{0}.getJSBundleLoader()
+09-26 07:08:09.645 15391 15602 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning()
+09-26 07:08:09.654 15391 15603 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:09.705 15391 15603 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning(): Async result = true
+09-26 07:08:09.707 15391 15602 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro()
+09-26 07:08:09.809 15391 15391 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libhermesvm.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:08:09.816 15391 15391 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libhermestooling.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:08:09.817 15391 15391 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-26 07:08:09.817 15391 15391 D jni_lib_merge: Preparing 4 pre-merged libs (including stub)
+09-26 07:08:09.818 15391 15391 D jni_lib_merge: Preparing to register libhermes_executor_so.  onload_func: 0x7d7dc6fbb6e0
+09-26 07:08:09.818 15391 15391 D jni_lib_merge: Preparing to register libhermesinstancejni_so.  onload_func: 0x7d7dc6fe7b60
+09-26 07:08:09.818 15391 15391 D jni_lib_merge: Preparing to register libjsijniprofiler_so.  onload_func: 0x7d7dc6fe9900
+09-26 07:08:09.818 15391 15391 D jni_lib_merge: About to register 3 actual methods.
+09-26 07:08:09.943 15391 15391 W unknown:BridgelessReact: ReactHost{0}.onHostResume(activity)
+09-26 07:08:09.976 15391 15604 D TrafficStats: tagSocket(141) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:09.976 15391 15391 I Choreographer: Skipped 45 frames!  The application may be doing too much work on its main thread.
+09-26 07:08:10.025 15391 15391 D AutofillManager: Fill dialog is enabled:false, hints=[password, passwordAuto, creditCardNumber, creditCardSecurityCode, creditCardExpirationDate]
+09-26 07:08:10.532 15391 15391 D VRI[DevLauncherActivity]: visibilityChanged oldVisibility=true newVisibility=false
+09-26 07:08:10.558 15391 15440 I HWUI    : Davey! duration=1287ms; Flags=1, FrameTimelineVsyncId=8488616, IntendedVsync=34575224039776, Vsync=34575974039746, InputEventId=0, HandleInputStart=34575987480900, AnimationStart=34575987509500, PerformTraversalsStart=34576010872500, DrawStart=34576285730300, FrameDeadline=34575240706442, FrameInterval=34575986327100, FrameStartTime=16666666, SyncQueued=34576366306500, SyncStart=34576397199900, IssueDrawCommandsStart=34576397466600, SwapBuffers=34576508858400, FrameCompleted=34576542045800, DequeueBufferDuration=434000, QueueBufferDuration=534300, GpuCompleted=34576542045800, SwapBuffersCompleted=34576521619700, DisplayPresentTime=0, CommandSubmissionCompleted=34576508858400, 
+09-26 07:08:10.561 15391 15414 D EGL_emulation: app_time_stats: avg=167.45ms min=4.26ms max=1312.56ms count=10
+09-26 07:08:10.611 15391 15440 I HWUI    : Davey! duration=1354ms; Flags=1, FrameTimelineVsyncId=8488616, IntendedVsync=34575224039776, Vsync=34575974039746, InputEventId=0, HandleInputStart=34575987480900, AnimationStart=34575987509500, PerformTraversalsStart=34576010872500, DrawStart=34576533563900, FrameDeadline=34575324039772, FrameInterval=34575986327100, FrameStartTime=16666666, SyncQueued=34576534669100, SyncStart=34576538168700, IssueDrawCommandsStart=34576538319900, SwapBuffers=34576558102000, FrameCompleted=34576581572700, DequeueBufferDuration=50800, QueueBufferDuration=2735100, GpuCompleted=34576571703000, SwapBuffersCompleted=34576581572700, DisplayPresentTime=0, CommandSubmissionCompleted=34576558102000, 
+09-26 07:08:10.672 15391 15396 I sujin.perchable: Background concurrent mark compact GC freed 6726KB AllocSpace bytes, 6(320KB) LOS objects, 49% free, 16MB/32MB, paused 2.681ms,6.714ms total 456.085ms
+09-26 07:08:10.675 15391 15391 I Choreographer: Skipped 41 frames!  The application may be doing too much work on its main thread.
+09-26 07:08:10.816 15391 15395 I sujin.perchable: Compiler allocated 4219KB to compile void android.widget.TextView.<init>(android.content.Context, android.util.AttributeSet, int, int)
+09-26 07:08:10.922 15391 15400 I HWUI    : Davey! duration=901ms; Flags=1, FrameTimelineVsyncId=8488728, IntendedVsync=34575990706412, Vsync=34576674039718, InputEventId=0, HandleInputStart=34576686228900, AnimationStart=34576686263800, PerformTraversalsStart=34576691168900, DrawStart=34576848382500, FrameDeadline=34576007373078, FrameInterval=34576685094500, FrameStartTime=16666666, SyncQueued=34576850384100, SyncStart=34576869057200, IssueDrawCommandsStart=34576869322500, SwapBuffers=34576873621200, FrameCompleted=34576911108100, DequeueBufferDuration=42300, QueueBufferDuration=357900, GpuCompleted=34576911108100, SwapBuffersCompleted=34576895228500, DisplayPresentTime=0, CommandSubmissionCompleted=34576873621200, 
+09-26 07:08:10.969 15391 15391 D AutofillManager: onActivityFinishing(): calling cancelLocked()
+09-26 07:08:10.973 15391 15391 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@1bd8331
+09-26 07:08:11.018 15391 15391 D SplashScreenView: Building from parcel drawable: android.graphics.drawable.BitmapDrawable@7a92ab1
+09-26 07:08:11.102 15391 15603 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro(): Creating BundleLoader
+09-26 07:08:11.103 15391 15391 D SplashScreenView: Build android.window.SplashScreenView{1ef1317 V.E...... ......ID 0,0-0,0}
+09-26 07:08:11.103 15391 15391 D SplashScreenView: Icon: view: androidx.appcompat.widget.AppCompatImageView{5665304 V.ED..... ......I. 0,0-0,0 #1020504 android:id/splashscreen_icon_view} drawable: android.graphics.drawable.BitmapDrawable@7a92ab1 size: 504
+09-26 07:08:11.103 15391 15391 D SplashScreenView: Branding: view: android.view.View{2f4c0ed G.ED..... ......I. 0,0-0,0 #1020503 android:id/splashscreen_branding_view} drawable: null size w: 0 h: 0
+09-26 07:08:11.108 15391 15391 W unknown:BridgelessReact: ReactHost{0}.raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+09-26 07:08:11.109 15391 15602 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating BridgelessReactContext
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: Unhandled SoftException
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: com.facebook.react.bridge.ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException(ReactHostImpl.kt:919)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException$default(ReactHostImpl.kt:910)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.onWindowFocusChange(ReactHostImpl.kt:682)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at com.facebook.react.ReactDelegate.onWindowFocusChanged(ReactDelegate.kt:229)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at com.facebook.react.ReactActivityDelegate.onWindowFocusChanged(ReactActivityDelegate.java:235)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invokeSuspend(ReactActivityDelegateWrapper.kt:320)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:8)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:4)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$launchLifecycleScopeWithLock$1.invokeSuspend(ReactActivityDelegateWrapper.kt:452)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at kotlinx.coroutines.internal.DispatchedContinuationKt.resumeCancellableWith(DispatchedContinuation.kt:375)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at kotlinx.coroutines.intrinsics.CancellableKt.startCoroutineCancellable(Cancellable.kt:26)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at kotlinx.coroutines.CoroutineStart.invoke(CoroutineStart.kt:358)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at kotlinx.coroutines.AbstractCoroutine.start(AbstractCoroutine.kt:134)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch(Builders.common.kt:53)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch(Unknown Source:1)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch$default(Builders.common.kt:44)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch$default(Unknown Source:1)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock(ReactActivityDelegateWrapper.kt:450)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock$default(ReactActivityDelegateWrapper.kt:446)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.onWindowFocusChanged(ReactActivityDelegateWrapper.kt:318)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at com.facebook.react.ReactActivity.onWindowFocusChanged(ReactActivity.java:161)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at androidx.appcompat.view.WindowCallbackWrapper.onWindowFocusChanged(WindowCallbackWrapper.java:124)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at expo.modules.devmenu.detectors.InterceptingWindowCallback.onWindowFocusChanged(Unknown Source:2)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at com.android.internal.policy.DecorView.onWindowFocusChanged(DecorView.java:1772)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.view.View.dispatchWindowFocusChanged(View.java:16743)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.view.ViewGroup.dispatchWindowFocusChanged(ViewGroup.java:1505)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.view.ViewRootImpl.dispatchFocusEvent(ViewRootImpl.java:4697)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.view.ViewRootImpl.handleWindowFocusChanged(ViewRootImpl.java:4601)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged(Unknown Source:0)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl(ViewRootImpl.java:6773)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessage(ViewRootImpl.java:6683)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.os.Looper.loopOnce(Looper.java:232)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.os.Looper.loop(Looper.java:317)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at java.lang.reflect.Method.invoke(Native Method)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+09-26 07:08:11.111 15391 15391 E unknown:ReactHost: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+09-26 07:08:11.128 15391 15391 I ImeTracker: com.tsujintsujin.perchable:6224673b: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+09-26 07:08:11.128 15391 15391 I ImeTracker: com.tsujintsujin.perchable:6224673b: onFailed at PHASE_CLIENT_VIEW_SERVED
+09-26 07:08:11.142 15391 15602 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating ReactInstance
+09-26 07:08:11.187 15391 15391 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@dd40c2f
+09-26 07:08:11.218 15391 15391 W RemoteInputConnectionImpl: requestCursorUpdates on inactive InputConnection
+09-26 07:08:11.305 15391 15391 E ImeBackDispatcher: Ime callback not found. Ignoring unregisterReceivedCallback. callbackId: 99212817
+09-26 07:08:11.457 15391 15391 D SplashScreenView: remove starting view
+09-26 07:08:11.944 15391 15602 W sujin.perchable: Verification of expo.modules.kotlin.modules.ModuleDefinitionData expo.modules.ui.ExpoUIModule.definition() took 108.001ms (110192.81 bytecodes/s) (226104B approximate peak alloc)
+09-26 07:08:12.641 15391 15602 I ExpoModulesCore: ✅ AppContext was initialized
+09-26 07:08:12.735 15391 15602 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Loading JS Bundle
+09-26 07:08:12.736 15391 15602 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): DevSupportManager.onNewReactContextCreated()
+09-26 07:08:12.745 15391 15391 W unknown:ReactNative: Packager connection already open, nooping.
+09-26 07:08:12.748 15391 15391 W unknown:BridgelessReact: ReactHost{0}.ReactContext.onHostResume()
+09-26 07:08:12.750 15391 15602 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Execute
+09-26 07:08:12.755 15391 15391 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Executing ReactInstanceEventListeners
+09-26 07:08:12.772 15391 15603 D TrafficStats: tagSocket(153) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:13.335 15391 15609 I WebViewFactory: Loading com.google.android.webview version 124.0.6367.219 (code 636771938)
+--------- beginning of system
+09-26 07:08:13.335 15391 15609 W ResourcesManager: Found a null ResourcesImpl, skipped.
+09-26 07:08:13.342 15391 15609 V ResourcesManager: The following library key has been added: ResourcesKey{ mHash=b428ef4d mResDir=null mSplitDirs=[] mOverlayDirs=[/product/overlay/EmulationPixel7/EmulationPixel7Overlay.apk,/product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk,/data/resource-cache/com.android.systemui-neutral-mj57.frro,/data/resource-cache/com.android.systemui-accent-E6e4.frro,/data/resource-cache/com.android.systemui-dynamic-DJhv.frro] mLibDirs=[/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk,/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk,/system_ext/framework/androidx.window.extensions.jar] mDisplayId=0 mOverrideConfig=v35 mCompatInfo={420dpi always-compat} mLoaders=[]}
+09-26 07:08:13.349 15391 15609 W ziparchive: Unable to open '/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.dm': No such file or directory
+09-26 07:08:13.349 15391 15609 W ziparchive: Unable to open '/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.dm': No such file or directory
+09-26 07:08:13.350 15391 15609 W sujin.perchable: Entry not found
+09-26 07:08:13.351 15391 15609 D nativeloader: Configuring clns-8 for other apk /data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/lib/x86_64:/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+09-26 07:08:13.357 15391 15609 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+09-26 07:08:13.382 15391 15609 D nativeloader: Configuring clns-9 for other apk /data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/lib/x86_64:/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+09-26 07:08:13.451 15391 15609 I cr_WVCFactoryProvider: Loaded version=124.0.6367.219 minSdkVersion=29 isBundle=false multiprocess=true packageId=2
+09-26 07:08:13.476 15391 15609 D nativeloader: Load /data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk!/lib/x86_64/libmonochrome_64.so using ns clns-9 from class loader (caller=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk): ok
+09-26 07:08:13.481 15391 15609 D nativeloader: Load /system/lib64/libwebviewchromium_plat_support.so using ns clns-9 from class loader (caller=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk): ok
+09-26 07:08:13.494 15391 15618 E chromium: [0926/070813.493975:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+09-26 07:08:13.496 15391 15618 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.tsujintsujin.perchable/app_webview/variations_seed_new"
+09-26 07:08:13.496 15391 15618 I chromium: [0926/070813.496850:INFO:variations_seed_loader.cc(66)] Failed to open file for reading.: No such file or directory (2)
+09-26 07:08:13.497 15391 15618 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.tsujintsujin.perchable/app_webview/variations_seed"
+09-26 07:08:13.514 15391 15609 I cr_LibraryLoader: Successfully loaded native library
+09-26 07:08:13.516 15391 15609 I cr_CachingUmaRecorder: Flushed 6 samples from 6 histograms, 0 samples were dropped.
+09-26 07:08:13.546 15391 15622 D TrafficStats: tagSocket(169) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:13.593 15391 15608 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libworklets.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:08:13.596 15391 15608 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libexpo-modules-core.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:08:13.608 15391 15608 W BridgelessReactContext: [WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of the new architecture is not encouraged usage.
+09-26 07:08:13.678 15391 15608 I ExpoModulesCore: ✅ JSI interop was installed
+09-26 07:08:13.692 15391 15608 I ExpoModulesCore: ✅ Constants were exported
+09-26 07:08:14.126 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.GroupViewManagerWrapper
+09-26 07:08:14.133 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.uimanager.LayoutShadowNode
+09-26 07:08:14.140 15391 15398 W System  : A resource failed to call release. 
+09-26 07:08:14.143 15391 15398 W sujin.perchable: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk' with 2 weak references
+09-26 07:08:14.143 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContainerViewManager
+09-26 07:08:14.147 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.reanimated.view.REASharedTransitionBoundaryManager
+09-26 07:08:14.151 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.SimpleViewManagerWrapper
+09-26 07:08:14.173 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.host.TabsHostViewManager
+09-26 07:08:14.175 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderConfigViewManager
+09-26 07:08:14.179 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.reactnativegooglesignin.RNGoogleSigninButtonViewManager
+09-26 07:08:14.181 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderSubviewManager
+09-26 07:08:14.187 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetHostViewManager
+09-26 07:08:14.197 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.scrollviewmarker.ScrollViewMarkerViewManager
+09-26 07:08:14.203 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetContentWrapperViewManager
+09-26 07:08:14.208 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContentWrapperManager
+09-26 07:08:14.220 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.screen.StackScreenViewManager
+09-26 07:08:14.225 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewManager
+09-26 07:08:14.226 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewShadowNode
+09-26 07:08:14.228 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenViewManager
+09-26 07:08:14.229 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.config.StackHeaderConfigViewManager
+09-26 07:08:14.230 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.RNSentryOnDrawReporterManager
+09-26 07:08:14.236 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaProviderManager
+09-26 07:08:14.239 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.SearchBarManager
+09-26 07:08:14.241 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.host.StackHostViewManager
+09-26 07:08:14.242 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.replay.RNSentryReplayMaskManager
+09-26 07:08:14.245 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenFooterManager
+09-26 07:08:14.246 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.replay.RNSentryReplayUnmaskManager
+09-26 07:08:14.248 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ModalScreenViewManager
+09-26 07:08:14.252 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.safearea.SafeAreaViewManager
+09-26 07:08:14.254 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackViewManager
+09-26 07:08:14.257 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.subview.StackHeaderSubviewViewManager
+09-26 07:08:14.259 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class org.reactnative.maskedview.RNCMaskedViewManager
+09-26 07:08:14.268 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.screen.TabsScreenViewManager
+09-26 07:08:14.361 15391 15391 E FrameTracker: force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@1@com.tsujintsujin.perchable>
+09-26 07:08:14.362 15391 15391 W FrameTracker: Missed SF frame:UNKNOWN: 66, 8487076, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.tsujintsujin.perchable>
+09-26 07:08:14.362 15391 15391 W FrameTracker: Missed SF frame:UNKNOWN: 66, 8487128, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.tsujintsujin.perchable>
+09-26 07:08:14.362 15391 15391 W FrameTracker: Missed SF frame:UNKNOWN: 66, 8487136, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.tsujintsujin.perchable>
+09-26 07:08:14.363 15391 15500 V PerfettoTrigger: Triggering /system/bin/trigger_perfetto com.android.telemetry.interaction-jank-monitor-80
+09-26 07:08:14.778 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager
+09-26 07:08:14.784 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+09-26 07:08:14.792 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
+09-26 07:08:14.798 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.modal.ReactModalHostManager
+09-26 07:08:14.807 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.progressbar.ReactProgressBarViewManager
+09-26 07:08:14.815 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+09-26 07:08:14.829 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.image.ReactImageManager
+09-26 07:08:14.839 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactTextViewManager
+09-26 07:08:14.844 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
+09-26 07:08:14.852 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
+09-26 07:08:14.860 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactScrollViewManager
+09-26 07:08:14.868 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.view.ReactViewManager
+09-26 07:08:14.878 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.drawer.ReactDrawerLayoutManager
+09-26 07:08:14.891 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.switchview.ReactSwitchManager
+09-26 07:08:14.902 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
+09-26 07:08:14.917 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.textinput.ReactTextInputManager
+09-26 07:08:14.924 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.SelectableTextViewManager
+09-26 07:08:14.931 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
+09-26 07:08:14.936 15391 15608 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.virtual.view.ReactVirtualViewManager
+09-26 07:08:14.996 15391 15622 D TrafficStats: tagSocket(125) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:15.373 15391 15608 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/librnscreens.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes2.dex): ok
+09-26 07:08:15.488 15391 15608 I ReactNativeJS: Running "main" with {"rootTag":1,"initialProps":{},"fabric":true}
+09-26 07:08:15.528 15391 15624 D TrafficStats: tagSocket(156) with statsTag=0xffffffff, statsUid=-1
+09-26 07:08:15.695 15391 15414 D EGL_emulation: app_time_stats: avg=560.56ms min=4.85ms max=4184.81ms count=9
+09-26 07:08:15.901 15391 15391 I ExpoModulesCore: ✅ JSI interop was installed
+09-26 07:08:16.700 15391 15609 I RNSentry: FrameMetricsAggregator installed.
+09-26 07:08:17.011 15391 15414 D EGL_emulation: app_time_stats: avg=210.79ms min=7.51ms max=1126.11ms count=6
+09-26 07:08:17.020 15391 15609 W sujin.perchable: Accessing hidden field Landroid/view/Choreographer;->mLastFrameTimeNanos:J (unsupported, reflection, allowed)
+09-26 07:08:17.060 15391 15633 D nativeloader: Load /system/lib64/liblog.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:08:17.069 15391 15633 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libsentry.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:08:17.074 15391 15633 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libsentry-android.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 07:08:17.105 15391 15609 I RNSentry: Starting with DSN: 'https://53d0bae748b6e27b4b8835e08e2f793f@o4512141240762368.ingest.us.sentry.io/4512141251313664'
+09-26 07:08:17.109 15391 15609 I RNSentry: Native Integrations '[io.sentry.UncaughtExceptionHandlerIntegration@5ec29c5, io.sentry.ShutdownHookIntegration@da5ff1a, io.sentry.SpotlightIntegration@b83ba4b, io.sentry.android.core.SendCachedEnvelopeIntegration@adb5c28, io.sentry.android.core.NdkIntegration@46a9d41, io.sentry.android.core.TombstoneIntegration@e94f2e6, io.sentry.android.core.EnvelopeFileObserverIntegration$OutboxEnvelopeFileObserverIntegration@b51b027, io.sentry.android.core.SendCachedEnvelopeIntegration@a9e12d4, io.sentry.android.core.AppLifecycleIntegration@302cc7d, io.sentry.android.core.AnrV2Integration@82d5772, io.sentry.android.core.ActivityLifecycleIntegration@1f27c3, io.sentry.android.core.ActivityBreadcrumbsIntegration@f338840, io.sentry.android.core.UserInteractionIntegration@df4b379, io.sentry.android.core.AppComponentsBreadcrumbsIntegration@87578be, io.sentry.android.core.SystemEventsBreadcrumbsIntegration@5c27d1f, io.sentry.android.core.NetworkBreadcrumbsIntegration@ae8e86c, io.sentry.android.replay.ReplayIntegration@b840e35]'
+09-26 07:08:17.200 15391 15391 W pool-6-thread-1: type=1400 audit(0.0:208): avc:  denied  { read } for  name="version" dev="proc" ino=4026532032 scontext=u:r:untrusted_app:s0:c211,c256,c512,c768 tcontext=u:object_r:proc_version:s0 tclass=file permissive=0 app=com.tsujintsujin.perchable
+09-26 07:08:17.472 15391 15631 W sujin.perchable: Verification of void io.sentry.JsonSerializer.<init>(io.sentry.SentryOptions) took 112.452ms (6518.30 bytecodes/s) (29056B approximate peak alloc)
+09-26 07:08:17.502 15391 15396 I sujin.perchable: NativeAlloc concurrent mark compact GC freed 5445KB AllocSpace bytes, 6(120KB) LOS objects, 49% free, 13MB/26MB, paused 2.985ms,4.277ms total 319.794ms
+09-26 07:08:18.303 15391 15391 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@7784ae4
+09-26 07:08:19.233 15391 15414 D EGL_emulation: app_time_stats: avg=1110.43ms min=374.00ms max=1846.86ms count=2
+09-26 07:08:20.707 15391 15414 D EGL_emulation: app_time_stats: avg=346.48ms min=3.23ms max=1349.39ms count=4
+09-26 07:08:36.322 15391 15391 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@21a5216
+09-26 07:08:51.109 15391 15391 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@a5ec626
