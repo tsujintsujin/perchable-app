@@ -234,3 +234,265 @@ active-state on the current tab.
 Metro stopped after (its own 600s safety timeout had already ended it by
 the time I went to stop it manually); port 8081 confirmed free both via
 `Get-NetTCPConnection` (nothing listening) and a raw TCP connect attempt.
+
+## QA (Queenie)
+
+Tested on emulator-5554 (td_emu). APK confirmed current: lastUpdateTime
+(2026-09-25 22:03:58 GMT, device clock) predates commit 79c761e's timestamp,
+but that is expected and not a staleness signal - the native rebuild
+(expo-blur) happened once during Bella's session and JS since then is served
+live by Metro (dev-client, JS not embedded), so only the native module
+addition needed reinstalling. Confirmed expo-blur is actually present and
+working empirically rather than trusting the log: BlurView renders without
+any native-module crash, and logcat shows expo-blur's own runtime warning
+(blurTarget not configured -> falls back to "none"), which only fires from
+inside expo-blur's own code - proof the native module loaded correctly.
+Evidence: logs/evidence/build-06/qa/ (screenshots 00-31, ui-*.xml dumps,
+logcat-app-full.txt).
+
+Own Metro started fresh (npx expo start --dev-client), stopped at end;
+confirmed port 8081 free (killed only this session's own node.exe PID 7196,
+verified via Get-CimInstance CommandLine match before killing). Did not clear
+app data at any point in the final state - app is left signed in as Justin,
+on the Profile tab, per instruction.
+
+### 1. Profile tab shows Justin's Google name + photo + "No usertag yet" state
+PASS. `00-launch.png`, `31-final-profile.png`. Real Google photo (not
+fallback-initials - Google returned a photo), "Justin Masiga" verbatim,
+"No usertag yet — add a usertag" chip verbatim with the bold "add a usertag"
+part as its own tap target (confirmed separately, see item 3).
+
+### 2. Loading state + load-error state (airplane mode) + Retry
+PASS, all three sub-states confirmed on-device:
+- Loading shimmer: forced a fresh mount after Retry (airplane mode had just
+  been disabled) and caught the shimmer mid-transition - circle + 2 bars +
+  2 row placeholders, exact shape of the loaded layout. `15-retry-result.png`.
+- Load-error: force-stopped + relaunched the app while offline (airplane
+  mode) to force a genuinely fresh Profile mount (tab screens stay mounted
+  across tab switches, so simply switching tabs while offline does not
+  reproduce this - confirmed via `ui-home2.xml` dump). Error state rendered
+  correctly: owl icon, "Couldn't load your profile", "Check your connection
+  and try again.", gold "Retry" button - copy verbatim per DESIGN.md.
+  `14-profile-error-state.png`.
+- Retry: re-enabled network, tapped Retry -> shimmer -> loaded state with
+  Justin's real data. `16-retry-loaded.png`.
+
+### 3. Edit profile / Settings stub navigation + back
+PASS, all four entry points tested:
+- "Edit profile" row -> stub "Coming soon / Editing your photo and
+  usertag lands in Build 7." Back returns cleanly to loaded profile.
+  `17-edit-stub.png`, `18-back-from-edit.png`.
+- "No usertag yet — add a usertag" bold tap target -> same Edit stub.
+  `23-usertag-tap.png`.
+- "Settings" row -> distinct stub "Coming soon / Sign out, delete account,
+  and app info land in Build 9." `20-settings-stub-correct.png`.
+- Header gear icon (top-right, inset) -> same Settings stub, confirming the
+  "two entry points, same screen" spec. `21-header-gear-tap.png`. Back
+  returns cleanly. `22-back-to-profile.png`.
+- Note: I initially mis-tapped the Edit profile row when aiming for Settings
+  (stale coordinates from an earlier UI dump, layout differs by pixel offset)
+  and briefly thought both rows led to the same stub - re-verified with a
+  fresh uiautomator dump and confirmed they are in fact two distinct stub
+  screens with distinct copy. Not a bug, my own mis-tap.
+
+### 4. Tab bar - 2 tabs, active colors, vs. DESIGN.md spec
+BUG. 2 tabs confirmed (Perch, Profile), active tab gold label vs inactive
+grey - that part matches spec. But the tab bar's own background is wrong:
+measured by pixel sampling (PIL) at four points across the bar on both Home
+and Profile screens: rgb(105,103,108) consistently - a flat, fairly light
+neutral grey. DESIGN.md/tokens.ts specify glass.nav.backgroundColor =
+rgba(30,26,38,0.55) over bg.base (#121016), which computes to
+rgb(25,22,31) - a dark purple-grey, nowhere near what's rendering. This
+matches what the Manager described from Bella's screenshot ("flat LIGHT
+GREY bar").
+
+For comparison, I pixel-sampled two other glass-token surfaces on the same
+screen that came out exact:
+- GlassCard rows ("Edit profile"/"Settings"): measured rgb(36,20,63) vs.
+  computed rgba(76,29,149,.32) over bg.base = rgb(36.5,20.2,62.7) - matches
+  to the pixel.
+- Usertag chip: measured rgb(34,20,57) vs. computed rgba(76,29,149,.28)
+  over bg.base = rgb(34.3,19.6,57.5) - matches to the pixel.
+
+So the token system and flat-fill GlassCard usage are correct; the bug is
+isolated to TabBar's own rendering. Logcat shows expo-blur's own runtime
+warning: "You have selected the 'dimezisBlurViewSdk31Plus' blur method, but
+the blurTarget prop has not been configured. The blur view will fallback
+to 'none' blur method to avoid errors." - per Bella's own build log this
+fallback is supposed to leave glass.nav's flat rgba fill visible (the
+wrapper View's backgroundColor), but the measured color doesn't match that
+fill either. I'm reporting the pixel evidence and the logcat warning, not
+asserting root cause - flagging for Ruby/Bella to trace whether BlurView's
+"none"-method fallback is painting an opaque default tint on top of
+wrapper, overriding the correct color underneath.
+Evidence: `01-home.png`, `12-app-final.png`, `31-final-profile.png`
+(pixel-sampled in `logs/evidence/build-06/qa/` via a py -3/PIL check, raw
+values quoted above).
+
+### 5. Gear-zone (top-right 64x64) empty on Home and Profile; Home avatar placement
+PASS on the "nothing important in the reserved corner" rule, but BUG found
+on the Settings icon itself (related to but distinct from item 4):
+- Home: signed-in Avatar (Justin's real photo) sits correctly inset left of
+  the dev-client gear icon, no overlap, tappable. `01-home.png`.
+- Profile: Settings header icon sits at bounds [818,147][912,242] -
+  94x95px / 2.625 ≈ 36x36dp, exactly the spec'd 36x36 size - correctly left
+  of the reserved zone (dev gear icon at [896,194][1022,320], no overlap).
+  Size and position are both correct.
+- BUG: the icon has no visible chip background at all. Pixel-sampled an
+  8x8 grid of points immediately around the gear glyph
+  (`00-launch-gearzone-crop.png` for the visual, raw sampling against
+  `00-launch.png`): every point reads exactly rgb(18,16,22) = bg.base,
+  zero purple tint. Spec calls for a 36x36 GlassCard-chip:
+  rgba(76,29,149,.3) fill + border.hairline border + radius: sm
+  (DESIGN.md Build 6, Layout section). Computed expected fill:
+  rgba(76,29,149,.3) over bg.base ≈ rgb(35,20,60) - clearly purple, not
+  what's rendering. The gear glyph itself renders (white gear character,
+  correct size/position), but with no pill/chip surface underneath - reads
+  as a bare icon floating on the background, not a button.
+
+### 6. "0 movies watched" empty box — what's actually there
+As instructed, reporting exactly what renders, not judging against the
+Manager's verbal note to Bella: "0 movies watched" caption (text.secondary)
+directly above an empty dashed-border rectangular placeholder box
+(no grid cells, no PosterCard shimmer/content inside - just an empty
+outlined container). No 3-column collection grid is visible; the box is a
+single empty rectangle. This matches DESIGN.md's literal Build 6 spec text
+("the grid itself is empty at this Build... the row count and grid container
+render now") more closely than a fully-removed strip would, but I'm not
+certain this is what "leave the movies strip out" meant - flagging both
+readings for the Manager/Ruby to reconcile, since I can only report what's
+on screen, not which instruction it was supposed to follow.
+`00-launch.png`, `31-final-profile.png`.
+
+### 7. Regression
+- Build 5 (sign-in persistence): PASS, confirmed multiple times this
+  session - the app started already signed in as Justin and stayed signed in
+  through two Metro-URL reconnect cycles, a force-stop, and an airplane-mode
+  round trip; never needed to sign in again.
+- Build 2 (Supabase): PASS - "CHECK CONNECTION" -> "Supabase: connected".
+  `25-check-connection.png`.
+- Build 3 (TMDB proxy): PASS - 5 titles + attribution string verbatim.
+  `27-tmdb-result.png`.
+- Build 4 (Sentry): PASS - "Sent — event ... at ...". `29-sentry-result2.png`.
+  (Note: hit "SIMULATE BAD KEY" by mistake once first, same stale-coordinate
+  mistake as previous Builds' debug screen - not a regression, confirmed by
+  re-running the real checks cleanly right after.)
+
+### Logcat
+--pid-filtered dump for the whole session (`logcat-app-full.txt`, 857
+lines). Reporting exactly what appeared:
+- Same recurring E unknown:ReactHost: Unhandled SoftException /
+  ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus
+  = "true")): Tried to access onWindowFocusChange while context is not
+  ready seen in Build 5's QA and its Bug 1 re-test - still present in Build
+  6, same signature, still no visible effect on any screen.
+- W HWUI: Failed to initialize 101010-2 format, error = EGL_SUCCESS.
+- E chromium: [...] Seed missing signature. (Play Services internal
+  component, not app code).
+- W BridgelessReactContext: [WARNING] Bridgeless doesn't support
+  CatalystInstance...
+- W ReactNativeJS: You have selected the "dimezisBlurViewSdk31Plus" blur
+  method, but the blurTarget prop has not been configured. The blur view
+  will fallback to "none" blur method to avoid errors. - see item 4/5 above,
+  directly relevant to both bugs found.
+- W ReactNativeJS: Error: undefined - fired once, coincided with a Metro
+  reconnect/URL-switch during my testing, not a runtime crash.
+- No DEVELOPER_ERROR, no ApiException, no FATAL, no crash/ANR.
+
+### UNTESTABLE
+None.
+
+### Bugs
+- Build 6 · Bug candidate 1 — TabBar background renders flat grey, not
+  DESIGN.md's glass.nav purple-tinted translucent fill. Repro: open any
+  tab screen (Home or Profile), look at/pixel-sample the bottom tab bar.
+  Expected: rgba(30,26,38,0.55) over bg.base ≈ rgb(25,22,31) (dark
+  purple-grey). Actual: flat rgb(105,103,108) (light-medium neutral grey),
+  consistent across screens. See item 4 for full pixel evidence and the
+  related logcat warning.
+- Build 6 · Bug candidate 2 — Settings header icon has no chip background.
+  Repro: open Profile screen, look at the top-right settings gear icon (inset
+  left of the dev-client corner). Expected: 36x36 GlassCard-chip,
+  rgba(76,29,149,.3) fill + border.hairline border + radius: sm.
+  Actual: bare gear glyph on the plain background, rgb(18,16,22) (bg.base,
+  zero purple tint) confirmed by pixel sampling around the icon. Size and
+  position are correct, just no visible chip surface. See item 5.
+
+Both bugs are visual/design-match failures, not functional breaks - every
+tap target still works, nothing crashes. Reporting as Bugs per the "no
+one-off colors" / exact-values DESIGN.md rule (§7), for Ruby to confirm in
+code and route to Bella.
+
+### Verdict
+FAIL (2 bug candidates) — functionally everything works (data, loading/
+error/retry, navigation, regression), but two DESIGN.md Build 6 value
+mismatches confirmed by pixel evidence: the TabBar's glass.nav fill and
+the Settings header icon's missing chip background. Recommend both go back
+to Bella as Build 6 Bugs before Ruby's review closes this Build.
+
+## Build 6 · Bug 1 (Queenie pixel-sampled, Ruby traced, Manager confirmed)
+
+Three findings:
+
+1. **TabBar rendered flat grey instead of `glass.nav`.** Ruby traced the
+   cause to `expo-blur`'s `ExpoBlurView.kt`: with no `blurTarget` wired,
+   Android skips the blur setup but still paints `tint` as the native
+   view's own opaque background — a flat mid-grey (`rgb(105,103,108)`),
+   unrelated to `glass.nav.backgroundColor` underneath. Fix:
+   `src/ui/TabBar/TabBar.tsx` only renders `BlurView` on
+   `Platform.OS === "ios"` now; Android renders two stacked flat `View`s
+   instead. **Re-checking this on-device (re-sampling, not just applying
+   the described fix) turned up a second, different bug the report didn't
+   catch**: with `BlurView` removed, the lone translucent
+   `glass.nav.backgroundColor` fill composited against nothing (the tab
+   bar sits in a reserved layout area outside the screen's own content,
+   not stacked visually over `bg.base`), landing on a *different* wrong
+   grey (`rgb(125,123,130)`, from blending against a white/undefined
+   backdrop). Added an opaque `bg.elevatedFlat` base layer underneath the
+   translucent tint (`styles.opaqueBase` + `styles.tintOverlay`), matching
+   tokens.ts's own note that `bg.elevatedFlat` is "the flat-fallback base
+   color these translucent fills sit on". Re-sampled after: `rgb(30,26,38)`
+   — exactly `glass.nav.backgroundColor`'s own RGB (its alpha-blend with
+   `bg.elevatedFlat` is a no-op since both tokens share the same base hue,
+   which is why the flat-fallback pattern works at all). Retracting my
+   Build 6 log's "visually correct" claim about this fill — it wasn't,
+   until this fix. Applied the same `Platform.OS === "ios"` guard to
+   `GlassCard`'s `blur` path for consistency, though no Build 6 caller
+   passes `blur` yet so it wasn't independently visible.
+2. **Settings header icon had no visible chip.** `src/app/(tabs)/profile/index.tsx`'s
+   `settingsChip` style only set size/radius/position — `GlassCard`'s
+   `tier="chip"` token (`rgba(18,16,22,.55)`, no border) reads as
+   near-invisible against `bg.base`, and DESIGN.md's Build 6 layout spec
+   wants explicit `rgba(76,29,149,.3)` + `border.hairline` for this one
+   button anyway (not `glass.chip`'s own values). Added those directly to
+   `settingsChip`'s style (which overrides `GlassCard`'s tier defaults,
+   since `style` is layered last). Pixel-sampled after:
+   `rgb(36,20,60)` — matches the computed `rgba(76,29,149,.3)` over
+   `bg.base` (≈`rgb(35,20,60)`) almost exactly.
+3. **(nit) Home read `session.user.user_metadata` inline.** DESIGN.md §7
+   says a route composes `ui/` + a module's exported hook only.
+   `src/app/(tabs)/index.tsx` now uses `useOwnProfile` (same hook the
+   Profile screen uses) instead of re-deriving the Google-metadata key
+   fallback itself; updated `__tests__/home-test.tsx` to mock
+   `@/modules/profile` instead of `@/modules/auth`.
+
+**Not a bug** (per the Manager's note): the "0 movies watched" row stays —
+DESIGN.md specifies it; my own earlier instruction to drop it in the
+original brief was wrong.
+
+Gates: `npx tsc --noEmit` / `npx expo lint` / `npx jest` all pass (3 suites
+/ 9 tests, zero warnings) after all three fixes.
+
+On-device: reloaded (no native rebuild needed — JS-only), left Justin's
+session signed in throughout (no data clear, no sign-out). Both fixes
+verified by pixel sample, not just visual inspection:
+`logs/evidence/build-06/bug1-tabbar.png` (`rgb(30,26,38)` at the tab bar),
+`logs/evidence/build-06/bug1-profile-settings-chip.png`
+(`rgb(36,20,60)` at the settings chip), `dump-profile.xml` (uiautomator
+bounds used to pick exact sample coordinates rather than eyeballing them).
+Metro stopped after, port 8081 confirmed free.
+
+Files touched, all inside Bug 1's own scope: `src/ui/TabBar/TabBar.tsx`,
+`src/ui/GlassCard/GlassCard.tsx`, `src/app/(tabs)/profile/index.tsx`,
+`src/app/(tabs)/index.tsx`, `__tests__/home-test.tsx`, this log. No files
+outside Bug 1's scope.

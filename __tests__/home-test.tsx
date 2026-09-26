@@ -1,13 +1,20 @@
 import { render, screen } from "@testing-library/react-native";
 
-// Home reads the signed-in Avatar from useAuthSession's session — mock it
-// so this test doesn't need a real Supabase session (or env vars).
-jest.mock("@/modules/auth", () => ({
-  useAuthSession: () => ({
-    session: {
-      user: { user_metadata: { full_name: "Justin Masiga", avatar_url: null } },
+// Home reads the signed-in Avatar from useOwnProfile (Build 6 · Bug 1 —
+// previously read session.user_metadata directly) — mock it so this test
+// doesn't need a real Supabase session or profiles row.
+jest.mock("@/modules/profile", () => ({
+  useOwnProfile: () => ({
+    state: "loaded",
+    refetch: jest.fn(),
+    profile: {
+      id: "u1",
+      displayName: "Justin Masiga",
+      avatarUrl: null,
+      usertag: null,
+      createdAt: "2026-01-01",
+      updatedAt: "2026-01-01",
     },
-    isLoading: false,
   }),
 }));
 

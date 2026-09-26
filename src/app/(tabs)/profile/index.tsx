@@ -22,7 +22,12 @@ export default function MyProfile() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>My Profile</Text>
         {/* 36×36 chip, inset left of the reserved 64×64 dev-client gear
-         * corner (DESIGN.md §7) — never a bare top-right icon. */}
+         * corner (DESIGN.md §7) — never a bare top-right icon. DESIGN.md's
+         * Build 6 layout spec gives this an explicit
+         * rgba(76,29,149,.3)/border.hairline look, not `glass.chip`'s own
+         * (darker, borderless) token values — override via `style` rather
+         * than adding a variant tier just for this one button
+         * (Build 6 · Bug 1). */}
         <GlassCard
           tier="chip"
           onPress={() => router.push("/profile/settings")}
@@ -137,6 +142,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 44,
+    // Exact DESIGN.md Build 6 values — not glass.chip's own token.
+    backgroundColor: "rgba(76,29,149,0.3)",
+    borderWidth: 1,
+    borderColor: colors.border.hairline,
   },
   settingsIcon: { fontSize: 16, color: colors.text.primary },
   centerBody: { flex: 1, alignItems: "center", justifyContent: "center" },

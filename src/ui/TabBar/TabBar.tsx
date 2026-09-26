@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { BlurView } from "expo-blur";
 import { colors, glass } from "@/ui/tokens";
 
@@ -28,22 +28,49 @@ type Props = {
  * content being blurred, with its ref passed to `blurTarget` here
  * (expo-blur docs). That content is the active tab screen, rendered by
  * `<Tabs>` internally — not reachable from this custom `tabBar` render
- * prop without forking the navigator's own layout. `blurMethod` is set so
- * Android 12+ still requests a real blur, but with no `blurTarget` it has
- * nothing to sample, so this currently renders as `glass.nav`'s flat
- * `rgba` fill on Android (visually fine, just not blurred) and a real
- * blur on iOS. Upgrade path: a screen-level `BlurTargetView` wired through
- * `(tabs)/_layout.tsx` once a Build actually needs the Android blur to be
- * real, not just present. */
+ * prop without forking the navigator's own layout. Upgrade path: a
+ * screen-level `BlurTargetView` wired through `(tabs)/_layout.tsx` once a
+ * Build actually needs the Android blur to be real, not just present.
+ *
+ * Build 6 · Bug 1: with no `blurTarget` on Android, `expo-blur`'s native
+ * view skips its blur setup but still paints the `tint` as its own opaque
+ * background — a flat mid-grey, not `glass.nav`'s `rgba` fill underneath
+ * (confirmed by pixel sample: rendered `rgb(105,103,108)` instead of
+ * `glass.nav` over `bg.base` ≈ `rgb(25,22,31)`). So `BlurView` only renders
+ * on iOS here.
+ *
+ * Also found while re-checking this fix (pixel sample again, not just
+ * reasoning): `glass.nav.backgroundColor` alone is a *translucent* rgba —
+ * with no BlurView and nothing dark drawn behind the tab bar's own reserved
+ * area (Android Tabs lays it out beside the screen content, not on top of
+ * it), the translucent fill composites against the native window's own
+ * default background instead of `bg.base`, landing near
+ * `rgb(125,123,130)` — a different wrong grey, not the fix. `styles.opaqueBase`
+ * below adds `bg.elevatedFlat` as the actual opaque backdrop underneath
+ * the translucent tint, matching tokens.ts's own note that
+ * `bg.elevatedFlat` is "the flat-fallback base color these translucent
+ * fills sit on". */
 export function TabBar({ state, navigation }: Props) {
   return (
     <View style={styles.wrapper}>
-      <BlurView
-        intensity={glass.nav.blurAmount}
-        tint="dark"
-        blurMethod="dimezisBlurViewSdk31Plus"
-        style={styles.blurFill}
-      />
+      {Platform.OS === "ios" ? (
+        // BlurView's own `tint` is the whole glass.nav treatment here — it
+        // blurs the real screen content behind it, so no separate flat
+        // layers underneath (that would just give BlurView a flat color to
+        // "blur", not real content).
+        <BlurView intensity={glass.nav.blurAmount} tint="dark" style={styles.blurFill} />
+      ) : (
+        // Android: opaque base first (paint order matters — a later sibling
+        // draws over an earlier one), then the translucent glass.nav tint on
+        // top of it. Without the opaque base, the translucent tint
+        // composites against whatever's behind the tab bar's own reserved
+        // layout area (not the screen content), landing on the wrong grey —
+        // see the comment above.
+        <>
+          <View style={styles.opaqueBase} />
+          <View style={styles.tintOverlay} />
+        </>
+      )}
       <View style={styles.row}>
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
@@ -74,13 +101,25 @@ export function TabBar({ state, navigation }: Props) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    // Flat fallback fill behind the BlurView (DESIGN.md §1.5) — same token,
-    // so an unblurred render (Android without a wired blurTarget, see
-    // above) still looks intentional rather than transparent/broken.
-    backgroundColor: glass.nav.backgroundColor,
     borderTopWidth: 1,
     borderTopColor: glass.nav.borderColor,
     overflow: "hidden",
+  },
+  opaqueBase: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.bg.elevatedFlat,
+  },
+  tintOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: glass.nav.backgroundColor,
   },
   blurFill: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
   row: { flexDirection: "row", paddingTop: 8, paddingBottom: 24 },

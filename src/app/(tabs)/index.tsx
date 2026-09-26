@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { Avatar } from "@/ui/Avatar";
 import { colors } from "@/ui/tokens";
-import { useAuthSession } from "@/modules/auth";
+import { useOwnProfile } from "@/modules/profile";
 
 /**
  * (tabs)/index — Home ("Perch"). Build 5 scope: this placeholder shell.
@@ -12,12 +12,17 @@ import { useAuthSession } from "@/modules/auth";
  * gear corner — with a small circular Avatar inset left of that zone,
  * tappable through to the Profile tab. Real Home content (roulette,
  * have-you-watched, friend activity — DESIGN.md §3) is still later Builds.
+ *
+ * Build 6 · Bug 1: reads the same `useOwnProfile` hook the Profile screen
+ * uses, instead of reaching into `session.user.user_metadata` and
+ * re-doing the Google-metadata key fallback inline — DESIGN.md §7 says a
+ * route composes `ui/` + a module's exported hook, nothing more. The
+ * `profiles` row (created by Build 6's trigger) already carries
+ * `display_name`/`avatar_url` for this.
  */
 export default function Home() {
-  const { session } = useAuthSession();
-  const meta = session?.user.user_metadata as
-    | { full_name?: string; name?: string; avatar_url?: string; picture?: string }
-    | undefined;
+  const profile = useOwnProfile();
+  const loaded = profile.state === "loaded" ? profile.profile : undefined;
 
   return (
     <View style={styles.root}>
@@ -28,11 +33,7 @@ export default function Home() {
           accessibilityRole="button"
           accessibilityLabel="Open My Profile"
         >
-          <Avatar
-            uri={meta?.avatar_url ?? meta?.picture}
-            name={meta?.full_name ?? meta?.name}
-            size="sm"
-          />
+          <Avatar uri={loaded?.avatarUrl} name={loaded?.displayName} size="sm" />
         </Pressable>
       </View>
 
