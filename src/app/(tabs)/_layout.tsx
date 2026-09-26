@@ -1,20 +1,22 @@
 import { Tabs } from "expo-router";
+import { TabBar } from "@/ui/TabBar";
 
 /**
- * Minimal tabs shell — only "index" (Home) exists as of Build 5. DESIGN.md's
- * §2 `TabBar` (5 items: Perch/Search/Chat/Leaderboards/Profile) waits until
- * the other 4 tab screens exist (Builds 12, 17, 27, current index already
- * covers Profile-adjacent content later); building it now against 4 routes
- * that don't exist yet would be speculative. Default tab bar, hidden since
- * there's nothing to switch between yet.
+ * DESIGN.md §2's `TabBar` is a fixed 5-item spec (Perch/Search/Chat/
+ * Leaderboards/Profile), but only routes that exist get a tab — Build 6
+ * adds the second one (Profile); Search/Chat/Leaderboards land in Builds
+ * 17, 27, 29 and each adds its own entry to `ui/TabBar`'s TAB_META then.
+ * This was flagged as a deferred decision in Build 5's log; this is that
+ * Build.
  */
 export default function TabsLayout() {
   return (
     <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: { display: "none" },
-      }}
-    />
+      tabBar={(props) => <TabBar state={props.state} navigation={props.navigation} />}
+      screenOptions={{ headerShown: false }}
+    >
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="profile" />
+    </Tabs>
   );
 }

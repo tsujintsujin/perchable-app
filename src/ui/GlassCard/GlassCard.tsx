@@ -1,0 +1,72 @@
+import type { ReactNode } from "react";
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import { BlurView } from "expo-blur";
+import { glass } from "@/ui/tokens";
+
+type Tier = "card" | "hero" | "chip";
+
+type Props = {
+  tier?: Tier;
+  /** Real BlurView vs. flat fallback fill — caller decides per DESIGN.md
+   * §1.5's table (never inside a FlashList or gesture-driven re-render). */
+  blur?: boolean;
+  onPress?: () => void;
+  style?: StyleProp<ViewStyle>;
+  children: ReactNode;
+};
+
+export function GlassCard({ tier = "card", blur = false, onPress, style, children }: Props) {
+  const t = glass[tier];
+  // `glass.chip` has no borderColor in tokens.ts; every other tier does.
+  // `in` narrows `t`'s union type directly, unlike a separate tier check.
+  const borderColor = "borderColor" in t ? t.borderColor : undefined;
+
+  const baseStyle: StyleProp<ViewStyle> = [
+    styles.base,
+    {
+      backgroundColor: t.backgroundColor,
+      borderColor,
+      borderWidth: borderColor ? 1 : 0,
+    },
+    style,
+  ];
+
+  const content = (
+    <>
+      {blur && (
+        // Same Android blurTarget caveat as ui/TabBar: without a
+        // BlurTargetView wired above this in the tree, Android renders the
+        // flat backgroundColor above instead of a real blur. Fine for iOS
+        // either way. No Build 6 caller passes `blur` — flagged here for
+        // whichever Build first does (DESIGN.md §1.5's ProfileSheet/hero
+        // cards).
+        <BlurView
+          intensity={t.blurAmount}
+          tint="dark"
+          blurMethod="dimezisBlurViewSdk31Plus"
+          style={styles.blurFill}
+        />
+      )}
+      {children}
+    </>
+  );
+
+  if (!onPress) {
+    return <View style={baseStyle}>{content}</View>;
+  }
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [baseStyle, pressed && styles.pressed]}
+    >
+      {content}
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  base: { overflow: "hidden" },
+  blurFill: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
+  pressed: { transform: [{ scale: 0.98 }] },
+});

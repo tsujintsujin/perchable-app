@@ -1,29 +1,39 @@
-import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { Link, router } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
+import { Avatar } from "@/ui/Avatar";
 import { colors } from "@/ui/tokens";
+import { useAuthSession } from "@/modules/auth";
 
 /**
- * (tabs)/index — Home ("Perch"). Build 5 scope only: the signed-in landing
- * DESIGN.md's Build 5 section calls for (chip in the header) plus this
- * placeholder shell. Real Home content (roulette, have-you-watched, friend
- * activity — DESIGN.md §3) is later Builds; not built here on purpose.
+ * (tabs)/index — Home ("Perch"). Build 5 scope: this placeholder shell.
+ * Build 6 (DESIGN.md §7 "Home screen fix"): replaced Build 5's top-right
+ * "Signed in ✓" text chip — which sat inside the reserved 64×64 dev-client
+ * gear corner — with a small circular Avatar inset left of that zone,
+ * tappable through to the Profile tab. Real Home content (roulette,
+ * have-you-watched, friend activity — DESIGN.md §3) is still later Builds.
  */
 export default function Home() {
+  const { session } = useAuthSession();
+  const meta = session?.user.user_metadata as
+    | { full_name?: string; name?: string; avatar_url?: string; picture?: string }
+    | undefined;
+
   return (
     <View style={styles.root}>
       <GlassBackdrop blobs={["purple", "gold"]} />
       <View style={styles.header}>
-        <View style={styles.chip}>
-          <LinearGradient
-            colors={[colors.brand.purple700, colors.brand.gold500]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.avatar}
+        <Pressable
+          onPress={() => router.push("/profile")}
+          accessibilityRole="button"
+          accessibilityLabel="Open My Profile"
+        >
+          <Avatar
+            uri={meta?.avatar_url ?? meta?.picture}
+            name={meta?.full_name ?? meta?.name}
+            size="sm"
           />
-          <Text style={styles.chipText}>Signed in ✓</Text>
-        </View>
+        </Pressable>
       </View>
 
       <View style={styles.body}>
@@ -45,20 +55,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     paddingTop: 56,
     paddingHorizontal: 20,
+    // Inset left of the reserved 64×64 dev-client gear corner (DESIGN.md
+    // §7) — never flush against the edge. Overrides paddingHorizontal's
+    // right value; Yoga always resolves the specific edge over the
+    // shorthand regardless of key order.
+    paddingRight: 84,
   },
-  chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(76,29,149,0.35)",
-    borderWidth: 1,
-    borderColor: colors.border.hairline,
-    borderRadius: 999,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    gap: 6,
-  },
-  avatar: { width: 18, height: 18, borderRadius: 9 },
-  chipText: { fontFamily: "Inter_500Medium", fontSize: 12, color: colors.text.primary },
   body: { flex: 1, alignItems: "center", justifyContent: "center" },
   placeholder: { color: colors.text.secondary, fontFamily: "Inter_400Regular" },
   link: { marginTop: 16, color: colors.accent.gold },
