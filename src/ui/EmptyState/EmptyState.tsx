@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, radius, spacing } from "@/ui/tokens";
+import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
 
 type Props = {
   icon: string;
@@ -26,16 +26,14 @@ export function EmptyState({ icon, title, body, action }: Props) {
 
 const styles = StyleSheet.create({
   container: { alignItems: "center", padding: spacing[24] },
-  icon: { fontSize: 32, marginBottom: spacing[12] },
+  icon: { fontSize: iconSize.emoji, marginBottom: spacing[12] },
   title: {
-    fontFamily: "Poppins_700Bold",
-    fontSize: 19,
+    ...type.subhead,
     color: colors.text.primary,
     textAlign: "center",
   },
   body: {
-    fontFamily: "Inter_400Regular",
-    fontSize: 15,
+    ...type.body,
     color: colors.text.secondary,
     textAlign: "center",
     marginTop: spacing[8],
@@ -48,8 +46,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent.gold,
   },
   buttonLabel: {
-    fontFamily: "Inter_600SemiBold",
-    fontSize: 15,
+    ...type.bodyStrong,
     color: colors.text.onGold,
   },
 });

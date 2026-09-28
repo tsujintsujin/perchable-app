@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { Avatar } from "@/ui/Avatar";
-import { colors } from "@/ui/tokens";
+import { colors, type } from "@/ui/tokens";
 import { useOwnProfile } from "@/modules/profile";
 
 /**
@@ -64,6 +64,6 @@ const styles = StyleSheet.create({
     paddingRight: 84,
   },
   body: { flex: 1, alignItems: "center", justifyContent: "center" },
-  placeholder: { color: colors.text.secondary, fontFamily: "Inter_400Regular" },
+  placeholder: { color: colors.text.secondary, fontFamily: type.small.fontFamily },
   link: { marginTop: 16, color: colors.accent.gold },
 });

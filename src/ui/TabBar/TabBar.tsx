@@ -1,6 +1,7 @@
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
-import { colors, glass } from "@/ui/tokens";
+import { colors, glass, iconSize, spacing, type } from "@/ui/tokens";
 
 // DESIGN.md §2: fixed 5 items (Perch/Search/Chat/Leaderboards/Profile), but
 // only routes that exist get a tab — Search/Chat/Leaderboards land in later
@@ -51,6 +52,8 @@ type Props = {
  * `bg.elevatedFlat` is "the flat-fallback base color these translucent
  * fills sit on". */
 export function TabBar({ state, navigation }: Props) {
+  const insets = useSafeAreaInsets();
+
   return (
     <View style={styles.wrapper}>
       {Platform.OS === "ios" ? (
@@ -71,7 +74,7 @@ export function TabBar({ state, navigation }: Props) {
           <View style={styles.tintOverlay} />
         </>
       )}
-      <View style={styles.row}>
+      <View style={[styles.row, { paddingBottom: insets.bottom }]}>
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
           const meta = TAB_META[route.name] ?? { icon: "•", label: route.name };
@@ -122,10 +125,10 @@ const styles = StyleSheet.create({
     backgroundColor: glass.nav.backgroundColor,
   },
   blurFill: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
-  row: { flexDirection: "row", paddingTop: 8, paddingBottom: 24 },
+  row: { flexDirection: "row", paddingTop: spacing[8] },
   tab: { flex: 1, alignItems: "center", gap: 2 },
-  icon: { fontSize: 20, opacity: 0.6 },
+  icon: { fontSize: iconSize.tab, opacity: 0.6 },
   iconActive: { opacity: 1 },
-  label: { fontFamily: "Inter_500Medium", fontSize: 11, color: colors.text.secondary },
+  label: { ...type.micro, color: colors.text.secondary },
   labelActive: { color: colors.accent.gold },
 });

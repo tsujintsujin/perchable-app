@@ -40,6 +40,9 @@ export const colors = {
     input: "rgba(76,29,149,0.28)",
     chip: "rgba(76,29,149,0.3)",
   },
+  overlay: {
+    spinnerTrack: "rgba(255,255,255,0.3)",
+  },
 } as const;
 
 /** DESIGN.md §1.4 — glass surface fills/borders. Real `BlurView` vs. flat
@@ -101,6 +104,8 @@ export const iconSize = {
   sm: 13,
   md: 16,
   lg: 22,
+  tab: 20,
+  emoji: 32,
 } as const;
 
 export const elevation = {
@@ -112,6 +117,7 @@ export const elevation = {
 /** DESIGN.md §1.6. `fontFamily` values match the keys `useFonts()` loads in
  * the root layout — see src/app/_layout.tsx. */
 export const type = {
+  micro: { fontSize: 11, fontWeight: "500", fontFamily: "Inter_500Medium" },
   small: { fontSize: 12, fontWeight: "400", fontFamily: "Inter_400Regular" },
   label: { fontSize: 14, fontWeight: "600", fontFamily: "Inter_600SemiBold" },
   caption: { fontSize: 12, fontWeight: "500", fontFamily: "Inter_500Medium" },

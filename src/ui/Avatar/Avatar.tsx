@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { colors } from "@/ui/tokens";
+import { colors, type } from "@/ui/tokens";
 
 type Size = "sm" | "md" | "lg";
 
@@ -60,7 +60,7 @@ export function Avatar({ uri, size = "md", ringGradient = false, name }: Props) 
 
 const styles = StyleSheet.create({
   fallback: { alignItems: "center", justifyContent: "center" },
-  initial: { color: colors.text.primary, fontFamily: "Poppins_700Bold" },
+  initial: { color: colors.text.primary, fontFamily: type.subhead.fontFamily },
   ring: { alignItems: "center", justifyContent: "center" },
   ringInner: { alignItems: "center", justifyContent: "center" },
 });

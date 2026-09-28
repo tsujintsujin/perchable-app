@@ -9,6 +9,18 @@ type Props = {
   onPress: () => void;
 };
 
+// Google's Sign-In branding guidelines, exact values — not app tokens
+// (see the component doc comment below).
+const googleBrand = {
+  buttonBg: "#131314",
+  buttonBorder: "#8E918F",
+  pressedOverlay: "rgba(255,255,255,0.08)",
+  spinnerTrack: "rgba(255,255,255,0.3)",
+  spinnerActive: "#fff",
+  label: "#E3E3E3",
+};
+const GOOGLE_LABEL_FONT_SIZE = 14;
+
 /**
  * Google's official dark-theme "Sign in with Google" button — exact colors,
  * logo and copy per Google's branding rules (DESIGN.md Build 5 spec). The
@@ -82,9 +94,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 48,
     borderRadius: radius.sm,
-    backgroundColor: "#131314",
+    backgroundColor: googleBrand.buttonBg,
     borderWidth: 1,
-    borderColor: "#8E918F",
+    borderColor: googleBrand.buttonBorder,
     overflow: "hidden",
   },
   pressedOverlay: {
@@ -93,7 +105,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: googleBrand.pressedOverlay,
     borderRadius: radius.sm,
   },
   disabled: {
@@ -113,13 +125,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 9,
     borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.3)",
-    borderTopColor: "#fff",
+    borderColor: googleBrand.spinnerTrack,
+    borderTopColor: googleBrand.spinnerActive,
   },
   label: {
-    color: "#E3E3E3",
+    color: googleBrand.label,
     fontFamily: "GoogleSans_500Medium",
-    fontSize: 14,
+    fontSize: GOOGLE_LABEL_FONT_SIZE,
     lineHeight: 20,
   },
 });

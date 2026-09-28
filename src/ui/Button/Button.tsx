@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, radius } from "@/ui/tokens";
+import { colors, radius, spacing, type } from "@/ui/tokens";
 
 type Variant = "primary-gold" | "secondary-glass" | "ghost" | "destructive";
 
@@ -78,18 +78,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing[20],
   },
   pressed: { opacity: 0.85 },
   disabled: { opacity: 0.5 },
-  label: { fontFamily: "Inter_600SemiBold", fontSize: 15 },
-  loadingRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  label: { ...type.bodyStrong },
+  loadingRow: { flexDirection: "row", alignItems: "center", gap: spacing[8] },
   spinner: {
     width: 16,
     height: 16,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.3)",
+    borderColor: colors.overlay.spinnerTrack,
     borderTopColor: colors.text.onGold,
   },
 });
@@ -101,7 +101,7 @@ const variantStyles: Record<Variant, { container: object; label: object }> = {
   },
   "secondary-glass": {
     container: {
-      backgroundColor: "rgba(76,29,149,0.28)",
+      backgroundColor: colors.surface.input,
       borderWidth: 1,
       borderColor: colors.border.hairline,
     },
