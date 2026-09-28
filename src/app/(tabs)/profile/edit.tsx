@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { Avatar } from "@/ui/Avatar";
@@ -34,6 +35,7 @@ type PhotoState = { state: "idle" } | { state: "uploading" } | { state: "error" 
 export default function EditProfile() {
   const profile = useOwnProfile();
   const loaded = profile.state === "loaded" ? profile.profile : undefined;
+  const insets = useSafeAreaInsets();
 
   // `undefined` means "not yet touched by the user" — the TextInput/Avatar
   // below fall back to the loaded profile's own value for that case, so
@@ -202,7 +204,7 @@ export default function EditProfile() {
   return (
     <View style={styles.root}>
       <GlassBackdrop blobs={["purple"]} opacity={0.2} />
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
         <Pressable onPress={handleCancel} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.backArrow}>←</Text>
         </Pressable>
@@ -316,7 +318,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 56,
     paddingHorizontal: spacing[20],
   },
   backArrow: { fontSize: iconSize.lg, color: colors.text.primary },

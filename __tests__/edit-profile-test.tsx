@@ -5,6 +5,11 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-
  * sign-in-test.tsx's Build 5 · Bug 1 fix). */
 const flushMicrotasks = () => new Promise((resolve) => setTimeout(resolve, 0));
 
+// No <SafeAreaProvider> in the test tree — fixed insets stand in for it.
+jest.mock("react-native-safe-area-context", () => ({
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+}));
+
 const mockUseOwnProfile = jest.fn();
 const mockUseUsertagAvailability = jest.fn();
 const mockPickAvatar = jest.fn();

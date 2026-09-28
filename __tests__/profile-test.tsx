@@ -1,5 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react-native";
 
+// No <SafeAreaProvider> in the test tree — fixed insets stand in for it.
+jest.mock("react-native-safe-area-context", () => ({
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+}));
+
 // Mock the profile module's hook directly (not Supabase) — this test is
 // about the screen's rendering per state, not the fetch itself (that's
 // api/getOwnProfile's own concern).

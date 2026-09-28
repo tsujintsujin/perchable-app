@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { GlassCard } from "@/ui/GlassCard";
@@ -15,11 +16,12 @@ import { useOwnProfile } from "@/modules/profile";
  */
 export default function MyProfile() {
   const profile = useOwnProfile();
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.root}>
       <GlassBackdrop blobs={["purple", "gold"]} />
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
         <Text style={styles.headerTitle}>My Profile</Text>
         {/* 36×36 chip, inset left of the reserved 64×64 dev-client gear
          * corner (DESIGN.md §7) — never a bare top-right icon. DESIGN.md's
@@ -131,7 +133,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 56,
     paddingHorizontal: spacing[20],
   },
   headerTitle: { ...type.subhead, color: colors.text.secondary },

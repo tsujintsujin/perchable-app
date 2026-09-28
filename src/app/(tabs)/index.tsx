@@ -1,5 +1,6 @@
 import { Link, router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { Avatar } from "@/ui/Avatar";
 import { colors } from "@/ui/tokens";
@@ -23,11 +24,12 @@ import { useOwnProfile } from "@/modules/profile";
 export default function Home() {
   const profile = useOwnProfile();
   const loaded = profile.state === "loaded" ? profile.profile : undefined;
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.root}>
       <GlassBackdrop blobs={["purple", "gold"]} />
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
         <Pressable
           onPress={() => router.push("/profile")}
           accessibilityRole="button"
@@ -54,7 +56,6 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    paddingTop: 56,
     paddingHorizontal: 20,
     // Inset left of the reserved 64×64 dev-client gear corner (DESIGN.md
     // §7) — never flush against the edge. Overrides paddingHorizontal's

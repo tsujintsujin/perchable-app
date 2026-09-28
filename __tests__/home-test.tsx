@@ -1,5 +1,10 @@
 import { render, screen } from "@testing-library/react-native";
 
+// No <SafeAreaProvider> in the test tree — fixed insets stand in for it.
+jest.mock("react-native-safe-area-context", () => ({
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+}));
+
 // Home reads the signed-in Avatar from useOwnProfile (Build 6 · Bug 1 —
 // previously read session.user_metadata directly) — mock it so this test
 // doesn't need a real Supabase session or profiles row.
