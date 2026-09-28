@@ -12,18 +12,14 @@ jest.mock("react-native-safe-area-context", () => ({
 
 const mockUseOwnProfile = jest.fn();
 const mockUseUsertagAvailability = jest.fn();
-const mockPickAvatar = jest.fn();
-const mockUploadAvatar = jest.fn();
 const mockUpdateProfile = jest.fn();
-const mockDeleteAvatarObject = jest.fn();
+const mockUseAvatarUpload = jest.fn();
 
 jest.mock("@/modules/profile", () => ({
   useOwnProfile: () => mockUseOwnProfile(),
   useUsertagAvailability: (...args: unknown[]) => mockUseUsertagAvailability(...args),
-  pickAvatar: (...args: unknown[]) => mockPickAvatar(...args),
-  uploadAvatar: (...args: unknown[]) => mockUploadAvatar(...args),
   updateProfile: (...args: unknown[]) => mockUpdateProfile(...args),
-  deleteAvatarObject: (...args: unknown[]) => mockDeleteAvatarObject(...args),
+  useAvatarUpload: (...args: unknown[]) => mockUseAvatarUpload(...args),
 }));
 
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: jest.fn() } }));
@@ -50,14 +46,23 @@ const PROFILE = {
 };
 
 describe("Edit profile screen", () => {
+  const mockPickAndUpload = jest.fn();
+  const mockCancel = jest.fn();
+
   beforeEach(() => {
     mockUseOwnProfile.mockReturnValue({ state: "loaded", refetch: jest.fn(), profile: PROFILE });
     mockUseUsertagAvailability.mockReturnValue({ status: "unchanged" });
-    mockPickAvatar.mockReset();
-    mockUploadAvatar.mockReset();
     mockUpdateProfile.mockReset().mockResolvedValue(undefined);
-    mockDeleteAvatarObject.mockReset().mockResolvedValue(undefined);
     mockRouterBack.mockReset();
+    mockPickAndUpload.mockReset();
+    mockCancel.mockReset();
+    mockUseAvatarUpload.mockReset().mockReturnValue({
+      avatarUrl: null,
+      photo: { state: "idle" },
+      isUploading: false,
+      pickAndUpload: mockPickAndUpload,
+      cancel: mockCancel,
+    });
   });
 
   it("renders the idle state and disables Save with no change", async () => {
@@ -105,161 +110,61 @@ describe("Edit profile screen", () => {
     expect(mockUpdateProfile).toHaveBeenCalledWith("u1", { usertag: "cineowl" });
   });
 
-  it("shows the upload-error card when the photo upload fails", async () => {
-    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
-    mockUploadAvatar.mockRejectedValue(new Error("network down"));
-    await render(<EditProfile />);
-
-    await act(async () => {
-      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
-      await flushMicrotasks();
+  // Photo pick/upload/cleanup logic itself is covered by
+  // useAvatarUpload-test.tsx — this screen only wires the hook's returned
+  // state and actions to the UI.
+  it("shows the upload-error card when the hook reports an error", async () => {
+    mockUseAvatarUpload.mockReturnValue({
+      avatarUrl: null,
+      photo: { state: "error" },
+      isUploading: false,
+      pickAndUpload: mockPickAndUpload,
+      cancel: mockCancel,
     });
+    await render(<EditProfile />);
 
     expect(
       screen.getByText("⚠ Photo upload failed. Your old photo is unchanged — tap the photo to try again."),
     ).toBeTruthy();
   });
 
-  it("uploads and saves a new photo immediately on pick, independent of Save", async () => {
-    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
-    mockUploadAvatar.mockResolvedValue("https://cdn.example/avatars/u1/avatar-1.jpg");
+  it("calls the hook's pickAndUpload when the photo is tapped", async () => {
     await render(<EditProfile />);
 
-    await act(async () => {
-      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
-      await flushMicrotasks();
-    });
+    fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
 
-    expect(mockUpdateProfile).toHaveBeenCalledWith("u1", {
-      avatarUrl: "https://cdn.example/avatars/u1/avatar-1.jpg",
-    });
+    expect(mockPickAndUpload).toHaveBeenCalledTimes(1);
   });
 
   // Build 7 · Bug 1 (1): a photo upload and a usertag save are two
   // different network calls against the same row — the form must not let
-  // one race the other. Holds `uploadAvatar`'s promise open so the
-  // uploading state is observable before it resolves.
+  // one race the other.
   it("disables Save and the usertag field while a photo is uploading", async () => {
     mockUseUsertagAvailability.mockReturnValue({ status: "available" });
-    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
-    let resolveUpload: (url: string) => void = () => {};
-    mockUploadAvatar.mockReturnValue(
-      new Promise<string>((resolve) => {
-        resolveUpload = resolve;
-      }),
-    );
-    await render(<EditProfile />);
-
-    await act(async () => {
-      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
-      await flushMicrotasks();
+    mockUseAvatarUpload.mockReturnValue({
+      avatarUrl: null,
+      photo: { state: "uploading" },
+      isUploading: true,
+      pickAndUpload: mockPickAndUpload,
+      cancel: mockCancel,
     });
+    await render(<EditProfile />);
 
     expect(screen.getByRole("button", { name: "Save" }).props.accessibilityState?.disabled).toBe(
       true,
     );
     expect(screen.getByDisplayValue("cineowl").props.editable).toBe(false);
-
-    // Let the held-open upload resolve so the test doesn't leak a pending
-    // timer/promise into the next one.
-    await act(async () => {
-      resolveUpload("https://cdn.example/avatars/u1/avatar-1.jpg");
-      await flushMicrotasks();
-    });
   });
 
-  // Build 7 · Bug 1 (2): tapping Cancel while a photo is mid-upload must
-  // not let the (un-abortable) upload's result reach `updateProfile` —
-  // that call is what would make the cancelled photo visible.
-  it("cancel mid-upload does not call updateProfile with the cancelled photo", async () => {
-    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
-    let resolveUpload: (url: string) => void = () => {};
-    mockUploadAvatar.mockReturnValue(
-      new Promise<string>((resolve) => {
-        resolveUpload = resolve;
-      }),
-    );
+  // Build 7 · Bug 1 (2): Cancel must still call the hook's cancel() even
+  // mid-upload — that's what stops an in-flight upload's result from
+  // applying after the screen is gone.
+  it("calls the hook's cancel and navigates back when Cancel is pressed", async () => {
     await render(<EditProfile />);
 
-    await act(async () => {
-      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
-      await flushMicrotasks();
-    });
+    fireEvent.press(screen.getByRole("button", { name: "Cancel" }));
 
-    await act(async () => {
-      fireEvent.press(screen.getByRole("button", { name: "Cancel" }));
-      await flushMicrotasks();
-    });
-
-    await act(async () => {
-      resolveUpload("https://cdn.example/avatars/u1/avatar-cancelled.jpg");
-      await flushMicrotasks();
-    });
-
-    expect(mockUpdateProfile).not.toHaveBeenCalled();
-  });
-
-  // Build 7 · Bug 1b: a successful photo replace must clean up the object
-  // it just superseded — otherwise every photo change leaks one orphaned
-  // Storage object forever.
-  it("deletes the previous avatar object after a successful photo replace", async () => {
-    mockUseOwnProfile.mockReturnValue({
-      state: "loaded",
-      refetch: jest.fn(),
-      profile: { ...PROFILE, avatarUrl: "https://cdn.example/avatars/u1/avatar-old.jpg" },
-    });
-    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
-    mockUploadAvatar.mockResolvedValue("https://cdn.example/avatars/u1/avatar-new.jpg");
-    await render(<EditProfile />);
-
-    await act(async () => {
-      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
-      await flushMicrotasks();
-    });
-
-    expect(mockDeleteAvatarObject).toHaveBeenCalledWith(
-      "u1",
-      "https://cdn.example/avatars/u1/avatar-old.jpg",
-    );
-  });
-
-  // Build 7 · Bug 1b: cancel can land after the (un-abortable) upload has
-  // already finished but before the commit check — the just-uploaded,
-  // now-unreferenced object must be cleaned up there, not left behind.
-  it("deletes the just-uploaded object when cancelled after the upload finished", async () => {
-    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
-    let resolveUpload: (url: string) => void = () => {};
-    mockUploadAvatar.mockReturnValue(
-      new Promise<string>((resolve) => {
-        resolveUpload = resolve;
-      }),
-    );
-    await render(<EditProfile />);
-
-    await act(async () => {
-      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
-      await flushMicrotasks();
-    });
-
-    await act(async () => {
-      fireEvent.press(screen.getByRole("button", { name: "Cancel" }));
-      await flushMicrotasks();
-    });
-
-    // The upload resolves after the screen is already gone — the promise
-    // chain keeps running regardless, it just checks cancelledRef instead
-    // of touching state.
-    await act(async () => {
-      resolveUpload("https://cdn.example/avatars/u1/avatar-cancelled.jpg");
-      await flushMicrotasks();
-    });
-
-    expect(mockDeleteAvatarObject).toHaveBeenCalledWith(
-      "u1",
-      "https://cdn.example/avatars/u1/avatar-cancelled.jpg",
-    );
-    // Not the profile's original (null) avatar — only the cancelled upload
-    // itself should ever be targeted here.
-    expect(mockDeleteAvatarObject).toHaveBeenCalledTimes(1);
+    expect(mockCancel).toHaveBeenCalledTimes(1);
+    expect(mockRouterBack).toHaveBeenCalledTimes(1);
   });
 });

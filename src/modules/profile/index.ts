@@ -6,5 +6,6 @@ export { deleteAvatarObject } from "./api/deleteAvatarObject";
 export { checkUsertagAvailable } from "./api/checkUsertagAvailable";
 export { useOwnProfile } from "./hooks/useOwnProfile";
 export { useUsertagAvailability } from "./hooks/useUsertagAvailability";
+export { useAvatarUpload } from "./hooks/useAvatarUpload";
 export type { UsertagAvailability } from "./hooks/useUsertagAvailability";
 export type { Profile } from "./types";

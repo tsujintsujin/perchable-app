@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Animated, Easing, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -7,17 +7,8 @@ import { Avatar } from "@/ui/Avatar";
 import { Button } from "@/ui/Button";
 import { ErrorCard } from "@/ui/ErrorCard";
 import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
-import {
-  deleteAvatarObject,
-  pickAvatar,
-  updateProfile,
-  uploadAvatar,
-  useOwnProfile,
-  useUsertagAvailability,
-} from "@/modules/profile";
+import { updateProfile, useAvatarUpload, useOwnProfile, useUsertagAvailability } from "@/modules/profile";
 import { Sentry } from "@/lib/sentry";
-
-type PhotoState = { state: "idle" } | { state: "uploading" } | { state: "error" };
 
 /**
  * (tabs)/profile/edit — DESIGN.md "Build 7 — Edit profile screen".
@@ -36,43 +27,18 @@ export default function EditProfile() {
   const profile = useOwnProfile();
   const loaded = profile.state === "loaded" ? profile.profile : undefined;
   const insets = useSafeAreaInsets();
+  const avatarUpload = useAvatarUpload(loaded?.id, loaded?.avatarUrl);
 
-  // `undefined` means "not yet touched by the user" — the TextInput/Avatar
-  // below fall back to the loaded profile's own value for that case, so
-  // there's no need for an effect to copy the loaded value into state once
-  // it arrives (which would just be a same-render echo — React 19's
-  // compiler flags synchronous setState-in-effect for exactly this
-  // anti-pattern).
-  const [avatarUrlOverride, setAvatarUrlOverride] = useState<string | null | undefined>(undefined);
-  const [photo, setPhoto] = useState<PhotoState>({ state: "idle" });
+  // `undefined` means "not yet touched by the user" — the TextInput below
+  // falls back to the loaded profile's own value for that case, so there's
+  // no need for an effect to copy the loaded value into state once it
+  // arrives (which would just be a same-render echo — React 19's compiler
+  // flags synchronous setState-in-effect for exactly this anti-pattern).
   const [usertagOverride, setUsertagOverride] = useState<string | undefined>(undefined);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // Build 7 · Bug 1: `handlePickPhoto` awaits three separate network calls
-  // (pick → upload → updateProfile) with no way to abort any of them once
-  // started (supabase-js gives no cancel token for `storage.upload` or a
-  // `.update()` call). "Cancel the upload" therefore can't mean "stop the
-  // request" — it means "don't act on the result, and don't touch state
-  // once this screen is gone." `cancelledRef` is checked after every await
-  // in that chain; it flips true the instant Cancel or the header back
-  // arrow is tapped (both navigate away immediately, before the upload
-  // finishes) and, as a catch-all for the Android hardware-back/gesture
-  // case — which unmounts this screen without going through either
-  // Pressable — on unmount itself. Ref, not state: it has to be readable
-  // synchronously from inside an already-running async function, and
-  // changing it must never itself trigger a re-render of an unmounting
-  // screen.
-  const cancelledRef = useRef(false);
-  useEffect(() => {
-    return () => {
-      cancelledRef.current = true;
-    };
-  }, []);
-
-  const avatarUrl = avatarUrlOverride !== undefined ? avatarUrlOverride : loaded?.avatarUrl;
   const usertagInput = usertagOverride !== undefined ? usertagOverride : (loaded?.usertag ?? "");
-
   const availability = useUsertagAvailability(usertagInput, loaded?.usertag ?? null, loaded?.id);
 
   if (profile.state !== "loaded" || !loaded) {
@@ -83,83 +49,13 @@ export default function EditProfile() {
     return <View style={styles.root} />;
   }
 
-  const isUploading = photo.state === "uploading";
+  const isUploading = avatarUpload.isUploading;
 
+  // Also the header back arrow's handler — both leave the screen the same
+  // way, and both must stop an in-flight upload's result from applying.
   const handleCancel = () => {
-    // Set before navigating, not after — router.back() unmounts this
-    // screen over the course of its transition animation, not instantly,
-    // so relying only on the unmount effect above would leave a window
-    // where an in-flight `await` could still see `cancelledRef.current ===
-    // false`. Setting it here first makes the very next check (right after
-    // `uploadAvatar` resolves, a few hundred ms out in practice) see it as
-    // cancelled even if the unmount hasn't actually happened yet.
-    cancelledRef.current = true;
+    avatarUpload.cancel();
     router.back();
-  };
-
-  const handlePickPhoto = async () => {
-    if (isUploading) return;
-    // Fresh attempt — this only runs from a Pressable on a screen that's
-    // still mounted (Cancel/back always navigate away), so a prior
-    // cancelled attempt (if the user picked, cancelled, and is now on a
-    // freshly re-focused Edit screen — not actually reachable today since
-    // Cancel always leaves the screen, but kept correct rather than
-    // assuming that never changes) must not leak into this one.
-    cancelledRef.current = false;
-    // The photo this attempt would replace, captured now — `avatarUrl` is
-    // this render's closed-over value and won't change for the rest of
-    // this single call, so this is exactly "what was showing when the
-    // user tapped to change it," independent of anything the pick/upload
-    // below does later.
-    const previousAvatarUrl = avatarUrl;
-    try {
-      const picked = await pickAvatar();
-      if (cancelledRef.current) return;
-      if (!picked) return; // cancelled or permission denied — not an error
-      if (cancelledRef.current) return;
-
-      setPhoto({ state: "uploading" });
-      const publicUrl = await uploadAvatar(loaded.id, picked.uri);
-      if (cancelledRef.current) {
-        // Build 7 · Bug 1b: the upload itself couldn't be stopped (this
-        // check is reached even after the screen has fully unmounted —
-        // the promise chain keeps running regardless, it just no longer
-        // touches any React state), so the cancelled photo already exists
-        // in Storage at `publicUrl`'s (unique) path. `updateProfile` never
-        // runs below, so nothing ever points at it — but left alone it
-        // would sit there forever, one orphaned object per cancelled pick,
-        // with no cleanup short of deleting the whole account. Best-effort
-        // delete it now instead; never throws (see deleteAvatarObject.ts),
-        // so this can't turn a cancel into a visible error.
-        await deleteAvatarObject(loaded.id, publicUrl);
-        return;
-      }
-
-      await updateProfile(loaded.id, { avatarUrl: publicUrl });
-      // Residual, accepted race (documented, not eliminated — see the
-      // build log): a cancel landing in the few-ms window between the
-      // upload finishing and this single small `.update()` call itself
-      // resolving can't be caught, for the same reason the upload
-      // couldn't be — there's no abort handle for this request either.
-      // Unlike the upload, there's nothing to skip once it's landed: the
-      // DB row already says the new photo. Not a scenario a human tapping
-      // Cancel during the ~1s *visible* upload spinner can actually hit.
-      if (cancelledRef.current) return;
-      setAvatarUrlOverride(publicUrl);
-      setPhoto({ state: "idle" });
-      // Build 7 · Bug 1b: the photo `avatar_url` just stopped pointing at.
-      // `deleteAvatarObject` itself handles "there wasn't one yet" and "it
-      // was a Google-provided URL, not one of ours" (both `null` paths,
-      // no-ops) — this call only ever does something on a genuine
-      // photo-to-photo replacement.
-      if (previousAvatarUrl) {
-        await deleteAvatarObject(loaded.id, previousAvatarUrl);
-      }
-    } catch (err) {
-      if (cancelledRef.current) return; // screen is gone — nothing to show
-      Sentry.captureException(err);
-      setPhoto({ state: "error" });
-    }
   };
 
   const handleUsertagChange = (text: string) => {
@@ -214,12 +110,12 @@ export default function EditProfile() {
 
       <View style={styles.body}>
         <Pressable
-          onPress={handlePickPhoto}
+          onPress={avatarUpload.pickAndUpload}
           accessibilityRole="button"
           accessibilityLabel="Change photo"
           style={[styles.avatarWrap, isUploading && styles.dimmed]}
         >
-          <Avatar uri={avatarUrl} name={loaded.displayName} size="lg" />
+          <Avatar uri={avatarUpload.avatarUrl} name={loaded.displayName} size="lg" />
           {isUploading ? (
             <View style={styles.spinnerOverlay}>
               <Spinner />
@@ -234,7 +130,7 @@ export default function EditProfile() {
           {isUploading ? "Uploading photo…" : "Tap to change photo"}
         </Text>
 
-        {photo.state === "error" && (
+        {avatarUpload.photo.state === "error" && (
           <ErrorCard
             message="⚠ Photo upload failed. Your old photo is unchanged — tap the photo to try again."
             style={styles.errorCard}
