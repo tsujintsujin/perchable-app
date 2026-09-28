@@ -144,3 +144,12 @@ raw lines). Additional reasoning moved here:
   or a Sentry test message to leak internal Build numbers), and
   `useAvatarUpload.ts`'s duplicate back-to-back `if (cancelledRef.current)
   return;` (the second was redundant — no `await` between the two checks).
+
+### On-device check (2026-09-29)
+Native rebuild for `expo-secure-store`/`aes-js`/`react-native-get-random-values`
+succeeded; app bundled and opened to the sign-in screen with no visual
+regression. As expected from the `LargeSecureStore` migration, the
+previously-signed-in session did not carry over (the old plain-AsyncStorage
+session isn't readable by the new storage) — one re-sign-in is required.
+Couldn't complete a real Google sign-in myself; Queenie/Justin should sign
+in once and confirm Home/Profile/Edit/Settings each open.
