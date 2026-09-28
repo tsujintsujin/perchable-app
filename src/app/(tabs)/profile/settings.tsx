@@ -2,11 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { colors, spacing, type } from "@/ui/tokens";
 
-/**
- * Placeholder — sign out, delete account and TMDB attribution land in a
- * later Build. This stub exists so the header icon and "Settings" row have
- * somewhere real to push to.
- */
+/** Placeholder — real Settings content lands later; gives the nav row somewhere to push to. */
 export default function ProfileSettings() {
   return (
     <View style={styles.root}>
@@ -14,7 +10,7 @@ export default function ProfileSettings() {
       <View style={styles.body}>
         <Text style={styles.title}>Coming soon</Text>
         <Text style={styles.bodyText}>
-          Sign out, delete account, and app info land in Build 9.
+          Sign out, delete account, and app info are coming soon.
         </Text>
       </View>
     </View>

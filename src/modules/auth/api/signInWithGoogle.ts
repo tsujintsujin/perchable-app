@@ -5,9 +5,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { supabase } from "@/lib/supabase";
 
-/** Thrown when the user dismisses the Google picker themselves. Not a real
- * failure, so the sign-in screen tells this apart from other thrown errors
- * to skip the Sentry report. */
+/** Thrown on a user-dismissed picker, not a real failure — skips the Sentry report. */
 export class GoogleSignInCancelledError extends Error {
   constructor() {
     super("Google sign-in was cancelled");
@@ -17,8 +15,7 @@ export class GoogleSignInCancelledError extends Error {
 
 let configured = false;
 
-/** `GoogleSignin.configure` is cheap and idempotent, but only needs to run
- * once — guarded so repeated sign-in attempts don't re-read env each time. */
+/** Cheap and idempotent, but only needs to run once per app session. */
 function ensureConfigured() {
   if (configured) return;
   const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
@@ -32,13 +29,7 @@ function ensureConfigured() {
   configured = true;
 }
 
-/**
- * Runs the native Google account picker, then exchanges the returned ID
- * token for a Supabase session (`signInWithIdToken`). Throws on cancel,
- * missing Play Services, or a Supabase error alike — the sign-in screen
- * shows one generic error state for all of these, except a cancel throws
- * the typed `GoogleSignInCancelledError` so it can skip the Sentry report.
- */
+/** Runs the native Google picker, then exchanges its ID token for a Supabase session. */
 export async function signInWithGoogle(): Promise<void> {
   ensureConfigured();
   await GoogleSignin.hasPlayServices();

@@ -6,10 +6,7 @@ import { Avatar } from "@/ui/Avatar";
 import { colors, type } from "@/ui/tokens";
 import { useOwnProfile } from "@/modules/profile";
 
-/**
- * Home ("Perch") placeholder shell. Shows the signed-in user's avatar,
- * tappable through to the Profile tab; real Home content lands later.
- */
+/** Home ("Perch") placeholder shell — avatar links to Profile; real content lands later. */
 export default function Home() {
   const profile = useOwnProfile();
   const loaded = profile.state === "loaded" ? profile.profile : undefined;

@@ -3,16 +3,8 @@ import { Sentry } from "@/lib/sentry";
 
 const AVATARS_PUBLIC_PATH = "/storage/v1/object/public/avatars/";
 
-/**
- * Pulls the Storage object path (e.g. `<uid>/avatar-123.jpg`) out of one of
- * our own avatar public URLs — and only that. Returns `null` (nothing to
- * delete) for anything that isn't clearly our own `avatars` bucket object
- * under the given user's own folder: a Google-provided avatar URL (can be
- * the fallback before a photo is ever uploaded), a URL from a different
- * bucket, or — defense in depth, since RLS already prevents a user's own
- * `avatar_url` from pointing outside their folder — a path whose first
- * segment isn't `userId`. Exported for its own unit tests.
- */
+/** Pulls the Storage path out of one of our own avatar public URLs, or
+ * `null` if it isn't clearly this user's own object. Exported for tests. */
 export function extractOwnAvatarPath(avatarUrl: string, userId: string): string | null {
   const idx = avatarUrl.indexOf(AVATARS_PUBLIC_PATH);
   if (idx === -1) return null;
@@ -21,14 +13,8 @@ export function extractOwnAvatarPath(avatarUrl: string, userId: string): string 
   return path;
 }
 
-/**
- * Best-effort delete of one avatar object, by its full public URL. Never
- * throws — a failed cleanup must never surface as a save/cancel error to
- * the user; the object is at worst a few KB of orphaned Storage that
- * account deletion's own full-folder cleanup sweeps up regardless.
- * Failures are reported to Sentry so they're visible without being
- * user-facing.
- */
+/** Best-effort delete of one avatar object. Never throws — failures go to
+ * Sentry instead of surfacing as a user-facing save/cancel error. */
 export async function deleteAvatarObject(userId: string, avatarUrl: string): Promise<void> {
   const path = extractOwnAvatarPath(avatarUrl, userId);
   if (!path) return;

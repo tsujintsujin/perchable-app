@@ -1,19 +1,6 @@
-// Supabase Edge Function: server-side TMDB proxy.
-//
-// TMDB's API key must never ship in the app bundle. The app calls this
-// function instead of TMDB directly; this function holds the real key
-// (`TMDB_API_KEY`, set via `supabase secrets set` in production, or
-// `supabase/functions/.env` locally — gitignored) and forwards only what's
-// needed.
-//
-// Endpoint whitelist: only `/movie/popular` is supported. Any other
-// `endpoint` value is rejected with 400 rather than proxied blind — this
-// function is not a general TMDB passthrough.
-//
-// Auth: Supabase verifies the caller's JWT/apikey before this code runs
-// (`verify_jwt` defaults to true, left at default in supabase/config.toml
-// — no per-function override). The app sends its Supabase anon key via
-// `supabase.functions.invoke()`, which attaches it automatically.
+// Server-side TMDB proxy — the app never gets the real TMDB key. Only
+// `/movie/popular` is proxied; anything else is rejected with 400 rather
+// than passed through blind.
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 
@@ -46,10 +33,8 @@ Deno.serve(async (req) => {
     return json({ error: "Unsupported endpoint. Only 'popular' is allowed." }, 400);
   }
 
-  // TMDB's own /movie/popular caps pages at 500 (confirmed against the live
-  // API: page=500 -> 200, page=501 -> TMDB's own 400 "Pages start at 1 and
-  // max at 500"). Validate here so a bad/huge/non-numeric page never
-  // reaches TMDB as an unclear upstream error.
+  // TMDB caps pages at 500 — validate here so a bad/huge/non-numeric page
+  // never reaches TMDB as an unclear upstream error.
   const page = Number(pageParam);
   if (!Number.isInteger(page) || page < 1 || page > 500) {
     return json({ error: "Invalid page" }, 400);
@@ -67,10 +52,8 @@ Deno.serve(async (req) => {
   try {
     tmdbRes = await fetch(tmdbUrl);
   } catch (err) {
-    // Deno's fetch network errors (DNS/TLS/connection failures) often embed
-    // the request URL in err.message — which contains api_key. Never put
-    // that in the response; log a redacted version for diagnostics and
-    // return a fixed, keyless message to the caller.
+    // Network errors can embed the request URL (with api_key) in the
+    // message — redact before logging, and never put it in the response.
     const message = err instanceof Error ? err.message : String(err);
     console.error("TMDB fetch failed:", message.replaceAll(apiKey, "***"));
     return json({ error: "TMDB request failed (network)" }, 502);

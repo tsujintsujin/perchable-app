@@ -3,13 +3,8 @@ import type { TablesUpdate } from "@/lib/database.types";
 
 type Updates = { avatarUrl?: string; usertag?: string };
 
-/**
- * Updates the caller's own `profiles` row (RLS: update is column-limited to
- * display_name/avatar_url/usertag and restricted to `auth.uid() = id`).
- * Throws the raw Postgrest error on failure; the caller checks
- * `error.code === "23505"` (unique violation) to catch a usertag race the
- * live availability check missed — the DB write is the source of truth.
- */
+/** Updates the caller's own `profiles` row (RLS-limited columns and rows).
+ * Throws the raw Postgrest error — callers check `error.code === "23505"`. */
 export async function updateProfile(userId: string, updates: Updates): Promise<void> {
   const payload: TablesUpdate<"profiles"> = {};
   if (updates.avatarUrl !== undefined) payload.avatar_url = updates.avatarUrl;

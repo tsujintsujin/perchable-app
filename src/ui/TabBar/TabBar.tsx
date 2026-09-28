@@ -16,36 +16,21 @@ type Props = {
   navigation: { navigate: (name: string) => void };
 };
 
-/** `glass.nav` tier — real BlurView per DESIGN.md §1.5 (static, one instance
- * per screen). Rendered once from `(tabs)/_layout.tsx`, never per-screen.
- *
- * ponytail: skips the `tabPress` emit/`canPreventDefault` dance the default
- * bottom-tab-bar does — nothing listens for it with only 2 tabs and no
- * scroll-to-top behavior yet. Add it back (and the full
- * `BottomTabBarProps` type import) if a later tab screen needs to
- * intercept its own re-selection.
- *
- * ponytail: real Android blur needs a `BlurTargetView` wrapped around the
- * active tab screen, which isn't reachable from this custom `tabBar` render
- * prop without forking the navigator's layout — so Android uses a flat
- * fallback fill instead (below) and only iOS gets the real BlurView.
- */
+/** `glass.nav` tier — real BlurView, rendered once from `(tabs)/_layout.tsx`. */
+// ponytail: skips the tabPress/canPreventDefault dance — add back if a later
+// tab needs to intercept its own re-selection. iOS-only real blur; Android
+// falls back to a flat fill (no BlurTargetView reachable from this API).
 export function TabBar({ state, navigation }: Props) {
   const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.wrapper}>
       {Platform.OS === "ios" ? (
-        // BlurView's own `tint` is the whole glass.nav treatment here — it
-        // blurs the real screen content behind it, so no separate flat
-        // layers underneath (that would just give BlurView a flat color to
-        // "blur", not real content).
+        // BlurView's `tint` blurs the real screen content — no flat layers
+        // underneath it.
         <BlurView intensity={glass.nav.blurAmount} tint="dark" style={styles.blurFill} />
       ) : (
-        // Android: opaque base first, then the translucent glass.nav tint
-        // on top — without the opaque base the translucent tint composites
-        // against whatever's behind the tab bar's own layout area, not the
-        // screen content.
+        // Opaque base first, then the translucent tint on top of it.
         <>
           <View style={styles.opaqueBase} />
           <View style={styles.tintOverlay} />

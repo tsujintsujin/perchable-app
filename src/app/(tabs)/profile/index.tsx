@@ -9,10 +9,7 @@ import { EmptyState } from "@/ui/EmptyState";
 import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
 import { useOwnProfile } from "@/modules/profile";
 
-/**
- * My Profile screen. Collection grid content (movies watched) is a later
- * module — this renders the row/container shell only.
- */
+/** My Profile screen — collection grid (movies watched) is a later module. */
 export default function MyProfile() {
   const profile = useOwnProfile();
   const insets = useSafeAreaInsets();

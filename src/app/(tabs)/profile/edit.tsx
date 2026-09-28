@@ -10,21 +10,15 @@ import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
 import { updateProfile, useAvatarUpload, useOwnProfile, useUsertagAvailability } from "@/modules/profile";
 import { Sentry } from "@/lib/sentry";
 
-/**
- * Edit profile screen. A picked photo uploads and saves immediately on
- * pick — independent of Save, which only governs the usertag field.
- */
+/** Edit profile screen — a picked photo saves on pick, independent of Save. */
 export default function EditProfile() {
   const profile = useOwnProfile();
   const loaded = profile.state === "loaded" ? profile.profile : undefined;
   const insets = useSafeAreaInsets();
   const avatarUpload = useAvatarUpload(loaded?.id, loaded?.avatarUrl);
 
-  // `undefined` means "not yet touched by the user" — the TextInput below
-  // falls back to the loaded profile's own value for that case, so there's
-  // no need for an effect to copy the loaded value into state once it
-  // arrives (which would just be a same-render echo — React 19's compiler
-  // flags synchronous setState-in-effect for exactly this anti-pattern).
+  // `undefined` means "not yet touched" — the TextInput below falls back to
+  // the loaded profile's own value instead, so no copy-into-state effect.
   const [usertagOverride, setUsertagOverride] = useState<string | undefined>(undefined);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -174,8 +168,7 @@ export default function EditProfile() {
   );
 }
 
-/** Indeterminate spinner in the progress ring's slot — no real determinate
- * percentage without bypassing supabase-js's own upload call. */
+/** Indeterminate spinner — no real progress % without bypassing supabase-js. */
 function Spinner() {
   const [spin] = useState(() => new Animated.Value(0));
   useEffect(() => {

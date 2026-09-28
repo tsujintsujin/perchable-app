@@ -9,12 +9,7 @@ import { Sentry } from "@/lib/sentry";
 
 type Status = { state: "idle" } | { state: "signing-in" } | { state: "error" };
 
-/**
- * Google sign-in screen. The root layout's route guard renders this group
- * only when there's no session, and swaps to (tabs) once `signInWithGoogle`
- * succeeds and Supabase's auth listener fires — this screen never navigates
- * itself.
- */
+/** Google sign-in screen — the route guard renders it only when signed out. */
 export default function SignIn() {
   const [status, setStatus] = useState<Status>({ state: "idle" });
 

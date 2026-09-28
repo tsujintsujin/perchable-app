@@ -16,17 +16,9 @@ const BLOB_COLOR: Record<Blob, string> = {
   gold: colors.brand.gold500,
 };
 
-/**
- * Full-bleed dark backdrop with large soft-edge color blobs behind content —
- * DESIGN.md §1.4 "background halo blobs". One instance per screen, never
- * per-card. `pointer-events: none` so it never intercepts taps.
- *
- * ponytail: React Native has no CSS-style `filter: blur()`, so the "blurred
- * 120–130px" glow in the mock is approximated with a large, low-opacity
- * radial fill (huge borderRadius) instead of a true Gaussian blur. Upgrade
- * path if exact fidelity ever matters: render via react-native-skia's blur
- * filter.
- */
+/** Full-bleed backdrop with soft color blobs behind content — one per screen. */
+// ponytail: no RN blur filter, so a low-opacity radial fill approximates it;
+// upgrade to react-native-skia's blur if exact fidelity ever matters.
 export function GlassBackdrop({ blobs = ["purple", "gold"], opacity = 0.3 }: Props) {
   return (
     <View style={styles.container} pointerEvents="none">

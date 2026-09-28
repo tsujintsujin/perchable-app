@@ -1,24 +1,12 @@
 import * as ImagePicker from "expo-image-picker";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 
-/** Avatar never renders above `Avatar`'s `lg` (88px) anywhere in the app —
- * 512px is comfortably above any screen density that matters and keeps the
- * upload well under the 2MB bucket limit regardless of source photo size. */
+/** Well above `Avatar`'s largest render size, well under the 2MB bucket limit. */
 const MAX_DIMENSION = 512;
 const JPEG_QUALITY = 0.8;
 
-/**
- * Opens the OS photo picker with a native 1:1 crop (the circular Avatar
- * treatment wants a square source), then resizes to a fixed max dimension
- * and re-encodes as JPEG.
- * Resizing (not just `launchImageLibraryAsync`'s own `quality` param) is
- * what actually guarantees the file stays under the bucket's 2MB limit —
- * `quality` alone only compresses, it can't cap the pixel dimensions a
- * high-megapixel camera photo would otherwise keep after cropping.
- *
- * Returns `null` if the user cancels the picker or denies permission —
- * not an error, just nothing to do.
- */
+/** Opens the OS photo picker with a native 1:1 crop, then resizes and
+ * re-encodes as JPEG. Returns `null` on cancel/denied permission. */
 export async function pickAvatar(): Promise<{ uri: string } | null> {
   const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!permission.granted) return null;

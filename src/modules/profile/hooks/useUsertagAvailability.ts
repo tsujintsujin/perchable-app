@@ -14,15 +14,8 @@ export type UsertagAvailability =
 
 type AsyncResult = { forUsertag: string; available: boolean } | null;
 
-/**
- * Debounced live uniqueness check for the edit-profile usertag field.
- * "unchanged"/"invalid" are computed at render time, not via state+effect —
- * they're pure functions of the two inputs, so there's nothing to
- * synchronize with an external system for those cases. The effect only
- * ever calls `setState` from inside its async `.then`/`.catch`, never
- * synchronously in the effect body, which is what `react-hooks/
- * set-state-in-effect` actually flags.
- */
+/** Debounced live uniqueness check for the edit-profile usertag field.
+ * "unchanged"/"invalid" are computed at render time, not via state+effect. */
 export function useUsertagAvailability(
   usertag: string,
   currentUsertag: string | null,

@@ -16,10 +16,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Supabase's documented pattern for storing an auth session (which can
-// exceed SecureStore's ~2KB limit) behind real OS-level encryption: the
-// AES key itself lives in SecureStore (Keychain/Keystore), the session it
-// encrypts lives in plain AsyncStorage.
+// Supabase's documented pattern for a session past SecureStore's ~2KB
+// limit: the AES key lives in SecureStore, the encrypted session in AsyncStorage.
 class LargeSecureStore {
   private async _encrypt(key: string, value: string) {
     const encryptionKey = crypto.getRandomValues(new Uint8Array(256 / 8));

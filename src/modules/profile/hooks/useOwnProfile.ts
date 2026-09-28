@@ -9,13 +9,8 @@ type State =
   | { state: "loaded"; profile: Profile }
   | { state: "error"; message: string };
 
-/**
- * Own-profile fetch, following the same plain useState pattern as
- * `useAuthSession` rather than TanStack Query — not needed until movie
- * data lands. Exposes `refetch` for the load-error state's Retry button.
- * Refetches on every screen focus, not just mount, since Stack/Tabs keep a
- * previous screen mounted instead of remounting it on navigating back.
- */
+/** Own-profile fetch with a Retry-button `refetch`. Reloads on every screen
+ * focus, not just mount, since Stack/Tabs keep a screen mounted instead of remounting it. */
 export function useOwnProfile() {
   const { session } = useAuthSession();
   const userId = session?.user.id;

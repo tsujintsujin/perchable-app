@@ -1,13 +1,6 @@
-// Supabase Edge Function: delete the caller's own account.
-//
-// Deleting a user is a service-role-only operation (auth.admin.deleteUser),
-// so it can't happen from the app directly. This function is the only
-// place that privilege is used, and only for the caller's own account,
-// resolved via `auth.getUser(token)` — never trusting a body-supplied id.
-//
-// Storage objects are removed before the auth user, so a retry after a
-// partial failure is safe: an already-emptied folder lists as empty
-// (no-op), and deleting an already-deleted uid fails safely too.
+// Deletes the caller's own account — the only place the service-role
+// privilege (auth.admin.deleteUser) is used. Storage cleanup runs before
+// the auth user is deleted, so a retry after a partial failure is safe.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -55,11 +48,8 @@ Deno.serve(async (req) => {
   const uid = userData.user.id;
 
   try {
-    // 1) Remove every object under avatars/<uid>/ — direct SQL deletes on
-    // storage.objects are blocked (storage.protect_delete), so this has to
-    // go through the Storage API. list() on a folder that's already empty
-    // (or was never created — e.g. the user never uploaded a photo)
-    // returns an empty array, so this is safe to retry.
+    // 1) Remove every object under avatars/<uid>/ via the Storage API —
+    // listing an already-empty folder is a safe no-op, so this can retry.
     const { data: files, error: listError } = await admin.storage
       .from("avatars")
       .list(uid);

@@ -21,16 +21,9 @@ const googleBrand = {
 };
 const GOOGLE_LABEL_FONT_SIZE = 14;
 
-/**
- * Google's official dark-theme "Sign in with Google" button — exact colors,
- * logo and copy per Google's branding rules. The colors are a deliberate
- * exception to the app's own token system; the corner radius isn't part of
- * Google's spec, so it still comes from `ui/tokens.ts` (`radius.sm`).
- */
+/** Google's official dark-theme button — colors are Google's spec, not app tokens. */
 export function GoogleSignInButton({ loading = false, disabled = false, onPress }: Props) {
-  // useState (not useRef) for the stable Animated.Value — the React
-  // Compiler's exhaustive-deps/refs lint flags reading `.current` during
-  // render, since a ref update doesn't trigger a re-render on its own.
+  // useState, not useRef: the React Compiler flags reading `.current` at render.
   const [spin] = useState(() => new Animated.Value(0));
 
   useEffect(() => {

@@ -123,3 +123,24 @@ Reasoning worth keeping, moved here instead of left in the code:
   `expo-blur` paints its `tint` as an opaque flat grey instead of blurring,
   confirmed by on-device pixel sample — both components fall back to a flat
   fill on Android and use the real `BlurView` on iOS only.
+
+### Second pass (2026-09-29) — Manager review found 32 blocks still over 2 lines
+Squeezed further to the letter of the rule (every `//`/`/** */` run ≤ 3
+raw lines). Additional reasoning moved here:
+- `supabase/functions/tmdb/index.ts` and `delete-account/index.ts`: both
+  rely on Supabase's project-default `verify_jwt: true` (no per-function
+  override in `config.toml`) to prove the caller carries a validly-signed
+  JWT, then call `auth.getUser(token)` themselves to prove it's a real
+  signed-in user (the anon key is also a validly-signed JWT, so
+  `verify_jwt` alone doesn't prove that). `delete-account` additionally
+  uses one `createClient` instance for both `auth.getUser(token)`
+  (validates that specific token) and the service-role admin/storage calls.
+- `TabBar`: the skipped `tabPress`/`canPreventDefault` dance and the
+  Android `BlurTargetView` gap both trace to the same root cause — this is
+  a custom `tabBar` render prop, not the default bottom-tab-bar, so neither
+  hook is reachable without forking the navigator's own layout.
+- Also fixed per Manager review: `settings.tsx`'s and `debug.tsx`'s
+  user-visible "Build 9"/"Build 4" strings (no reason for a shipped screen
+  or a Sentry test message to leak internal Build numbers), and
+  `useAvatarUpload.ts`'s duplicate back-to-back `if (cancelledRef.current)
+  return;` (the second was redundant — no `await` between the two checks).
