@@ -21,6 +21,16 @@ jest.mock("@/modules/profile", () => ({
 
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: jest.fn() } }));
 
+// Build 7 · Bug 1: the real `router.back()` reads expo-router's global
+// navigation store, which only gets initialized by a real Stack/root
+// layout mounting — not present when unit-rendering a leaf screen like
+// this one in isolation. An earlier test in this file happened to pass by
+// relying on that store being left "ready" from some other render; mocking
+// it here makes every test's use of `router.back()` correct on its own
+// terms instead of by test-order accident.
+const mockRouterBack = jest.fn();
+jest.mock("expo-router", () => ({ router: { back: (...args: unknown[]) => mockRouterBack(...args) } }));
+
 import EditProfile from "@/app/(tabs)/profile/edit";
 
 const PROFILE = {
@@ -39,6 +49,7 @@ describe("Edit profile screen", () => {
     mockPickAvatar.mockReset();
     mockUploadAvatar.mockReset();
     mockUpdateProfile.mockReset().mockResolvedValue(undefined);
+    mockRouterBack.mockReset();
   });
 
   it("renders the idle state and disables Save with no change", async () => {
@@ -103,7 +114,7 @@ describe("Edit profile screen", () => {
 
   it("uploads and saves a new photo immediately on pick, independent of Save", async () => {
     mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
-    mockUploadAvatar.mockResolvedValue("https://cdn.example/avatars/u1/avatar.jpg?v=1");
+    mockUploadAvatar.mockResolvedValue("https://cdn.example/avatars/u1/avatar-1.jpg");
     await render(<EditProfile />);
 
     await act(async () => {
@@ -112,7 +123,71 @@ describe("Edit profile screen", () => {
     });
 
     expect(mockUpdateProfile).toHaveBeenCalledWith("u1", {
-      avatarUrl: "https://cdn.example/avatars/u1/avatar.jpg?v=1",
+      avatarUrl: "https://cdn.example/avatars/u1/avatar-1.jpg",
     });
+  });
+
+  // Build 7 · Bug 1 (1): a photo upload and a usertag save are two
+  // different network calls against the same row — the form must not let
+  // one race the other. Holds `uploadAvatar`'s promise open so the
+  // uploading state is observable before it resolves.
+  it("disables Save and the usertag field while a photo is uploading", async () => {
+    mockUseUsertagAvailability.mockReturnValue({ status: "available" });
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    let resolveUpload: (url: string) => void = () => {};
+    mockUploadAvatar.mockReturnValue(
+      new Promise<string>((resolve) => {
+        resolveUpload = resolve;
+      }),
+    );
+    await render(<EditProfile />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
+      await flushMicrotasks();
+    });
+
+    expect(screen.getByRole("button", { name: "Save" }).props.accessibilityState?.disabled).toBe(
+      true,
+    );
+    expect(screen.getByDisplayValue("cineowl").props.editable).toBe(false);
+
+    // Let the held-open upload resolve so the test doesn't leak a pending
+    // timer/promise into the next one.
+    await act(async () => {
+      resolveUpload("https://cdn.example/avatars/u1/avatar-1.jpg");
+      await flushMicrotasks();
+    });
+  });
+
+  // Build 7 · Bug 1 (2): tapping Cancel while a photo is mid-upload must
+  // not let the (un-abortable) upload's result reach `updateProfile` —
+  // that call is what would make the cancelled photo visible.
+  it("cancel mid-upload does not call updateProfile with the cancelled photo", async () => {
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    let resolveUpload: (url: string) => void = () => {};
+    mockUploadAvatar.mockReturnValue(
+      new Promise<string>((resolve) => {
+        resolveUpload = resolve;
+      }),
+    );
+    await render(<EditProfile />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
+      await flushMicrotasks();
+    });
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "Cancel" }));
+      await flushMicrotasks();
+    });
+
+    await act(async () => {
+      resolveUpload("https://cdn.example/avatars/u1/avatar-cancelled.jpg");
+      await flushMicrotasks();
+    });
+
+    expect(mockUpdateProfile).not.toHaveBeenCalled();
   });
 });

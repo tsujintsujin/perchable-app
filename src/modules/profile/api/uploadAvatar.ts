@@ -2,27 +2,40 @@ import { supabase } from "@/lib/supabase";
 
 /**
  * Uploads a (already-resized/compressed) local image file to
- * `avatars/<userId>/avatar.jpg`, upserting the same path every time — one
- * avatar per user, no orphaned old files to clean up. `fetch(uri).then(res
- * => res.arrayBuffer())` is Supabase's own current recommended pattern for
+ * `avatars/<userId>/avatar-<timestamp>.jpg` — a **uniquely-named** object
+ * per upload, not a fixed/reused path. `fetch(uri).then(res =>
+ * res.arrayBuffer())` is Supabase's own current recommended pattern for
  * turning an Expo/React Native local file URI into a Storage-uploadable
  * body (checked against Supabase's Expo example, not memory).
  *
- * Returns a cache-busted public URL — the storage path never changes
- * between uploads (upsert overwrites the same file), so without a query
- * param the `Image` component and any HTTP cache would keep showing the
- * previous photo's bytes at that same URL.
+ * Build 7 · Bug 1: this used to upsert a single fixed path
+ * (`<uid>/avatar.jpg`) with a `?v=<timestamp>` query param on the returned
+ * URL for cache-busting. That was broken for cancel-mid-upload: the
+ * *upload itself* can't be aborted (supabase-js gives no cancel token for
+ * `storage.upload`), so a user cancelling while the spinner was showing
+ * still let the network call finish and overwrite the fixed path with the
+ * new bytes — the query param only changes the client-side cache key, not
+ * the object identity, so the OLD `avatar_url` (still pointing at the same
+ * path, just an older `?v=`) would start serving the NEW, cancelled photo
+ * the moment any cache (client or CDN) was bypassed, including after a
+ * cold relaunch. A unique path per upload removes that failure mode
+ * entirely: nothing ever gets overwritten, so a cancelled upload's object
+ * just sits there unreferenced — see edit.tsx's Bug 1 comment for why nothing
+ * deletes it immediately, and the Build 9 log for the cleanup that does
+ * eventually happen.
+ *
+ * Returns the plain public URL — no `?v=` needed any more, the path itself
+ * is already unique per upload, so there's nothing to cache-bust around.
  */
 export async function uploadAvatar(userId: string, localUri: string): Promise<string> {
-  const path = `${userId}/avatar.jpg`;
+  const path = `${userId}/avatar-${Date.now()}.jpg`;
   const arraybuffer = await fetch(localUri).then((res) => res.arrayBuffer());
 
   const { error } = await supabase.storage.from("avatars").upload(path, arraybuffer, {
     contentType: "image/jpeg",
-    upsert: true,
   });
   if (error) throw error;
 
   const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-  return `${data.publicUrl}?v=${Date.now()}`;
+  return data.publicUrl;
 }

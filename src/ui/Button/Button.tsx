@@ -10,6 +10,13 @@ type Props = {
   variant?: Variant;
   disabled?: boolean;
   loading?: boolean;
+  /** Text shown in the loading state instead of `label` — e.g. Save shows
+   * "Save" idle but "Saving" while loading (DESIGN.md Build 7 copy table);
+   * Build 9's delete button will pass "Deleting…" the same way. Defaults to
+   * `label` for callers that don't need the wording to change (Build 7 ·
+   * Bug 1 — this used to hardcode "Saving" here, which was fine for Save
+   * but wrong for any other loading button). */
+  loadingLabel?: string;
   style?: object;
 };
 
@@ -21,6 +28,7 @@ export function Button({
   variant = "primary-gold",
   disabled = false,
   loading = false,
+  loadingLabel = label,
   style,
 }: Props) {
   const [spin] = useState(() => new Animated.Value(0));
@@ -55,7 +63,7 @@ export function Button({
       {loading ? (
         <View style={styles.loadingRow}>
           <Animated.View style={[styles.spinner, { transform: [{ rotate }] }]} />
-          <Text style={[styles.label, variantStyles[variant].label]}>Saving</Text>
+          <Text style={[styles.label, variantStyles[variant].label]}>{loadingLabel}</Text>
         </View>
       ) : (
         <Text style={[styles.label, variantStyles[variant].label]}>{label}</Text>

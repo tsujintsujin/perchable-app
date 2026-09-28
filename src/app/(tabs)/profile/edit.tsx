@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
@@ -45,6 +45,27 @@ export default function EditProfile() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  // Build 7 · Bug 1: `handlePickPhoto` awaits three separate network calls
+  // (pick → upload → updateProfile) with no way to abort any of them once
+  // started (supabase-js gives no cancel token for `storage.upload` or a
+  // `.update()` call). "Cancel the upload" therefore can't mean "stop the
+  // request" — it means "don't act on the result, and don't touch state
+  // once this screen is gone." `cancelledRef` is checked after every await
+  // in that chain; it flips true the instant Cancel or the header back
+  // arrow is tapped (both navigate away immediately, before the upload
+  // finishes) and, as a catch-all for the Android hardware-back/gesture
+  // case — which unmounts this screen without going through either
+  // Pressable — on unmount itself. Ref, not state: it has to be readable
+  // synchronously from inside an already-running async function, and
+  // changing it must never itself trigger a re-render of an unmounting
+  // screen.
+  const cancelledRef = useRef(false);
+  useEffect(() => {
+    return () => {
+      cancelledRef.current = true;
+    };
+  }, []);
+
   const avatarUrl = avatarUrlOverride !== undefined ? avatarUrlOverride : loaded?.avatarUrl;
   const usertagInput = usertagOverride !== undefined ? usertagOverride : (loaded?.usertag ?? "");
 
@@ -58,17 +79,65 @@ export default function EditProfile() {
     return <View style={styles.root} />;
   }
 
+  const isUploading = photo.state === "uploading";
+
+  const handleCancel = () => {
+    // Set before navigating, not after — router.back() unmounts this
+    // screen over the course of its transition animation, not instantly,
+    // so relying only on the unmount effect above would leave a window
+    // where an in-flight `await` could still see `cancelledRef.current ===
+    // false`. Setting it here first makes the very next check (right after
+    // `uploadAvatar` resolves, a few hundred ms out in practice) see it as
+    // cancelled even if the unmount hasn't actually happened yet.
+    cancelledRef.current = true;
+    router.back();
+  };
+
   const handlePickPhoto = async () => {
-    if (photo.state === "uploading") return;
+    if (isUploading) return;
+    // Fresh attempt — this only runs from a Pressable on a screen that's
+    // still mounted (Cancel/back always navigate away), so a prior
+    // cancelled attempt (if the user picked, cancelled, and is now on a
+    // freshly re-focused Edit screen — not actually reachable today since
+    // Cancel always leaves the screen, but kept correct rather than
+    // assuming that never changes) must not leak into this one.
+    cancelledRef.current = false;
     try {
       const picked = await pickAvatar();
+      if (cancelledRef.current) return;
       if (!picked) return; // cancelled or permission denied — not an error
+      if (cancelledRef.current) return;
+
       setPhoto({ state: "uploading" });
       const publicUrl = await uploadAvatar(loaded.id, picked.uri);
+      if (cancelledRef.current) {
+        // The upload itself couldn't be stopped, so the new photo now
+        // exists in Storage at `publicUrl`'s (unique, never-reused) path —
+        // see uploadAvatar.ts's Bug 1 comment for why that's safe to leave
+        // unreferenced rather than needing to delete it here: nothing
+        // points at it, so nobody ever sees it, and it's swept up by
+        // account deletion's full-folder cleanup if it's never claimed.
+        // Critically: skip `updateProfile` — that's the one call that
+        // would make this cancelled photo visible, by pointing
+        // `avatar_url` at it. No setState below this line either; the
+        // screen that owns this state is gone or going.
+        return;
+      }
+
       await updateProfile(loaded.id, { avatarUrl: publicUrl });
+      // Residual, accepted race (documented, not eliminated — see the
+      // build log): a cancel landing in the few-ms window between the
+      // upload finishing and this single small `.update()` call itself
+      // resolving can't be caught, for the same reason the upload
+      // couldn't be — there's no abort handle for this request either.
+      // Unlike the upload, there's nothing to skip once it's landed: the
+      // DB row already says the new photo. Not a scenario a human tapping
+      // Cancel during the ~1s *visible* upload spinner can actually hit.
+      if (cancelledRef.current) return;
       setAvatarUrlOverride(publicUrl);
       setPhoto({ state: "idle" });
     } catch (err) {
+      if (cancelledRef.current) return; // screen is gone — nothing to show
       Sentry.captureException(err);
       setPhoto({ state: "error" });
     }
@@ -81,7 +150,15 @@ export default function EditProfile() {
     setSaveError(null);
   };
 
-  const canSave = availability.status === "available" && !saving;
+  // `!isUploading` (Build 7 · Bug 1): a photo upload and a usertag save are
+  // two different network calls that both touch the same profiles row —
+  // DESIGN.md's uploading-photo state spec is explicit that the rest of the
+  // form (usertag field + Save) is disabled/dimmed so a save can't race an
+  // in-flight upload. Cancel is deliberately NOT gated on `isUploading`
+  // (DESIGN.md: "Cancel stays tappable [during upload] — cancels the
+  // upload too"); it's still gated on `saving`, per the Saving state spec
+  // ("Cancel becomes disabled too — no cancelling mid-write").
+  const canSave = availability.status === "available" && !saving && !isUploading;
 
   const handleSave = async () => {
     if (!canSave) return;
@@ -103,14 +180,13 @@ export default function EditProfile() {
     }
   };
 
-  const isUploading = photo.state === "uploading";
   const isTaken = availability.status === "taken" || saveError !== null;
 
   return (
     <View style={styles.root}>
       <GlassBackdrop blobs={["purple"]} opacity={0.2} />
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={handleCancel} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.backArrow}>←</Text>
         </Pressable>
         <Text style={styles.headerTitle}>Edit profile</Text>
@@ -147,13 +223,19 @@ export default function EditProfile() {
           </View>
         )}
 
-        <Text style={[styles.usertagLabel, saving && styles.dimmedText]}>USERTAG</Text>
-        <View style={[styles.usertagRow, isTaken && styles.usertagRowError, saving && styles.dimmed]}>
+        <Text style={[styles.usertagLabel, (saving || isUploading) && styles.dimmedText]}>USERTAG</Text>
+        <View
+          style={[
+            styles.usertagRow,
+            isTaken && styles.usertagRowError,
+            (saving || isUploading) && styles.dimmed,
+          ]}
+        >
           <Text style={styles.usertagPrefix}>@</Text>
           <TextInput
             value={usertagInput}
             onChangeText={handleUsertagChange}
-            editable={!saving}
+            editable={!saving && !isUploading}
             autoCapitalize="none"
             autoCorrect={false}
             style={styles.usertagInput}
@@ -175,12 +257,13 @@ export default function EditProfile() {
           <Button
             label="Cancel"
             variant="secondary-glass"
-            onPress={() => router.back()}
+            onPress={handleCancel}
             disabled={saving}
             style={styles.buttonHalf}
           />
           <Button
             label="Save"
+            loadingLabel="Saving"
             variant="primary-gold"
             onPress={handleSave}
             disabled={!canSave}
