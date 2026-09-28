@@ -10,6 +10,7 @@ const mockUseUsertagAvailability = jest.fn();
 const mockPickAvatar = jest.fn();
 const mockUploadAvatar = jest.fn();
 const mockUpdateProfile = jest.fn();
+const mockDeleteAvatarObject = jest.fn();
 
 jest.mock("@/modules/profile", () => ({
   useOwnProfile: () => mockUseOwnProfile(),
@@ -17,6 +18,7 @@ jest.mock("@/modules/profile", () => ({
   pickAvatar: (...args: unknown[]) => mockPickAvatar(...args),
   uploadAvatar: (...args: unknown[]) => mockUploadAvatar(...args),
   updateProfile: (...args: unknown[]) => mockUpdateProfile(...args),
+  deleteAvatarObject: (...args: unknown[]) => mockDeleteAvatarObject(...args),
 }));
 
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: jest.fn() } }));
@@ -49,6 +51,7 @@ describe("Edit profile screen", () => {
     mockPickAvatar.mockReset();
     mockUploadAvatar.mockReset();
     mockUpdateProfile.mockReset().mockResolvedValue(undefined);
+    mockDeleteAvatarObject.mockReset().mockResolvedValue(undefined);
     mockRouterBack.mockReset();
   });
 
@@ -189,5 +192,69 @@ describe("Edit profile screen", () => {
     });
 
     expect(mockUpdateProfile).not.toHaveBeenCalled();
+  });
+
+  // Build 7 · Bug 1b: a successful photo replace must clean up the object
+  // it just superseded — otherwise every photo change leaks one orphaned
+  // Storage object forever.
+  it("deletes the previous avatar object after a successful photo replace", async () => {
+    mockUseOwnProfile.mockReturnValue({
+      state: "loaded",
+      refetch: jest.fn(),
+      profile: { ...PROFILE, avatarUrl: "https://cdn.example/avatars/u1/avatar-old.jpg" },
+    });
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    mockUploadAvatar.mockResolvedValue("https://cdn.example/avatars/u1/avatar-new.jpg");
+    await render(<EditProfile />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
+      await flushMicrotasks();
+    });
+
+    expect(mockDeleteAvatarObject).toHaveBeenCalledWith(
+      "u1",
+      "https://cdn.example/avatars/u1/avatar-old.jpg",
+    );
+  });
+
+  // Build 7 · Bug 1b: cancel can land after the (un-abortable) upload has
+  // already finished but before the commit check — the just-uploaded,
+  // now-unreferenced object must be cleaned up there, not left behind.
+  it("deletes the just-uploaded object when cancelled after the upload finished", async () => {
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    let resolveUpload: (url: string) => void = () => {};
+    mockUploadAvatar.mockReturnValue(
+      new Promise<string>((resolve) => {
+        resolveUpload = resolve;
+      }),
+    );
+    await render(<EditProfile />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "Change photo" }));
+      await flushMicrotasks();
+    });
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "Cancel" }));
+      await flushMicrotasks();
+    });
+
+    // The upload resolves after the screen is already gone — the promise
+    // chain keeps running regardless, it just checks cancelledRef instead
+    // of touching state.
+    await act(async () => {
+      resolveUpload("https://cdn.example/avatars/u1/avatar-cancelled.jpg");
+      await flushMicrotasks();
+    });
+
+    expect(mockDeleteAvatarObject).toHaveBeenCalledWith(
+      "u1",
+      "https://cdn.example/avatars/u1/avatar-cancelled.jpg",
+    );
+    // Not the profile's original (null) avatar — only the cancelled upload
+    // itself should ever be targeted here.
+    expect(mockDeleteAvatarObject).toHaveBeenCalledTimes(1);
   });
 });

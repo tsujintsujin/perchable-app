@@ -19,10 +19,11 @@ import { supabase } from "@/lib/supabase";
  * path, just an older `?v=`) would start serving the NEW, cancelled photo
  * the moment any cache (client or CDN) was bypassed, including after a
  * cold relaunch. A unique path per upload removes that failure mode
- * entirely: nothing ever gets overwritten, so a cancelled upload's object
- * just sits there unreferenced — see edit.tsx's Bug 1 comment for why nothing
- * deletes it immediately, and the Build 9 log for the cleanup that does
- * eventually happen.
+ * entirely: nothing ever gets overwritten. The tradeoff it introduces —
+ * every photo change or cancelled pick leaves its now-unreferenced object
+ * behind, forever, since nothing ever reuses a path to overwrite it — is
+ * handled by `deleteAvatarObject` (Build 7 · Bug 1b), called from
+ * `edit.tsx` right after a cancel and right after a successful replace.
  *
  * Returns the plain public URL — no `?v=` needed any more, the path itself
  * is already unique per upload, so there's nothing to cache-bust around.

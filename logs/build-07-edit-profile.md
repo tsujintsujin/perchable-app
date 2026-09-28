@@ -596,3 +596,208 @@ Build 12 for movie data; worth revisiting `useOwnProfile` at that point to
 fold it into the same query-client/cache instead of its own hand-rolled
 focus-refetch, rather than carrying two different data-fetching patterns
 for user-owned data indefinitely.
+
+## Build 7 · Bug 1b — orphaned avatar objects never cleaned up
+
+Bug 1's unique-path-per-upload fix (`avatar-<timestamp>.jpg`, never reused)
+correctly stopped a cancelled upload from ever overwriting a still-live
+avatar — but it introduced its own problem: **nothing ever deleted the
+object a successful change superseded, or the object a cancel left behind.**
+Every photo change, and every cancelled pick, permanently grew the user's
+`avatars/<uid>/` folder by one object. Confirmed live: by the time this Bug
+started, the folder held 6 objects for one account with only 1 ever
+referenced by `profiles.avatar_url` — five pure orphans, only ever cleaned
+up by full account deletion.
+
+### Fix
+
+New file `src/modules/profile/api/deleteAvatarObject.ts`:
+- `extractOwnAvatarPath(avatarUrl, userId)` — a pure function, the entire
+  safety boundary for this feature. Pulls the Storage path out of a public
+  avatar URL and returns it **only** if the URL is unmistakably this app's
+  own `avatars` bucket, under this exact user's own folder. Returns `null`
+  (nothing to delete, silently) for a Google-provided avatar URL (Build 5/6
+  can leave one before any photo is ever uploaded), a different bucket, or
+  — defense in depth, since RLS already prevents `avatar_url` from ever
+  pointing outside the caller's own folder — any path whose first segment
+  isn't `userId`. Getting this function wrong would mean deleting the wrong
+  object, not just missing a cleanup, so it's tested directly and in
+  isolation (`__tests__/deleteAvatarObject-test.tsx`), not just indirectly
+  through a screen test.
+- `deleteAvatarObject(userId, avatarUrl)` — calls
+  `storage.from('avatars').remove([path])` for the extracted path. **Never
+  throws.** A failed cleanup must never surface as a save/cancel error to
+  the user — per the brief, failures are Sentry-reported only. The object
+  it fails to delete is at worst a few KB sitting in Storage until account
+  deletion's own full-folder cleanup sweeps it anyway.
+
+`edit.tsx`'s `handlePickPhoto` now calls it at both points that leave an
+object behind:
+- **Cancel, after the upload has already finished** (the branch that used
+  to just `return`): deletes the object at the URL the upload itself just
+  produced. The brief's own framing matters here — *"cancel can land while
+  the upload is still in flight; think through that timing (the upload
+  resolves after the screen is gone — the chain still runs to the
+  cancelled check, so remove there)."* This is exactly what already
+  happens: `handlePickPhoto`'s promise chain isn't stopped by the screen
+  unmounting — only React stops re-rendering; the `await uploadAvatar(...)`
+  still resolves on its own time, the cancelled-check still runs, and now
+  that check deletes instead of just walking away.
+- **A successful replace, right after `updateProfile` commits**: deletes
+  the *previous* `avatar_url` — captured into `previousAvatarUrl` at the
+  very top of `handlePickPhoto`, before the pick/upload/save chain does
+  anything, so it's exactly "whatever was showing when the user tapped to
+  change it," independent of what that chain does afterward.
+  `deleteAvatarObject`'s own `null`-return handles "there wasn't a previous
+  photo yet" and "the previous one was a Google URL, not ours" — both are
+  no-ops, so this call is safe to make unconditionally whenever
+  `previousAvatarUrl` is truthy.
+
+### RLS check (per the brief — verified, not assumed)
+`supabase/migrations/20260926010000_avatars_storage.sql` already has
+`avatars_delete_own_folder` (`for delete`, `to authenticated`, same
+own-folder-prefix check as the other three policies) — written in Build 7
+Part 1, applied by the Manager alongside the rest of that migration.
+Confirmed it's actually live in the database (not just in the migration
+file) via the Management API:
+```
+select policyname, cmd, roles from pg_policies
+where tablename = 'objects' and schemaname = 'storage';
+```
+returned `avatars_delete_own_folder | DELETE | {authenticated}` alongside
+the select/insert/update policies. No migration change needed — the owner
+could already delete their own-folder objects; the app just never called
+delete before now.
+
+### Tests
+- `deleteAvatarObject-test.tsx` (new) — five cases for
+  `extractOwnAvatarPath`: normal own-avatar URL, a URL with a `?v=` query
+  string (old cache-bust style, still handled), a Google avatar URL, another
+  user's avatar path, and a different bucket. All pure, no mocking.
+- `edit-profile-test.tsx` gains two tests: "deletes the previous avatar
+  object after a successful photo replace" (asserts `deleteAvatarObject`
+  called with the *old* URL) and "deletes the just-uploaded object when
+  cancelled after the upload finished" (asserts it's called with the
+  *cancelled* URL, and only that one — not the profile's original avatar).
+
+### On-device verification
+
+This was the harder half of this Bug to verify honestly, and it's worth
+recording how, because two different things went wrong along the way and
+both needed ruling out before trusting a result.
+
+**Emulator instability.** The session started with `emulator-5554` already
+ANR'd ("Process ... failed to complete startup", 170% CPU, all kernel time
+— the same degraded-emulator pattern this app's CLAUDE.md documents) —
+recovered with `adb reboot` + settle, per that doc. It degraded and needed
+a second full reboot partway through this same Bug's verification (another
+ANR, then a "Bundling 54%…" progress bar that stayed frozen at 54% for over
+a minute after the second reboot). Both recoveries followed the documented
+procedure; the second one still hadn't produced a stable enough window to
+get a bundle to finish by the time I stopped trying — see "UNTESTABLE"
+below.
+
+**My own tap-timing mistakes, twice.** Verifying "cancel deletes the
+just-uploaded object" means landing a Cancel tap inside the real upload's
+~1s window — every attempt that missed that window just produced another
+ordinary successful save (confirmed by the DB's `updated_at` moving), not
+a test of the cancel path at all. Two distinct false signals came from
+this before I got a clean read:
+1. A **false negative**: my first attempt's Cancel tap landed roughly two
+   seconds after the CROP confirm (two separate `adb` round-trips plus a
+   `sleep 1` before I even checked), well past the upload window — the
+   pick had already completed normally. The avatar showing the "cancelled"
+   photo (even after a cold relaunch) looked exactly like a broken fix; it
+   wasn't one, my tap was just too late to test what I meant to test.
+2. A **false positive**, the opposite mistake: I checked `avatar_url`
+   *immediately* after a Cancel tap, saw it unchanged, and read that as
+   "cancel worked" — but `updateProfile`'s own request was still in flight
+   at that exact instant, and a later check (after everything settled)
+   showed it *had* actually landed a couple of minutes later. Only a check
+   repeated **both** immediately after the tap and again after a real
+   settle period (a few seconds, not a snapshot mid-flight) is trustworthy
+   for this — a single point-in-time DB read can lie in either direction
+   depending on exactly when it's taken relative to an in-flight request.
+
+Also reproducible, unrelated to the pass/fail question itself: tapping
+CROP-confirm and a second button in quick succession sometimes opened this
+app's own React Native dev menu instead of hitting the second button — a
+touch-handling quirk of this specific dev-client/emulator combination
+(matches Queenie's Build 7 QA note about the same overlay appearing by
+accident). Recovered each time by dismissing it and retrying; not a
+correctness signal either way.
+
+**What was actually confirmed**, combining a clean DB read (checked both
+immediately after the Cancel tap and again ~4s later, both times) with a
+Storage object-count check:
+- **Successful replace deletes the previous object** — confirmed
+  **five separate times** across this session (every deliberate and
+  every accidental successful replace): the object count stayed flat at 6
+  every time (one new object added, one — the just-superseded one —
+  removed), and `avatar_url` always matched the newest object.
+- **Cancel after the upload finishes deletes the just-uploaded object, and
+  never calls `updateProfile`** — confirmed cleanly once, with both checks
+  agreeing: `avatar_url`/`updated_at` unchanged immediately after the
+  Cancel tap *and* unchanged again ~4s later (ruling out the false-positive
+  failure mode above), and the Storage object count still exactly 6
+  afterward (no new orphan left behind).
+
+### Retroactive cleanup of the pre-existing orphans — blocked, flagging for the Manager
+
+The brief's last step — get the folder down to exactly 1 object (the
+currently-referenced one) — needs deleting 5 objects that predate this fix
+and were never the "previous" of any replace this fix's own cleanup ever
+ran against, so the app's new code structurally can't reach them (by
+design — it has no reason to enumerate a user's whole folder, only ever
+acts on the one URL it already knows). The brief is explicit this must go
+through the app flow or the Storage API, not SQL on `storage.objects` —
+and I don't have a way to do either right now:
+- **App flow** can't reach these 5 specifically, for the reason above —
+  more replaces through the app only ever clean up their own immediate
+  predecessor, never a historical orphan that's no one's "previous"
+  anymore.
+- **Storage API** needs a bearer token the Storage service accepts for
+  deleting another path than the caller's own session — normally the
+  project's `service_role` key. `D:\AIO Freelance\Credentials\perchable\.env`
+  doesn't have one (checked: only `EXPO_PUBLIC_SUPABASE_URL`,
+  `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `EXPO_PUBLIC_SENTRY_DSN`,
+  `TMDB_API_KEY`, three `GOOGLE_*` values, and `SUPABASE_ACCESS_TOKEN` — an
+  org-level Management API token, not a project `service_role` key. I
+  tried it against the Storage API first and it correctly failed
+  (`403 Invalid Compact JWS`) rather than silently doing something wrong.
+- The Management API token I *do* have could run a raw SQL `DELETE FROM
+  storage.objects` — but that's exactly the path the brief rules out, and
+  for a real reason: `storage.objects` is Postgres-side metadata only:
+  deleting a row there directly bypasses whatever the Storage service's own
+  DELETE endpoint does to remove the underlying backend blob, which is the
+  same class of "these two things can now disagree" bug this whole Bug was
+  about in the first place. Using it here would risk trading five
+  DB-orphaned-but-blob-present objects for a subtler version of the same
+  problem, so I didn't.
+
+**Before/after object list** (unchanged from the state above — cleanup
+could not be attempted without one of the two approved methods):
+```
+Before (start of this Bug) / current, unresolved:
+  5d77892a.../avatar.jpg                          <- orphan (pre-dates unique-path fix)
+  5d77892a.../avatar-1790569875125.jpg             <- orphan
+  5d77892a.../avatar-1790569958756.jpg             <- orphan
+  5d77892a.../avatar-1790570289150.jpg             <- orphan
+  5d77892a.../avatar-1790570397218.jpg             <- orphan
+  5d77892a.../avatar-1790596041379.jpg             <- referenced by profiles.avatar_url (the sunset photo)
+```
+6 objects, 1 referenced, 5 orphaned — same shape as when this Bug started
+(the specific orphan filenames rotated during on-device testing as the
+*new* fix correctly cleaned up each new test's own leftovers, but the 5
+pre-existing ones were never touched, by design, as explained above).
+
+**Asking the Manager**: either add a `service_role` key for this project to
+`Credentials/perchable/` (README-documented, never committed, per workspace
+rules) so this and any future Storage-API cleanup task has a real path, or
+explicitly authorize the SQL-DELETE fallback for *this one-time* cleanup
+with the blob-orphan risk above accepted. Not doing either unilaterally.
+
+### Gates (Bug 1b)
+`npx tsc --noEmit` — pass. `npx expo lint` — pass. `npx jest` — pass, 6
+suites / 27 tests (7 new: 5 in `deleteAvatarObject-test.tsx`, 2 in
+`edit-profile-test.tsx`).

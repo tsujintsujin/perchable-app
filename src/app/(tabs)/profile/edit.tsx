@@ -6,6 +6,7 @@ import { Avatar } from "@/ui/Avatar";
 import { Button } from "@/ui/Button";
 import { colors, radius, spacing } from "@/ui/tokens";
 import {
+  deleteAvatarObject,
   pickAvatar,
   updateProfile,
   uploadAvatar,
@@ -102,6 +103,12 @@ export default function EditProfile() {
     // Cancel always leaves the screen, but kept correct rather than
     // assuming that never changes) must not leak into this one.
     cancelledRef.current = false;
+    // The photo this attempt would replace, captured now — `avatarUrl` is
+    // this render's closed-over value and won't change for the rest of
+    // this single call, so this is exactly "what was showing when the
+    // user tapped to change it," independent of anything the pick/upload
+    // below does later.
+    const previousAvatarUrl = avatarUrl;
     try {
       const picked = await pickAvatar();
       if (cancelledRef.current) return;
@@ -111,16 +118,17 @@ export default function EditProfile() {
       setPhoto({ state: "uploading" });
       const publicUrl = await uploadAvatar(loaded.id, picked.uri);
       if (cancelledRef.current) {
-        // The upload itself couldn't be stopped, so the new photo now
-        // exists in Storage at `publicUrl`'s (unique, never-reused) path —
-        // see uploadAvatar.ts's Bug 1 comment for why that's safe to leave
-        // unreferenced rather than needing to delete it here: nothing
-        // points at it, so nobody ever sees it, and it's swept up by
-        // account deletion's full-folder cleanup if it's never claimed.
-        // Critically: skip `updateProfile` — that's the one call that
-        // would make this cancelled photo visible, by pointing
-        // `avatar_url` at it. No setState below this line either; the
-        // screen that owns this state is gone or going.
+        // Build 7 · Bug 1b: the upload itself couldn't be stopped (this
+        // check is reached even after the screen has fully unmounted —
+        // the promise chain keeps running regardless, it just no longer
+        // touches any React state), so the cancelled photo already exists
+        // in Storage at `publicUrl`'s (unique) path. `updateProfile` never
+        // runs below, so nothing ever points at it — but left alone it
+        // would sit there forever, one orphaned object per cancelled pick,
+        // with no cleanup short of deleting the whole account. Best-effort
+        // delete it now instead; never throws (see deleteAvatarObject.ts),
+        // so this can't turn a cancel into a visible error.
+        await deleteAvatarObject(loaded.id, publicUrl);
         return;
       }
 
@@ -136,6 +144,14 @@ export default function EditProfile() {
       if (cancelledRef.current) return;
       setAvatarUrlOverride(publicUrl);
       setPhoto({ state: "idle" });
+      // Build 7 · Bug 1b: the photo `avatar_url` just stopped pointing at.
+      // `deleteAvatarObject` itself handles "there wasn't one yet" and "it
+      // was a Google-provided URL, not one of ours" (both `null` paths,
+      // no-ops) — this call only ever does something on a genuine
+      // photo-to-photo replacement.
+      if (previousAvatarUrl) {
+        await deleteAvatarObject(loaded.id, previousAvatarUrl);
+      }
     } catch (err) {
       if (cancelledRef.current) return; // screen is gone — nothing to show
       Sentry.captureException(err);
