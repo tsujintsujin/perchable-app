@@ -27,39 +27,38 @@ export function useOwnProfile() {
   const userId = session?.user.id;
   const [state, setState] = useState<State>({ state: "loading" });
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!userId) return;
-      let cancelled = false;
+  // One fetch path for both the focus-triggered load and the manual
+  // refetch, so both get the same cancelled-guard. Resets to "loading"
+  // (dropping any previous user's data) when there's no signed-in user.
+  const load = useCallback(() => {
+    if (!userId) {
+      setState({ state: "loading" });
+      return () => {};
+    }
+    let cancelled = false;
+    getOwnProfile(userId)
+      .then((profile) => {
+        if (!cancelled) setState({ state: "loaded", profile });
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setState({
+            state: "error",
+            message: err instanceof Error ? err.message : String(err),
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
-      getOwnProfile(userId)
-        .then((profile) => {
-          if (!cancelled) setState({ state: "loaded", profile });
-        })
-        .catch((err) => {
-          if (!cancelled) {
-            setState({
-              state: "error",
-              message: err instanceof Error ? err.message : String(err),
-            });
-          }
-        });
-
-      return () => {
-        cancelled = true;
-      };
-    }, [userId]),
-  );
+  useFocusEffect(useCallback(() => load(), [load]));
 
   const refetch = useCallback(() => {
     setState({ state: "loading" });
-    if (!userId) return;
-    getOwnProfile(userId)
-      .then((profile) => setState({ state: "loaded", profile }))
-      .catch((err) =>
-        setState({ state: "error", message: err instanceof Error ? err.message : String(err) }),
-      );
-  }, [userId]);
+    load();
+  }, [load]);
 
   return { ...state, refetch };
 }

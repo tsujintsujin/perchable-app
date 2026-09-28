@@ -6,14 +6,24 @@ import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from "@expo-goog
 import { Poppins_700Bold, Poppins_800ExtraBold } from "@expo-google-fonts/poppins";
 import { GoogleSans_500Medium } from "@expo-google-fonts/google-sans";
 import { initSentry } from "@/lib/sentry";
-import { useAuthSession } from "@/modules/auth";
+import { AuthProvider, useAuthSession } from "@/modules/auth";
 
 // Runs once at module load, before the first screen renders.
 initSentry();
 
 SplashScreen.preventAutoHideAsync();
 
+// Wraps the app in the single shared auth listener before anything below
+// (including the route guard, which needs it) can read the session.
 export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
+  );
+}
+
+function RootNavigator() {
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,

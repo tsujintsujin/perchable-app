@@ -1,3 +1,3 @@
 export { signInWithGoogle, GoogleSignInCancelledError } from "./api/signInWithGoogle";
-export { useAuthSession } from "./hooks/useAuthSession";
+export { AuthProvider, useAuthSession } from "./AuthProvider";
 export { GoogleSignInButton } from "./components/GoogleSignInButton";
