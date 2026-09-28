@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import type { TablesUpdate } from "@/lib/database.types";
 
 type Updates = { avatarUrl?: string; usertag?: string };
 
@@ -11,7 +12,7 @@ type Updates = { avatarUrl?: string; usertag?: string };
  * "handle the unique-violation on save as the source of truth."
  */
 export async function updateProfile(userId: string, updates: Updates): Promise<void> {
-  const payload: Record<string, string> = {};
+  const payload: TablesUpdate<"profiles"> = {};
   if (updates.avatarUrl !== undefined) payload.avatar_url = updates.avatarUrl;
   if (updates.usertag !== undefined) payload.usertag = updates.usertag;
 
