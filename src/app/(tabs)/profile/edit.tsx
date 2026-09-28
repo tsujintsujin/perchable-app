@@ -4,7 +4,8 @@ import { router } from "expo-router";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { Avatar } from "@/ui/Avatar";
 import { Button } from "@/ui/Button";
-import { colors, radius, spacing } from "@/ui/tokens";
+import { ErrorCard } from "@/ui/ErrorCard";
+import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
 import {
   deleteAvatarObject,
   pickAvatar,
@@ -232,11 +233,11 @@ export default function EditProfile() {
         </Text>
 
         {photo.state === "error" && (
-          <View style={styles.errorCard}>
-            <Text style={styles.errorText}>
-              ⚠ Photo upload failed. Your old photo is unchanged — tap the photo to try again.
-            </Text>
-          </View>
+          <ErrorCard
+            message="⚠ Photo upload failed. Your old photo is unchanged — tap the photo to try again."
+            style={styles.errorCard}
+            textStyle={styles.errorText}
+          />
         )}
 
         <Text style={[styles.usertagLabel, (saving || isUploading) && styles.dimmedText]}>USERTAG</Text>
@@ -318,9 +319,9 @@ const styles = StyleSheet.create({
     paddingTop: 56,
     paddingHorizontal: spacing[20],
   },
-  backArrow: { fontSize: 22, color: colors.text.primary },
-  headerTitle: { fontFamily: "Poppins_700Bold", fontSize: 19, color: colors.text.primary },
-  headerSpacer: { width: 22 },
+  backArrow: { fontSize: iconSize.lg, color: colors.text.primary },
+  headerTitle: { ...type.subhead, color: colors.text.primary },
+  headerSpacer: { width: iconSize.lg },
   body: { flex: 1, alignItems: "center", paddingTop: spacing[32], paddingHorizontal: spacing[20] },
   avatarWrap: { position: "relative" },
   dimmed: { opacity: 0.5 },
@@ -338,7 +339,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  cameraIcon: { fontSize: 13 },
+  cameraIcon: { fontSize: iconSize.sm },
   spinnerOverlay: {
     position: "absolute",
     top: 0,
@@ -358,30 +359,21 @@ const styles = StyleSheet.create({
   },
   photoCaption: {
     marginTop: spacing[12],
-    fontFamily: "Inter_400Regular",
-    fontSize: 12,
+    ...type.small,
     color: colors.text.secondary,
   },
   errorCard: {
     marginTop: spacing[16],
-    padding: spacing[16],
-    borderRadius: radius.md,
-    backgroundColor: "rgba(76,29,149,0.28)",
-    borderWidth: 1,
-    borderColor: "rgba(255,138,138,0.35)",
     width: "100%",
   },
   errorText: {
-    fontFamily: "Inter_600SemiBold",
-    fontSize: 14,
+    ...type.label,
     lineHeight: 20,
-    color: colors.danger,
   },
   usertagLabel: {
     alignSelf: "flex-start",
     marginTop: spacing[32],
-    fontFamily: "Inter_500Medium",
-    fontSize: 12,
+    ...type.caption,
     letterSpacing: 1,
     color: colors.text.secondary,
     textTransform: "uppercase",
@@ -392,38 +384,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderRadius: radius.md,
-    backgroundColor: "rgba(76,29,149,0.28)",
+    backgroundColor: colors.surface.input,
     borderWidth: 1,
     borderColor: colors.border.hairline,
     paddingHorizontal: spacing[16],
     height: 48,
   },
-  usertagRowError: { borderColor: "rgba(255,138,138,0.5)" },
+  usertagRowError: { borderColor: colors.border.dangerStrong },
   usertagPrefix: {
-    fontFamily: "Inter_600SemiBold",
-    fontSize: 15,
+    ...type.bodyStrong,
     color: colors.accent.gold,
-    marginRight: 4,
+    marginRight: spacing[4],
   },
   usertagInput: {
     flex: 1,
-    fontFamily: "Inter_400Regular",
-    fontSize: 15,
+    ...type.body,
     color: colors.text.primary,
     height: 48,
   },
   helper: {
     alignSelf: "flex-start",
     marginTop: spacing[8],
-    fontFamily: "Inter_400Regular",
-    fontSize: 12,
+    ...type.small,
     color: colors.text.disabled,
   },
   errorHelper: {
     alignSelf: "flex-start",
     marginTop: spacing[8],
-    fontFamily: "Inter_400Regular",
-    fontSize: 12,
+    ...type.small,
     color: colors.danger,
   },
   buttonRow: {

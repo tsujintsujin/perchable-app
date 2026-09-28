@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
-import { colors } from "@/ui/tokens";
+import { colors, spacing, type } from "@/ui/tokens";
 
 /**
  * Placeholder — the real Settings screen (sign out, delete account, TMDB
@@ -32,12 +32,11 @@ export default function ProfileSettings() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg.base },
-  body: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 28 },
-  title: { fontFamily: "Poppins_700Bold", fontSize: 19, color: colors.text.primary },
+  body: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: spacing[28] },
+  title: { ...type.subhead, color: colors.text.primary },
   bodyText: {
-    marginTop: 12,
-    fontFamily: "Inter_400Regular",
-    fontSize: 15,
+    marginTop: spacing[12],
+    ...type.body,
     color: colors.text.secondary,
     textAlign: "center",
   },

@@ -5,7 +5,7 @@ import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { GlassCard } from "@/ui/GlassCard";
 import { Avatar } from "@/ui/Avatar";
 import { EmptyState } from "@/ui/EmptyState";
-import { colors, radius, spacing } from "@/ui/tokens";
+import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
 import { useOwnProfile } from "@/modules/profile";
 
 /**
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     paddingTop: 56,
     paddingHorizontal: spacing[20],
   },
-  headerTitle: { fontFamily: "Poppins_700Bold", fontSize: 19, color: colors.text.secondary },
+  headerTitle: { ...type.subhead, color: colors.text.secondary },
   settingsChip: {
     width: 36,
     height: 36,
@@ -143,17 +143,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 44,
     // Exact DESIGN.md Build 6 values — not glass.chip's own token.
-    backgroundColor: "rgba(76,29,149,0.3)",
+    backgroundColor: colors.surface.chip,
     borderWidth: 1,
     borderColor: colors.border.hairline,
   },
-  settingsIcon: { fontSize: 16, color: colors.text.primary },
+  settingsIcon: { fontSize: iconSize.md, color: colors.text.primary },
   centerBody: { flex: 1, alignItems: "center", justifyContent: "center" },
   body: { flex: 1, alignItems: "center", paddingTop: spacing[32], paddingHorizontal: spacing[20] },
   name: {
     marginTop: spacing[16],
-    fontFamily: "Poppins_800ExtraBold",
-    fontSize: 24,
+    ...type.title,
     color: colors.text.primary,
   },
   usertagChip: {
@@ -161,19 +160,18 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[8],
     paddingHorizontal: spacing[16],
     borderRadius: radius.pill,
-    backgroundColor: "rgba(76,29,149,0.28)",
+    backgroundColor: colors.surface.input,
     borderWidth: 1,
     borderColor: colors.border.hairline,
   },
-  usertagText: { fontFamily: "Inter_400Regular", fontSize: 15, color: colors.text.secondary },
-  usertagBold: { fontFamily: "Inter_600SemiBold", color: colors.text.primary },
+  usertagText: { ...type.body, color: colors.text.secondary },
+  usertagBold: { fontFamily: type.bodyStrong.fontFamily, color: colors.text.primary },
   rows: { width: "100%", marginTop: spacing[32], gap: spacing[12] },
   row: { padding: spacing[16], borderRadius: radius.md },
-  rowLabel: { fontFamily: "Inter_400Regular", fontSize: 15, color: colors.text.primary },
+  rowLabel: { ...type.body, color: colors.text.primary },
   moviesCount: {
     marginTop: spacing[32],
-    fontFamily: "Inter_500Medium",
-    fontSize: 12,
+    ...type.caption,
     color: colors.text.secondary,
     alignSelf: "flex-start",
   },

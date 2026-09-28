@@ -33,6 +33,12 @@ export const colors = {
   border: {
     hairline: "rgba(214,196,233,0.18)",
     hairlineStrong: "rgba(214,196,233,0.30)",
+    danger: "rgba(255,138,138,0.35)",
+    dangerStrong: "rgba(255,138,138,0.5)",
+  },
+  surface: {
+    input: "rgba(76,29,149,0.28)",
+    chip: "rgba(76,29,149,0.3)",
   },
 } as const;
 
@@ -74,9 +80,11 @@ export const spacing = {
   16: 16,
   20: 20,
   24: 24,
+  28: 28,
   32: 32,
   40: 40,
   48: 48,
+  56: 56,
 } as const;
 
 export const radius = {
@@ -85,6 +93,14 @@ export const radius = {
   lg: 20,
   xl: 28,
   pill: 999,
+} as const;
+
+/** Icon glyph sizes — icons render as plain `Text`, so they need a size
+ * scale separate from `type`'s text styles (no fontFamily to carry). */
+export const iconSize = {
+  sm: 13,
+  md: 16,
+  lg: 22,
 } as const;
 
 export const elevation = {
@@ -96,6 +112,8 @@ export const elevation = {
 /** DESIGN.md §1.6. `fontFamily` values match the keys `useFonts()` loads in
  * the root layout — see src/app/_layout.tsx. */
 export const type = {
+  small: { fontSize: 12, fontWeight: "400", fontFamily: "Inter_400Regular" },
+  label: { fontSize: 14, fontWeight: "600", fontFamily: "Inter_600SemiBold" },
   caption: { fontSize: 12, fontWeight: "500", fontFamily: "Inter_500Medium" },
   body: { fontSize: 15, fontWeight: "400", fontFamily: "Inter_400Regular" },
   bodyStrong: { fontSize: 15, fontWeight: "600", fontFamily: "Inter_600SemiBold" },

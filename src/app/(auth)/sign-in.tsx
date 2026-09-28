@@ -2,7 +2,8 @@ import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
-import { colors } from "@/ui/tokens";
+import { ErrorCard } from "@/ui/ErrorCard";
+import { colors, spacing, type } from "@/ui/tokens";
 import { GoogleSignInButton, GoogleSignInCancelledError, signInWithGoogle } from "@/modules/auth";
 import { Sentry } from "@/lib/sentry";
 
@@ -47,11 +48,11 @@ export default function SignIn() {
 
         <View style={styles.buttonGap}>
           {status.state === "error" && (
-            <View style={styles.errorCard}>
-              <Text style={styles.errorText}>
-                ⚠ Couldn&apos;t sign in. Check your connection and try again.
-              </Text>
-            </View>
+            <ErrorCard
+              message="⚠ Couldn't sign in. Check your connection and try again."
+              style={styles.errorCard}
+              textStyle={styles.errorText}
+            />
           )}
           <GoogleSignInButton loading={isSigningIn} onPress={handlePress} />
         </View>
@@ -66,38 +67,29 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 28,
+    paddingHorizontal: spacing[28],
   },
   dimmed: { opacity: 0.85 },
   wordmark: {
-    fontFamily: "Poppins_800ExtraBold",
-    fontSize: 38,
+    ...type.hero,
     color: colors.accent.gold,
   },
   tagline: {
-    marginTop: 12,
-    fontFamily: "Inter_400Regular",
-    fontSize: 15,
+    marginTop: spacing[12],
+    ...type.body,
     lineHeight: 21,
     color: colors.text.secondary,
     textAlign: "center",
   },
   buttonGap: {
-    marginTop: 56,
+    marginTop: spacing[56],
     width: "100%",
   },
   errorCard: {
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: "rgba(76,29,149,0.28)",
-    borderWidth: 1,
-    borderColor: "rgba(255,138,138,0.35)",
+    marginBottom: spacing[16],
   },
   errorText: {
-    fontFamily: "Inter_600SemiBold",
-    fontSize: 15,
+    ...type.bodyStrong,
     lineHeight: 21,
-    color: colors.danger,
   },
 });
