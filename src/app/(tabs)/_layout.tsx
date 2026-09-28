@@ -2,12 +2,8 @@ import { Tabs } from "expo-router";
 import { TabBar } from "@/ui/TabBar";
 
 /**
- * DESIGN.md §2's `TabBar` is a fixed 5-item spec (Perch/Search/Chat/
- * Leaderboards/Profile), but only routes that exist get a tab — Build 6
- * adds the second one (Profile); Search/Chat/Leaderboards land in Builds
- * 17, 27, 29 and each adds its own entry to `ui/TabBar`'s TAB_META then.
- * This was flagged as a deferred decision in Build 5's log; this is that
- * Build.
+ * Renders a tab for each route that exists. `ui/TabBar`'s 5-item spec fills
+ * in as the remaining routes (Search/Chat/Leaderboards) land.
  */
 export default function TabsLayout() {
   return (

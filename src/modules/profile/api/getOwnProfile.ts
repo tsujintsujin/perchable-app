@@ -2,8 +2,8 @@ import { supabase } from "@/lib/supabase";
 import type { Profile } from "../types";
 
 /** Reads the signed-in user's own `profiles` row. The row always exists by
- * the time this is called — the Build 6 migration's `on_auth_user_created`
- * trigger creates it at sign-up, before the app ever gets a session. */
+ * the time this is called — the `on_auth_user_created` DB trigger creates
+ * it at sign-up, before the app ever gets a session. */
 export async function getOwnProfile(userId: string): Promise<Profile> {
   const { data, error } = await supabase
     .from("profiles")

@@ -3,18 +3,9 @@ import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { colors, spacing, type } from "@/ui/tokens";
 
 /**
- * Placeholder — the real Settings screen (sign out, delete account, TMDB
- * attribution per DESIGN.md §6) is Build 9's scope ("Build 9 — Settings
- * screen: Sign out + Delete account"). This stub exists so Build 6's header
- * icon and "Settings" row have somewhere real to push to (Bella's call, per
- * the Build 6 brief — logged here, not built out further).
- *
- * PLAN PROBLEM flagged, not fixed here: DESIGN.md §7's rules list says TMDB
- * attribution "must render on every build that includes the TMDB proxy
- * (Build 3 onward)", but the Settings screen it lives on (§6) is scoped to
- * Build 9 by PLAN.md. That gap has existed since Build 3; this Build didn't
- * create it and a stub isn't the place to resolve it — flagging for the
- * Manager/Priya rather than unilaterally pulling Build 9 content forward.
+ * Placeholder — sign out, delete account and TMDB attribution land in a
+ * later Build. This stub exists so the header icon and "Settings" row have
+ * somewhere real to push to.
  */
 export default function ProfileSettings() {
   return (

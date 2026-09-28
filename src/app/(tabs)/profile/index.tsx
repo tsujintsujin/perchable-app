@@ -10,9 +10,8 @@ import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
 import { useOwnProfile } from "@/modules/profile";
 
 /**
- * (tabs)/profile/index — DESIGN.md "Build 6 — My Profile screen". Collection
- * grid content (movies watched) is Module 3+ scope — this Build only renders
- * the row/container shell per the spec's Build 6 scope note.
+ * My Profile screen. Collection grid content (movies watched) is a later
+ * module — this renders the row/container shell only.
  */
 export default function MyProfile() {
   const profile = useOwnProfile();
@@ -23,13 +22,8 @@ export default function MyProfile() {
       <GlassBackdrop blobs={["purple", "gold"]} />
       <View style={[styles.header, { paddingTop: insets.top }]}>
         <Text style={styles.headerTitle}>My Profile</Text>
-        {/* 36×36 chip, inset left of the reserved 64×64 dev-client gear
-         * corner (DESIGN.md §7) — never a bare top-right icon. DESIGN.md's
-         * Build 6 layout spec gives this an explicit
-         * rgba(76,29,149,.3)/border.hairline look, not `glass.chip`'s own
-         * (darker, borderless) token values — override via `style` rather
-         * than adding a variant tier just for this one button
-         * (Build 6 · Bug 1). */}
+        {/* Settings chip: DESIGN.md gives this its own color/border, not
+         * glass.chip's own, applied via a style override. */}
         <GlassCard
           tier="chip"
           onPress={() => router.push("/profile/settings")}
@@ -96,10 +90,8 @@ export default function MyProfile() {
   );
 }
 
-/** Shimmer placeholders in the loaded layout's shape (DESIGN.md Build 6).
- * No shared shimmer component exists yet (PosterCard, which the spec says
- * to reuse, is Build 12) — a small local pulse animation stands in until
- * then. */
+/** Shimmer placeholders matching the loaded layout's shape. No shared
+ * shimmer component exists yet, so a local pulse animation stands in. */
 function LoadingBody() {
   const [pulse] = useState(() => new Animated.Value(0.4));
 
@@ -143,7 +135,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 44,
-    // Exact DESIGN.md Build 6 values — not glass.chip's own token.
+    // Distinct from glass.chip's own token values, per DESIGN.md.
     backgroundColor: colors.surface.chip,
     borderWidth: 1,
     borderColor: colors.border.hairline,

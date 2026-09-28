@@ -1,7 +1,7 @@
 /**
  * Design tokens — DESIGN.md §1, transcribed as code. No component should
  * hardcode a color, blur, spacing or radius value that lives here; use the
- * token instead (DESIGN.md §7 rule, Ruby checks this).
+ * token instead.
  *
  * v1 ships dark-only (DESIGN.md §1.2) — `colors` below IS the dark palette.
  * Light tokens (§1.3) aren't built; no toggle exists to select them.

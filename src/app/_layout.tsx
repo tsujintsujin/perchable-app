@@ -30,8 +30,8 @@ function RootNavigator() {
     Inter_600SemiBold,
     Poppins_700Bold,
     Poppins_800ExtraBold,
-    // The one place in the app that doesn't use the app's own type scale —
-    // Google's button-text spec requires Google Sans (DESIGN.md Build 5).
+    // The one place that doesn't use the app's own type scale — Google's
+    // button-text spec requires Google Sans.
     GoogleSans_500Medium,
   });
   const { session, isLoading: sessionLoading } = useAuthSession();

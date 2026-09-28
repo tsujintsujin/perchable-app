@@ -1,14 +1,14 @@
 // Supabase Edge Function: server-side TMDB proxy.
 //
-// Why this exists (RESEARCH.md §1, PLAN.md Build 3): TMDB's API key must
-// never ship in the app bundle. The app calls this function instead of
-// TMDB directly; this function holds the real key (`TMDB_API_KEY`, set via
-// `supabase secrets set` in production, or `supabase/functions/.env`
-// locally — gitignored) and forwards only what's needed.
+// TMDB's API key must never ship in the app bundle. The app calls this
+// function instead of TMDB directly; this function holds the real key
+// (`TMDB_API_KEY`, set via `supabase secrets set` in production, or
+// `supabase/functions/.env` locally — gitignored) and forwards only what's
+// needed.
 //
-// Endpoint whitelist: only `/movie/popular` for now (all PLAN.md Build 3
-// needs). Any other `endpoint` value is rejected with 400 rather than
-// proxied blind — this function is not a general TMDB passthrough.
+// Endpoint whitelist: only `/movie/popular` is supported. Any other
+// `endpoint` value is rejected with 400 rather than proxied blind — this
+// function is not a general TMDB passthrough.
 //
 // Auth: Supabase verifies the caller's JWT/apikey before this code runs
 // (`verify_jwt` defaults to true, left at default in supabase/config.toml

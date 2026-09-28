@@ -4,8 +4,8 @@ import { BlurView } from "expo-blur";
 import { colors, glass, iconSize, spacing, type } from "@/ui/tokens";
 
 // DESIGN.md §2: fixed 5 items (Perch/Search/Chat/Leaderboards/Profile), but
-// only routes that exist get a tab — Search/Chat/Leaderboards land in later
-// Builds (17, 27, 29) and each adds its own entry here then.
+// only routes that exist get a tab — the rest add their own entry here as
+// they land.
 const TAB_META: Record<string, { icon: string; label: string }> = {
   index: { icon: "🦉", label: "Perch" },
   profile: { icon: "👤", label: "Profile" },
@@ -25,32 +25,11 @@ type Props = {
  * `BottomTabBarProps` type import) if a later tab screen needs to
  * intercept its own re-selection.
  *
- * ponytail: Android blur needs a `BlurTargetView` wrapped around the
- * content being blurred, with its ref passed to `blurTarget` here
- * (expo-blur docs). That content is the active tab screen, rendered by
- * `<Tabs>` internally — not reachable from this custom `tabBar` render
- * prop without forking the navigator's own layout. Upgrade path: a
- * screen-level `BlurTargetView` wired through `(tabs)/_layout.tsx` once a
- * Build actually needs the Android blur to be real, not just present.
- *
- * Build 6 · Bug 1: with no `blurTarget` on Android, `expo-blur`'s native
- * view skips its blur setup but still paints the `tint` as its own opaque
- * background — a flat mid-grey, not `glass.nav`'s `rgba` fill underneath
- * (confirmed by pixel sample: rendered `rgb(105,103,108)` instead of
- * `glass.nav` over `bg.base` ≈ `rgb(25,22,31)`). So `BlurView` only renders
- * on iOS here.
- *
- * Also found while re-checking this fix (pixel sample again, not just
- * reasoning): `glass.nav.backgroundColor` alone is a *translucent* rgba —
- * with no BlurView and nothing dark drawn behind the tab bar's own reserved
- * area (Android Tabs lays it out beside the screen content, not on top of
- * it), the translucent fill composites against the native window's own
- * default background instead of `bg.base`, landing near
- * `rgb(125,123,130)` — a different wrong grey, not the fix. `styles.opaqueBase`
- * below adds `bg.elevatedFlat` as the actual opaque backdrop underneath
- * the translucent tint, matching tokens.ts's own note that
- * `bg.elevatedFlat` is "the flat-fallback base color these translucent
- * fills sit on". */
+ * ponytail: real Android blur needs a `BlurTargetView` wrapped around the
+ * active tab screen, which isn't reachable from this custom `tabBar` render
+ * prop without forking the navigator's layout — so Android uses a flat
+ * fallback fill instead (below) and only iOS gets the real BlurView.
+ */
 export function TabBar({ state, navigation }: Props) {
   const insets = useSafeAreaInsets();
 
@@ -63,12 +42,10 @@ export function TabBar({ state, navigation }: Props) {
         // "blur", not real content).
         <BlurView intensity={glass.nav.blurAmount} tint="dark" style={styles.blurFill} />
       ) : (
-        // Android: opaque base first (paint order matters — a later sibling
-        // draws over an earlier one), then the translucent glass.nav tint on
-        // top of it. Without the opaque base, the translucent tint
-        // composites against whatever's behind the tab bar's own reserved
-        // layout area (not the screen content), landing on the wrong grey —
-        // see the comment above.
+        // Android: opaque base first, then the translucent glass.nav tint
+        // on top — without the opaque base the translucent tint composites
+        // against whatever's behind the tab bar's own layout area, not the
+        // screen content.
         <>
           <View style={styles.opaqueBase} />
           <View style={styles.tintOverlay} />

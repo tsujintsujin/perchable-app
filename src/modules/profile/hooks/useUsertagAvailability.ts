@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { checkUsertagAvailable } from "../api/checkUsertagAvailable";
 
 const USERTAG_REGEX = /^[a-z][a-z0-9_]{2,19}$/;
-// DESIGN.md Build 7: "debounce ... (≈400-500ms after the user stops
-// typing) ... Bella's call on the exact constant."
+// DESIGN.md: debounce roughly 400-500ms after the user stops typing.
 const DEBOUNCE_MS = 450;
 
 export type UsertagAvailability =

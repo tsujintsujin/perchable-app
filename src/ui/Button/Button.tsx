@@ -11,17 +11,13 @@ type Props = {
   disabled?: boolean;
   loading?: boolean;
   /** Text shown in the loading state instead of `label` — e.g. Save shows
-   * "Save" idle but "Saving" while loading (DESIGN.md Build 7 copy table);
-   * Build 9's delete button will pass "Deleting…" the same way. Defaults to
-   * `label` for callers that don't need the wording to change (Build 7 ·
-   * Bug 1 — this used to hardcode "Saving" here, which was fine for Save
-   * but wrong for any other loading button). */
+   * "Save" idle but "Saving" while loading. Defaults to `label` for callers
+   * that don't need the wording to change. */
   loadingLabel?: string;
   style?: object;
 };
 
-/** DESIGN.md §2: default/pressed/disabled/loading states, 4 variants. First
- * built for Build 7's Save/Cancel row. */
+/** DESIGN.md §2: default/pressed/disabled/loading states, 4 variants. */
 export function Button({
   label,
   onPress,

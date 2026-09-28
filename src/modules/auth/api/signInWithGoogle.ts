@@ -5,10 +5,9 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { supabase } from "@/lib/supabase";
 
-/** Thrown when the user dismisses the Google picker themselves — DESIGN.md
- * still shows the same generic error card for this (Build 5 spec), but it's
- * not a real failure, so the sign-in screen tells this apart from other
- * thrown errors to skip the Sentry report (Build 5 · Bug 1). */
+/** Thrown when the user dismisses the Google picker themselves. Not a real
+ * failure, so the sign-in screen tells this apart from other thrown errors
+ * to skip the Sentry report. */
 export class GoogleSignInCancelledError extends Error {
   constructor() {
     super("Google sign-in was cancelled");
@@ -27,9 +26,8 @@ function ensureConfigured() {
     throw new Error("Missing EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID — check .env");
   }
   // webClientId is the GCP "Web client" ID, not the Android client — Supabase
-  // verifies the ID token's audience against this one (DESIGN.md Build 5 /
-  // task brief). offlineAccess isn't needed: the app never calls Google APIs
-  // server-side, only exchanges the ID token with Supabase once.
+  // verifies the ID token's audience against this one. offlineAccess isn't
+  // needed: the app only exchanges the ID token with Supabase once.
   GoogleSignin.configure({ webClientId });
   configured = true;
 }
@@ -38,10 +36,8 @@ function ensureConfigured() {
  * Runs the native Google account picker, then exchanges the returned ID
  * token for a Supabase session (`signInWithIdToken`). Throws on cancel,
  * missing Play Services, or a Supabase error alike — the sign-in screen
- * shows one generic error state for all of these per DESIGN.md's Build 5
- * spec ("don't branch UI text per error type"). A cancel throws the typed
- * `GoogleSignInCancelledError` specifically so the screen can skip reporting
- * it to Sentry (Build 5 · Bug 1) while still reporting every other failure.
+ * shows one generic error state for all of these, except a cancel throws
+ * the typed `GoogleSignInCancelledError` so it can skip the Sentry report.
  */
 export async function signInWithGoogle(): Promise<void> {
   ensureConfigured();

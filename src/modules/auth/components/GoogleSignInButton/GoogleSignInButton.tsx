@@ -23,12 +23,9 @@ const GOOGLE_LABEL_FONT_SIZE = 14;
 
 /**
  * Google's official dark-theme "Sign in with Google" button — exact colors,
- * logo and copy per Google's branding rules (DESIGN.md Build 5 spec). The
- * *colors* are a deliberate exception to the app's own token system (§7) —
- * never pull them from `ui/tokens.ts`, and never restyle this button to
- * match the app's own type family or palette. The corner radius isn't part
- * of Google's spec (DESIGN.md: "Google permits any radius") so it does come
- * from `ui/tokens.ts` (`radius.sm`), same as every other component.
+ * logo and copy per Google's branding rules. The colors are a deliberate
+ * exception to the app's own token system; the corner radius isn't part of
+ * Google's spec, so it still comes from `ui/tokens.ts` (`radius.sm`).
  */
 export function GoogleSignInButton({ loading = false, disabled = false, onPress }: Props) {
   // useState (not useRef) for the stable Animated.Value — the React
@@ -68,8 +65,7 @@ export function GoogleSignInButton({ loading = false, disabled = false, onPress 
       {({ pressed }) => (
         <>
           {/* Google's permitted press feedback — a translucent white overlay
-           * on top of the fill (DESIGN.md), not a whole-button opacity dip
-           * (Build 5 · Bug 1). */}
+           * on top of the fill, not a whole-button opacity dip. */}
           {pressed && !isDisabled && <View style={styles.pressedOverlay} pointerEvents="none" />}
           {loading ? (
             <Animated.View style={[styles.spinner, { transform: [{ rotate }] }]} />

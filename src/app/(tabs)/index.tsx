@@ -7,19 +7,8 @@ import { colors, type } from "@/ui/tokens";
 import { useOwnProfile } from "@/modules/profile";
 
 /**
- * (tabs)/index — Home ("Perch"). Build 5 scope: this placeholder shell.
- * Build 6 (DESIGN.md §7 "Home screen fix"): replaced Build 5's top-right
- * "Signed in ✓" text chip — which sat inside the reserved 64×64 dev-client
- * gear corner — with a small circular Avatar inset left of that zone,
- * tappable through to the Profile tab. Real Home content (roulette,
- * have-you-watched, friend activity — DESIGN.md §3) is still later Builds.
- *
- * Build 6 · Bug 1: reads the same `useOwnProfile` hook the Profile screen
- * uses, instead of reaching into `session.user.user_metadata` and
- * re-doing the Google-metadata key fallback inline — DESIGN.md §7 says a
- * route composes `ui/` + a module's exported hook, nothing more. The
- * `profiles` row (created by Build 6's trigger) already carries
- * `display_name`/`avatar_url` for this.
+ * Home ("Perch") placeholder shell. Shows the signed-in user's avatar,
+ * tappable through to the Profile tab; real Home content lands later.
  */
 export default function Home() {
   const profile = useOwnProfile();
@@ -57,10 +46,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     paddingHorizontal: 20,
-    // Inset left of the reserved 64×64 dev-client gear corner (DESIGN.md
-    // §7) — never flush against the edge. Overrides paddingHorizontal's
-    // right value; Yoga always resolves the specific edge over the
-    // shorthand regardless of key order.
+    // Reserves the 64x64 dev-client gear corner. The specific edge wins
+    // over paddingHorizontal's shorthand regardless of key order.
     paddingRight: 84,
   },
   body: { flex: 1, alignItems: "center", justifyContent: "center" },

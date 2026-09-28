@@ -10,10 +10,10 @@ import { Sentry } from "@/lib/sentry";
 type Status = { state: "idle" } | { state: "signing-in" } | { state: "error" };
 
 /**
- * (auth)/sign-in — DESIGN.md "Build 5 — Sign-in screen". The root layout's
- * route guard (src/app/_layout.tsx) only renders this group when there's no
- * session, and swaps to (tabs) the moment `signInWithGoogle` succeeds and
- * Supabase's auth listener fires — this screen itself never navigates.
+ * Google sign-in screen. The root layout's route guard renders this group
+ * only when there's no session, and swaps to (tabs) once `signInWithGoogle`
+ * succeeds and Supabase's auth listener fires — this screen never navigates
+ * itself.
  */
 export default function SignIn() {
   const [status, setStatus] = useState<Status>({ state: "idle" });
@@ -25,11 +25,8 @@ export default function SignIn() {
       // No manual navigation: useAuthSession's onAuthStateChange listener
       // updates the session, and the root layout's guard swaps to (tabs).
     } catch (err) {
-      // Same generic error card for cancel, missing Play Services, or a
-      // Supabase failure — DESIGN.md says don't branch copy per error type.
-      // A user-initiated cancel isn't a real failure though (Build 5 · Bug 1)
-      // — skip the Sentry report for that one case; every other cause still
-      // goes to Sentry.
+      // Same generic error card for any failure. A user cancelling isn't a
+      // real failure, so it's the only cause that skips the Sentry report.
       if (!(err instanceof GoogleSignInCancelledError)) {
         Sentry.captureException(err);
       }

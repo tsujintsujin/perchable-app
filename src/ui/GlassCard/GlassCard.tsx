@@ -34,14 +34,9 @@ export function GlassCard({ tier = "card", blur = false, onPress, style, childre
   const content = (
     <>
       {blur && Platform.OS === "ios" && (
-        // Build 6 · Bug 1: without a BlurTargetView wired above this in the
-        // tree, expo-blur's Android view skips blur setup but still paints
-        // `tint` as its own opaque background (a flat grey, confirmed by
-        // pixel sample on ui/TabBar) — not `backgroundColor` above. So this
-        // only renders on iOS; Android always falls through to the flat
-        // fill. No Build 6 caller passes `blur` yet — flagged here for
-        // whichever Build first does (DESIGN.md §1.5's ProfileSheet/hero
-        // cards).
+        // iOS only: without a BlurTargetView wired above this in the tree,
+        // expo-blur's Android view paints `tint` as an opaque flat grey
+        // instead of blurring — Android falls through to the flat fill.
         <BlurView intensity={t.blurAmount} tint="dark" style={styles.blurFill} />
       )}
       {children}

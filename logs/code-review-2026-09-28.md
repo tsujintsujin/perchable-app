@@ -96,3 +96,30 @@ of `src/` + functions to the 1–2 line rule.
 Then Queenie: pixel/regression check that every screen looks and behaves
 exactly as before (sign-in, Home, Profile, Edit, debug), plus the session
 survives relaunch after the storage change.
+
+## Standards pass (2026-09-29) — reasoning moved out of code comments
+
+Item 7 trimmed several long in-code essays to 1–2 line purpose comments.
+Reasoning worth keeping, moved here instead of left in the code:
+
+- **PLAN PROBLEM, still open**: `settings.tsx`'s doc comment used to flag
+  that DESIGN.md §7's rule ("TMDB attribution must render on every build
+  with the TMDB proxy, Build 3 onward") can't be satisfied yet, because the
+  screen that attribution lives on (§6 Settings) isn't built until Build 9.
+  That gap has existed since Build 3 and is still unresolved — flagging for
+  the Manager/Priya, not something this pass fixes.
+- ⚠️ Big decision (`edit.tsx`, unchanged from Build 7): a picked photo
+  uploads and saves to `profiles.avatar_url` immediately on pick, not gated
+  behind Save — DESIGN.md already describes the photo and usertag as
+  independent fields with independent save outcomes, and this avoids a
+  confusing dual-purpose Save button.
+- `uploadAvatar.ts` used to upsert one fixed path with a `?v=` cache-buster;
+  that let an unabortable, cancelled upload still overwrite the current
+  photo once any cache was bypassed. Fixed by giving every upload a unique
+  path, with `deleteAvatarObject` cleaning up the now-orphaned object after
+  a cancel or a successful replace — the tradeoff (every change leaves one
+  object to clean up) is handled entirely by that cleanup.
+- `TabBar`/`GlassCard`'s Android blur notes: without a `BlurTargetView`,
+  `expo-blur` paints its `tint` as an opaque flat grey instead of blurring,
+  confirmed by on-device pixel sample — both components fall back to a flat
+  fill on Android and use the real `BlurView` on iOS only.

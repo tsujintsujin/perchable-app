@@ -11,16 +11,10 @@ type State =
 
 /**
  * Own-profile fetch, following the same plain useState pattern as
- * `useAuthSession` rather than TanStack Query — PLAN.md only requires
- * TanStack Query starting with Build 12's movie data; wiring the query
- * client now would be new infra this Build doesn't need. Exposes `refetch`
- * for the load-error state's Retry button (DESIGN.md Build 6).
- *
- * Build 7 fix (found on-device, not by reading code): refetches on every
- * screen focus, not just mount. Without this, saving a usertag/photo on
- * the Edit screen and navigating back showed stale data on the Profile
- * screen — Stack/Tabs both keep the previous screen mounted rather than
- * remounting it, so a mount-only fetch never re-ran after the save.
+ * `useAuthSession` rather than TanStack Query — not needed until movie
+ * data lands. Exposes `refetch` for the load-error state's Retry button.
+ * Refetches on every screen focus, not just mount, since Stack/Tabs keep a
+ * previous screen mounted instead of remounting it on navigating back.
  */
 export function useOwnProfile() {
   const { session } = useAuthSession();

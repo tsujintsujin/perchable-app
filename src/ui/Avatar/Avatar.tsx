@@ -5,8 +5,8 @@ import { colors, type } from "@/ui/tokens";
 
 type Size = "sm" | "md" | "lg";
 
-// DESIGN.md §2: sm/md/lg. lg is the Build 6 "88px in the mock" value; sm is
-// the Home header chip's 28-32px range (use the top of it).
+// DESIGN.md §2: sm/md/lg. lg is the 88px mock value; sm is the Home header
+// chip's 28-32px range (use the top of it).
 const DIMENSIONS: Record<Size, number> = { sm: 32, md: 48, lg: 88 };
 
 type Props = {
@@ -15,13 +15,13 @@ type Props = {
   size?: Size;
   /** purple.700→gold.500 ring — own-profile screens only (DESIGN.md §2). */
   ringGradient?: boolean;
-  /** First-letter fallback source when `uri` is absent (DESIGN.md Build 6:
-   * "first letter of the Google display name"). */
+  /** First-letter fallback source when `uri` is absent (first letter of the
+   * Google display name). */
   name?: string | null;
 };
 
 /** Loaded photo, or a gradient-fill fallback-initials circle — never a
- * fabricated placeholder image (DESIGN.md Build 6 decision). */
+ * fabricated placeholder image. */
 export function Avatar({ uri, size = "md", ringGradient = false, name }: Props) {
   const d = DIMENSIONS[size];
   const initial = name?.trim()?.[0]?.toUpperCase() ?? "?";

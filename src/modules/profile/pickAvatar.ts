@@ -8,9 +8,9 @@ const MAX_DIMENSION = 512;
 const JPEG_QUALITY = 0.8;
 
 /**
- * Opens the OS photo picker with a native 1:1 crop (DESIGN.md Build 7:
- * avatar tap → picker; the circular Avatar treatment wants a square
- * source), then resizes to a fixed max dimension and re-encodes as JPEG.
+ * Opens the OS photo picker with a native 1:1 crop (the circular Avatar
+ * treatment wants a square source), then resizes to a fixed max dimension
+ * and re-encodes as JPEG.
  * Resizing (not just `launchImageLibraryAsync`'s own `quality` param) is
  * what actually guarantees the file stays under the bucket's 2MB limit —
  * `quality` alone only compresses, it can't cap the pixel dimensions a

@@ -11,17 +11,8 @@ import { updateProfile, useAvatarUpload, useOwnProfile, useUsertagAvailability }
 import { Sentry } from "@/lib/sentry";
 
 /**
- * (tabs)/profile/edit — DESIGN.md "Build 7 — Edit profile screen".
- *
- * ⚠️ Big decision (deviation from a literal reading of the spec): a picked
- * photo uploads and saves to `profiles.avatar_url` immediately on pick, not
- * gated behind the Save button. DESIGN.md's states already describe the
- * photo and usertag as "independent fields with independent save
- * outcomes" and the uploading state as its own thing driven purely by the
- * pick — Save/Cancel below govern the usertag field only. This avoids a
- * confusing dual-purpose Save button (what would "Save" even mean once a
- * photo already finished uploading?) and matches how every other screen in
- * this app treats a Supabase write as soon as its own action completes.
+ * Edit profile screen. A picked photo uploads and saves immediately on
+ * pick — independent of Save, which only governs the usertag field.
  */
 export default function EditProfile() {
   const profile = useOwnProfile();
@@ -42,10 +33,8 @@ export default function EditProfile() {
   const availability = useUsertagAvailability(usertagInput, loaded?.usertag ?? null, loaded?.id);
 
   if (profile.state !== "loaded" || !loaded) {
-    // Reached only from the already-loaded Profile screen in practice — no
-    // separate loading/error shimmer spec exists for this screen in
-    // DESIGN.md's Build 7 section, so this is a minimal defensive fallback,
-    // not a designed state.
+    // Reached only from the already-loaded Profile screen in practice —
+    // minimal defensive fallback, not a designed state.
     return <View style={styles.root} />;
   }
 
@@ -65,14 +54,8 @@ export default function EditProfile() {
     setSaveError(null);
   };
 
-  // `!isUploading` (Build 7 · Bug 1): a photo upload and a usertag save are
-  // two different network calls that both touch the same profiles row —
-  // DESIGN.md's uploading-photo state spec is explicit that the rest of the
-  // form (usertag field + Save) is disabled/dimmed so a save can't race an
-  // in-flight upload. Cancel is deliberately NOT gated on `isUploading`
-  // (DESIGN.md: "Cancel stays tappable [during upload] — cancels the
-  // upload too"); it's still gated on `saving`, per the Saving state spec
-  // ("Cancel becomes disabled too — no cancelling mid-write").
+  // Disabled while uploading so a usertag save can't race an in-flight
+  // photo upload. Cancel stays tappable during upload but not during save.
   const canSave = availability.status === "available" && !saving && !isUploading;
 
   const handleSave = async () => {
@@ -191,10 +174,8 @@ export default function EditProfile() {
   );
 }
 
-/** Indeterminate spinner in the progress ring's slot — Manager's decision:
- * no XHR bypass of supabase-js just to get a real determinate percentage
- * for a ≤512px JPEG that finishes in about a second. Deviates from
- * DESIGN.md's "determinate progress ring" spec; see the build log. */
+/** Indeterminate spinner in the progress ring's slot — no real determinate
+ * percentage without bypassing supabase-js's own upload call. */
 function Spinner() {
   const [spin] = useState(() => new Animated.Value(0));
   useEffect(() => {
