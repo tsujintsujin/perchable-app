@@ -77,3 +77,22 @@ Handle each one up front; say in the Build log how (or "n/a").
   collide (ninja "Permission denied"). Don't run Metro/QA on td_emu during it (CPU). (2026-09-30)
 - Release APKs are built only when Justin asks for one — never per change or per Build.
   (Manager built one unasked after the Profile rows change, 2026-09-30.)
+
+## Moderation carry-forward (Module 3 → Builds 20, 24, 25, 27, 28; PLAN.md rules 1–5)
+- [ ] Any migration adding a table other users can read (captions, comments,
+      DM messages): INSERT policy calls `public.has_accepted_terms()`; the
+      SQL test copies `supabase/tests/terms_gate_rls.sql` and shows the
+      insert **rejected on the real table** while `terms_accepted_at` is
+      null. No such test = FIX NEEDED.
+- [ ] Comment / DM policies also call `public.is_blocked_between(...)`; tests
+      prove both directions of a block. (Caption SELECT stays owner-only
+      until a Build shows captions to others.)
+- [ ] Every UGC surface opens `ReportSheet` with the right `target`
+      (24 profile + `BlockUserSheet`; 25 comment + collection entry/caption;
+      27 DM message). Ruby greps for the caller.
+- [ ] Every composer calls `useTermsGate().requireTerms` before first submit
+      (20 caption, 25 comment, 27 DM).
+- [ ] The Build adds its "remove this content" query to
+      `docs/ADMIN-MODERATION.md`, tested in a rolled-back transaction.
+- [ ] New functions used by RLS: `security definer`, `set search_path = ''`,
+      `revoke all ... from public, anon`, `grant execute ... to authenticated`.
