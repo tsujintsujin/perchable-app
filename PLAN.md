@@ -343,7 +343,7 @@ Done means (checkable; migration reviewed + applied by the Manager, RLS
       (c) remove a user's profile content: clear avatar_url, usertag **and
           display_name** on `profiles`, and delete their `avatars/<uid>/`
           Storage objects — the only content type that exists in 10a;
-      (d) ban and unban: set `auth.users.banned_until = 'infinity'` (a
+      (d) ban and unban: set `auth.users.banned_until = now() + interval '100 years'` (a far date, not `'infinity'` — unproven against the sign-in service; Ruby, Build 10a review) (a
           deleted user can just sign up again with Google, as Build 9
           showed, so a ban must be a ban, not a delete) and back to null;
           plus how to make it bite immediately: an already-issued access
