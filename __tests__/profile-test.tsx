@@ -1,9 +1,26 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react-native";
 
 // No <SafeAreaProvider> in the test tree — fixed insets stand in for it.
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
 }));
+
+const mockPush = jest.fn();
+let mockFocusCallbacks: (() => void)[] = [];
+jest.mock("expo-router", () => {
+  const { useEffect } = jest.requireActual("react");
+  return {
+    router: { push: (...args: unknown[]) => mockPush(...args) },
+    // Runs the callback on mount and records it so a test can simulate regaining focus.
+    useFocusEffect: (cb: () => void) => {
+      useEffect(() => {
+        mockFocusCallbacks.push(cb);
+        cb();
+      }, [cb]);
+    },
+  };
+});
 
 // Mock the profile module's hook directly (not Supabase) — this test is
 // about the screen's rendering per state, not the fetch itself (that's
@@ -18,7 +35,23 @@ import MyProfile from "@/app/(tabs)/profile/index";
 describe("My Profile screen", () => {
   beforeEach(() => {
     mockUseOwnProfile.mockReset();
+    mockPush.mockReset();
+    mockFocusCallbacks = [];
   });
+
+  const loaded = (usertag: string | null) =>
+    mockUseOwnProfile.mockReturnValue({
+      state: "loaded",
+      refetch: jest.fn(),
+      profile: {
+        id: "u1",
+        displayName: "Justin Masiga",
+        avatarUrl: null,
+        usertag,
+        createdAt: "2026-01-01",
+        updatedAt: "2026-01-01",
+      },
+    });
 
   it("renders shimmer placeholders in the loading state", async () => {
     mockUseOwnProfile.mockReturnValue({ state: "loading", refetch: jest.fn() });
@@ -46,8 +79,8 @@ describe("My Profile screen", () => {
 
     expect(screen.getByText("Justin Masiga")).toBeTruthy();
     expect(screen.getByText(/No usertag yet/)).toBeTruthy();
-    expect(screen.getByText("✏️ Edit profile")).toBeTruthy();
-    expect(screen.getByText("⚙ Settings")).toBeTruthy();
+    expect(screen.queryByText("✏️ Edit profile")).toBeNull();
+    expect(screen.queryByText("⚙ Settings")).toBeNull();
     expect(screen.getByText("0 movies watched")).toBeTruthy();
   });
 
@@ -80,5 +113,54 @@ describe("My Profile screen", () => {
 
     fireEvent.press(screen.getByText("Retry"));
     await waitFor(() => expect(refetch).toHaveBeenCalledTimes(1));
+  });
+
+  it("empty-usertag chip pushes Edit profile and is labelled", async () => {
+    loaded(null);
+    await render(<MyProfile />);
+    const chip = screen.getByRole("button", { name: "Add a usertag" });
+    await fireEvent.press(chip);
+    expect(mockPush).toHaveBeenCalledWith("/profile/edit");
+  });
+
+  it("@usertag chip pushes Edit profile, has role button, a label and a 44dp+ tap height", async () => {
+    loaded("cineowl");
+    await render(<MyProfile />);
+    const chip = screen.getByRole("button", { name: "Edit usertag, currently @cineowl" });
+    expect(StyleSheet.flatten(chip.props.style).minHeight).toBeGreaterThanOrEqual(44);
+    await fireEvent.press(chip);
+    expect(mockPush).toHaveBeenCalledWith("/profile/edit");
+  });
+
+  it("the header Settings chip is the only Settings entry and opens Settings", async () => {
+    loaded(null);
+    await render(<MyProfile />);
+    expect(screen.getAllByText("⚙")).toHaveLength(1);
+    await fireEvent.press(screen.getByText("⚙"));
+    expect(mockPush).toHaveBeenCalledWith("/profile/settings");
+  });
+
+  it("a double tap pushes once, and tapping works again after focus returns", async () => {
+    loaded("cineowl");
+    await render(<MyProfile />);
+    const chip = screen.getByRole("button", { name: /Edit usertag/ });
+    await fireEvent.press(chip);
+    await fireEvent.press(chip);
+    await fireEvent.press(screen.getByText("⚙"));
+    expect(mockPush).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      mockFocusCallbacks[mockFocusCallbacks.length - 1]();
+    });
+    await fireEvent.press(chip);
+    expect(mockPush).toHaveBeenCalledTimes(2);
+  });
+
+  it("loading state shows no entry rows and no loaded content", async () => {
+    mockUseOwnProfile.mockReturnValue({ state: "loading", refetch: jest.fn() });
+    await render(<MyProfile />);
+    expect(screen.queryByText(/Edit profile/)).toBeNull();
+    expect(screen.queryByText(/Settings/)).toBeNull();
+    expect(screen.queryByText("0 movies watched")).toBeNull();
   });
 });
