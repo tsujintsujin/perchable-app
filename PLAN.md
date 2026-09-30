@@ -82,8 +82,8 @@ movie-domain modules.
 
 Every module from 2 onward that adds a user-owned table carries a
 Done-means bullet: "deleting the account removes this module's rows
-(`ON DELETE CASCADE`)" — see each Build below. Modules 1–2 are detailed in
-full (first two, per batching rule); 3–12 are one-line-rough until the team
+(`ON DELETE CASCADE`)" — see each Build below. Modules 1–3 are detailed in
+full; 4–12 are one-line-rough until the team
 reaches them, but are still Build-numbered here so milestones and manual
 steps stay unambiguous.
 
@@ -202,29 +202,343 @@ Phases: 0 Dianne mockup · 1 Bella build · 2 Bella gates · 3 Queenie QA ·
         4 Ruby review · 5 Manager ships
 ```
 
-### Modules 3–12 — rough (one line each, detailed when the team reaches them)
+### Module 3 — Moderation base (report/block schema + UGC terms)
+
+Detailed 2026-09-30 (Priya, at the Manager's request). Applies RESEARCH.md §6
+(Play UGC policy: report on every UGC surface, in-app block, terms that
+define objectionable content, moderation that is *active*).
+
+**The problem this module has to solve.** No UGC surface exists yet —
+comments, DMs, other users' profiles and captions arrive in Builds 20–27.
+So Module 3 builds the *base*: tables, RLS, SQL helpers, and reusable
+components/hooks with a fixed contract. The later surfaces plug into it
+(see "Carry-forward rules" below). Nothing fake ships to users: every
+harness below is `__DEV__`-only and is compiled out of the release APK.
+
+**Where things live.** All client code in `src/modules/moderation/`
+(`api/`, `components/`, `hooks/`, `types.ts`, `index.ts` — DESIGN.md §4;
+routes stay thin, DESIGN.md §7). Reusable overlay sheets follow the
+existing `DeleteAccountSheet` pattern (an in-screen overlay component, not
+a route), so they also work over the future `user/[id]` formSheet.
+`src/modules/moderation/README.md` is the module's how-to (started in
+Build 10, extended in Build 11).
+
+**Shared vocabulary (single source of truth).** One constant in the module,
+`OBJECTIONABLE_CATEGORIES`, feeds both the Build 10 report-reason list and
+the Build 11 terms text, so what the terms define and what users can report
+never drift apart. Categories (Priya's derivation — RESEARCH.md §6 requires
+the terms to "define what counts as objectionable content" but does not
+enumerate them; Justin approves the wording at Build 11): `spam`,
+`harassment` (harassment or bullying), `hate` (hate speech), `sexual`
+(sexual content), `violence` (violence or threats), `impersonation`,
+`other`.
 
 ```
-Build 10 — Moderation schema + UI         Module: Moderation base
-Done means: `reports` (reporter_id, target_type, target_id, reason) and
-  `blocked_users` (blocker_id, blocked_id) tables exist with RLS; generic
-  report-content UI reachable from every future UGC surface; block-a-user
-  UI; deleting the account removes this module's rows (ON DELETE CASCADE);
-  Justin (as admin) can remove content or ban a user via a direct Supabase
-  query — documented as the admin action path, no admin panel needed for v1.
-Test on: emulator
-Needs: nothing
+Build 10 — Moderation schema + report/block UI   Module: Moderation base
+Done means (checkable). Part A is the database, Part B the admin path,
+  Part C the reusable UI; the seam between A+B and C is where this Build
+  can be split if the Manager wants (see PLAN PROBLEM in the Manager
+  report — this Build is over the "and more than twice" size rule).
+
+  A. Database (migration reviewed + applied by the Manager; RLS proven in
+     a rolled-back transaction — `supabase/tests/moderation_rls.sql`,
+     pattern of `supabase/tests/profiles_rls.sql`)
+  A1. `public.reports` exists: id (uuid pk), reporter_id (default
+      auth.uid(), FK auth.users ON DELETE CASCADE), reported_user_id (the
+      author/owner of the reported thing; FK auth.users ON DELETE CASCADE),
+      target_type, target_id (uuid, no FK — polymorphic, and a report must
+      outlive removal of the content it points at), reason, details
+      (optional, max 500 chars), status, created_at, reviewed_at (null
+      until reviewed).
+  A2. target_type is text with a CHECK of: `profile`, `comment`,
+      `dm_message`, `collection_item` (a caption lives on a collection
+      entry). Text + CHECK, not a Postgres enum, so a later surface adds a
+      value with one constraint change. reason is a CHECK of the seven
+      categories above. `other` requires non-blank details (CHECK).
+      status is a CHECK of `open` (default), `reviewed`, `actioned`,
+      `dismissed`.
+  A3. Enforced by the database, not the UI: no self-report (reporter_id <>
+      reported_user_id); for target_type `profile`, target_id must equal
+      reported_user_id; one report per reporter per target (UNIQUE
+      reporter_id, target_type, target_id).
+  A4. `reports` RLS: an authenticated user may INSERT only with reporter_id
+      = their own uid, through column-limited grants (they cannot set
+      status, reviewed_at or id). No client SELECT, UPDATE or DELETE at
+      all — a reporter never sees any report, not even their own; only the
+      SQL editor / service role reads or changes them. `anon` has no
+      access. The tests prove each denial (spoofed reporter_id rejected,
+      client SELECT denied, client UPDATE of status denied, anon denied).
+  A5. `public.blocked_users` exists: blocker_id and blocked_id (both FK
+      auth.users ON DELETE CASCADE), created_at; primary key
+      (blocker_id, blocked_id), so a repeat block cannot duplicate; CHECK
+      blocker_id <> blocked_id (no self-block).
+  A6. `blocked_users` RLS: authenticated INSERT only with blocker_id = own
+      uid; SELECT and DELETE only rows where blocker_id = own uid; no
+      UPDATE. A blocked user therefore cannot list who blocked them, and
+      one user cannot read another's block list. `anon` has no access.
+  A7. Indexes: partial index on reports (created_at) WHERE status = 'open'
+      (the admin queue); index on reports (reported_user_id); index on
+      blocked_users (blocked_id) (reverse lookup for "blocked either way"
+      and for the cascade). The unique constraints cover the rest.
+  A8. SQL helper `public.is_blocked_between(a uuid, b uuid)` — true when
+      either has blocked the other. SECURITY DEFINER with an empty
+      search_path (as `handle_new_user`), EXECUTE for `authenticated` only,
+      and it answers only when auth.uid() is one of the two arguments
+      (otherwise false), so it cannot be used to probe other people's
+      blocks. Later RLS policies call this instead of re-writing the
+      subquery (RESEARCH.md §6).
+  A9. Deleting an auth user removes every reports row they filed or that is
+      about them, and every blocked_users row where they are either side
+      (proven in the rolled-back test with a real `delete from auth.users`).
+      No change to the `delete-account` Edge Function is needed.
+
+  B. Admin path (Justin is the admin — RESEARCH.md §6: "a Supabase admin
+     query is enough at this scale; no dedicated admin panel needed for v1")
+  B1. `docs/ADMIN-MODERATION.md` exists, written for Justin, run in the
+      Supabase SQL editor (which bypasses RLS). It contains, each as a
+      copy-paste query with a one-line "what this does":
+      (a) list open reports, oldest first, with the reporter's and the
+          reported user's usertag/display name and the reason;
+      (b) mark a report reviewed / actioned / dismissed (sets status and
+          reviewed_at);
+      (c) remove a user's profile content (clear avatar_url and usertag on
+          `profiles`, and delete their `avatars/<uid>/` objects in
+          Storage) — the only content type that exists in Build 10;
+      (d) ban a user: set `auth.users.banned_until = 'infinity'` (a
+          deleted user can simply sign up again with Google, as Build 9
+          showed, so a ban must be a ban, not a delete), plus the matching
+          unban; noting that an already-issued access token works until it
+          expires (up to an hour);
+      (e) a "remove reported content" section with a placeholder heading
+          per future content type — comment, DM message, caption — each
+          marked "query added by Build 25 / 27 / 20" (Carry-forward rule 5).
+  B2. Bella runs (a)-(d) against the live project inside rolled-back
+      transactions in Phase 2, so the doc holds no untested SQL; the
+      Manager repeats (a) and (d) once. The ban is proven live through the
+      backend only: the Manager creates a throwaway email-provider user via
+      the Admin API (the Email provider is still on), bans it, confirms
+      sign-in and token refresh are refused, unbans, and deletes it. No
+      second Google account is needed.
+
+  C. Reusable report/block UI (module exports; contract fixed here)
+  C1. `ReportSheet` — bottom-sheet overlay, props:
+      `{ target: { type: ReportTargetType; id: string; ownerId: string };
+      onClose(): void; onReported?(): void }`. Shows the seven reasons as a
+      single-select list; picking `other` reveals a details box (max 500
+      chars; optional for the other reasons); Submit is disabled until a
+      reason is chosen (and details are non-blank for `other`). On success
+      it shows the sent confirmation, then closes. It refuses to open or
+      submit when `ownerId` is the signed-in user (defence in depth; the DB
+      also rejects it).
+  C2. States, per DESIGN.md §2/§7: idle, submitting (Submit uses the
+      `Button` loading convention, list disabled), sent, error (inline
+      `ErrorCard` with retry; chosen reason and typed details are kept).
+      Filing a report the user already filed for the same target (unique
+      violation) shows the same sent confirmation — not an error, and the
+      user learns nothing about existing reports.
+  C3. `useBlockUser(userId)` + `BlockUserSheet` confirm overlay, props
+      `{ userId: string; displayName?: string; onClose(): void;
+      onBlocked?(): void }`. Confirm inserts the block; blocking someone
+      already blocked is a silent success (idempotent); cancel and
+      double-tap are safe; self-block is refused in the hook and by the DB.
+  C4. `useBlockedUsers()` returns the caller's block list with each blocked
+      user's display name, usertag and photo (a second read of `profiles`
+      by id — the FK points at auth.users, so there is no embed), and
+      `unblock(userId)`.
+  C5. Blocked users screen, reachable from a new Settings row "Blocked
+      users" (Account section): lists blocked users with an Unblock button
+      each; all four DESIGN.md §2 states (loading, empty, error + retry,
+      filled); unblock shows a row-level busy state and, on failure, keeps
+      the row and shows an error. Route added to DESIGN.md §3 by Dianne in
+      Phase 0 (as Build 7 added `edit.tsx`). **NEEDS JUSTIN
+      (interpretation):** Settings has no such row today. It is the only
+      way to undo a block and the only place a block can be checked
+      on-device before Build 24; I read it as part of "block-a-user UI"
+      (this Build's original text; RESEARCH.md §6 "in-app user blocking")
+      rather than a new feature. If it is read as a feature add, the
+      fallback is unblock in the dev harness only — which would ship a
+      block with no way back, so I do not recommend it.
+  C6. Dev harness — the only way to exercise C1-C4 on the emulator before
+      Builds 24-27 create real surfaces. A `ModerationDevHarness` component
+      in the module, rendered from `src/app/debug.tsx` (already reachable
+      only through the `__DEV__`-gated link on Home) and returning null
+      when `__DEV__` is false. It lists other profiles (readable under the
+      existing profiles RLS), lets QA pick one, then buttons open
+      `ReportSheet` for each target_type (a random uuid stands in for a
+      comment/DM/caption id, since target_id has no FK) and
+      `BlockUserSheet` for the picked user. It is not part of the product:
+      Queenie tests on the dev build (Metro), and Ruby/Manager grep the
+      release bundle for the harness's marker string and find nothing.
+  C7. Nothing is wired to a product surface in this Build. The exported
+      contract is what Builds 24 (profile), 25 (comments), 27 (DMs) and the
+      future collection-entry view call. The module `README.md` documents
+      the props, the reason list, the helper functions and the doc-update
+      duty.
+  C8. Deleting the account needs no client cleanup (A9). Sign-out clears
+      the blocked-users cache (query keys tagged with the owner, as
+      `useOwnProfile` does).
+
+What Build 10 enforces now vs later. **Now:** the tables and their RLS; the
+`is_blocked_between` helper; that nobody can read reports; that a block is
+private to the blocker; no self-report or self-block; cascades. **Not now:**
+anything that hides or rejects content because of a block — no comment, DM
+or other-user surface exists to hide or reject. Deferred, by Build: 24 wires
+Report/Block into the profile modal; 25 comments — hide a blocked user's
+comments from the blocker and reject inserts when `is_blocked_between` is
+true; 27 DMs — the same on messages and conversation lists; 28 DM block
+enforcement as already planned (a blocked user cannot open or send in a
+thread, in RLS). Build 23 (follow): whether blocking removes a follow is not
+specified anywhere — flagged to the Manager, not decided here.
+
+Test on: emulator (dev build; harness + Settings > Blocked users) plus
+  `moderation_rls.sql` and Jest for the components/hooks
+Needs from Justin: (1) once, open `docs/ADMIN-MODERATION.md`, confirm you
+  can open the Supabase SQL editor for the project and run query (a)
+  (Build 10, before Phase 4). (2) Nothing else — the Manager applies the
+  migration; no new credentials (Credentials/perchable already holds the
+  Supabase access token); QA needs two other profiles, which the Manager
+  seeds via the Admin API (throwaway email-provider users, deleted after).
+Failure modes to cover (Manager expands into the Build log):
+  - Report: dismiss mid-submit (no state update after unmount, result not
+    applied, no double row); offline / server error (sheet stays open,
+    choices kept, retry works); double-tap Submit (one row); repeat report
+    of the same target (shows sent, no error); `other` without details
+    (blocked in UI and by the CHECK); 501-char details; report against
+    self (refused in UI, rejected by DB).
+  - Block: cancel; double-tap Confirm; already blocked (silent success);
+    self-block; nonexistent user id (FK error -> error state, not a
+    crash); leave the screen mid-unblock; unblock fails offline (row
+    stays); blocked user has null name/photo (fallback initials + fallback
+    name copy from DESIGN.md).
+  - Signed-out / account switch: caches cleared; anon cannot read either
+    table.
+  - Sentry: unexpected failures only (not duplicates, validation, or user
+    cancel); never send the details text as event data; environment tag.
+  - Security: spoofed reporter_id / blocker_id rejected; `reports` and other
+    users' blocks unreadable; helper returns false for pairs not involving
+    the caller; migration touches only the new tables and functions (no
+    `config.toml` push — app CLAUDE.md).
+  - Cleanup: cascade proven live for both columns of each table.
+  - Release build contains no harness code.
+Phases: 0 Dianne mockup (ReportSheet all states; BlockUserSheet; Blocked
+        users screen 4 states; the Settings row; "sent" copy) ·
+        1 Bella build · 2 Bella gates (tsc, lint, jest, SQL tests,
+        admin-doc queries) · 3 Queenie QA · 4 Ruby review · 5 Manager ships
 ```
 
 ```
 Build 11 — UGC terms acceptance           Module: Moderation base
-Done means: a terms screen (defines objectionable content) must be accepted
-  before a user's first comment/DM; `profiles.terms_accepted_at` is set on
-  acceptance; RLS on comments/DMs INSERT rejects rows where
-  terms_accepted_at is null.
-Test on: emulator
-Needs: nothing
+Done means (checkable):
+  A. Database (migration reviewed + applied by the Manager;
+     `supabase/tests/terms_gate_rls.sql`, rolled back)
+  A1. `profiles.terms_accepted_at timestamptz` exists, null for every
+      existing and new profile (Justin's and the emulator's included —
+      everyone accepts once).
+  A2. It is not client-writable. The existing column-limited update grant
+      (display_name, avatar_url, usertag — Build 6) is left as is, and a
+      test proves `update profiles set terms_accepted_at = now()` as an
+      authenticated user is denied. Acceptance goes only through
+      `public.accept_terms()`: SECURITY DEFINER, empty search_path, EXECUTE
+      for `authenticated` only, sets the caller's own timestamp to now()
+      only if it is currently null (a second call keeps the first
+      timestamp), returns the timestamp.
+  A3. `public.has_accepted_terms()` (SECURITY DEFINER, STABLE, empty
+      search_path, `authenticated` only) is true when the caller's
+      terms_accepted_at is not null. Every UGC INSERT policy calls it.
+  A4. **The rule "INSERT rejected while terms_accepted_at is null" is
+      proven now, on a stand-in.** The rolled-back test creates a temporary
+      table carrying the exact policy shape later Builds must use
+      (`WITH CHECK (public.has_accepted_terms() AND author_id = auth.uid()
+      AND NOT public.is_blocked_between(...))`) and shows: insert rejected
+      while null, allowed after `accept_terms()`, another user's acceptance
+      does not count, and a null-terms user can still SELECT. Builds
+      20/25/27 reuse this file as their template (Carry-forward rules).
+
+  B. Terms screen and gate (client, `src/modules/moderation/`)
+  B1. A terms screen with: a plain-language definition of objectionable
+      content built from `OBJECTIONABLE_CATEGORIES` (same seven categories
+      as the report reasons, rendered from the constant, not retyped); how
+      to report and block; that reported content can be removed and
+      accounts banned; who operates the app (Justin). Copy is written by
+      Dianne in DESIGN.md (verbatim table) and **approved by Justin**
+      (Needs from Justin). It is not legal advice; it is the Play-policy
+      minimum (RESEARCH.md §6), and Justin may want a proper terms text
+      before store submission.
+  B2. States: not accepted (shows "I agree"), accepting (loading), accepted
+      (no button; "Accepted on <date>"), error (inline error + retry;
+      screen stays open). No "decline" control: leaving the screen means
+      not accepted.
+  B3. `useTermsGate()` exported from the module's `index.ts`:
+      `{ accepted: boolean; isLoading: boolean; requireTerms(onAccepted):
+      void }`. If accepted, `requireTerms` runs the callback immediately.
+      If not, it opens the terms screen and runs the callback exactly once
+      after a successful acceptance; if the user backs out, nothing runs.
+      While the profile read is loading or has failed it fails closed
+      (treated as not accepted, never as accepted).
+  B4. Reachable now, for QA and for users: a Settings row "Terms &
+      community rules" (Account section) opens the screen in view mode
+      (accept button if not yet accepted, accepted date if accepted).
+      **NEEDS JUSTIN (interpretation):** a row Justin did not list; needed
+      because the objectionable-content definition must be readable at any
+      time (RESEARCH.md §6) and it is the only non-fake place to reach the
+      screen before Build 25. The `terms` route sits under the session
+      guard in the root layout; Dianne adds it to DESIGN.md §3 in Phase 0.
+  B5. The dev harness (Build 10, `__DEV__` only) gains a "Simulate first
+      comment" button that calls `requireTerms`: with terms not accepted it
+      opens the screen and, after acceptance, shows "action ran"; with
+      terms accepted it runs at once. This proves the gate on the emulator
+      before a real comment box exists.
+  B6. After acceptance the timestamp is visible in `profiles` (Manager
+      checks the row) and survives app restart; sign-out and a different
+      account see their own state (query keys owner-tagged).
+
+Test on: emulator (Settings row, terms screen, harness gate) plus
+  `terms_gate_rls.sql` and Jest for the hook and screen
+Needs from Justin: read the terms copy in Dianne's Phase 0 mockup and say
+  OK or give changes (Build 11, before Phase 1). Nothing else.
+Failure modes to cover (Manager expands):
+  - Accept: offline / server error (screen stays, retry); double-tap "I
+    agree" (one write; timestamp unchanged by a second call); leave the
+    screen mid-accept (callback never runs twice; no state update after
+    unmount); accept succeeds but the profile refetch fails (gate must not
+    stay stuck, nor treat a failed read as accepted).
+  - Gate: backing out runs nothing; called twice quickly; called while
+    loading; profile row missing.
+  - Security: client cannot set terms_accepted_at; another user's
+    acceptance never counts; anon cannot call either function; the
+    functions take no user-id argument (they always act on auth.uid()).
+  - Sentry: only unexpected accept failures, environment tag, no user text.
+  - Cleanup: none (column on `profiles`; cascade unchanged).
+  - Carry-forward: the README checklist and the Build 20/25/27 pointers
+    below exist before this Build is closed.
+Phases: 0 Dianne mockup (terms screen 4 states + Settings row + copy) ·
+        1 Bella build · 2 Bella gates (tsc, lint, jest, SQL test) ·
+        3 Queenie QA · 4 Ruby review · 5 Manager ships
 ```
+
+**Carry-forward rules for later Builds (so nothing in Module 3 can be
+forgotten).** These are rules for Builds 20, 24, 25, 27, 28; the Manager
+copies them into those Builds' failure lists and briefs. They add no
+features.
+1. Every table holding content another user can read (captions, comments,
+   DM messages) gets an INSERT policy that calls
+   `public.has_accepted_terms()`, and its Build's SQL test copies
+   `terms_gate_rls.sql` and asserts the insert is rejected on the *real*
+   table while `terms_accepted_at` is null. A migration without that test
+   is a Ruby FIX NEEDED.
+2. Comment and DM policies also call `public.is_blocked_between(...)`
+   (Build 25 comments; Builds 27-28 DMs); their tests prove both
+   directions of a block.
+3. Every UGC surface exposes a report entry point that opens `ReportSheet`
+   with the right `target` (24 profile; 25 comment; 27 DM message;
+   collection entry/caption wherever another user's collection is shown),
+   and Build 24 also wires the block action (`BlockUserSheet`).
+4. Every UGC composer calls `useTermsGate().requireTerms` before its first
+   submit.
+5. Each such Build adds its own "remove this content" query to
+   `docs/ADMIN-MODERATION.md`, tested in a rolled-back transaction.
+
+### Modules 4–12 — rough (one line each, detailed when the team reaches them)
 
 ```
 Build 12 — Home poster grid               Module: Movie browse/details
@@ -506,3 +820,4 @@ this is marked NEEDS JUSTIN.
 - 2026-09-24 (Manager): section 6 reframed at Justin's request — service setup is done by the Manager in Justin's Chrome; Justin only for new-account signup, passwords, terms acceptance, payment.
 - 2026-09-24 (Manager, Justin's decision in chat): design direction = Proposal A "Night Owl Arcade" with glassmorphism surfaces. Three inspo features added as **UI shells only** in v1 (visible, not functional): Perch Roulette (Home), S/A/B tier badges (details/collection), #spoiler-free-lounge (details). They ride inside the existing screen Builds (Home grid, details, collection) — no new Builds; wiring them is post-v1.
 - 2026-09-25 (Manager, from Build 2 review): Build 5 Done-means also includes Supabase's AppState auto-refresh listener (`supabase.auth.startAutoRefresh()` on foreground / `stopAutoRefresh()` on background) so sessions refresh correctly on Android.
+- 2026-09-30 (Priya, at the Manager's request): detailed Builds 10-11 (Module 3) in section 5; rough one-liners replaced. No Build number, order or feature removed. **NEEDS JUSTIN (interpretation, not silently applied):** two Settings rows the Done-means implies but never named - "Blocked users" (Build 10: list + unblock) and "Terms & community rules" (Build 11: read/accept). Added, as infrastructure not features: `docs/ADMIN-MODERATION.md`, the SQL helper functions, the dev-only harness, and five Module 3 carry-forward rules for Builds 20/24/25/27/28.
