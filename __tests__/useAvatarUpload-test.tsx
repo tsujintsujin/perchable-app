@@ -157,4 +157,51 @@ describe("useAvatarUpload", () => {
     expect(screen.getByTestId("state").props.children).toContain('"idle"');
     expect(mockPrepareAvatar).not.toHaveBeenCalled();
   });
+
+  // Busy must start before the picker opens so Save is disabled in the gap
+  // between the crop closing and the picker promise resolving.
+  it("is uploading while the picker promise is pending, and idle again after a picker cancel", async () => {
+    let resolvePick: (v: { uri: string } | null) => void = () => {};
+    mockPickAvatar.mockReturnValue(new Promise((resolve) => (resolvePick = resolve)));
+    await render(<Harness initialAvatarUrl={null} />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick" }));
+    });
+    expect(screen.getByTestId("state").props.children).toContain('"uploading"');
+
+    await act(async () => resolvePick(null));
+    expect(screen.getByTestId("state").props.children).toContain('"idle"');
+    expect(mockUploadAvatar).not.toHaveBeenCalled();
+  });
+
+  it("shows an error state when the picker throws", async () => {
+    mockPickAvatar.mockRejectedValue(new Error("picker failed"));
+    await render(<Harness initialAvatarUrl={null} />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick" }));
+    });
+
+    await waitFor(() => expect(screen.getByTestId("state").props.children).toContain('"error"'));
+  });
+
+  it("never uploads when cancelled while the resize is pending", async () => {
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    let finishResize: (r: { uri: string }) => void = () => {};
+    mockPrepareAvatar.mockReturnValue(new Promise((resolve) => (finishResize = resolve)));
+    await render(<Harness initialAvatarUrl={null} />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick" }));
+    });
+    await waitFor(() => expect(mockPrepareAvatar).toHaveBeenCalled());
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "cancel" }));
+    });
+    await act(async () => finishResize({ uri: "file:///small.jpg" }));
+
+    expect(mockUploadAvatar).not.toHaveBeenCalled();
+    expect(screen.getByTestId("state").props.children).toContain('"idle"');
+  });
 });

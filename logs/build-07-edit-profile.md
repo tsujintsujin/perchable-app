@@ -971,3 +971,44 @@ Lost-upload (QA 2 observation 2): 10 uploads this session (6 race runs + 4 norma
 
 ### Verdict (QA 3)
 PARTIAL — Bug 3 font regression is fixed (item 1); the Save race is reduced but not eliminated (item 2, 1 of 7); items 3 and 4 pass.
+
+## Build 7 · Bug 3, round 2 — race closed (Bella)
+Base SHA: 71112d4.
+
+### Cause
+QA 3 lost 1 of 7 photos. The gap is between Android closing the crop activity and the JS picker promise resolving; no state set after `pickAvatarAsset()` returns can cover it.
+
+### Fix (`src/modules/profile/hooks/useAvatarUpload.ts`, `pickAvatar.ts`)
+1. **Busy before the picker opens:** `pickAndUpload` sets `uploading` first (the picker covers the screen, so nothing visible changes) and back to idle when the picker returns null. A picker that throws goes to the error state.
+2. **Permission gate removed** from `pickAvatarAsset`: expo-image-picker's `ImagePicker.d.ts:77` says `launchImageLibraryAsync` needs the media-library permission on iOS 10 only, so the gate only added a silent do-nothing path.
+3. **Cancel token instead of a boolean:** `runRef` is bumped by every new run and by `cancel()`; a run is stale if its number changed or the component unmounted (`mountedRef`, a ref because it is read in async code). This stops an old run from being revived when a new run starts after a Cancel.
+4. **Cancel frees the busy state:** `cancel()` resets `photo` to idle when still mounted, so `isUploading` can't stay stuck; nothing is set after unmount.
+
+### Tests (`__tests__/useAvatarUpload-test.tsx`)
+Uploading while the picker promise is pending and idle after a picker cancel; picker throws gives error; cancel while the resize is pending never uploads. Checked that this last test fails (1 failed) when the post-resize stale check is removed, and passes with it restored.
+
+### Failure modes
+| Case | Handling |
+|---|---|
+| Save tapped between crop closing and promise resolving | already busy, Save disabled |
+| Picker cancelled | idle, Save re-enabled |
+| Picker throws | error state, Sentry |
+| Cancel during resize / upload | run stale, no upload / uploaded object deleted, idle |
+| Unmount mid-run | stale, no setState |
+
+### On-device race test (td_emu, own Metro)
+Same chain as Queenie: change usertag, tap avatar, pick, crop, then in the same adb call the CROP tap followed by 25 `input tap` on Save. 10 runs. After each run I queried the DB with `supabase db query --linked` (token from Credentials, not logged): `avatar_url` and the object count in `storage.objects` for bucket `avatars`.
+**Tally: 10/10 — `avatar_url` changed every run, bucket held exactly 1 object every run.** Usertag reset to `justin94test` at the end (DB confirms; `avatar_url` still the last upload, 1 object). Screenshot: `evidence/build-07/bug3r2-race.png` (final My Profile). Nothing written to /sdcard. The usertag itself did not change in every run (my script's Save tap after the chain sometimes landed before the availability check finished); the photo criterion is unaffected.
+
+### Spec-trace
+| Item | Where | Test |
+|---|---|---|
+| Busy before picker | `useAvatarUpload.ts` setPhoto before `pickAvatarAsset` | pending-picker test |
+| Picker cancel to idle | same, `!asset` branch | same test |
+| Picker throws to error | catch | picker-throws test |
+| No permission gate | `pickAvatar.ts` | n/a |
+| Cancel during resize | `isStale()` after `prepareAvatar` | cancel-during-resize test |
+| Cancel resets idle, no setState after unmount | `cancel`, `mountedRef` | cancel tests |
+
+### Gates
+tsc pass, lint pass, jest 11 suites / 50 tests, 0 "act(" and 0 console.warn/error in the full output (stdout+stderr). Metro stopped, 8081 free.

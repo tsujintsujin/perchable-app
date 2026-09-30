@@ -7,49 +7,59 @@ import { Sentry } from "@/lib/sentry";
 
 type PhotoState = { state: "idle" } | { state: "uploading" } | { state: "error" };
 
-/** Full pick → upload → save → cleanup flow; every await checks `cancelledRef`. */
+/** Full pick → resize → upload → save → cleanup flow; every await checks whether this run went stale. */
 export function useAvatarUpload(userId: string | undefined, initialAvatarUrl: string | null | undefined) {
   const [avatarUrlOverride, setAvatarUrlOverride] = useState<string | null | undefined>(undefined);
   const [photo, setPhoto] = useState<PhotoState>({ state: "idle" });
-  const cancelledRef = useRef(false);
+  // Bumped by cancel() and by each new run, so an older run can tell it was superseded.
+  const runRef = useRef(0);
+  // Ref, not state: read inside async code to avoid setState after unmount.
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
-      cancelledRef.current = true;
+      mountedRef.current = false;
     };
   }, []);
 
   const avatarUrl = avatarUrlOverride !== undefined ? avatarUrlOverride : initialAvatarUrl;
   const isUploading = photo.state === "uploading";
 
+  // Invalidates the in-flight run and frees the busy state if the screen is still open.
   const cancel = () => {
-    cancelledRef.current = true;
+    runRef.current += 1;
+    if (mountedRef.current) setPhoto({ state: "idle" });
   };
 
   const pickAndUpload = async () => {
     if (isUploading || !userId) return;
-    cancelledRef.current = false;
-    // What this attempt would replace, captured now — stable for the rest
-    // of this call regardless of what the pick/upload below does later.
+    const run = ++runRef.current;
+    const isStale = () => runRef.current !== run || !mountedRef.current;
+    // What this attempt would replace, captured now.
     const previousAvatarUrl = avatarUrl;
+    // Busy before the picker opens: Android closes the crop screen slightly before the promise resolves.
+    setPhoto({ state: "uploading" });
     try {
       const asset = await pickAvatarAsset();
-      if (cancelledRef.current) return;
-      if (!asset) return; // cancelled or permission denied — not an error
+      if (isStale()) return;
+      if (!asset) {
+        // Picker cancelled — not an error.
+        setPhoto({ state: "idle" });
+        return;
+      }
 
-      // Busy from here so Save stays disabled while the resize runs.
-      setPhoto({ state: "uploading" });
       const prepared = await prepareAvatar(asset.uri);
-      if (cancelledRef.current) return;
+      if (isStale()) return;
       const publicUrl = await uploadAvatar(userId, prepared.uri);
-      if (cancelledRef.current) {
+      if (isStale()) {
         // Already landed in Storage under a unique path — clean it up.
         await deleteAvatarObject(userId, publicUrl);
         return;
       }
 
       await updateProfile(userId, { avatarUrl: publicUrl });
-      if (cancelledRef.current) return;
+      if (isStale()) return;
       setAvatarUrlOverride(publicUrl);
       setPhoto({ state: "idle" });
       // Clean up the photo this replace just superseded.
@@ -57,7 +67,7 @@ export function useAvatarUpload(userId: string | undefined, initialAvatarUrl: st
         await deleteAvatarObject(userId, previousAvatarUrl);
       }
     } catch (err) {
-      if (cancelledRef.current) return;
+      if (isStale()) return;
       Sentry.captureException(err);
       setPhoto({ state: "error" });
     }

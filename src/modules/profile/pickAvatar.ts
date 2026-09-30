@@ -5,12 +5,8 @@ import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 const MAX_DIMENSION = 512;
 const JPEG_QUALITY = 0.8;
 
-/** Opens the OS photo picker with a native 1:1 crop. Returns `null` on
- * cancel/denied permission. */
+/** Opens the OS photo picker with a native 1:1 crop. Returns `null` on cancel. */
 export async function pickAvatarAsset(): Promise<{ uri: string } | null> {
-  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (!permission.granted) return null;
-
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
     allowsEditing: true,
