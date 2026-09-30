@@ -91,10 +91,12 @@ describe("useAvatarUpload", () => {
 
     await act(async () => {
       fireEvent.press(screen.getByRole("button", { name: "pick" }));
-      await waitFor(() => expect(mockUploadAvatar).toHaveBeenCalled());
     });
+    await waitFor(() => expect(mockUploadAvatar).toHaveBeenCalled());
 
-    fireEvent.press(screen.getByRole("button", { name: "cancel" }));
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "cancel" }));
+    });
 
     await act(async () => {
       resolveUpload("https://cdn.example/avatars/u1/avatar-cancelled.jpg");

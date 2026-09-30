@@ -13,15 +13,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Follows the auth listener only; its INITIAL_SESSION event (null when signed out) ends loading.
   useEffect(() => {
-    supabase.auth
-      .getSession()
-      .then(({ data }) => setSession(data.session))
-      .catch(() => setSession(null))
-      .finally(() => setIsLoading(false));
-
     const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
+      setIsLoading(false);
     });
 
     return () => listener.subscription.unsubscribe();

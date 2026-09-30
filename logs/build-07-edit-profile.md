@@ -821,3 +821,41 @@ came from the source image, not the pipeline:
 - Fix is process: 247 QA files moved from `/sdcard` to `/data/local/tmp/qa`
   (gallery now holds only `Pictures/test-avatar.*`); `queenie.md` now forbids
   saving to `/sdcard`. Added to LESSONS.md.
+
+## Build 7 · Bug 2 — session storage and auth ordering (Bella)
+Base SHA: 0fb1f71 (branch `module/auth`). The blank avatar was diagnosed as not a code bug; the avatar pipeline was not touched.
+
+### a. act() warnings
+- **Cause:** the cancel-mid-upload test awaited `waitFor` inside `act(async …)`, which overlaps act scopes and let the "uploading" state update land outside act.
+- **Fix:** `__tests__/useAvatarUpload-test.tsx` — the pick and cancel presses each get their own awaited `act`, and `waitFor` runs outside them. The test still asserts `updateProfile` is never called and the uploaded object is deleted exactly once.
+- **Evidence:** full `npx jest` output, `grep -c "act("` = **0**.
+
+### b. Legacy plaintext session
+- **What:** `LargeSecureStore.getItem` (`src/lib/supabase.ts`) now removes the AsyncStorage entry (via `removeItem`, which also clears SecureStore) and returns null when the value can't be decrypted.
+- **Why:** Builds 1–7 left the session as plain JSON on disk until the next sign-in. Deleting it on first read means a plaintext token doesn't outlive the upgrade.
+- **Also:** hex validation (`HEX_PATTERN`) so a corrupt value is caught instead of decrypting to garbage.
+- Tests: `__tests__/LargeSecureStore-test.ts` (plaintext removed, encrypted round-trip, empty storage removes nothing, corrupt hex, SecureStore throws, removeItem clears both).
+
+### c. AuthProvider ordering
+- **Checked:** `node_modules/@supabase/auth-js/dist/main/GoTrueClient.js` `onAuthStateChange` awaits initialisation, then `_emitInitialSession` calls the callback with `INITIAL_SESSION` and the session, or with `null` on no session or on error. It always fires.
+- **Fix:** `getSession()` removed; `src/modules/auth/AuthProvider.tsx` sets session and `isLoading=false` from the listener only, so there is one writer and a stale result can't overwrite a newer session. The cleanup `unsubscribe()` removes the emitter, so no setState after unmount.
+- Tests: `__tests__/AuthProvider-test.tsx` (loading until the first event; clears on INITIAL_SESSION null and non-null; later SIGNED_OUT applies; unsubscribe on unmount).
+
+### Failure modes
+| Failure | Handling |
+|---|---|
+| Corrupt / undecryptable value (bad hex) | `_decrypt` returns null, entry removed via `removeItem`, user signed out, no crash. Test: corrupt-hex case. |
+| SecureStore throws | Caught in `getItem`, `Sentry.captureException`, returns null, user lands on sign-in. Entry is kept in case the failure is transient. Test: throws case. |
+| Cold launch with a valid encrypted session | Still signed in. Test: round-trip. On device: force-stop, relaunch, Home then Profile shows @justin94test (`logs/evidence/build-07/bug2-relaunch.png`). |
+| Sign-out (`removeItem`) | Still clears both stores. Test: removeItem case. |
+
+### Spec-trace
+| Item | Implemented | Tested |
+|---|---|---|
+| a. zero act() warnings | `__tests__/useAvatarUpload-test.tsx` cancel test | jest output, 0 matches |
+| b. plaintext removed, null returned | `src/lib/supabase.ts` `getItem` | `LargeSecureStore-test.ts` plaintext / round-trip / empty |
+| c. no stale overwrite, isLoading from listener | `src/modules/auth/AuthProvider.tsx` effect | `AuthProvider-test.tsx` |
+
+### Gates
+`npx tsc --noEmit` pass. `npx expo lint` pass. `npx jest` pass, 10 suites / 39 tests, 0 "act(" matches. App bundled on Metro (1975 modules) and launched on td_emu; Metro stopped.
+Files outside the listed scope touched: none. Note: `MSYS_NO_PATHCONV=1` is needed for `/data/local/tmp` paths in Git Bash.
