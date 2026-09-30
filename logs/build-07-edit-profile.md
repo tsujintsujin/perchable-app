@@ -837,7 +837,8 @@ Base SHA: 0fb1f71 (branch `module/auth`). The blank avatar was diagnosed as not 
 - Tests: `__tests__/LargeSecureStore-test.ts` (plaintext removed, encrypted round-trip, empty storage removes nothing, corrupt hex, SecureStore throws, removeItem clears both).
 
 ### c. AuthProvider ordering
-- **Checked:** `node_modules/@supabase/auth-js/dist/main/GoTrueClient.js` `onAuthStateChange` awaits initialisation, then `_emitInitialSession` calls the callback with `INITIAL_SESSION` and the session, or with `null` on no session or on error. It always fires.
+- **Checked:** auth-js `onAuthStateChange` awaits initialisation then `_emitInitialSession` calls the callback with `INITIAL_SESSION`. It does NOT always fire: `_useSession` / `__loadSession` are try/finally with no catch, and the callback try/catch does not wrap them, so if storage `getItem` rejects, INITIAL_SESSION never fires and `isLoading` would stay true forever (round 2 finding).
+- **Root fix (round 2):** `LargeSecureStore.getItem` is now guaranteed never to reject — every failure is reported to Sentry and returns null, so INITIAL_SESSION always fires.
 - **Fix:** `getSession()` removed; `src/modules/auth/AuthProvider.tsx` sets session and `isLoading=false` from the listener only, so there is one writer and a stale result can't overwrite a newer session. The cleanup `unsubscribe()` removes the emitter, so no setState after unmount.
 - Tests: `__tests__/AuthProvider-test.tsx` (loading until the first event; clears on INITIAL_SESSION null and non-null; later SIGNED_OUT applies; unsubscribe on unmount).
 
@@ -859,3 +860,20 @@ Base SHA: 0fb1f71 (branch `module/auth`). The blank avatar was diagnosed as not 
 ### Gates
 `npx tsc --noEmit` pass. `npx expo lint` pass. `npx jest` pass, 10 suites / 39 tests, 0 "act(" matches. App bundled on Metro (1975 modules) and launched on td_emu; Metro stopped.
 Files outside the listed scope touched: none. Note: `MSYS_NO_PATHCONV=1` is needed for `/data/local/tmp` paths in Git Bash.
+
+### Round 2 (Ruby's review)
+Base 64fa661. No emulator/Metro used; unit tests only.
+- **getItem never rejects** (`src/lib/supabase.ts`): AsyncStorage read, SecureStore read and the purge sit inside one try; any error goes to Sentry and returns null.
+- **Two failure kinds separated:** SecureStore I/O error (`getItemAsync` throws) keeps the entry (transient), Sentry, null. Decrypt failure (aes-js throws, e.g. wrong key length, or bad hex) is undecryptable, so purge and null, no Sentry (expected, self-heals).
+- **removeItem** attempts both deletes with `Promise.allSettled` and rethrows the first failure, so sign-out clears what it can.
+- Comments wrapped to two lines.
+
+| Failure | Handling |
+|---|---|
+| AsyncStorage.getItem rejects | Sentry, resolves null, user on sign-in. Test. |
+| Purge (removeItem / deleteItemAsync) rejects | Sentry, resolves null. Test. |
+| Key of wrong length | aes-js throws, treated as undecryptable, purged, null. Test. |
+| SecureStore getItemAsync throws | Entry kept, Sentry, null. Test. |
+| removeItem: AsyncStorage throws | SecureStore key still deleted, error rethrown. Test. |
+
+Gates: tsc pass, lint pass, jest 10 suites / 43 tests; full output (stdout+stderr) has 0 "act(" and 0 console.warn/error.

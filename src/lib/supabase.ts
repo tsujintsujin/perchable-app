@@ -31,37 +31,45 @@ class LargeSecureStore {
     return aesjs.utils.hex.fromBytes(encryptedBytes);
   }
 
-  // Returns null when the stored value cannot be decrypted (no key, malformed hex).
-  private async _decrypt(key: string, value: string) {
-    const encryptionKeyHex = await SecureStore.getItemAsync(key);
-    if (!encryptionKeyHex || !HEX_PATTERN.test(value)) return null;
-    const cipher = new aesjs.ModeOfOperation.ctr(
-      aesjs.utils.hex.toBytes(encryptionKeyHex),
-      new aesjs.Counter(1),
-    );
-    const decryptedBytes = cipher.decrypt(aesjs.utils.hex.toBytes(value));
-    return aesjs.utils.utf8.fromBytes(decryptedBytes);
+  // Decrypts with the stored AES key; null when the value or key is malformed.
+  private _decrypt(encryptionKeyHex: string, value: string) {
+    if (!HEX_PATTERN.test(value)) return null;
+    try {
+      const cipher = new aesjs.ModeOfOperation.ctr(
+        aesjs.utils.hex.toBytes(encryptionKeyHex),
+        new aesjs.Counter(1),
+      );
+      return aesjs.utils.utf8.fromBytes(cipher.decrypt(aesjs.utils.hex.toBytes(value)));
+    } catch {
+      return null;
+    }
   }
 
-  // Reads the session; a value that cannot be decrypted (legacy plaintext, corrupt) is removed and treated as signed out.
+  // Reads the session and never rejects: supabase-js hangs its startup if storage throws.
+  // Undecryptable values are purged; storage I/O errors keep the entry, go to Sentry, sign out.
   async getItem(key: string) {
-    const encrypted = await AsyncStorage.getItem(key);
-    if (!encrypted) return null;
     try {
-      const decrypted = await this._decrypt(key, encrypted);
+      const stored = await AsyncStorage.getItem(key);
+      if (!stored) return null;
+      const encryptionKeyHex = await SecureStore.getItemAsync(key);
+      const decrypted = encryptionKeyHex ? this._decrypt(encryptionKeyHex, stored) : null;
       if (decrypted !== null) return decrypted;
+      await this.removeItem(key);
+      return null;
     } catch (error) {
-      // Unexpected SecureStore failure: keep the entry (may be transient) and sign the user out for this launch.
       Sentry.captureException(error);
       return null;
     }
-    await this.removeItem(key);
-    return null;
   }
 
+  // Clears both stores even if one delete fails, then rethrows the first failure.
   async removeItem(key: string) {
-    await AsyncStorage.removeItem(key);
-    await SecureStore.deleteItemAsync(key);
+    const results = await Promise.allSettled([
+      AsyncStorage.removeItem(key),
+      SecureStore.deleteItemAsync(key),
+    ]);
+    const failed = results.find((r) => r.status === "rejected");
+    if (failed) throw failed.reason;
   }
 
   async setItem(key: string, value: string) {
