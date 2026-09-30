@@ -499,3 +499,50 @@ d_unban_returning | {"email":"y@example.test","banned_until":null}
 ## Disagreements / notes
 - None on substance. Note: the doc says the SQL editor shows only the last statement; that is the editor's documented behaviour, confirmed by the final-select design, but I did not open the Dashboard to see it.
 - Query (a) now exposes the reported user's email to the admin; fine for the admin, flagged because it is personal data.
+
+---
+# Build 10a · Bug 2 (Bella): default privileges left on public.profiles
+
+Base: 0953808. Nothing applied live; no emulator.
+
+**Cause.** The Build 6 migration granted select and column-level update on `public.profiles` but never revoked the
+project's default privileges, so `anon` and `authenticated` still hold TRUNCATE, REFERENCES and TRIGGER (found by
+Bug 1's mutation check, verified live by the Manager). Not reachable through PostgREST, but it must not be there.
+
+**Fix.** New migration `supabase/migrations/20260930010000_profiles_revoke_default_privileges.sql`:
+`revoke truncate, references, trigger on public.profiles from anon, authenticated;` only. I did not `revoke all` and
+re-grant: the test proves the end state is otherwise unchanged (authenticated select true, column update only on
+display_name / avatar_url / usertag, no INSERT/DELETE for either role).
+
+**Step 2: read-only listing of everything in `public` (live, before the migration).** Query used
+`pg_class` + `has_table_privilege` / `has_sequence_privilege` for anon and authenticated:
+```
+kind | name     | anon privileges             | authenticated privileges
+r    | profiles | TRUNCATE,REFERENCES,TRIGGER | SELECT,TRUNCATE,REFERENCES,TRIGGER
+```
+`public` holds exactly one table (`profiles`), no views, no materialised views, no sequences. So `profiles` is the only
+residue and the migration covers it. (The moderation tables are not live yet; their revoke is already in that migration.)
+Also listed (not changed, outside "tables/views/sequences"): functions in `public` with EXECUTE for anon / authenticated:
+`rls_auto_enable()` true/true (a Supabase-created event-trigger function), `set_profiles_updated_at()` true/true
+(trigger function, cannot be called directly), `handle_new_user()` false/false (revoked in Build 6). Flagging
+`rls_auto_enable()` for the Manager to judge; I left it alone.
+
+**Test.** New `supabase/tests/profiles_privileges.sql` (one transaction: migration at the marker, assertions, rollback;
+run with `node supabase/tests/run-sql.mjs supabase/tests/profiles_privileges.sql --migration <the migration>`).
+Rows: for anon and authenticated, table TRUNCATE/REFERENCES/TRIGGER/INSERT/DELETE false, column INSERT and REFERENCES
+false; authenticated select true; anon select false (table and column level); anon no UPDATE; authenticated no
+table-level UPDATE; authenticated column UPDATE true for display_name/avatar_url/usertag and false for
+id/created_at/updated_at.
+- With the migration: **pass=24 fail=0**, exit 0.
+- Mutation (same file, run WITHOUT `--migration`): **pass=16 fail=8**, exit 1; the 8 FAIL rows are
+  TRUNCATE/REFERENCES/TRIGGER table rows and the column-REFERENCES row, for both anon and authenticated.
+
+**LESSONS.md** gained the line: every new table starts with `revoke all ... from anon, authenticated`, asserted with
+`has_table_privilege`.
+
+**Regression (with this migration applied inside the transaction).** `moderation_rls.sql` still **pass=94 fail=0**;
+profiles_rls.sql and avatars_storage_rls.sql give the same rows as baseline. tsc 0, lint 0, jest 19 suites / 132 tests,
+0 `act(`, 0 console warnings (regression only).
+
+**Files outside the Build's original scope:** the new migration and test touch `public.profiles` (a Build 6 object);
+that is exactly what this Bug is about. Nothing else.

@@ -96,3 +96,7 @@ Handle each one up front; say in the Build log how (or "n/a").
       `docs/ADMIN-MODERATION.md`, tested in a rolled-back transaction.
 - [ ] New functions used by RLS: `security definer`, `set search_path = ''`,
       `revoke all ... from public, anon`, `grant execute ... to authenticated`.
+- [ ] Every new table starts with `revoke all on public.<t> from anon, authenticated`
+      before any grant: this project's default privileges hand both roles
+      TRUNCATE/REFERENCES/TRIGGER (found on `profiles`, 10a Bug 2; RLS does not
+      guard TRUNCATE). The SQL test asserts it with `has_table_privilege`.
