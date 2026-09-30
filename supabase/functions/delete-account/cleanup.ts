@@ -30,3 +30,29 @@ export async function emptyFolder(bucket: Bucket, folder: string): Promise<void>
   }
   throw new Error("storage cleanup did not finish");
 }
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Reads the `sub` claim from a JWT payload without verifying it; null unless it is a UUID.
+ * Only safe because verify_jwt has already checked the signature and expiry. */
+export function subFromJwt(token: string): string | null {
+  try {
+    const payload = token.split(".")[1];
+    if (!payload) return null;
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const claims = JSON.parse(atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "=")));
+    return typeof claims.sub === "string" && UUID_PATTERN.test(claims.sub) ? claims.sub : null;
+  } catch {
+    return null;
+  }
+}
+
+/** True only when a getUserById result proves the user does not exist (not for other errors). */
+export function isUserGone(result: {
+  data: { user: unknown } | null;
+  error: { message: string; status?: number; code?: string } | null;
+}): boolean {
+  const { data, error } = result;
+  if (data?.user || !error) return false;
+  return error.status === 404 || error.code === "user_not_found" || /not.?found/i.test(error.message);
+}

@@ -3,7 +3,7 @@
 // the auth user is deleted, so a retry after a partial failure is safe.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { emptyFolder } from "./cleanup.ts";
+import { emptyFolder, isUserGone, subFromJwt } from "./cleanup.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -43,10 +43,18 @@ Deno.serve(async (req) => {
 
   // Resolve the caller from their own token — never trust a body-supplied id.
   const { data: userData, error: getUserError } = await admin.auth.getUser(token);
-  if (getUserError || !userData?.user) {
-    return json({ error: "Unauthorized" }, 401);
+  let uid: string;
+  if (userData?.user && !getUserError) {
+    uid = userData.user.id;
+  } else {
+    // verify_jwt has already checked the token, so its sub is the caller. If that user no
+    // longer exists, an earlier attempt finished: fall through to the idempotent cleanup below.
+    const sub = subFromJwt(token);
+    if (!sub || !isUserGone(await admin.auth.admin.getUserById(sub))) {
+      return json({ error: "Unauthorized" }, 401);
+    }
+    uid = sub;
   }
-  const uid = userData.user.id;
 
   try {
     // 1) Remove every object under avatars/<uid>/ via the Storage API —
