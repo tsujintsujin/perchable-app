@@ -16,10 +16,8 @@ type Status =
   | { state: "connected" }
   | { state: "error"; message: string };
 
-/** Round-trips to Supabase's auth settings endpoint — no table needed, so it
- * works before any schema exists and isn't blocked by RLS (which only
- * guards table data, not this endpoint). Proves the URL + anon key are both
- * valid: a bad URL fails to resolve/connect, a bad key gets a 401. */
+/** Round-trips to Supabase's auth settings endpoint to prove the URL + anon
+ * key are both valid — no table or RLS involved. */
 async function pingSupabase(url: string, apikey: string) {
   const response = await fetch(`${url}/auth/v1/settings`, {
     headers: { apikey },
@@ -48,7 +46,7 @@ export default function Debug() {
   const sendTestError = useCallback(() => {
     let eventId: string;
     try {
-      throw new Error("Perchable Build 4 test error — debug screen button");
+      throw new Error("Perchable debug test error");
     } catch (err) {
       eventId = Sentry.captureException(err);
     }

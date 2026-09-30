@@ -10,20 +10,14 @@ if (!dsn) {
 export function initSentry() {
   Sentry.init({
     dsn,
-    // Foundation module has no user flows yet to trace, and this app never
-    // sends PII — keep tracing off rather than sampling something with
-    // nothing worth tracing yet. Revisit once real screens exist.
+    // No user flows worth tracing yet, and this app never sends PII — keep
+    // tracing off.
     tracesSampleRate: 0,
-    // Send in dev too: Build 4's done-means is a dev-only test button whose
-    // event must reach the dashboard, and there's no separate prod build yet.
+    // Send in dev too — there's no separate prod build yet.
     enabled: true,
-    // Build 4 · Bug 1 (Ruby/Manager): without this, dev and prod errors land
-    // in one undistinguishable stream. __DEV__ is Metro's dev/release flag.
+    // Tags events by build type so dev and prod errors don't land in one
+    // undistinguishable stream. __DEV__ is Metro's dev/release flag.
     environment: __DEV__ ? "development" : "production",
-    // No SENTRY_AUTH_TOKEN available yet (Manager hasn't created one) — skip
-    // source map upload rather than fail the build. See logs/build-04-testing-sentry.md
-    // for the SENTRY_DISABLE_AUTO_UPLOAD=true env var this relies on (also a
-    // no-op for debug builds, which never run the upload task at all).
   });
 }
 

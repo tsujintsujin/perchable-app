@@ -1,0 +1,102 @@
+--------- beginning of main
+09-30 05:47:44.458 E/android.hardware.audio@7.1-impl.ranchu(  405): pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 05:47:44.458 E/android.hardware.audio@7.1-impl.ranchu(  405): pcmOpen:184 failure: nullptr
+09-30 05:47:44.458 E/android.hardware.audio@7.1-impl.ranchu(  405): create:239 failure: nullptr
+09-30 05:47:49.829 E/android.hardware.audio@7.1-impl.ranchu(  405): pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 05:47:49.829 E/android.hardware.audio@7.1-impl.ranchu(  405): pcmOpen:184 failure: nullptr
+09-30 05:47:49.830 E/android.hardware.audio@7.1-impl.ranchu(  405): create:239 failure: nullptr
+09-30 05:47:57.355 E/android.hardware.audio@7.1-impl.ranchu(  405): pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 05:47:57.355 E/android.hardware.audio@7.1-impl.ranchu(  405): pcmOpen:184 failure: nullptr
+09-30 05:47:57.356 E/android.hardware.audio@7.1-impl.ranchu(  405): create:239 failure: nullptr
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): InputConnectionWrapper.waitForInputConnectionFutureInternal():1773 Failed to get the input connection call's result.
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): java.util.concurrent.TimeoutException: Waited 100 milliseconds (plus 10 milliseconds, 340800 nanoseconds delay) for pxi@802cc08[status=PENDING, info=[task=[running=[RUNNING ON ICWrapper-1], fch@98b7fa1]]]
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at pug.get(PG:52)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at kbd.g(PG:9)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at kbd.f(PG:20)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at kbd.t(PG:27)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at kef.e(PG:15)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at kfm.A(PG:21)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at joy.A(PG:3)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at fto.g(PG:9)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at jov.a(PG:3)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at joy.af(PG:15)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at joy.I(PG:49)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at jos.k(PG:30)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at dia.q(PG:11)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at kfm.onFinishInputView(PG:75)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at android.inputmethodservice.InputMethodService.finishViews(InputMethodService.java:3245)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at android.inputmethodservice.InputMethodService.hideWindow(InputMethodService.java:3284)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at android.inputmethodservice.InputMethodService$InputMethodImpl.hideSoftInput(InputMethodService.java:967)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at kfl.hideSoftInput(PG:67)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at android.inputmethodservice.InputMethodService$InputMethodImpl.hideSoftInputWithToken(InputMethodService.java:927)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at android.inputmethodservice.IInputMethodWrapper.executeMessage(IInputMethodWrapper.java:247)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at com.android.internal.os.HandlerCaller$MyHandler.handleMessage(HandlerCaller.java:44)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at android.os.Handler.dispatchMessage(Handler.java:107)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at android.os.Looper.loopOnce(Looper.java:232)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at android.os.Looper.loop(Looper.java:317)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at java.lang.reflect.Method.invoke(Native Method)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+09-30 05:47:57.666 E/InputConnectionWrapper( 1278): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+09-30 05:47:57.731 E/ImeBackDispatcher(31540): Ime callback not found. Ignoring unregisterReceivedCallback. callbackId: 223959887
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): Error occurred, shutting down websocket connection: Websocket exception
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): java.net.SocketException: Software caused connection abort
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.socketRead0(Native Method)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-30 05:47:58.313 E/unknown:ReconnectingWebSocket(31540): 	at java.lang.Thread.run(Thread.java:1012)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): Error occurred, shutting down websocket connection: Websocket exception
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): java.net.SocketException: Software caused connection abort
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.socketRead0(Native Method)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-30 05:47:58.321 E/unknown:ReconnectingWebSocket(31540): 	at java.lang.Thread.run(Thread.java:1012)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): Error occurred, shutting down websocket connection: Websocket exception
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): java.net.SocketException: Software caused connection abort
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.socketRead0(Native Method)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-30 05:47:58.323 E/unknown:ReconnectingWebSocket(31540): 	at java.lang.Thread.run(Thread.java:1012)
+--------- beginning of kernel
+09-30 05:47:58.464 E/audit   (    0): rate limit exceeded
+09-30 05:48:03.082 E/FrameTracker(31540): force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@0@com.tsujintsujin.perchable>
+09-30 05:48:08.739 E/FrameTracker(31540): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@0@com.tsujintsujin.perchable>

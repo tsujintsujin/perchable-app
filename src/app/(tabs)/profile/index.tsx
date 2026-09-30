@@ -1,0 +1,191 @@
+import { useEffect, useState } from "react";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { GlassBackdrop } from "@/ui/GlassBackdrop";
+import { GlassCard } from "@/ui/GlassCard";
+import { Avatar } from "@/ui/Avatar";
+import { EmptyState } from "@/ui/EmptyState";
+import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
+import { useOwnProfile } from "@/modules/profile";
+
+/** My Profile screen — collection grid (movies watched) is a later module. */
+export default function MyProfile() {
+  const profile = useOwnProfile();
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View style={styles.root}>
+      <GlassBackdrop blobs={["purple", "gold"]} />
+      <View style={[styles.header, { paddingTop: insets.top }]}>
+        <Text style={styles.headerTitle}>My Profile</Text>
+        {/* Settings chip: DESIGN.md gives this its own color/border, not
+         * glass.chip's own, applied via a style override. */}
+        <GlassCard
+          tier="chip"
+          onPress={() => router.push("/profile/settings")}
+          style={styles.settingsChip}
+        >
+          <Text style={styles.settingsIcon}>⚙</Text>
+        </GlassCard>
+      </View>
+
+      {profile.state === "loading" && <LoadingBody />}
+      {profile.state === "error" && (
+        <View style={styles.centerBody}>
+          <EmptyState
+            icon="🦉"
+            title="Couldn't load your profile"
+            body="Check your connection and try again."
+            action={{ label: "Retry", onPress: profile.refetch }}
+          />
+        </View>
+      )}
+      {profile.state === "loaded" && (
+        <View style={styles.body}>
+          <Avatar
+            uri={profile.profile.avatarUrl}
+            name={profile.profile.displayName}
+            size="lg"
+            ringGradient
+          />
+          <Text style={styles.name}>{profile.profile.displayName ?? "Unnamed"}</Text>
+
+          {profile.profile.usertag ? (
+            <View style={styles.usertagChip}>
+              <Text style={styles.usertagText}>@{profile.profile.usertag}</Text>
+            </View>
+          ) : (
+            <Pressable
+              style={styles.usertagChip}
+              onPress={() => router.push("/profile/edit")}
+            >
+              <Text style={styles.usertagText}>
+                No usertag yet — <Text style={styles.usertagBold}>add a usertag</Text>
+              </Text>
+            </Pressable>
+          )}
+
+          <View style={styles.rows}>
+            <GlassCard tier="card" onPress={() => router.push("/profile/edit")} style={styles.row}>
+              <Text style={styles.rowLabel}>✏️ Edit profile</Text>
+            </GlassCard>
+            <GlassCard
+              tier="card"
+              onPress={() => router.push("/profile/settings")}
+              style={styles.row}
+            >
+              <Text style={styles.rowLabel}>⚙ Settings</Text>
+            </GlassCard>
+          </View>
+
+          <Text style={styles.moviesCount}>0 movies watched</Text>
+          <View style={styles.moviesGrid} />
+        </View>
+      )}
+    </View>
+  );
+}
+
+/** Shimmer placeholders matching the loaded layout's shape. No shared
+ * shimmer component exists yet, so a local pulse animation stands in. */
+function LoadingBody() {
+  const [pulse] = useState(() => new Animated.Value(0.4));
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 0.9, duration: 700, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0.4, duration: 700, useNativeDriver: true }),
+      ]),
+    );
+    animation.start();
+    return () => animation.stop();
+  }, [pulse]);
+
+  return (
+    <View style={styles.body}>
+      <Animated.View style={[styles.shimmerCircle, { opacity: pulse }]} />
+      <Animated.View style={[styles.shimmerBar, styles.shimmerName, { opacity: pulse }]} />
+      <Animated.View style={[styles.shimmerBar, styles.shimmerTag, { opacity: pulse }]} />
+      <View style={styles.rows}>
+        <Animated.View style={[styles.shimmerRow, { opacity: pulse }]} />
+        <Animated.View style={[styles.shimmerRow, { opacity: pulse }]} />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.bg.base },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing[20],
+  },
+  headerTitle: { ...type.subhead, color: colors.text.secondary },
+  settingsChip: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.sm,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 44,
+    // Distinct from glass.chip's own token values, per DESIGN.md.
+    backgroundColor: colors.surface.chip,
+    borderWidth: 1,
+    borderColor: colors.border.hairline,
+  },
+  settingsIcon: { fontSize: iconSize.md, color: colors.text.primary },
+  centerBody: { flex: 1, alignItems: "center", justifyContent: "center" },
+  body: { flex: 1, alignItems: "center", paddingTop: spacing[32], paddingHorizontal: spacing[20] },
+  name: {
+    marginTop: spacing[16],
+    ...type.title,
+    color: colors.text.primary,
+  },
+  usertagChip: {
+    marginTop: spacing[12],
+    paddingVertical: spacing[8],
+    paddingHorizontal: spacing[16],
+    borderRadius: radius.pill,
+    backgroundColor: colors.surface.input,
+    borderWidth: 1,
+    borderColor: colors.border.hairline,
+  },
+  usertagText: { ...type.body, color: colors.text.secondary },
+  usertagBold: { fontFamily: type.bodyStrong.fontFamily, color: colors.text.primary },
+  rows: { width: "100%", marginTop: spacing[32], gap: spacing[12] },
+  row: { padding: spacing[16], borderRadius: radius.md },
+  rowLabel: { ...type.body, color: colors.text.primary },
+  moviesCount: {
+    marginTop: spacing[32],
+    ...type.caption,
+    color: colors.text.secondary,
+    alignSelf: "flex-start",
+  },
+  moviesGrid: {
+    width: "100%",
+    minHeight: 96,
+    marginTop: spacing[8],
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border.hairline,
+    borderStyle: "dashed",
+  },
+  shimmerCircle: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: colors.bg.elevatedFlat,
+  },
+  shimmerBar: { borderRadius: radius.sm, backgroundColor: colors.bg.elevatedFlat },
+  shimmerName: { width: 160, height: 22, marginTop: spacing[16] },
+  shimmerTag: { width: 120, height: 16, marginTop: spacing[12] },
+  shimmerRow: {
+    height: 52,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg.elevatedFlat,
+  },
+});

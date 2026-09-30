@@ -1,0 +1,857 @@
+--------- beginning of main
+09-26 02:11:37.072  9331  9331 I sujin.perchable: Late-enabling -Xcheck:jni
+09-26 02:11:37.119  9331  9331 I sujin.perchable: Using CollectorTypeCMC GC.
+09-26 02:11:37.120  9331  9331 W sujin.perchable: Unexpected CPU variant for x86: x86_64.
+09-26 02:11:37.120  9331  9331 W sujin.perchable: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+09-26 02:11:37.149  9331  9331 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+09-26 02:11:37.286  9331  9331 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+09-26 02:11:37.287  9331  9331 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+09-26 02:11:37.290  9331  9331 W ziparchive: Unable to open '/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.dm': No such file or directory
+09-26 02:11:37.290  9331  9331 W ziparchive: Unable to open '/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.dm': No such file or directory
+09-26 02:11:38.600  9331  9331 D nativeloader: Configuring clns-7 for other apk /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/lib/x86_64:/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.tsujintsujin.perchable
+09-26 02:11:38.657  9331  9331 V GraphicsEnvironment: Currently set values for:
+09-26 02:11:38.658  9331  9331 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+09-26 02:11:38.658  9331  9331 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+09-26 02:11:38.658  9331  9331 V GraphicsEnvironment: Global.Settings values are invalid: number of packages: 0, number of values: 0
+09-26 02:11:38.659  9331  9331 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+09-26 02:11:38.851  9331  9331 D Sentry  : io.sentry.auto-init read: false
+09-26 02:11:38.998  9331  9331 W SoLoader: Initializing SoLoader: 0
+09-26 02:11:39.004  9331  9331 W SoLoader: Recording new base apk path: /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk
+09-26 02:11:39.004  9331  9331 W SoLoader: Previously recorded 0 base apk paths.
+09-26 02:11:39.015  9331  9331 I SoLoader: Preparing SO source: DirectorySoSource[root = /vendor/lib64 flags = 2]
+09-26 02:11:39.016  9331  9331 I SoLoader: Preparing SO source: DirectorySoSource[root = /system/lib64 flags = 2]
+09-26 02:11:39.016  9331  9331 I SoLoader: Preparing SO source: DirectApkSoSource[root = [/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64]]
+09-26 02:11:39.128  9331  9331 I SoLoader: Preparing SO source: ApplicationSoSource[DirectorySoSource[root = /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/lib/x86_64 flags = 0]]
+09-26 02:11:39.128  9331  9331 I SoLoader: init finish: 4 SO sources prepared
+09-26 02:11:39.130  9331  9331 W SoLoader: SoLoader initialized: 8
+09-26 02:11:39.247  9331  9331 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libc++_shared.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:11:39.259  9331  9331 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libjsi.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:11:39.274  9331  9331 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libfbjni.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:11:39.297  9331  9331 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libreactnative.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:11:39.297  9331  9331 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-26 02:11:39.297  9331  9331 D jni_lib_merge: Preparing 13 pre-merged libs (including stub)
+09-26 02:11:39.298  9331  9331 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7d7d41083530
+09-26 02:11:39.298  9331  9331 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7d7d412cf110
+09-26 02:11:39.298  9331  9331 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7d7d412e19a0
+09-26 02:11:39.299  9331  9331 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7d7d4138a560
+09-26 02:11:39.299  9331  9331 D jni_lib_merge: Preparing to register libreact_tracingjni_so.  onload_func: 0x7d7d4168cbb0
+09-26 02:11:39.299  9331  9331 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7d7d4169fb00
+09-26 02:11:39.299  9331  9331 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7d7d416c2d70
+09-26 02:11:39.299  9331  9331 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7d7d416c8860
+09-26 02:11:39.299  9331  9331 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7d7d41745590
+09-26 02:11:39.299  9331  9331 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7d7d418a83b0
+09-26 02:11:39.299  9331  9331 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7d7d418be780
+09-26 02:11:39.300  9331  9331 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7d7d418cd780
+09-26 02:11:39.300  9331  9331 D jni_lib_merge: About to register 12 actual methods.
+09-26 02:11:39.334  9331  9331 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libreact_codegen_rnscreens.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:11:39.335  9331  9331 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-26 02:11:39.335  9331  9331 D jni_lib_merge: Preparing 13 pre-merged libs (including stub)
+09-26 02:11:39.335  9331  9331 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7d7d41083530
+09-26 02:11:39.335  9331  9331 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7d7d412cf110
+09-26 02:11:39.335  9331  9331 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7d7d412e19a0
+09-26 02:11:39.336  9331  9331 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7d7d4138a560
+09-26 02:11:39.336  9331  9331 D jni_lib_merge: Preparing to register libreact_tracingjni_so.  onload_func: 0x7d7d4168cbb0
+09-26 02:11:39.336  9331  9331 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7d7d4169fb00
+09-26 02:11:39.336  9331  9331 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7d7d416c2d70
+09-26 02:11:39.336  9331  9331 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7d7d416c8860
+09-26 02:11:39.336  9331  9331 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7d7d41745590
+09-26 02:11:39.336  9331  9331 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7d7d418a83b0
+09-26 02:11:39.336  9331  9331 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7d7d418be780
+09-26 02:11:39.336  9331  9331 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7d7d418cd780
+09-26 02:11:39.337  9331  9331 D jni_lib_merge: About to register 12 actual methods.
+09-26 02:11:39.362  9331  9331 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libreact_codegen_safeareacontext.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:11:39.367  9331  9331 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libappmodules.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:11:41.282  9331  9356 D TrafficStats: tagSocket(91) with statsTag=0xffffffff, statsUid=-1
+09-26 02:11:41.319  9331  9356 W unknown:ReconnectingWebSocket: Couldn't connect to "ws://10.0.2.2:8081/message?device=sdk_gphone64_x86_64%20-%2015%20-%20API%2035&app=com.tsujintsujin.perchable&clientid=BridgelessDevSupportManager", will silently retry
+09-26 02:11:42.518  9331  9331 I Choreographer: Skipped 211 frames!  The application may be doing too much work on its main thread.
+09-26 02:11:42.779  9331  9331 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+09-26 02:11:42.982  9331  9331 W sujin.perchable: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (unsupported, reflection, allowed)
+09-26 02:11:43.095  9331  9331 W sujin.perchable: Accessing hidden field Ljava/lang/reflect/Field;->accessFlags:I (unsupported, reflection, allowed)
+09-26 02:11:43.283  9331  9331 W HWUI    : Unknown dataspace 0
+09-26 02:11:43.452  9331  9356 D TrafficStats: tagSocket(105) with statsTag=0xffffffff, statsUid=-1
+09-26 02:11:43.542  9331  9362 I EGL_emulation: Opening libGLESv1_CM_emulation.so
+09-26 02:11:43.548  9331  9362 I EGL_emulation: Opening libGLESv2_emulation.so
+09-26 02:11:43.581  9331  9362 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+09-26 02:11:43.581  9331  9362 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+09-26 02:11:43.773  9331  9362 I Gralloc4: mapper 4.x is not supported
+09-26 02:11:44.352  9331  9331 D VRI[MainActivity]: visibilityChanged oldVisibility=true newVisibility=false
+09-26 02:11:44.950  9331  9335 I sujin.perchable: Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
+09-26 02:11:45.912  9331  9331 W sujin.perchable: Accessing hidden method Landroid/os/SystemProperties;->addChangeCallback(Ljava/lang/Runnable;)V (unsupported, reflection, allowed)
+09-26 02:11:47.197  9331  9336 I sujin.perchable: Background concurrent mark compact GC freed 6959KB AllocSpace bytes, 22(1240KB) LOS objects, 49% free, 6372KB/12MB, paused 1.289ms,6.722ms total 65.485ms
+09-26 02:11:48.416  9331  9335 I sujin.perchable: Compiler allocated 5417KB to compile void android.view.ViewRootImpl.performTraversals()
+09-26 02:11:49.166  9331  9361 I HWUI    : Davey! duration=4767ms; Flags=1, FrameTimelineVsyncId=2210729, IntendedVsync=16790358084504, Vsync=16790374751170, InputEventId=0, HandleInputStart=16790376536400, AnimationStart=16790376579500, PerformTraversalsStart=16790376641400, DrawStart=16794833177200, FrameDeadline=16790374751170, FrameInterval=16790376476000, FrameStartTime=16666666, SyncQueued=16794972518800, SyncStart=16794982647800, IssueDrawCommandsStart=16794983593200, SwapBuffers=16795061562700, FrameCompleted=16795136111100, DequeueBufferDuration=38400, QueueBufferDuration=70935800, GpuCompleted=16795135620300, SwapBuffersCompleted=16795136111100, DisplayPresentTime=0, CommandSubmissionCompleted=16795061562700, 
+09-26 02:11:49.280  9331  9331 I Choreographer: Skipped 263 frames!  The application may be doing too much work on its main thread.
+09-26 02:11:49.462  9331  9356 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 02:11:49.468  9331  9374 D ProfileInstaller: Installing profile for com.tsujintsujin.perchable
+09-26 02:11:49.639  9331  9361 I HWUI    : Davey! duration=4670ms; Flags=0, FrameTimelineVsyncId=2210745, IntendedVsync=16790891417816, Vsync=16795274750974, InputEventId=0, HandleInputStart=16795295461100, AnimationStart=16795295515900, PerformTraversalsStart=16795411047800, DrawStart=16795422603700, FrameDeadline=16795158084312, FrameInterval=16795290692000, FrameStartTime=16666666, SyncQueued=16795430556300, SyncStart=16795449399300, IssueDrawCommandsStart=16795449628700, SwapBuffers=16795537195700, FrameCompleted=16795580383900, DequeueBufferDuration=46600, QueueBufferDuration=1346900, GpuCompleted=16795580383900, SwapBuffersCompleted=16795540183900, DisplayPresentTime=0, CommandSubmissionCompleted=16795537195700, 
+09-26 02:11:49.749  9331  9331 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@f7eaa86
+09-26 02:11:50.548  9331  9362 D EGL_emulation: app_time_stats: avg=77.71ms min=5.29ms max=404.25ms count=15
+09-26 02:11:51.599  9331  9362 D EGL_emulation: app_time_stats: avg=19.90ms min=3.17ms max=40.27ms count=30
+09-26 02:11:51.674  9331  9356 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 02:11:52.743  9331  9362 D EGL_emulation: app_time_stats: avg=20.00ms min=2.58ms max=61.65ms count=28
+09-26 02:11:53.744  9331  9356 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-26 02:11:53.753  9331  9362 D EGL_emulation: app_time_stats: avg=36.31ms min=3.13ms max=110.40ms count=15
+09-26 02:11:54.785  9331  9362 D EGL_emulation: app_time_stats: avg=18.16ms min=2.73ms max=53.00ms count=30
+09-26 02:11:55.790  9331  9362 D EGL_emulation: app_time_stats: avg=20.42ms min=2.63ms max=104.28ms count=25
+09-26 02:11:55.803  9331  9356 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 02:11:56.822  9331  9362 D EGL_emulation: app_time_stats: avg=19.02ms min=3.20ms max=49.28ms count=25
+09-26 02:11:57.830  9331  9362 D EGL_emulation: app_time_stats: avg=19.59ms min=3.89ms max=36.78ms count=24
+09-26 02:11:57.854  9331  9356 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 02:11:58.837  9331  9362 D EGL_emulation: app_time_stats: avg=18.76ms min=3.10ms max=41.91ms count=29
+09-26 02:11:59.873  9331  9362 D EGL_emulation: app_time_stats: avg=16.48ms min=3.52ms max=53.95ms count=27
+09-26 02:11:59.960  9331  9356 D TrafficStats: tagSocket(120) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:00.908  9331  9362 D EGL_emulation: app_time_stats: avg=17.99ms min=3.35ms max=43.14ms count=26
+09-26 02:12:01.912  9331  9362 D EGL_emulation: app_time_stats: avg=15.61ms min=3.69ms max=53.52ms count=29
+09-26 02:12:01.987  9331  9356 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:02.916  9331  9362 D EGL_emulation: app_time_stats: avg=14.96ms min=2.98ms max=35.74ms count=33
+09-26 02:12:03.958  9331  9362 D EGL_emulation: app_time_stats: avg=13.89ms min=2.63ms max=29.02ms count=34
+09-26 02:12:04.025  9331  9356 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:04.999  9331  9362 D EGL_emulation: app_time_stats: avg=14.15ms min=2.92ms max=29.70ms count=33
+09-26 02:12:06.036  9331  9362 D EGL_emulation: app_time_stats: avg=16.74ms min=2.99ms max=35.56ms count=32
+09-26 02:12:06.045  9331  9356 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:07.078  9331  9362 D EGL_emulation: app_time_stats: avg=15.33ms min=3.15ms max=34.59ms count=36
+09-26 02:12:08.083  9331  9362 D EGL_emulation: app_time_stats: avg=16.83ms min=2.91ms max=39.35ms count=32
+09-26 02:12:08.100  9331  9356 D TrafficStats: tagSocket(120) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:09.105  9331  9362 D EGL_emulation: app_time_stats: avg=16.15ms min=3.70ms max=41.95ms count=34
+09-26 02:12:10.145  9331  9362 D EGL_emulation: app_time_stats: avg=14.37ms min=2.95ms max=41.02ms count=34
+09-26 02:12:10.160  9331  9356 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:11.158  9331  9362 D EGL_emulation: app_time_stats: avg=14.42ms min=2.76ms max=29.18ms count=32
+09-26 02:12:12.166  9331  9362 D EGL_emulation: app_time_stats: avg=14.86ms min=2.85ms max=29.46ms count=32
+09-26 02:12:12.213  9331  9356 D TrafficStats: tagSocket(148) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:13.196  9331  9362 D EGL_emulation: app_time_stats: avg=16.03ms min=2.54ms max=45.98ms count=32
+09-26 02:12:14.198  9331  9362 D EGL_emulation: app_time_stats: avg=16.27ms min=2.76ms max=40.62ms count=27
+09-26 02:12:14.276  9331  9356 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:15.334  9331  9362 D EGL_emulation: app_time_stats: avg=23.48ms min=3.36ms max=53.06ms count=18
+09-26 02:12:16.334  9331  9362 D EGL_emulation: app_time_stats: avg=54.27ms min=8.60ms max=130.97ms count=11
+09-26 02:12:16.368  9331  9356 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:17.370  9331  9362 D EGL_emulation: app_time_stats: avg=45.72ms min=5.00ms max=115.42ms count=12
+09-26 02:12:18.381  9331  9362 D EGL_emulation: app_time_stats: avg=21.54ms min=3.55ms max=93.88ms count=27
+09-26 02:12:18.420  9331  9356 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:19.382  9331  9362 D EGL_emulation: app_time_stats: avg=15.41ms min=2.99ms max=47.74ms count=32
+09-26 02:12:20.434  9331  9362 D EGL_emulation: app_time_stats: avg=17.13ms min=3.02ms max=46.18ms count=29
+09-26 02:12:20.447  9331  9356 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:20.520  9331  9336 I sujin.perchable: Background concurrent mark compact GC freed 3628KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 9093KB/17MB, paused 1.082ms,3.679ms total 101.931ms
+09-26 02:12:21.468  9331  9362 D EGL_emulation: app_time_stats: avg=18.63ms min=2.90ms max=46.96ms count=28
+09-26 02:12:22.479  9331  9362 D EGL_emulation: app_time_stats: avg=23.96ms min=3.97ms max=72.31ms count=22
+09-26 02:12:22.511  9331  9356 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:23.490  9331  9362 D EGL_emulation: app_time_stats: avg=21.16ms min=3.82ms max=45.64ms count=27
+09-26 02:12:24.523  9331  9362 D EGL_emulation: app_time_stats: avg=23.97ms min=3.32ms max=150.26ms count=25
+09-26 02:12:24.564  9331  9356 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:25.525  9331  9362 D EGL_emulation: app_time_stats: avg=14.74ms min=2.86ms max=33.91ms count=31
+09-26 02:12:26.579  9331  9362 D EGL_emulation: app_time_stats: avg=18.40ms min=2.65ms max=54.72ms count=28
+09-26 02:12:26.610  9331  9356 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:27.581  9331  9362 D EGL_emulation: app_time_stats: avg=15.68ms min=3.23ms max=40.90ms count=33
+09-26 02:12:28.608  9331  9362 D EGL_emulation: app_time_stats: avg=16.34ms min=2.65ms max=41.19ms count=28
+09-26 02:12:28.657  9331  9356 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:29.642  9331  9362 D EGL_emulation: app_time_stats: avg=17.40ms min=2.94ms max=40.57ms count=31
+09-26 02:12:30.664  9331  9362 D EGL_emulation: app_time_stats: avg=30.07ms min=5.09ms max=108.80ms count=14
+09-26 02:12:30.854  9331  9356 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:31.739  9331  9362 D EGL_emulation: app_time_stats: avg=107.19ms min=14.47ms max=253.55ms count=7
+09-26 02:12:32.748  9331  9362 D EGL_emulation: app_time_stats: avg=50.81ms min=6.94ms max=327.34ms count=13
+09-26 02:12:33.143  9331  9356 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:33.770  9331  9362 D EGL_emulation: app_time_stats: avg=25.98ms min=5.96ms max=71.90ms count=14
+09-26 02:12:34.774  9331  9362 D EGL_emulation: app_time_stats: avg=38.01ms min=4.68ms max=132.75ms count=18
+09-26 02:12:35.249  9331  9356 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:35.793  9331  9362 D EGL_emulation: app_time_stats: avg=28.46ms min=3.61ms max=201.02ms count=20
+09-26 02:12:36.866  9331  9362 D EGL_emulation: app_time_stats: avg=18.55ms min=3.17ms max=45.48ms count=31
+09-26 02:12:37.283  9331  9356 D TrafficStats: tagSocket(116) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:37.897  9331  9362 D EGL_emulation: app_time_stats: avg=16.33ms min=2.89ms max=37.91ms count=29
+09-26 02:12:38.903  9331  9362 D EGL_emulation: app_time_stats: avg=29.58ms min=3.98ms max=98.65ms count=21
+09-26 02:12:39.441  9331  9356 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:39.953  9331  9362 D EGL_emulation: app_time_stats: avg=23.28ms min=3.04ms max=44.74ms count=25
+09-26 02:12:40.990  9331  9362 D EGL_emulation: app_time_stats: avg=19.83ms min=2.94ms max=44.02ms count=27
+09-26 02:12:41.505  9331  9356 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:42.043  9331  9362 D EGL_emulation: app_time_stats: avg=26.74ms min=3.32ms max=115.00ms count=24
+09-26 02:12:43.075  9331  9362 D EGL_emulation: app_time_stats: avg=21.32ms min=2.75ms max=100.29ms count=25
+09-26 02:12:43.602  9331  9356 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:44.111  9331  9362 D EGL_emulation: app_time_stats: avg=17.74ms min=3.28ms max=60.21ms count=30
+09-26 02:12:45.133  9331  9362 D EGL_emulation: app_time_stats: avg=15.74ms min=3.01ms max=46.87ms count=32
+09-26 02:12:45.651  9331  9356 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:46.158  9331  9362 D EGL_emulation: app_time_stats: avg=14.57ms min=2.72ms max=35.58ms count=32
+09-26 02:12:47.187  9331  9362 D EGL_emulation: app_time_stats: avg=16.51ms min=3.68ms max=38.33ms count=31
+09-26 02:12:47.709  9331  9356 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:48.188  9331  9362 D EGL_emulation: app_time_stats: avg=15.95ms min=2.62ms max=50.58ms count=30
+09-26 02:12:49.223  9331  9362 D EGL_emulation: app_time_stats: avg=24.65ms min=4.45ms max=59.03ms count=20
+09-26 02:12:49.746  9331  9356 D TrafficStats: tagSocket(133) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:50.283  9331  9362 D EGL_emulation: app_time_stats: avg=23.18ms min=3.16ms max=69.36ms count=21
+09-26 02:12:51.304  9331  9362 D EGL_emulation: app_time_stats: avg=28.51ms min=7.37ms max=104.02ms count=17
+09-26 02:12:51.858  9331  9356 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:52.325  9331  9362 D EGL_emulation: app_time_stats: avg=26.18ms min=3.71ms max=72.24ms count=25
+09-26 02:12:53.344  9331  9362 D EGL_emulation: app_time_stats: avg=28.87ms min=4.35ms max=78.02ms count=23
+09-26 02:12:53.971  9331  9356 D TrafficStats: tagSocket(120) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:54.373  9331  9362 D EGL_emulation: app_time_stats: avg=19.95ms min=3.50ms max=38.40ms count=28
+09-26 02:12:55.400  9331  9362 D EGL_emulation: app_time_stats: avg=27.76ms min=3.49ms max=81.92ms count=22
+09-26 02:12:56.056  9331  9356 D TrafficStats: tagSocket(120) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:56.441  9331  9362 D EGL_emulation: app_time_stats: avg=19.92ms min=3.22ms max=68.36ms count=23
+09-26 02:12:57.456  9331  9362 D EGL_emulation: app_time_stats: avg=19.06ms min=3.01ms max=49.33ms count=30
+09-26 02:12:58.160  9331  9356 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-26 02:12:58.487  9331  9362 D EGL_emulation: app_time_stats: avg=22.49ms min=3.42ms max=52.77ms count=25
+09-26 02:12:59.493  9331  9362 D EGL_emulation: app_time_stats: avg=24.04ms min=4.30ms max=64.21ms count=25
+09-26 02:13:00.226  9331  9356 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:00.554  9331  9362 D EGL_emulation: app_time_stats: avg=25.69ms min=3.40ms max=65.35ms count=27
+09-26 02:13:01.576  9331  9362 D EGL_emulation: app_time_stats: avg=21.10ms min=3.38ms max=59.74ms count=27
+09-26 02:13:02.553  9331  9356 D TrafficStats: tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:02.660  9331  9362 D EGL_emulation: app_time_stats: avg=37.67ms min=2.61ms max=211.49ms count=17
+09-26 02:13:03.721  9331  9362 D EGL_emulation: app_time_stats: avg=52.09ms min=5.03ms max=102.54ms count=14
+09-26 02:13:04.871  9331  9362 D EGL_emulation: app_time_stats: avg=106.37ms min=6.73ms max=259.31ms count=9
+09-26 02:13:04.889  9331  9356 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:06.802  9331  9331 W sujin.perchable: Accessing hidden method Landroid/view/ViewTreeObserver;->dispatchOnScrollChanged()V (unsupported, reflection, allowed)
+09-26 02:13:07.184  9331  9331 I Choreographer: Skipped 124 frames!  The application may be doing too much work on its main thread.
+09-26 02:13:07.436  9331  9331 D InsetsController: show(ime(), fromIme=false)
+09-26 02:13:07.438  9331  9331 I ImeTracker: com.tsujintsujin.perchable:12c669e5: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT_BY_INSETS_API fromUser false
+09-26 02:13:07.444  9331  9331 D InputMethodManager: showSoftInput() view=androidx.compose.ui.platform.AndroidComposeView{58b11da VFED..... .F....ID 0,0-1080,2400 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT_BY_INSETS_API
+09-26 02:13:07.553  9331  9362 D EGL_emulation: app_time_stats: avg=635.59ms min=59.88ms max=2348.58ms count=4
+09-26 02:13:07.672  9331  9341 I HWUI    : Davey! duration=2441ms; Flags=0, FrameTimelineVsyncId=2226283, IntendedVsync=16871124747940, Vsync=16873191414524, InputEventId=800164185, HandleInputStart=16873198177600, AnimationStart=16873200906600, PerformTraversalsStart=16873464857700, DrawStart=16873466006300, FrameDeadline=16871241414602, FrameInterval=16873194223600, FrameStartTime=16666666, SyncQueued=16873500900100, SyncStart=16873501371600, IssueDrawCommandsStart=16873501560500, SwapBuffers=16873506013600, FrameCompleted=16873566288400, DequeueBufferDuration=63200, QueueBufferDuration=35296600, GpuCompleted=16873563304500, SwapBuffersCompleted=16873566288400, DisplayPresentTime=0, CommandSubmissionCompleted=16873506013600, 
+09-26 02:13:07.869  9331  9361 I HWUI    : Davey! duration=2659ms; Flags=1, FrameTimelineVsyncId=2226283, IntendedVsync=16871124747940, Vsync=16873191414524, InputEventId=0, HandleInputStart=16873198177600, AnimationStart=16873200906600, PerformTraversalsStart=16873464857700, DrawStart=16873686175000, FrameDeadline=16871141414606, FrameInterval=16873194223600, FrameStartTime=16666666, SyncQueued=16873712514400, SyncStart=16873739203100, IssueDrawCommandsStart=16873744474600, SwapBuffers=16873745022400, FrameCompleted=16873811138500, DequeueBufferDuration=61200, QueueBufferDuration=10313900, GpuCompleted=16873810884600, SwapBuffersCompleted=16873811138500, DisplayPresentTime=72904454231359566, CommandSubmissionCompleted=16873745022400, 
+09-26 02:13:07.940  9331  9331 I Choreographer: Skipped 44 frames!  The application may be doing too much work on its main thread.
+09-26 02:13:07.945  9331  9356 D TrafficStats: tagSocket(152) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:08.130  9331  9331 I ImeTracker: com.tsujintsujin.perchable:39970928: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+09-26 02:13:08.131  9331  9331 D InputMethodManager: showSoftInput() view=androidx.compose.ui.platform.AndroidComposeView{58b11da VFED..... .F...... 0,0-1080,2400 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+09-26 02:13:08.159  9331  9341 I HWUI    : Davey! duration=886ms; Flags=0, FrameTimelineVsyncId=2226493, IntendedVsync=16873208081190, Vsync=16873941414494, InputEventId=205278709, HandleInputStart=16873955013500, AnimationStart=16873955200000, PerformTraversalsStart=16874054522800, DrawStart=16874055084700, FrameDeadline=16873591414508, FrameInterval=16873950795300, FrameStartTime=16666666, SyncQueued=16874058900500, SyncStart=16874085371500, IssueDrawCommandsStart=16874091786100, SwapBuffers=16874115951400, FrameCompleted=16874120655900, DequeueBufferDuration=51700, QueueBufferDuration=1251900, GpuCompleted=16874120295500, SwapBuffersCompleted=16874120655900, DisplayPresentTime=0, CommandSubmissionCompleted=16874115951400, 
+09-26 02:13:08.242  9331  9361 I HWUI    : Davey! duration=961ms; Flags=0, FrameTimelineVsyncId=2226493, IntendedVsync=16873208081190, Vsync=16873941414494, InputEventId=0, HandleInputStart=16873955013500, AnimationStart=16873955200000, PerformTraversalsStart=16874054522800, DrawStart=16874095634300, FrameDeadline=16873841414498, FrameInterval=16873950795300, FrameStartTime=16666666, SyncQueued=16874099782600, SyncStart=16874135969500, IssueDrawCommandsStart=16874136110500, SwapBuffers=16874190096500, FrameCompleted=16874206147000, DequeueBufferDuration=57600, QueueBufferDuration=4165000, GpuCompleted=16874195777900, SwapBuffersCompleted=16874206147000, DisplayPresentTime=144115222452437076, CommandSubmissionCompleted=16874190096500, 
+09-26 02:13:08.684  9331  9362 D EGL_emulation: app_time_stats: avg=281.67ms min=92.10ms max=554.18ms count=4
+09-26 02:13:09.775  9331  9362 D EGL_emulation: app_time_stats: avg=133.88ms min=35.46ms max=209.26ms count=8
+09-26 02:13:10.131  9331  9356 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:10.223  9331  9362 D EGL_emulation: app_time_stats: avg=603.11ms min=45.08ms max=1661.07ms count=4
+09-26 02:13:10.777  9331  9362 D EGL_emulation: app_time_stats: avg=93.40ms min=14.86ms max=223.52ms count=10
+09-26 02:13:11.798  9331  9362 D EGL_emulation: app_time_stats: avg=63.39ms min=9.61ms max=135.35ms count=14
+09-26 02:13:12.108  9331  9335 I sujin.perchable: Compiler allocated 4219KB to compile void android.widget.TextView.<init>(android.content.Context, android.util.AttributeSet, int, int)
+09-26 02:13:12.431  9331  9356 D TrafficStats: tagSocket(130) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:13.073  9331  9362 D EGL_emulation: app_time_stats: avg=80.34ms min=3.28ms max=471.22ms count=12
+09-26 02:13:14.147  9331  9362 D EGL_emulation: app_time_stats: avg=83.90ms min=11.79ms max=170.77ms count=11
+09-26 02:13:14.313  9331  9331 D InsetsController: show(ime(), fromIme=true)
+09-26 02:13:14.370  9331  9331 I Choreographer: Skipped 30 frames!  The application may be doing too much work on its main thread.
+09-26 02:13:14.459  9331  9331 W InteractionJankMonitor: Initializing without READ_DEVICE_CONFIG permission. enabled=true, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.tsujintsujin.perchable
+09-26 02:13:14.785  9331  9331 I ImeTracker: com.tsujintsujin.perchable:12c669e5: onShown
+09-26 02:13:14.863  9331  9331 D InsetsController: show(ime(), fromIme=true)
+09-26 02:13:14.865  9331  9331 I ImeTracker: com.tsujintsujin.perchable:39970928: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+09-26 02:13:14.941  9331  9356 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:15.177  9331  9362 D EGL_emulation: app_time_stats: avg=153.03ms min=37.63ms max=406.94ms count=6
+09-26 02:13:16.225  9331  9362 D EGL_emulation: app_time_stats: avg=79.16ms min=15.78ms max=237.31ms count=12
+09-26 02:13:17.271  9331  9362 D EGL_emulation: app_time_stats: avg=80.91ms min=12.36ms max=205.99ms count=11
+09-26 02:13:17.280  9331  9356 D TrafficStats: tagSocket(117) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:18.348  9331  9362 D EGL_emulation: app_time_stats: avg=51.03ms min=11.44ms max=129.53ms count=14
+09-26 02:13:19.350  9331  9362 D EGL_emulation: app_time_stats: avg=38.21ms min=3.67ms max=74.78ms count=16
+09-26 02:13:19.569  9331  9356 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:20.168  9331  9331 I Choreographer: Skipped 33 frames!  The application may be doing too much work on its main thread.
+09-26 02:13:20.486  9331  9362 D EGL_emulation: app_time_stats: avg=102.02ms min=18.29ms max=361.35ms count=8
+09-26 02:13:20.533  9331  9343 I HWUI    : Davey! duration=746ms; Flags=0, FrameTimelineVsyncId=2228412, IntendedVsync=16885624747360, Vsync=16886174747338, InputEventId=0, HandleInputStart=16886179767800, AnimationStart=16886179822500, PerformTraversalsStart=16886183884300, DrawStart=16886184096800, FrameDeadline=16886008080678, FrameInterval=16886178647000, FrameStartTime=16666666, SyncQueued=16886239232400, SyncStart=16886239581200, IssueDrawCommandsStart=16886241135300, SwapBuffers=16886339423900, FrameCompleted=16886371487900, DequeueBufferDuration=60500, QueueBufferDuration=625700, GpuCompleted=16886371487900, SwapBuffersCompleted=16886342150800, DisplayPresentTime=0, CommandSubmissionCompleted=16886339423900, 
+09-26 02:13:20.940  9331  9610 D TrafficStats: tagSocket(133) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:21.489  9331  9362 D EGL_emulation: app_time_stats: avg=61.72ms min=8.31ms max=144.48ms count=14
+09-26 02:13:22.551  9331  9362 D EGL_emulation: app_time_stats: avg=138.25ms min=4.68ms max=364.75ms count=6
+09-26 02:13:22.717  9331  9610 W sujin.perchable: Verification of void okio.ForwardingTimeout.<init>(okio.Timeout) took 202.913ms (54.21 bytecodes/s) (2336B approximate peak alloc)
+09-26 02:13:23.126  9331  9331 I Choreographer: Skipped 46 frames!  The application may be doing too much work on its main thread.
+09-26 02:13:23.126  9331  9361 I HWUI    : Davey! duration=852ms; Flags=0, FrameTimelineVsyncId=2228631, IntendedVsync=16887841413938, Vsync=16888158080592, InputEventId=0, HandleInputStart=16888178952100, AnimationStart=16888179070000, PerformTraversalsStart=16888184698600, DrawStart=16888188021900, FrameDeadline=16888174747258, FrameInterval=16888168599600, FrameStartTime=16666666, SyncQueued=16888190337200, SyncStart=16888234492500, IssueDrawCommandsStart=16888234762100, SwapBuffers=16888460262500, FrameCompleted=16888737888800, DequeueBufferDuration=50600, QueueBufferDuration=939100, GpuCompleted=16888737888800, SwapBuffersCompleted=16888581094800, DisplayPresentTime=0, CommandSubmissionCompleted=16888460262500, 
+09-26 02:13:23.346  9331  9606 I HWUI    : Davey! duration=777ms; Flags=0, FrameTimelineVsyncId=2228647, IntendedVsync=16888241413922, Vsync=16888324747252, InputEventId=0, HandleInputStart=16888334512100, AnimationStart=16888334548100, PerformTraversalsStart=16888351877000, DrawStart=16888352071500, FrameDeadline=16888758080568, FrameInterval=16888334484200, FrameStartTime=16666666, SyncQueued=16888419639700, SyncStart=16888581692000, IssueDrawCommandsStart=16888581954500, SwapBuffers=16888899199300, FrameCompleted=16889181284200, DequeueBufferDuration=86335400, QueueBufferDuration=543000, GpuCompleted=16889156675100, SwapBuffersCompleted=16889181284200, DisplayPresentTime=0, CommandSubmissionCompleted=16888899199300, 
+09-26 02:13:23.571  9331  9606 I HWUI    : Davey! duration=1095ms; Flags=0, FrameTimelineVsyncId=2228654, IntendedVsync=16888358080584, Vsync=16889124747220, InputEventId=0, HandleInputStart=16889177126900, AnimationStart=16889179161700, PerformTraversalsStart=16889180194600, DrawStart=16889226740800, FrameDeadline=16889174747218, FrameInterval=16889136130500, FrameStartTime=16666666, SyncQueued=16889332429000, SyncStart=16889333817300, IssueDrawCommandsStart=16889334375100, SwapBuffers=16889365359400, FrameCompleted=16889454706500, DequeueBufferDuration=51400, QueueBufferDuration=817300, GpuCompleted=16889452477700, SwapBuffersCompleted=16889454706500, DisplayPresentTime=0, CommandSubmissionCompleted=16889365359400, 
+09-26 02:13:23.596  9331  9362 D EGL_emulation: app_time_stats: avg=319.26ms min=153.57ms max=532.85ms count=3
+09-26 02:13:24.933  9331  9362 D EGL_emulation: app_time_stats: avg=1332.40ms min=1332.40ms max=1332.40ms count=1
+09-26 02:13:24.985  9331  9331 I Choreographer: Skipped 89 frames!  The application may be doing too much work on its main thread.
+09-26 02:13:24.986  9331  9361 I HWUI    : Davey! duration=1514ms; Flags=0, FrameTimelineVsyncId=2228684, IntendedVsync=16889408080542, Vsync=16889474747206, InputEventId=0, HandleInputStart=16889479843900, AnimationStart=16889479890000, PerformTraversalsStart=16890321164400, DrawStart=16890323113500, FrameDeadline=16889674747198, FrameInterval=16889479808100, FrameStartTime=16666666, SyncQueued=16890894854400, SyncStart=16890918247400, IssueDrawCommandsStart=16890928968800, SwapBuffers=16890931956600, FrameCompleted=16890946358800, DequeueBufferDuration=50300, QueueBufferDuration=645300, GpuCompleted=16890940115900, SwapBuffersCompleted=16890946358800, DisplayPresentTime=0, CommandSubmissionCompleted=16890931956600, 
+09-26 02:13:25.194  9331  9606 I HWUI    : Davey! duration=1647ms; Flags=0, FrameTimelineVsyncId=2228692, IntendedVsync=16889508080538, Vsync=16890991413812, InputEventId=0, HandleInputStart=16890996773800, AnimationStart=16890996825600, PerformTraversalsStart=16891079676200, DrawStart=16891079836400, FrameDeadline=16890958080480, FrameInterval=16890995052500, FrameStartTime=16666666, SyncQueued=16891114491900, SyncStart=16891118881200, IssueDrawCommandsStart=16891119597000, SwapBuffers=16891138117800, FrameCompleted=16891160160500, DequeueBufferDuration=34500, QueueBufferDuration=5369400, GpuCompleted=16891159924900, SwapBuffersCompleted=16891160160500, DisplayPresentTime=0, CommandSubmissionCompleted=16891138117800, 
+09-26 02:13:25.822  9331  9331 D InsetsController: hide(ime(), fromIme=false)
+09-26 02:13:25.891  9331  9331 I ImeTracker: com.tsujintsujin.perchable:a4389464: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_BY_INSETS_API fromUser false
+09-26 02:13:25.905  9331  9331 I ImeTracker: com.tsujintsujin.perchable:faf2178c: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_REQUEST_HIDE_WITH_CONTROL fromUser false
+09-26 02:13:25.977  9331  9331 E FrameTracker: force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@1@com.tsujintsujin.perchable>
+09-26 02:13:25.978  9331  9331 W FrameTracker: Missed App frame:UNKNOWN: 74, 2227605, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.tsujintsujin.perchable>
+09-26 02:13:25.978  9331  9331 W FrameTracker: Missed SF frame:UNKNOWN: 74, 2227605, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.tsujintsujin.perchable>
+09-26 02:13:25.981  9331  9331 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@83957a
+09-26 02:13:25.995  9331  9362 D EGL_emulation: app_time_stats: avg=211.83ms min=124.07ms max=310.30ms count=5
+09-26 02:13:26.235  9331  9331 I ImeTracker: com.tsujintsujin.perchable:905c317d: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+09-26 02:13:26.265  9331  9331 I ImeTracker: com.tsujintsujin.perchable:a4389464: onHidden
+09-26 02:13:26.291  9331  9331 W RemoteInputConnectionImpl: requestCursorUpdates on inactive InputConnection
+09-26 02:13:26.589  9331  9331 D InsetsController: hide(ime(), fromIme=true)
+09-26 02:13:26.590  9331  9331 I ImeTracker: com.tsujintsujin.perchable:faf2178c: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+09-26 02:13:27.028  9331  9362 D EGL_emulation: app_time_stats: avg=48.24ms min=11.10ms max=152.51ms count=16
+09-26 02:13:28.058  9331  9362 D EGL_emulation: app_time_stats: avg=41.12ms min=3.16ms max=121.33ms count=18
+09-26 02:13:29.059  9331  9362 D EGL_emulation: app_time_stats: avg=56.83ms min=9.10ms max=176.57ms count=14
+09-26 02:13:30.062  9331  9362 D EGL_emulation: app_time_stats: avg=33.75ms min=4.53ms max=67.02ms count=19
+09-26 02:13:31.064  9331  9362 D EGL_emulation: app_time_stats: avg=37.18ms min=3.60ms max=82.85ms count=18
+09-26 02:13:32.080  9331  9362 D EGL_emulation: app_time_stats: avg=36.76ms min=6.36ms max=150.53ms count=18
+09-26 02:13:33.183  9331  9362 D EGL_emulation: app_time_stats: avg=52.67ms min=10.65ms max=149.55ms count=14
+09-26 02:13:34.225  9331  9362 D EGL_emulation: app_time_stats: avg=42.22ms min=5.93ms max=116.38ms count=13
+09-26 02:13:35.290  9331  9362 D EGL_emulation: app_time_stats: avg=53.84ms min=3.84ms max=136.66ms count=16
+09-26 02:13:36.319  9331  9362 D EGL_emulation: app_time_stats: avg=50.47ms min=3.43ms max=161.33ms count=17
+09-26 02:13:36.901  9331  9331 E FrameTracker: force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.tsujintsujin.perchable>
+09-26 02:13:36.902  9331  9331 W FrameTracker: Missed App frame:UNKNOWN: 74, 2228830, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.tsujintsujin.perchable>
+09-26 02:13:36.902  9331  9331 W FrameTracker: Missed SF frame:UNKNOWN: 74, 2228830, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.tsujintsujin.perchable>
+09-26 02:13:37.336  9331  9362 D EGL_emulation: app_time_stats: avg=21.47ms min=3.89ms max=46.69ms count=24
+09-26 02:13:38.338  9331  9362 D EGL_emulation: app_time_stats: avg=28.83ms min=3.14ms max=69.24ms count=22
+09-26 02:13:39.452  9331  9362 D EGL_emulation: app_time_stats: avg=28.17ms min=3.12ms max=69.30ms count=24
+09-26 02:13:40.481  9331  9362 D EGL_emulation: app_time_stats: avg=21.34ms min=3.45ms max=47.32ms count=25
+09-26 02:13:41.483  9331  9362 D EGL_emulation: app_time_stats: avg=20.71ms min=3.30ms max=89.79ms count=27
+09-26 02:13:42.487  9331  9362 D EGL_emulation: app_time_stats: avg=20.38ms min=2.99ms max=71.31ms count=26
+09-26 02:13:43.521  9331  9362 D EGL_emulation: app_time_stats: avg=71.16ms min=12.80ms max=154.94ms count=10
+09-26 02:13:44.528  9331  9362 D EGL_emulation: app_time_stats: avg=21.31ms min=3.36ms max=46.32ms count=25
+09-26 02:13:44.550  9331  9610 D TrafficStats: tagSocket(106) with statsTag=0xffffffff, statsUid=-1
+09-26 02:13:45.584  9331  9362 D EGL_emulation: app_time_stats: avg=26.66ms min=5.07ms max=64.36ms count=16
+09-26 02:13:46.621  9331  9362 D EGL_emulation: app_time_stats: avg=23.70ms min=4.09ms max=116.86ms count=20
+09-26 02:13:47.626  9331  9362 D EGL_emulation: app_time_stats: avg=20.48ms min=3.41ms max=44.09ms count=25
+09-26 02:13:47.839  9331  9336 I sujin.perchable: Background concurrent mark compact GC freed 8142KB AllocSpace bytes, 2(44KB) LOS objects, 49% free, 9939KB/19MB, paused 1.596ms,7.209ms total 113.293ms
+09-26 02:13:48.627  9331  9362 D EGL_emulation: app_time_stats: avg=23.54ms min=4.24ms max=75.28ms count=24
+09-26 02:13:49.628  9331  9362 D EGL_emulation: app_time_stats: avg=28.64ms min=3.18ms max=124.15ms count=21
+09-26 02:13:50.671  9331  9362 D EGL_emulation: app_time_stats: avg=22.56ms min=2.95ms max=150.38ms count=25
+09-26 02:13:51.679  9331  9362 D EGL_emulation: app_time_stats: avg=26.50ms min=3.48ms max=77.87ms count=21
+09-26 02:13:52.692  9331  9362 D EGL_emulation: app_time_stats: avg=24.39ms min=2.77ms max=77.26ms count=24
+09-26 02:13:53.758  9331  9362 D EGL_emulation: app_time_stats: avg=21.27ms min=3.74ms max=57.03ms count=29
+09-26 02:13:54.774  9331  9362 D EGL_emulation: app_time_stats: avg=21.74ms min=3.21ms max=38.23ms count=20
+09-26 02:13:55.839  9331  9362 D EGL_emulation: app_time_stats: avg=19.77ms min=3.14ms max=48.02ms count=27
+09-26 02:13:56.904  9331  9362 D EGL_emulation: app_time_stats: avg=21.84ms min=3.36ms max=48.11ms count=27
+09-26 02:13:57.945  9331  9362 D EGL_emulation: app_time_stats: avg=26.55ms min=3.76ms max=65.71ms count=24
+09-26 02:13:58.959  9331  9362 D EGL_emulation: app_time_stats: avg=41.46ms min=3.28ms max=194.56ms count=15
+09-26 02:14:00.010  9331  9362 D EGL_emulation: app_time_stats: avg=47.11ms min=4.06ms max=255.44ms count=16
+09-26 02:14:01.096  9331  9362 D EGL_emulation: app_time_stats: avg=22.31ms min=2.97ms max=87.22ms count=27
+09-26 02:14:02.137  9331  9362 D EGL_emulation: app_time_stats: avg=21.25ms min=3.65ms max=57.79ms count=26
+09-26 02:14:03.149  9331  9362 D EGL_emulation: app_time_stats: avg=27.01ms min=2.98ms max=86.38ms count=22
+09-26 02:14:04.161  9331  9362 D EGL_emulation: app_time_stats: avg=20.44ms min=2.78ms max=71.15ms count=28
+09-26 02:14:05.162  9331  9362 D EGL_emulation: app_time_stats: avg=20.95ms min=3.54ms max=44.92ms count=26
+09-26 02:14:06.302  9331  9331 I Choreographer: Skipped 36 frames!  The application may be doing too much work on its main thread.
+09-26 02:14:06.548  9331  9362 D EGL_emulation: app_time_stats: avg=70.99ms min=4.03ms max=756.00ms count=16
+09-26 02:14:06.627  9331  9361 I HWUI    : Davey! duration=836ms; Flags=0, FrameTimelineVsyncId=2236009, IntendedVsync=16931708078850, Vsync=16932308078826, InputEventId=0, HandleInputStart=16932334470500, AnimationStart=16932334527100, PerformTraversalsStart=16932407565600, DrawStart=16932408106200, FrameDeadline=16932324745492, FrameInterval=16932312168600, FrameStartTime=16666666, SyncQueued=16932411956700, SyncStart=16932417111900, IssueDrawCommandsStart=16932417253000, SwapBuffers=16932534657200, FrameCompleted=16932549709700, DequeueBufferDuration=57600, QueueBufferDuration=8957800, GpuCompleted=16932548450300, SwapBuffersCompleted=16932549709700, DisplayPresentTime=144115222452437076, CommandSubmissionCompleted=16932534657200, 
+09-26 02:14:06.633  9331  9361 I HWUI    : Davey! duration=731ms; Flags=0, FrameTimelineVsyncId=2236009, IntendedVsync=16931708078850, Vsync=16932308078826, InputEventId=0, HandleInputStart=16932334470500, AnimationStart=16932334527100, PerformTraversalsStart=16932407565600, DrawStart=16932421934200, FrameDeadline=16931858078844, FrameInterval=16932312168600, FrameStartTime=16666666, SyncQueued=16932431088000, SyncStart=16932554821100, IssueDrawCommandsStart=16932555100700, SwapBuffers=16932556566100, FrameCompleted=16932563741100, DequeueBufferDuration=52600, QueueBufferDuration=833700, GpuCompleted=16932560866100, SwapBuffersCompleted=16932563741100, DisplayPresentTime=0, CommandSubmissionCompleted=16932556566100, 
+09-26 02:14:07.624  9331  9362 D EGL_emulation: app_time_stats: avg=40.30ms min=9.91ms max=88.42ms count=17
+09-26 02:14:08.660  9331  9362 D EGL_emulation: app_time_stats: avg=23.80ms min=3.56ms max=62.67ms count=23
+09-26 02:14:09.706  9331  9362 D EGL_emulation: app_time_stats: avg=24.19ms min=4.22ms max=112.53ms count=22
+09-26 02:14:10.711  9331  9362 D EGL_emulation: app_time_stats: avg=19.19ms min=3.44ms max=85.05ms count=28
+09-26 02:14:11.753  9331  9362 D EGL_emulation: app_time_stats: avg=18.61ms min=2.99ms max=52.81ms count=25
+09-26 02:14:12.840  9331  9362 D EGL_emulation: app_time_stats: avg=22.30ms min=3.56ms max=47.11ms count=25
+09-26 02:14:13.844  9331  9362 D EGL_emulation: app_time_stats: avg=19.59ms min=3.15ms max=47.78ms count=26
+09-26 02:14:14.844  9331  9362 D EGL_emulation: app_time_stats: avg=20.11ms min=3.97ms max=42.89ms count=25
+09-26 02:14:15.854  9331  9362 D EGL_emulation: app_time_stats: avg=28.83ms min=4.85ms max=77.98ms count=22
+09-26 02:14:16.867  9331  9362 D EGL_emulation: app_time_stats: avg=24.10ms min=3.73ms max=63.95ms count=23
+09-26 02:14:17.872  9331  9362 D EGL_emulation: app_time_stats: avg=23.48ms min=3.90ms max=65.09ms count=18
+09-26 02:14:18.808  9331  9362 D EGL_emulation: app_time_stats: avg=6264.29ms min=259.40ms max=12269.18ms count=2
+09-26 02:14:18.852  9331  9331 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@6e9fbe4
+09-26 02:14:18.946  9331  9362 D EGL_emulation: app_time_stats: avg=24.69ms min=3.63ms max=118.32ms count=26
+09-26 02:14:19.971  9331  9362 D EGL_emulation: app_time_stats: avg=18.70ms min=3.13ms max=45.08ms count=31
+09-26 02:14:20.976  9331  9362 D EGL_emulation: app_time_stats: avg=19.36ms min=2.99ms max=40.56ms count=28
+09-26 02:14:21.990  9331  9362 D EGL_emulation: app_time_stats: avg=15.02ms min=3.11ms max=28.22ms count=34
+09-26 02:14:23.044  9331  9362 D EGL_emulation: app_time_stats: avg=16.81ms min=3.05ms max=33.55ms count=34
+09-26 02:14:24.061  9331  9362 D EGL_emulation: app_time_stats: avg=20.10ms min=2.87ms max=58.33ms count=24
+09-26 02:14:25.136  9331  9362 D EGL_emulation: app_time_stats: avg=21.27ms min=3.96ms max=46.80ms count=27
+09-26 02:14:25.983  9331  9331 I Choreographer: Skipped 36 frames!  The application may be doing too much work on its main thread.
+09-26 02:14:26.054  9331  9606 I HWUI    : Davey! duration=790ms; Flags=0, FrameTimelineVsyncId=2240023, IntendedVsync=16951158078072, Vsync=16951224744736, InputEventId=0, HandleInputStart=16951231352500, AnimationStart=16951231389800, PerformTraversalsStart=16951235097200, DrawStart=16951235228000, FrameDeadline=16951374744730, FrameInterval=16951231326600, FrameStartTime=16666666, SyncQueued=16951236481000, SyncStart=16951269346500, IssueDrawCommandsStart=16951269533800, SwapBuffers=16951293011800, FrameCompleted=16951981338600, DequeueBufferDuration=620317100, QueueBufferDuration=558200, GpuCompleted=16951981338600, SwapBuffersCompleted=16951972452500, DisplayPresentTime=0, CommandSubmissionCompleted=16951293011800, 
+09-26 02:14:26.243  9331  9362 D EGL_emulation: app_time_stats: avg=85.90ms min=23.08ms max=166.46ms count=5
+09-26 02:14:26.323  9331  9340 I HWUI    : Davey! duration=781ms; Flags=0, FrameTimelineVsyncId=2240047, IntendedVsync=16951391411396, Vsync=16951991411372, InputEventId=0, HandleInputStart=16951999396200, AnimationStart=16951999448800, PerformTraversalsStart=16952007162600, DrawStart=16952007280600, FrameDeadline=16952108078034, FrameInterval=16951993451600, FrameStartTime=16666666, SyncQueued=16952008453100, SyncStart=16952090377700, IssueDrawCommandsStart=16952090585100, SwapBuffers=16952187098500, FrameCompleted=16952254366300, DequeueBufferDuration=103100, QueueBufferDuration=23235200, GpuCompleted=16952249286300, SwapBuffersCompleted=16952254366300, DisplayPresentTime=0, CommandSubmissionCompleted=16952187098500, 
+09-26 02:14:27.253  9331  9362 D EGL_emulation: app_time_stats: avg=44.57ms min=4.28ms max=93.66ms count=16
+09-26 02:14:28.295  9331  9362 D EGL_emulation: app_time_stats: avg=34.66ms min=6.63ms max=84.41ms count=19
+09-26 02:14:29.308  9331  9362 D EGL_emulation: app_time_stats: avg=35.16ms min=4.40ms max=91.51ms count=15
+09-26 02:14:30.314  9331  9362 D EGL_emulation: app_time_stats: avg=28.18ms min=3.91ms max=64.79ms count=20
+09-26 02:14:31.377  9331  9362 D EGL_emulation: app_time_stats: avg=22.34ms min=4.11ms max=47.04ms count=24
+09-26 02:14:32.401  9331  9362 D EGL_emulation: app_time_stats: avg=21.14ms min=3.15ms max=59.58ms count=27
+09-26 02:14:33.440  9331  9362 D EGL_emulation: app_time_stats: avg=17.02ms min=3.02ms max=32.79ms count=32
+09-26 02:14:34.442  9331  9362 D EGL_emulation: app_time_stats: avg=16.42ms min=3.57ms max=32.54ms count=29
+09-26 02:14:35.471  9331  9362 D EGL_emulation: app_time_stats: avg=14.26ms min=2.85ms max=29.82ms count=32
+09-26 02:14:36.480  9331  9362 D EGL_emulation: app_time_stats: avg=24.91ms min=3.92ms max=82.26ms count=24
+09-26 02:14:37.523  9331  9362 D EGL_emulation: app_time_stats: avg=17.29ms min=3.10ms max=50.01ms count=31
+09-26 02:14:38.552  9331  9362 D EGL_emulation: app_time_stats: avg=22.30ms min=3.14ms max=97.19ms count=26
+09-26 02:14:39.569  9331  9362 D EGL_emulation: app_time_stats: avg=19.10ms min=3.36ms max=36.53ms count=28
+09-26 02:14:40.575  9331  9362 D EGL_emulation: app_time_stats: avg=17.71ms min=3.07ms max=44.27ms count=30
+09-26 02:14:41.576  9331  9362 D EGL_emulation: app_time_stats: avg=20.55ms min=3.47ms max=41.40ms count=29
+09-26 02:14:42.577  9331  9362 D EGL_emulation: app_time_stats: avg=14.27ms min=2.89ms max=24.96ms count=34
+09-26 02:14:43.578  9331  9362 D EGL_emulation: app_time_stats: avg=15.04ms min=3.20ms max=30.70ms count=34
+09-26 02:14:44.606  9331  9362 D EGL_emulation: app_time_stats: avg=16.39ms min=2.82ms max=32.61ms count=31
+09-26 02:14:45.624  9331  9362 D EGL_emulation: app_time_stats: avg=15.22ms min=3.03ms max=28.53ms count=32
+09-26 02:14:46.635  9331  9362 D EGL_emulation: app_time_stats: avg=16.28ms min=3.21ms max=39.63ms count=30
+09-26 02:14:47.638  9331  9362 D EGL_emulation: app_time_stats: avg=17.37ms min=2.63ms max=45.05ms count=31
+09-26 02:14:48.722  9331  9362 D EGL_emulation: app_time_stats: avg=19.18ms min=2.59ms max=38.42ms count=29
+09-26 02:14:49.765  9331  9362 D EGL_emulation: app_time_stats: avg=24.72ms min=3.48ms max=100.24ms count=25
+09-26 02:14:50.792  9331  9362 D EGL_emulation: app_time_stats: avg=19.52ms min=3.95ms max=46.02ms count=27
+09-26 02:14:51.821  9331  9362 D EGL_emulation: app_time_stats: avg=13.95ms min=2.84ms max=31.50ms count=33
+09-26 02:14:52.832  9331  9362 D EGL_emulation: app_time_stats: avg=17.08ms min=2.84ms max=37.24ms count=31
+09-26 02:14:53.843  9331  9362 D EGL_emulation: app_time_stats: avg=18.41ms min=2.98ms max=44.51ms count=32
+09-26 02:14:54.846  9331  9362 D EGL_emulation: app_time_stats: avg=16.71ms min=2.77ms max=39.07ms count=31
+09-26 02:14:55.847  9331  9362 D EGL_emulation: app_time_stats: avg=15.77ms min=3.20ms max=33.59ms count=32
+09-26 02:14:56.852  9331  9362 D EGL_emulation: app_time_stats: avg=20.47ms min=3.17ms max=60.14ms count=29
+09-26 02:14:57.856  9331  9362 D EGL_emulation: app_time_stats: avg=22.19ms min=3.94ms max=74.92ms count=24
+09-26 02:14:59.295  9331  9362 D EGL_emulation: app_time_stats: avg=57.04ms min=3.25ms max=603.73ms count=19
+09-26 02:14:59.869  9331  9341 I HWUI    : Davey! duration=772ms; Flags=0, FrameTimelineVsyncId=2247196, IntendedVsync=16984624743400, Vsync=16984841410058, InputEventId=0, HandleInputStart=16984849257700, AnimationStart=16984849306900, PerformTraversalsStart=16984853178200, DrawStart=16984853315100, FrameDeadline=16985341410038, FrameInterval=16984843010800, FrameStartTime=16666666, SyncQueued=16984883798400, SyncStart=16985311902800, IssueDrawCommandsStart=16985312194700, SwapBuffers=16985316345600, FrameCompleted=16985825263700, DequeueBufferDuration=488992400, QueueBufferDuration=426300, GpuCompleted=16985825263700, SwapBuffersCompleted=16985807726300, DisplayPresentTime=0, CommandSubmissionCompleted=16985316345600, 
+09-26 02:15:00.359  9331  9362 D EGL_emulation: app_time_stats: avg=33.30ms min=7.43ms max=86.73ms count=11
+09-26 02:15:01.389  9331  9362 D EGL_emulation: app_time_stats: avg=33.53ms min=7.50ms max=80.29ms count=17
+09-26 02:15:02.423  9331  9362 D EGL_emulation: app_time_stats: avg=36.44ms min=5.30ms max=112.42ms count=17
+09-26 02:15:03.436  9331  9362 D EGL_emulation: app_time_stats: avg=21.11ms min=3.31ms max=48.59ms count=26
+09-26 02:15:04.444  9331  9362 D EGL_emulation: app_time_stats: avg=20.86ms min=3.45ms max=44.81ms count=25
+09-26 02:15:04.966  9331  9336 W sujin.perchable: Cleared Reference was only reachable from finalizer (only reported once)
+09-26 02:15:05.012  9331  9336 I sujin.perchable: Background concurrent mark compact GC freed 10224KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 9607KB/18MB, paused 1.118ms,5.773ms total 87.560ms
+09-26 02:15:05.470  9331  9362 D EGL_emulation: app_time_stats: avg=18.73ms min=2.76ms max=32.97ms count=31
+09-26 02:15:06.492  9331  9362 D EGL_emulation: app_time_stats: avg=20.89ms min=3.65ms max=60.04ms count=27
+09-26 02:15:07.494  9331  9362 D EGL_emulation: app_time_stats: avg=24.27ms min=4.12ms max=55.25ms count=27
+09-26 02:15:08.538  9331  9362 D EGL_emulation: app_time_stats: avg=16.89ms min=3.48ms max=37.14ms count=30
+09-26 02:15:09.538  9331  9362 D EGL_emulation: app_time_stats: avg=16.89ms min=2.96ms max=44.25ms count=27
+09-26 02:15:10.565  9331  9362 D EGL_emulation: app_time_stats: avg=18.06ms min=3.03ms max=34.14ms count=31
+09-26 02:15:11.575  9331  9362 D EGL_emulation: app_time_stats: avg=14.62ms min=2.63ms max=30.00ms count=33
+09-26 02:15:12.589  9331  9362 D EGL_emulation: app_time_stats: avg=15.08ms min=2.97ms max=28.32ms count=33
+09-26 02:15:13.615  9331  9362 D EGL_emulation: app_time_stats: avg=15.51ms min=2.66ms max=56.32ms count=28
+09-26 02:15:14.658  9331  9362 D EGL_emulation: app_time_stats: avg=20.74ms min=3.51ms max=71.53ms count=26
+09-26 02:15:15.698  9331  9362 D EGL_emulation: app_time_stats: avg=19.60ms min=3.23ms max=66.63ms count=28
+09-26 02:15:16.713  9331  9362 D EGL_emulation: app_time_stats: avg=15.86ms min=3.18ms max=30.61ms count=31
+09-26 02:15:17.761  9331  9362 D EGL_emulation: app_time_stats: avg=17.40ms min=2.93ms max=36.70ms count=33
+09-26 02:15:18.826  9331  9362 D EGL_emulation: app_time_stats: avg=16.79ms min=2.59ms max=35.64ms count=34
+09-26 02:15:19.834  9331  9362 D EGL_emulation: app_time_stats: avg=17.82ms min=3.40ms max=48.25ms count=30
+09-26 02:15:21.003  9331  9362 D EGL_emulation: app_time_stats: avg=43.37ms min=3.26ms max=155.85ms count=17
+09-26 02:15:22.053  9331  9362 D EGL_emulation: app_time_stats: avg=52.52ms min=5.81ms max=212.17ms count=14
+09-26 02:15:23.064  9331  9362 D EGL_emulation: app_time_stats: avg=52.89ms min=3.19ms max=149.86ms count=14
+09-26 02:15:23.967  9331  9610 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:15:24.097  9331  9976 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 02:15:24.129  9331  9362 D EGL_emulation: app_time_stats: avg=58.58ms min=6.96ms max=197.84ms count=14
+09-26 02:15:24.596  9331  9331 W sujin.perchable: Verification of void androidx.fragment.app.FragmentTransaction.<init>(androidx.fragment.app.FragmentFactory, java.lang.ClassLoader, androidx.fragment.app.FragmentTransaction) took 119.744ms (1010.49 bytecodes/s) (4240B approximate peak alloc)
+09-26 02:15:25.096  9331  9331 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Schedule
+09-26 02:15:25.097  9331  9331 W unknown:BridgelessReact: ReactHost{0}.attachSurface(surfaceId = 0)
+09-26 02:15:25.100  9331  9980 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask()
+09-26 02:15:25.101  9331  9980 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Start
+09-26 02:15:25.101  9331  9980 W unknown:BridgelessReact: ReactHost{0}.getJSBundleLoader()
+09-26 02:15:25.105  9331  9980 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning()
+09-26 02:15:25.168  9331  9356 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning(): Async result = true
+09-26 02:15:25.170  9331  9980 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro()
+09-26 02:15:25.351  9331  9331 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libhermesvm.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:15:25.360  9331  9331 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libhermestooling.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:15:25.360  9331  9331 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-26 02:15:25.361  9331  9331 D jni_lib_merge: Preparing 4 pre-merged libs (including stub)
+09-26 02:15:25.361  9331  9331 D jni_lib_merge: Preparing to register libhermes_executor_so.  onload_func: 0x7d7dc854e6e0
+09-26 02:15:25.362  9331  9331 D jni_lib_merge: Preparing to register libhermesinstancejni_so.  onload_func: 0x7d7dc857ab60
+09-26 02:15:25.362  9331  9331 D jni_lib_merge: Preparing to register libjsijniprofiler_so.  onload_func: 0x7d7dc857c900
+09-26 02:15:25.362  9331  9331 D jni_lib_merge: About to register 3 actual methods.
+09-26 02:15:25.405  9331  9331 W unknown:BridgelessReact: ReactHost{0}.onHostResume(activity)
+09-26 02:15:25.431  9331  9981 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:15:25.451  9331  9331 I Choreographer: Skipped 78 frames!  The application may be doing too much work on its main thread.
+09-26 02:15:25.554  9331  9331 D AutofillManager: Fill dialog is enabled:false, hints=[password, passwordAuto, creditCardNumber, creditCardSecurityCode, creditCardExpirationDate]
+09-26 02:15:26.424  9331  9331 D VRI[DevLauncherActivity]: visibilityChanged oldVisibility=true newVisibility=false
+09-26 02:15:26.455  9331  9341 I HWUI    : Davey! duration=2221ms; Flags=1, FrameTimelineVsyncId=2252283, IntendedVsync=17010158075712, Vsync=17011458075660, InputEventId=0, HandleInputStart=17011464470700, AnimationStart=17011464522900, PerformTraversalsStart=17011481124600, DrawStart=17012003211100, FrameDeadline=17010174742378, FrameInterval=17011461098500, FrameStartTime=16666666, SyncQueued=17012053128300, SyncStart=17012070805400, IssueDrawCommandsStart=17012071623500, SwapBuffers=17012373557800, FrameCompleted=17012397709300, DequeueBufferDuration=96500, QueueBufferDuration=1167200, GpuCompleted=17012397709300, SwapBuffersCompleted=17012378829600, DisplayPresentTime=0, CommandSubmissionCompleted=17012373557800, 
+09-26 02:15:26.490  9331  9362 D EGL_emulation: app_time_stats: avg=1180.02ms min=94.59ms max=2265.45ms count=2
+09-26 02:15:26.566  9331  9341 I HWUI    : Davey! duration=2336ms; Flags=1, FrameTimelineVsyncId=2252283, IntendedVsync=17010158075712, Vsync=17011458075660, InputEventId=0, HandleInputStart=17011464470700, AnimationStart=17011464522900, PerformTraversalsStart=17011481124600, DrawStart=17012400407800, FrameDeadline=17010258075708, FrameInterval=17011461098500, FrameStartTime=16666666, SyncQueued=17012414952800, SyncStart=17012433561800, IssueDrawCommandsStart=17012433864800, SwapBuffers=17012457349600, FrameCompleted=17012513353400, DequeueBufferDuration=57500, QueueBufferDuration=5675700, GpuCompleted=17012513353400, SwapBuffersCompleted=17012501068100, DisplayPresentTime=0, CommandSubmissionCompleted=17012457349600, 
+09-26 02:15:26.628  9331  9331 I Choreographer: Skipped 69 frames!  The application may be doing too much work on its main thread.
+09-26 02:15:27.123  9331  9341 I HWUI    : Davey! duration=1451ms; Flags=1, FrameTimelineVsyncId=2252421, IntendedVsync=17011474742326, Vsync=17012624742280, InputEventId=0, HandleInputStart=17012641859500, AnimationStart=17012641916900, PerformTraversalsStart=17012706057300, DrawStart=17012869612200, FrameDeadline=17011491408992, FrameInterval=17012638686900, FrameStartTime=16666666, SyncQueued=17012870313700, SyncStart=17013015448900, IssueDrawCommandsStart=17013015695600, SwapBuffers=17013048349100, FrameCompleted=17013071172600, DequeueBufferDuration=51400, QueueBufferDuration=1202400, GpuCompleted=17013067620900, SwapBuffersCompleted=17013071172600, DisplayPresentTime=0, CommandSubmissionCompleted=17013048349100, 
+09-26 02:15:27.165  9331  9331 D AutofillManager: onActivityFinishing(): calling cancelLocked()
+09-26 02:15:27.167  9331  9331 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@25a5b83
+09-26 02:15:27.223  9331  9331 D SplashScreenView: Building from parcel drawable: android.graphics.drawable.BitmapDrawable@9e4f007
+09-26 02:15:27.234  9331  9331 D SplashScreenView: Build android.window.SplashScreenView{d94bf5d V.E...... ......ID 0,0-0,0}
+09-26 02:15:27.234  9331  9331 D SplashScreenView: Icon: view: androidx.appcompat.widget.AppCompatImageView{99200d2 V.ED..... ......I. 0,0-0,0 #1020504 android:id/splashscreen_icon_view} drawable: android.graphics.drawable.BitmapDrawable@9e4f007 size: 504
+09-26 02:15:27.234  9331  9331 D SplashScreenView: Branding: view: android.view.View{3d685a3 G.ED..... ......I. 0,0-0,0 #1020503 android:id/splashscreen_branding_view} drawable: null size w: 0 h: 0
+09-26 02:15:27.305  9331  9331 W unknown:BridgelessReact: ReactHost{0}.raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: Unhandled SoftException
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: com.facebook.react.bridge.ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException(ReactHostImpl.kt:919)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException$default(ReactHostImpl.kt:910)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.onWindowFocusChange(ReactHostImpl.kt:682)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at com.facebook.react.ReactDelegate.onWindowFocusChanged(ReactDelegate.kt:229)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at com.facebook.react.ReactActivityDelegate.onWindowFocusChanged(ReactActivityDelegate.java:235)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invokeSuspend(ReactActivityDelegateWrapper.kt:320)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:8)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:4)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$launchLifecycleScopeWithLock$1.invokeSuspend(ReactActivityDelegateWrapper.kt:452)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at kotlinx.coroutines.internal.DispatchedContinuationKt.resumeCancellableWith(DispatchedContinuation.kt:375)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at kotlinx.coroutines.intrinsics.CancellableKt.startCoroutineCancellable(Cancellable.kt:26)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at kotlinx.coroutines.CoroutineStart.invoke(CoroutineStart.kt:358)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at kotlinx.coroutines.AbstractCoroutine.start(AbstractCoroutine.kt:134)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch(Builders.common.kt:53)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch(Unknown Source:1)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch$default(Builders.common.kt:44)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch$default(Unknown Source:1)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock(ReactActivityDelegateWrapper.kt:450)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock$default(ReactActivityDelegateWrapper.kt:446)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.onWindowFocusChanged(ReactActivityDelegateWrapper.kt:318)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at com.facebook.react.ReactActivity.onWindowFocusChanged(ReactActivity.java:161)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at androidx.appcompat.view.WindowCallbackWrapper.onWindowFocusChanged(WindowCallbackWrapper.java:124)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at expo.modules.devmenu.detectors.InterceptingWindowCallback.onWindowFocusChanged(Unknown Source:2)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at com.android.internal.policy.DecorView.onWindowFocusChanged(DecorView.java:1772)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.view.View.dispatchWindowFocusChanged(View.java:16743)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.view.ViewGroup.dispatchWindowFocusChanged(ViewGroup.java:1505)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.view.ViewRootImpl.dispatchFocusEvent(ViewRootImpl.java:4697)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.view.ViewRootImpl.handleWindowFocusChanged(ViewRootImpl.java:4601)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged(Unknown Source:0)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl(ViewRootImpl.java:6773)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessage(ViewRootImpl.java:6683)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.os.Looper.loopOnce(Looper.java:232)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.os.Looper.loop(Looper.java:317)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at java.lang.reflect.Method.invoke(Native Method)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+09-26 02:15:27.310  9331  9331 E unknown:ReactHost: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+09-26 02:15:27.343  9331  9331 I Choreographer: Skipped 40 frames!  The application may be doing too much work on its main thread.
+09-26 02:15:27.614  9331  9606 I HWUI    : Davey! duration=861ms; Flags=0, FrameTimelineVsyncId=2252528, IntendedVsync=17012674742278, Vsync=17013341408918, InputEventId=0, HandleInputStart=17013354936300, AnimationStart=17013354986300, PerformTraversalsStart=17013358273400, DrawStart=17013360872800, FrameDeadline=17012691408944, FrameInterval=17013353707600, FrameStartTime=16666666, SyncQueued=17013361686200, SyncStart=17013398360200, IssueDrawCommandsStart=17013399145000, SwapBuffers=17013456658800, FrameCompleted=17013573332000, DequeueBufferDuration=53000, QueueBufferDuration=769700, GpuCompleted=17013573332000, SwapBuffersCompleted=17013464997900, DisplayPresentTime=0, CommandSubmissionCompleted=17013456658800, 
+09-26 02:15:27.835  9331  9331 D SplashScreenView: remove starting view
+09-26 02:15:28.429  9331  9362 D EGL_emulation: app_time_stats: avg=148.53ms min=25.75ms max=314.61ms count=9
+09-26 02:15:29.480  9331  9362 D EGL_emulation: app_time_stats: avg=33.60ms min=2.83ms max=124.41ms count=16
+09-26 02:15:30.565  9331  9362 D EGL_emulation: app_time_stats: avg=74.45ms min=4.69ms max=222.97ms count=11
+09-26 02:15:31.580  9331  9362 D EGL_emulation: app_time_stats: avg=68.93ms min=6.31ms max=150.34ms count=12
+09-26 02:15:32.102  9331  9362 D EGL_emulation: app_time_stats: avg=1433.44ms min=191.53ms max=4092.51ms count=4
+09-26 02:15:32.724  9331  9331 I Choreographer: Skipped 42 frames!  The application may be doing too much work on its main thread.
+09-26 02:15:32.932  9331  9362 D EGL_emulation: app_time_stats: avg=213.10ms min=13.81ms max=740.61ms count=5
+09-26 02:15:33.177  9331  9340 I HWUI    : Davey! duration=833ms; Flags=0, FrameTimelineVsyncId=2253196, IntendedVsync=17018024742064, Vsync=17018724742036, InputEventId=0, HandleInputStart=17018752914200, AnimationStart=17018752966300, PerformTraversalsStart=17018753042100, DrawStart=17018753599800, FrameDeadline=17018391408716, FrameInterval=17018734607400, FrameStartTime=16666666, SyncQueued=17018756508400, SyncStart=17018914650400, IssueDrawCommandsStart=17018914878100, SwapBuffers=17018924836300, FrameCompleted=17019016797400, DequeueBufferDuration=55500, QueueBufferDuration=1137100, GpuCompleted=17019016797400, SwapBuffersCompleted=17018943710400, DisplayPresentTime=0, CommandSubmissionCompleted=17018924836300, 
+09-26 02:15:34.602  9331  9336 I sujin.perchable: Background concurrent mark compact GC freed 7130KB AllocSpace bytes, 6(344KB) LOS objects, 49% free, 11MB/23MB, paused 6.141ms,19.525ms total 444.875ms
+09-26 02:15:34.640  9331  9338 W System  : A resource failed to call release. 
+09-26 02:15:36.949  9331  9362 D EGL_emulation: app_time_stats: avg=2421.72ms min=103.64ms max=4739.80ms count=2
+09-26 02:15:41.717  9331  9331 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@44ef958
+09-26 02:15:41.717  9331  9356 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro(): Creating BundleLoader
+09-26 02:15:41.723  9331  9980 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating BridgelessReactContext
+09-26 02:15:41.733  9331  9980 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating ReactInstance
+09-26 02:15:42.259  9331  9980 W sujin.perchable: Verification of expo.modules.kotlin.modules.ModuleDefinitionData expo.modules.ui.ExpoUIModule.definition() took 113.205ms (105127.87 bytecodes/s) (226104B approximate peak alloc)
+09-26 02:15:42.444  9331  9336 I sujin.perchable: Background concurrent mark compact GC freed 13MB AllocSpace bytes, 0(0B) LOS objects, 49% free, 10MB/20MB, paused 13.003ms,5.497ms total 101.755ms
+09-26 02:15:42.823  9331  9980 W sujin.perchable: Verification of expo.modules.kotlin.modules.ModuleDefinitionData expo.modules.filesystem.FileSystemModule.definition() took 101.202ms (222079.06 bytecodes/s) (545152B approximate peak alloc)
+09-26 02:15:43.207  9331  9980 I ExpoModulesCore: ✅ AppContext was initialized
+09-26 02:15:43.334  9331  9980 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Loading JS Bundle
+09-26 02:15:43.336  9331  9980 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): DevSupportManager.onNewReactContextCreated()
+09-26 02:15:43.348  9331  9331 W unknown:ReactNative: Packager connection already open, nooping.
+09-26 02:15:43.350  9331  9980 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Execute
+09-26 02:15:43.355  9331  9331 W unknown:BridgelessReact: ReactHost{0}.ReactContext.onHostResume()
+09-26 02:15:43.365  9331  9331 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Executing ReactInstanceEventListeners
+09-26 02:15:43.376  9331  9356 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-26 02:15:44.122  9331  9995 I WebViewFactory: Loading com.google.android.webview version 124.0.6367.219 (code 636771938)
+--------- beginning of system
+09-26 02:15:44.123  9331  9995 W ResourcesManager: Found a null ResourcesImpl, skipped.
+09-26 02:15:44.129  9331  9995 V ResourcesManager: The following library key has been added: ResourcesKey{ mHash=b428ef4d mResDir=null mSplitDirs=[] mOverlayDirs=[/product/overlay/EmulationPixel7/EmulationPixel7Overlay.apk,/product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk,/data/resource-cache/com.android.systemui-neutral-mj57.frro,/data/resource-cache/com.android.systemui-accent-E6e4.frro,/data/resource-cache/com.android.systemui-dynamic-DJhv.frro] mLibDirs=[/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk,/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk,/system_ext/framework/androidx.window.extensions.jar] mDisplayId=0 mOverrideConfig=v35 mCompatInfo={420dpi always-compat} mLoaders=[]}
+09-26 02:15:44.133  9331  9995 W ziparchive: Unable to open '/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.dm': No such file or directory
+09-26 02:15:44.133  9331  9995 W ziparchive: Unable to open '/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.dm': No such file or directory
+09-26 02:15:44.137  9331  9995 W sujin.perchable: Entry not found
+09-26 02:15:44.141  9331  9995 D nativeloader: Configuring clns-8 for other apk /data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/lib/x86_64:/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+09-26 02:15:44.148  9331  9995 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+09-26 02:15:44.162  9331  9995 D nativeloader: Configuring clns-9 for other apk /data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/lib/x86_64:/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+09-26 02:15:44.266  9331  9995 I cr_WVCFactoryProvider: Loaded version=124.0.6367.219 minSdkVersion=29 isBundle=false multiprocess=true packageId=2
+09-26 02:15:44.292  9331  9995 D nativeloader: Load /data/app/~~PFV9KYkoyIidxYp9l_YGtA==/com.google.android.trichromelibrary_636771938-upeuH2McNXfgF6WnHjiQfg==/TrichromeLibrary.apk!/lib/x86_64/libmonochrome_64.so using ns clns-9 from class loader (caller=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk): ok
+09-26 02:15:44.304  9331  9995 D nativeloader: Load /system/lib64/libwebviewchromium_plat_support.so using ns clns-9 from class loader (caller=/data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk): ok
+09-26 02:15:44.315  9331 10003 E chromium: [0926/021544.315089:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+09-26 02:15:44.316  9331 10003 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.tsujintsujin.perchable/app_webview/variations_seed_new"
+09-26 02:15:44.317  9331 10003 I chromium: [0926/021544.316699:INFO:variations_seed_loader.cc(66)] Failed to open file for reading.: No such file or directory (2)
+09-26 02:15:44.326  9331 10003 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.tsujintsujin.perchable/app_webview/variations_seed"
+09-26 02:15:44.395  9331  9995 I cr_LibraryLoader: Successfully loaded native library
+09-26 02:15:44.398  9331  9995 I cr_CachingUmaRecorder: Flushed 6 samples from 6 histograms, 0 samples were dropped.
+09-26 02:15:44.516  9331 10007 D TrafficStats: tagSocket(160) with statsTag=0xffffffff, statsUid=-1
+09-26 02:15:44.759  9331  9336 I sujin.perchable: NativeAlloc concurrent mark compact GC freed 1656KB AllocSpace bytes, 7(204KB) LOS objects, 49% free, 11MB/23MB, paused 10.444ms,19.245ms total 263.954ms
+09-26 02:15:44.761  9331  9338 W sujin.perchable: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~fwL0KmUfJdAJkfxBcUhBKA==/com.google.android.webview-qLK5zw71TnwVIkwsyrISaA==/WebViewGoogle.apk' with 2 weak references
+09-26 02:15:44.783  9331  9994 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libworklets.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:15:44.798  9331  9994 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libexpo-modules-core.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:15:44.815  9331  9994 W BridgelessReactContext: [WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of the new architecture is not encouraged usage.
+09-26 02:15:44.913  9331  9994 I ExpoModulesCore: ✅ JSI interop was installed
+09-26 02:15:44.949  9331  9994 I ExpoModulesCore: ✅ Constants were exported
+09-26 02:15:44.961  9331  9994 W sujin.perchable: JNI critical lock held for 16.367ms on Thread[16,tid=9994,Runnable,Thread*=0x7d7e444b4a80,peer=0x145a50e0,"mqt_v_js"]
+09-26 02:15:45.778  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.GroupViewManagerWrapper
+09-26 02:15:45.790  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.uimanager.LayoutShadowNode
+09-26 02:15:45.797  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContainerViewManager
+09-26 02:15:45.805  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.reanimated.view.REASharedTransitionBoundaryManager
+09-26 02:15:45.809  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.SimpleViewManagerWrapper
+09-26 02:15:45.823  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.host.TabsHostViewManager
+09-26 02:15:45.826  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderConfigViewManager
+09-26 02:15:45.833  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.reactnativegooglesignin.RNGoogleSigninButtonViewManager
+09-26 02:15:45.840  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderSubviewManager
+09-26 02:15:45.844  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetHostViewManager
+09-26 02:15:45.862  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.scrollviewmarker.ScrollViewMarkerViewManager
+09-26 02:15:45.864  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetContentWrapperViewManager
+09-26 02:15:45.869  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContentWrapperManager
+09-26 02:15:45.878  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.screen.StackScreenViewManager
+09-26 02:15:45.892  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewManager
+09-26 02:15:45.895  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewShadowNode
+09-26 02:15:45.897  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenViewManager
+09-26 02:15:45.899  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.config.StackHeaderConfigViewManager
+09-26 02:15:45.900  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.RNSentryOnDrawReporterManager
+09-26 02:15:45.904  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaProviderManager
+09-26 02:15:45.905  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.SearchBarManager
+09-26 02:15:45.909  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.host.StackHostViewManager
+09-26 02:15:45.911  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.replay.RNSentryReplayMaskManager
+09-26 02:15:45.915  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenFooterManager
+09-26 02:15:45.920  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.replay.RNSentryReplayUnmaskManager
+09-26 02:15:45.926  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ModalScreenViewManager
+09-26 02:15:45.929  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.safearea.SafeAreaViewManager
+09-26 02:15:45.933  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackViewManager
+09-26 02:15:45.942  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.subview.StackHeaderSubviewViewManager
+09-26 02:15:45.945  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class org.reactnative.maskedview.RNCMaskedViewManager
+09-26 02:15:45.951  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.screen.TabsScreenViewManager
+09-26 02:15:47.198  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager
+09-26 02:15:47.262  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+09-26 02:15:47.308  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
+09-26 02:15:47.329  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.modal.ReactModalHostManager
+09-26 02:15:47.361  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.progressbar.ReactProgressBarViewManager
+09-26 02:15:47.396  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+09-26 02:15:47.440  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.image.ReactImageManager
+09-26 02:15:47.499  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactTextViewManager
+09-26 02:15:47.519  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
+09-26 02:15:47.556  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
+09-26 02:15:47.625  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactScrollViewManager
+09-26 02:15:47.655  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.view.ReactViewManager
+09-26 02:15:47.728  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.drawer.ReactDrawerLayoutManager
+09-26 02:15:47.746  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.switchview.ReactSwitchManager
+09-26 02:15:47.772  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
+09-26 02:15:47.839  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.textinput.ReactTextInputManager
+09-26 02:15:47.852  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.SelectableTextViewManager
+09-26 02:15:47.873  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
+09-26 02:15:47.889  9331  9994 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.virtual.view.ReactVirtualViewManager
+09-26 02:15:48.111  9331 10007 D TrafficStats: tagSocket(132) with statsTag=0xffffffff, statsUid=-1
+09-26 02:15:48.998  9331  9994 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/librnscreens.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes2.dex): ok
+09-26 02:15:49.161  9331  9994 I ReactNativeJS: Running "main" with {"rootTag":1,"initialProps":{},"fabric":true}
+09-26 02:15:49.213  9331 10008 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 02:15:50.176  9331  9331 I ExpoModulesCore: ✅ JSI interop was installed
+09-26 02:15:52.431  9331  9995 I RNSentry: FrameMetricsAggregator installed.
+09-26 02:15:52.850  9331  9995 W sujin.perchable: Accessing hidden field Landroid/view/Choreographer;->mLastFrameTimeNanos:J (unsupported, reflection, allowed)
+09-26 02:15:52.867  9331  9362 D EGL_emulation: app_time_stats: avg=3921.34ms min=9.69ms max=15515.05ms count=4
+09-26 02:15:52.975  9331 10018 D nativeloader: Load /system/lib64/liblog.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:15:52.982  9331 10018 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libsentry.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:15:52.993  9331 10018 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libsentry-android.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes7.dex): ok
+09-26 02:15:53.012  9331  9995 I RNSentry: Starting with DSN: 'https://53d0bae748b6e27b4b8835e08e2f793f@o4512141240762368.ingest.us.sentry.io/4512141251313664'
+09-26 02:15:53.015  9331  9995 I RNSentry: Native Integrations '[io.sentry.UncaughtExceptionHandlerIntegration@4ee93c9, io.sentry.ShutdownHookIntegration@1125ace, io.sentry.SpotlightIntegration@5cf9def, io.sentry.android.core.SendCachedEnvelopeIntegration@15f40fc, io.sentry.android.core.NdkIntegration@a43a385, io.sentry.android.core.TombstoneIntegration@87d55da, io.sentry.android.core.EnvelopeFileObserverIntegration$OutboxEnvelopeFileObserverIntegration@e222a0b, io.sentry.android.core.SendCachedEnvelopeIntegration@cdd70e8, io.sentry.android.core.AppLifecycleIntegration@e1ff301, io.sentry.android.core.AnrV2Integration@36af5a6, io.sentry.android.core.ActivityLifecycleIntegration@fc75be7, io.sentry.android.core.ActivityBreadcrumbsIntegration@18cb394, io.sentry.android.core.UserInteractionIntegration@17be3d, io.sentry.android.core.AppComponentsBreadcrumbsIntegration@640c632, io.sentry.android.core.SystemEventsBreadcrumbsIntegration@2a3cf83, io.sentry.android.core.NetworkBreadcrumbsIntegration@b4b7500, io.sentry.android.replay.ReplayIntegration@ac70139]'
+09-26 02:15:53.120  9331  9331 W pool-7-thread-1: type=1400 audit(0.0:120): avc:  denied  { read } for  name="version" dev="proc" ino=4026532032 scontext=u:r:untrusted_app:s0:c211,c256,c512,c768 tcontext=u:object_r:proc_version:s0 tclass=file permissive=0 app=com.tsujintsujin.perchable
+09-26 02:15:53.413  9331  9336 I sujin.perchable: NativeAlloc concurrent mark compact GC freed 6196KB AllocSpace bytes, 10(400KB) LOS objects, 49% free, 12MB/25MB, paused 2.008ms,7.675ms total 281.051ms
+09-26 02:15:54.414  9331 10023 D TrafficStats: tagSocket(173) with statsTag=0xf001, statsUid=-1
+09-26 02:15:55.396  9331 10023 D TrafficStats: tagSocket(173) with statsTag=0xf001, statsUid=-1
+09-26 02:15:55.590  9331  9994 W ReactNativeJS: You have selected the "dimezisBlurViewSdk31Plus" blur method, but the `blurTarget` prop has not been configured. The blur view will fallback to "none" blur method to avoid errors. You can learn more about the new BlurView API at: https://docs.expo.dev/versions/latest/sdk/blur-view/
+09-26 02:15:56.362  9331  9362 D EGL_emulation: app_time_stats: avg=1743.48ms min=255.83ms max=3231.13ms count=2
+09-26 02:15:57.061  9331  9340 I HWUI    : Davey! duration=896ms; Flags=0, FrameTimelineVsyncId=2257589, IntendedVsync=17042141407766, Vsync=17042324741092, InputEventId=0, HandleInputStart=17042335232700, AnimationStart=17042335271700, PerformTraversalsStart=17042986136200, DrawStart=17042986711100, FrameDeadline=17042408074422, FrameInterval=17042334108100, FrameStartTime=16666666, SyncQueued=17043005336300, SyncStart=17043005694900, IssueDrawCommandsStart=17043005865700, SwapBuffers=17043007093100, FrameCompleted=17043037781100, DequeueBufferDuration=48300, QueueBufferDuration=847300, GpuCompleted=17043037781100, SwapBuffersCompleted=17043008978600, DisplayPresentTime=261494239154602826, CommandSubmissionCompleted=17043007093100, 
+09-26 02:15:57.233  9331 10033 D nativeloader: Load /data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!/lib/x86_64/libavif_android.so using ns clns-7 from class loader (caller=/data/app/~~cBx3p6cuYK9fgwvV5hIh5A==/com.tsujintsujin.perchable-1fffMw8WXx8ZJ69jsqtgYw==/base.apk!classes9.dex): ok
+09-26 02:15:57.308  9331  9331 D Glide   : Finished loading BitmapDrawable from DATA_DISK_CACHE for https://lh3.googleusercontent.com/a/ACg8ocLlfuw7idxKlySyEGWf5pHBpUxZ4KzawR8ReFxKYPM03kKrLk3t=s96-c with size [84x84] in 358.26509999999996 ms
+09-26 02:16:09.346  9331  9331 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@ce67102
+09-26 02:16:10.678  9331  9331 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@4a393b9
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: java.net.SocketException: Software caused connection abort
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead0(Native Method)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-26 02:16:22.247  9331  9981 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+09-26 02:16:22.247  9331  9981 W unknown:ReconnectingWebSocket: Couldn't connect to "ws://192.168.254.100:8081/message?device=sdk_gphone64_x86_64%20-%2015%20-%20API%2035&app=com.tsujintsujin.perchable&clientid=DevLauncherBridgelessDevSupportManager", will silently retry
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: java.net.SocketException: Software caused connection abort
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead0(Native Method)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-26 02:16:22.249  9331  9976 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+09-26 02:16:22.249  9331  9976 W unknown:ReconnectingWebSocket: Couldn't connect to "ws://10.0.2.2:8081/message?device=sdk_gphone64_x86_64%20-%2015%20-%20API%2035&app=com.tsujintsujin.perchable&clientid=DevLauncherBridgelessDevSupportManager", will silently retry
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: java.net.SocketException: Software caused connection abort
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead0(Native Method)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-26 02:16:22.362  9331  9356 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+09-26 02:16:22.370  9331  9356 W unknown:ReconnectingWebSocket: Couldn't connect to "ws://192.168.254.100:8081/inspector/network", will silently retry
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: Cannot connect to Expo CLI.
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: 
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: Try the following to fix the issue:
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: - Ensure that Expo dev server is running and available on the same network
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: - Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: - If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: 
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: URL: 192.168.254.100:8081
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: 
+09-26 02:16:22.905  9331  9994 W ReactNativeJS: Error: undefined
+09-26 02:16:24.333  9331  9356 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:24.341  9331 10008 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:24.343  9331 10007 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:24.407  9331 10008 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:26.346  9331  9362 D EGL_emulation: app_time_stats: avg=5995.71ms min=44.63ms max=29010.90ms count=5
+09-26 02:16:26.427  9331 10007 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:26.480  9331 10008 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:26.965  9331  9331 W sujin.perchable: Long monitor contention with owner mqt_v_js (9994) at boolean android.os.MessageQueue.enqueueMessage(android.os.Message, long)(MessageQueue.java:695) waiters=0 in boolean android.os.MessageQueue.enqueueMessage(android.os.Message, long) for 190ms
+09-26 02:16:26.979  9331  9340 I HWUI    : Davey! duration=795ms; Flags=0, FrameTimelineVsyncId=2268054, IntendedVsync=17071874739910, Vsync=17072274739894, InputEventId=0, HandleInputStart=17072285011200, AnimationStart=17072285314800, PerformTraversalsStart=17072297462800, DrawStart=17072305781600, FrameDeadline=17072374739890, FrameInterval=17072278538400, FrameStartTime=16666666, SyncQueued=17072308199800, SyncStart=17072359516000, IssueDrawCommandsStart=17072377878600, SwapBuffers=17072415176800, FrameCompleted=17072721416300, DequeueBufferDuration=44900, QueueBufferDuration=63714500, GpuCompleted=17072721107900, SwapBuffersCompleted=17072721416300, DisplayPresentTime=400826478667629965, CommandSubmissionCompleted=17072415176800, 
+09-26 02:16:26.998  9331  9331 I Choreographer: Skipped 33 frames!  The application may be doing too much work on its main thread.
+09-26 02:16:27.022  9331 10007 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:27.904  9331  9340 I HWUI    : Davey! duration=845ms; Flags=0, FrameTimelineVsyncId=2268083, IntendedVsync=17072441406554, Vsync=17072991406532, InputEventId=0, HandleInputStart=17073010884600, AnimationStart=17073010987200, PerformTraversalsStart=17073014956300, DrawStart=17073015530100, FrameDeadline=17073041406530, FrameInterval=17073004313600, FrameStartTime=16666666, SyncQueued=17073015639200, SyncStart=17073023202700, IssueDrawCommandsStart=17073029413300, SwapBuffers=17073102628900, FrameCompleted=17073293971300, DequeueBufferDuration=20118800, QueueBufferDuration=163958500, GpuCompleted=17073272037200, SwapBuffersCompleted=17073293971300, DisplayPresentTime=456277895201097298, CommandSubmissionCompleted=17073102628900, 
+09-26 02:16:27.912  9331  9362 D EGL_emulation: app_time_stats: avg=385.20ms min=261.50ms max=629.22ms count=4
+09-26 02:16:28.414  9331  9340 I HWUI    : Davey! duration=1161ms; Flags=0, FrameTimelineVsyncId=2268106, IntendedVsync=17073041406530, Vsync=17073491406512, InputEventId=0, HandleInputStart=17073643094800, AnimationStart=17073643161600, PerformTraversalsStart=17073835690000, DrawStart=17073836160000, FrameDeadline=17073958073160, FrameInterval=17073502829000, FrameStartTime=16666666, SyncQueued=17073836252300, SyncStart=17073923915800, IssueDrawCommandsStart=17073924151300, SwapBuffers=17073978278700, FrameCompleted=17074290452700, DequeueBufferDuration=2802000, QueueBufferDuration=23223400, GpuCompleted=17074290452700, SwapBuffersCompleted=17074249621500, DisplayPresentTime=514825583723743010, CommandSubmissionCompleted=17073978278700, 
+09-26 02:16:28.429  9331 10007 D TrafficStats: tagSocket(137) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:28.967  9331 10007 D TrafficStats: tagSocket(121) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:29.510  9331 10008 D TrafficStats: tagSocket(121) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:29.529  9331  9362 D EGL_emulation: app_time_stats: avg=531.36ms min=322.73ms max=678.12ms count=3
+09-26 02:16:29.681  9331  9343 I HWUI    : Davey! duration=956ms; Flags=0, FrameTimelineVsyncId=2268172, IntendedVsync=17074541406470, Vsync=17074808073126, InputEventId=0, HandleInputStart=17074842472000, AnimationStart=17074842547700, PerformTraversalsStart=17074914555100, DrawStart=17074922286600, FrameDeadline=17074908073122, FrameInterval=17074814513200, FrameStartTime=16666666, SyncQueued=17074922368800, SyncStart=17074963910500, IssueDrawCommandsStart=17074964761300, SwapBuffers=17075509031400, FrameCompleted=17075539767800, DequeueBufferDuration=122300, QueueBufferDuration=11135200, GpuCompleted=17075521066500, SwapBuffersCompleted=17075539767800, DisplayPresentTime=496810893169002465, CommandSubmissionCompleted=17075509031400, 
+09-26 02:16:29.740  9331 10007 D TrafficStats: tagSocket(121) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:29.778  9331  9343 I HWUI    : Davey! duration=772ms; Flags=0, FrameTimelineVsyncId=2268187, IntendedVsync=17074858073124, Vsync=17075158073112, InputEventId=0, HandleInputStart=17075259755600, AnimationStart=17075259810600, PerformTraversalsStart=17075482192200, DrawStart=17075482836400, FrameDeadline=17075541406430, FrameInterval=17075170824000, FrameStartTime=16666666, SyncQueued=17075482886700, SyncStart=17075543794100, IssueDrawCommandsStart=17075551698300, SwapBuffers=17075678807300, FrameCompleted=17075691276600, DequeueBufferDuration=2895300, QueueBufferDuration=2213900, GpuCompleted=17075688081800, SwapBuffersCompleted=17075691276600, DisplayPresentTime=593921259083663419, CommandSubmissionCompleted=17075678807300, 
+09-26 02:16:30.512  9331  9362 D EGL_emulation: app_time_stats: avg=95.66ms min=41.34ms max=158.48ms count=9
+09-26 02:16:31.059  9331 10007 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:31.617  9331  9362 D EGL_emulation: app_time_stats: avg=76.73ms min=15.75ms max=314.12ms count=11
+09-26 02:16:31.981  9331 10007 D TrafficStats: tagSocket(138) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:31.981  9331 10008 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:32.718  9331  9362 D EGL_emulation: app_time_stats: avg=162.32ms min=64.05ms max=374.51ms count=6
+09-26 02:16:33.196  9331  9331 I Choreographer: Skipped 39 frames!  The application may be doing too much work on its main thread.
+09-26 02:16:33.446  9331 10007 D TrafficStats: tagSocket(173) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:33.718  9331  9340 I HWUI    : Davey! duration=797ms; Flags=0, FrameTimelineVsyncId=2268543, IntendedVsync=17078524739644, Vsync=17078524739644, InputEventId=0, HandleInputStart=17078533119000, AnimationStart=17078533155200, PerformTraversalsStart=17078624651900, DrawStart=17078625334000, FrameDeadline=17078758072968, FrameInterval=17078533092900, FrameStartTime=16666666, SyncQueued=17078625807200, SyncStart=17078745034800, IssueDrawCommandsStart=17078745270000, SwapBuffers=17078763169800, FrameCompleted=17079441238400, DequeueBufferDuration=668760900, QueueBufferDuration=864500, GpuCompleted=17079103140700, SwapBuffersCompleted=17079441238400, DisplayPresentTime=1291145415192285672, CommandSubmissionCompleted=17078763169800, 
+09-26 02:16:33.989  9331  9362 D EGL_emulation: app_time_stats: avg=191.38ms min=42.39ms max=340.36ms count=2
+09-26 02:16:33.999  9331  9331 I Choreographer: Skipped 30 frames!  The application may be doing too much work on its main thread.
+09-26 02:16:34.274  9331 10007 D TrafficStats: tagSocket(136) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:34.324  9331 10008 D TrafficStats: tagSocket(136) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:34.479  9331  9340 I HWUI    : Davey! duration=715ms; Flags=0, FrameTimelineVsyncId=2268580, IntendedVsync=17079508072938, Vsync=17080008072918, InputEventId=0, HandleInputStart=17080010835800, AnimationStart=17080010937700, PerformTraversalsStart=17080130142600, DrawStart=17080130606100, FrameDeadline=17080158072912, FrameInterval=17080009674500, FrameStartTime=16666666, SyncQueued=17080130677800, SyncStart=17080190232700, IssueDrawCommandsStart=17080190490300, SwapBuffers=17080275564800, FrameCompleted=17080283433700, DequeueBufferDuration=82700, QueueBufferDuration=2800800, GpuCompleted=17080283040800, SwapBuffersCompleted=17080283433700, DisplayPresentTime=1372774403994686219, CommandSubmissionCompleted=17080275564800, 
+09-26 02:16:35.037  9331  9362 D EGL_emulation: app_time_stats: avg=173.06ms min=18.37ms max=355.86ms count=5
+09-26 02:16:35.142  9331  9340 I HWUI    : Davey! duration=706ms; Flags=0, FrameTimelineVsyncId=2268625, IntendedVsync=17080341406238, Vsync=17080591406228, InputEventId=0, HandleInputStart=17080601119600, AnimationStart=17080601159900, PerformTraversalsStart=17080687023500, DrawStart=17080960948900, FrameDeadline=17080541406230, FrameInterval=17080600183500, FrameStartTime=16666666, SyncQueued=17080961049300, SyncStart=17080961208500, IssueDrawCommandsStart=17080961361800, SwapBuffers=17081018951600, FrameCompleted=17081048426000, DequeueBufferDuration=49600, QueueBufferDuration=15009400, GpuCompleted=17081047787000, SwapBuffersCompleted=17081048426000, DisplayPresentTime=1461440370302063681, CommandSubmissionCompleted=17081018951600, 
+09-26 02:16:35.902  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:36.492  9331  9362 D EGL_emulation: app_time_stats: avg=233.18ms min=142.81ms max=491.92ms count=6
+09-26 02:16:36.724  9331 10008 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:37.038  9331 10007 D TrafficStats: tagSocket(121) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:37.591  9331 10007 D TrafficStats: tagSocket(126) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:37.658  9331  9362 D EGL_emulation: app_time_stats: avg=232.60ms min=86.99ms max=410.22ms count=5
+09-26 02:16:37.968  9331 10007 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:38.949  9331  9362 D EGL_emulation: app_time_stats: avg=187.14ms min=3.99ms max=394.20ms count=6
+09-26 02:16:39.293  9331  9331 I Choreographer: Skipped 40 frames!  The application may be doing too much work on its main thread.
+09-26 02:16:40.482  9331  9340 I HWUI    : Davey! duration=739ms; Flags=0, FrameTimelineVsyncId=2268881, IntendedVsync=17084174739418, Vsync=17084258072748, InputEventId=0, HandleInputStart=17084270184100, AnimationStart=17084270227700, PerformTraversalsStart=17084284939700, DrawStart=17084362943200, FrameDeadline=17084541406070, FrameInterval=17084270152600, FrameStartTime=16666666, SyncQueued=17084363033100, SyncStart=17084603452000, IssueDrawCommandsStart=17084603645000, SwapBuffers=17084897318500, FrameCompleted=17085154450100, DequeueBufferDuration=103917100, QueueBufferDuration=636800, GpuCompleted=17085154450100, SwapBuffersCompleted=17085063736400, DisplayPresentTime=1912933126473652873, CommandSubmissionCompleted=17084897318500, 
+09-26 02:16:40.507  9331  9362 D EGL_emulation: app_time_stats: avg=1454.28ms min=1454.28ms max=1454.28ms count=1
+09-26 02:16:40.591  9331 10007 D TrafficStats: tagSocket(121) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:40.730  9331  9331 I Choreographer: Skipped 82 frames!  The application may be doing too much work on its main thread.
+09-26 02:16:40.790  9331  9340 I HWUI    : Davey! duration=1638ms; Flags=0, FrameTimelineVsyncId=2268889, IntendedVsync=17084291406080, Vsync=17084591406068, InputEventId=0, HandleInputStart=17084607455400, AnimationStart=17084607500300, PerformTraversalsStart=17084611528800, DrawStart=17084611879700, FrameDeadline=17085174739378, FrameInterval=17084605579000, FrameStartTime=16666666, SyncQueued=17084611944400, SyncStart=17085216137000, IssueDrawCommandsStart=17085216376800, SwapBuffers=17086149890200, FrameCompleted=17086534154700, DequeueBufferDuration=45700, QueueBufferDuration=2641400, GpuCompleted=17086517842700, SwapBuffersCompleted=17086534154700, DisplayPresentTime=1939955136561027814, CommandSubmissionCompleted=17086149890200, 
+09-26 02:16:41.047  9331 10007 D TrafficStats: tagSocket(167) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:41.225  9331 10007 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:41.240  9331  9340 I HWUI    : Davey! duration=979ms; Flags=0, FrameTimelineVsyncId=2268904, IntendedVsync=17084624739400, Vsync=17085291406040, InputEventId=0, HandleInputStart=17085343270300, AnimationStart=17085343331600, PerformTraversalsStart=17085348254200, DrawStart=17085348605200, FrameDeadline=17086541405990, FrameInterval=17085303446800, FrameStartTime=16666666, SyncQueued=17085348662600, SyncStart=17086534516200, IssueDrawCommandsStart=17086534699900, SwapBuffers=17086636505100, FrameCompleted=17086790583800, DequeueBufferDuration=7666500, QueueBufferDuration=5369800, GpuCompleted=17086782631500, SwapBuffersCompleted=17086790583800, DisplayPresentTime=1968103063735376717, CommandSubmissionCompleted=17086636505100, 
+09-26 02:16:42.296  9331  9362 D EGL_emulation: app_time_stats: avg=406.39ms min=8.97ms max=907.41ms count=4
+09-26 02:16:42.490  9331  9341 I HWUI    : Davey! duration=1131ms; Flags=0, FrameTimelineVsyncId=2268956, IntendedVsync=17087191405964, Vsync=17087374739290, InputEventId=0, HandleInputStart=17087398783300, AnimationStart=17087398940100, PerformTraversalsStart=17087880579500, DrawStart=17087880995700, FrameDeadline=17087408072622, FrameInterval=17087390054200, FrameStartTime=16666666, SyncQueued=17088012359400, SyncStart=17088014927200, IssueDrawCommandsStart=17088015200200, SwapBuffers=17088291499800, FrameCompleted=17088325011300, DequeueBufferDuration=70300, QueueBufferDuration=449000, GpuCompleted=17088325011300, SwapBuffersCompleted=17088322689100, DisplayPresentTime=2049169093997501549, CommandSubmissionCompleted=17088291499800, 
+09-26 02:16:42.681  9331 10007 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:43.131  9331 10007 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:43.283  9331 10008 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:44.748  9331 10008 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:45.324  9331 10008 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:45.341  9331 10007 D TrafficStats: tagSocket(178) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:46.783  9331 10007 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:47.392  9331 10007 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:47.447  9331 10007 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:48.907  9331 10007 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:49.149  9331  9362 D EGL_emulation: app_time_stats: avg=6852.45ms min=6852.45ms max=6852.45ms count=1
+09-26 02:16:49.426  9331  9341 I HWUI    : Davey! duration=722ms; Flags=0, FrameTimelineVsyncId=2270636, IntendedVsync=17094474739006, Vsync=17094574739002, InputEventId=0, HandleInputStart=17094746099300, AnimationStart=17094746140000, PerformTraversalsStart=17094773624800, DrawStart=17094816707700, FrameDeadline=17094491405672, FrameInterval=17094585382300, FrameStartTime=16666666, SyncQueued=17094819537800, SyncStart=17094853148000, IssueDrawCommandsStart=17094853561000, SwapBuffers=17095157555800, FrameCompleted=17095230376300, DequeueBufferDuration=172600, QueueBufferDuration=486000, GpuCompleted=17095230376300, SwapBuffersCompleted=17095200307600, DisplayPresentTime=2076191104084876493, CommandSubmissionCompleted=17095157555800, 
+09-26 02:16:49.626  9331 10007 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:49.676  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:51.149  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:51.736  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:51.840  9331 10007 D TrafficStats: tagSocket(177) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:53.267  9331 10007 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:53.901  9331 10007 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:53.956  9331 10007 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:53.967  9331 10008 D TrafficStats: tagSocket(177) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:55.336  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:55.927  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:55.994  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:57.344  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:57.953  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:58.048  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:59.366  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:16:59.986  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:00.085  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:01.385  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:02.000  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:02.117  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:03.416  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:04.067  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:04.146  9331 10007 D TrafficStats: tagSocket(137) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:05.513  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:06.202  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:06.204  9331 10007 D TrafficStats: tagSocket(177) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:07.544  9331 10007 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:08.239  9331 10007 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:08.255  9331 10008 D TrafficStats: tagSocket(137) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:09.564  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:10.263  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:10.295  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:11.577  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:12.279  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:12.311  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:13.595  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:14.292  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:14.325  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:15.613  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:16.330  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:16.342  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:17.619  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:18.364  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:18.370  9331 10007 D TrafficStats: tagSocket(177) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:19.634  9331 10007 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:20.391  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:20.391  9331 10007 D TrafficStats: tagSocket(137) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:21.688  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:22.417  9331 10007 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:22.506  9331 10008 D TrafficStats: tagSocket(177) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:23.010  9331  9362 D EGL_emulation: app_time_stats: avg=33820.38ms min=33820.38ms max=33820.38ms count=1
+09-26 02:17:23.860  9331 10007 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:24.015  9331  9362 D EGL_emulation: app_time_stats: avg=27.56ms min=3.27ms max=67.62ms count=24
+09-26 02:17:24.598  9331 10007 D TrafficStats: tagSocket(148) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:24.661  9331 10007 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:25.072  9331  9362 D EGL_emulation: app_time_stats: avg=21.56ms min=3.21ms max=60.28ms count=26
+09-26 02:17:25.994  9331 10007 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:26.013  9331 10008 D TrafficStats: tagSocket(171) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:26.150  9331  9362 D EGL_emulation: app_time_stats: avg=45.06ms min=4.89ms max=96.04ms count=17
+09-26 02:17:26.729  9331 10007 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:26.790  9331 10008 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:27.208  9331  9362 D EGL_emulation: app_time_stats: avg=79.65ms min=18.77ms max=221.14ms count=11
+09-26 02:17:28.292  9331  9362 D EGL_emulation: app_time_stats: avg=276.80ms min=36.41ms max=450.88ms count=3
+09-26 02:17:28.352  9331  9341 I HWUI    : Davey! duration=826ms; Flags=0, FrameTimelineVsyncId=2282801, IntendedVsync=17133024737464, Vsync=17133458070780, InputEventId=0, HandleInputStart=17133472489400, AnimationStart=17133472562600, PerformTraversalsStart=17133484590500, DrawStart=17133484921300, FrameDeadline=17133541404110, FrameInterval=17133468629600, FrameStartTime=16666666, SyncQueued=17133484988500, SyncStart=17133509455700, IssueDrawCommandsStart=17133509652400, SwapBuffers=17133828927100, FrameCompleted=17133875616800, DequeueBufferDuration=61400, QueueBufferDuration=627000, GpuCompleted=17133851015200, SwapBuffersCompleted=17133875616800, DisplayPresentTime=0, CommandSubmissionCompleted=17133828927100, 
+09-26 02:17:28.741  9331 10008 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:28.763  9331  9341 I HWUI    : Davey! duration=712ms; Flags=0, FrameTimelineVsyncId=2282830, IntendedVsync=17133474737446, Vsync=17133608070774, InputEventId=0, HandleInputStart=17133620974300, AnimationStart=17133621098800, PerformTraversalsStart=17133645027400, DrawStart=17133645439300, FrameDeadline=17133874737430, FrameInterval=17133620005600, FrameStartTime=16666666, SyncQueued=17133645877500, SyncStart=17133879138500, IssueDrawCommandsStart=17134146701400, SwapBuffers=17134296251600, FrameCompleted=17134420836200, DequeueBufferDuration=77275600, QueueBufferDuration=1300000, GpuCompleted=17134420836200, SwapBuffersCompleted=17134380076800, DisplayPresentTime=0, CommandSubmissionCompleted=17134296251600, 
+09-26 02:17:29.095  9331 10008 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:29.221  9331 10008 D TrafficStats: tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:29.523  9331  9362 D EGL_emulation: app_time_stats: avg=178.61ms min=11.64ms max=398.70ms count=6
+09-26 02:17:30.543  9331  9362 D EGL_emulation: app_time_stats: avg=83.79ms min=38.76ms max=148.92ms count=9
+09-26 02:17:31.447  9331 10008 D TrafficStats: tagSocket(121) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:31.461  9331 10007 D TrafficStats: tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:31.577  9331 10352 D TrafficStats: tagSocket(168) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:31.593  9331  9343 I HWUI    : Davey! duration=827ms; Flags=0, FrameTimelineVsyncId=2283074, IntendedVsync=17136591403988, Vsync=17136891403976, InputEventId=0, HandleInputStart=17136904473400, AnimationStart=17136904564100, PerformTraversalsStart=17137153480900, DrawStart=17137153913900, FrameDeadline=17137058070636, FrameInterval=17136894166600, FrameStartTime=16666666, SyncQueued=17137154005000, SyncStart=17137158828700, IssueDrawCommandsStart=17137159140200, SwapBuffers=17137280037100, FrameCompleted=17137423345400, DequeueBufferDuration=50700, QueueBufferDuration=844600, GpuCompleted=17137423068700, SwapBuffersCompleted=17137423345400, DisplayPresentTime=0, CommandSubmissionCompleted=17137280037100, 
+09-26 02:17:31.659  9331  9362 D EGL_emulation: app_time_stats: avg=237.25ms min=108.81ms max=385.28ms count=4
+09-26 02:17:32.529  9331 10118 D TrafficStats: tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+09-26 02:17:32.690  9331  9362 D EGL_emulation: app_time_stats: avg=136.23ms min=37.38ms max=322.92ms count=7
+09-26 02:17:33.822  9331  9362 D EGL_emulation: app_time_stats: avg=91.27ms min=5.21ms max=197.92ms count=10
+09-26 02:17:34.417  9331 10118 W sujin.perchable: Verification of boolean okhttp3.internal.http2.PushObserver.onHeaders(int, java.util.List, boolean) took 131.250ms (0.00 bytecodes/s) (1680B approximate peak alloc)
+09-26 02:17:35.103  9331  9362 D EGL_emulation: app_time_stats: avg=157.85ms min=68.71ms max=323.71ms count=7
+09-26 02:17:35.134  9331 10118 W sujin.perchable: Verification of void okhttp3.internal.http2.Http2Connection.setLastGoodStreamId$okhttp(int) took 167.150ms (17.95 bytecodes/s) (2032B approximate peak alloc)
+09-26 02:17:35.496  9331 10118 W sujin.perchable: Verification of void okhttp3.internal.http2.Settings$Companion.<init>() took 162.353ms (24.64 bytecodes/s) (2128B approximate peak alloc)
+09-26 02:17:36.119  9331  9362 D EGL_emulation: app_time_stats: avg=148.57ms min=83.59ms max=294.66ms count=5
+09-26 02:17:37.127  9331  9362 D EGL_emulation: app_time_stats: avg=59.22ms min=19.89ms max=171.00ms count=13
+09-26 02:17:38.128  9331  9362 D EGL_emulation: app_time_stats: avg=45.87ms min=5.53ms max=140.77ms count=16
+09-26 02:17:39.153  9331  9362 D EGL_emulation: app_time_stats: avg=136.29ms min=15.31ms max=375.34ms count=6
+09-26 02:17:40.807  9331  9331 D Glide   : Finished loading BitmapDrawable from DATA_DISK_CACHE for https://lh3.googleusercontent.com/a/ACg8ocLlfuw7idxKlySyEGWf5pHBpUxZ4KzawR8ReFxKYPM03kKrLk3t=s96-c with size [231x231] in 68.9105 ms
+09-26 02:17:40.889  9331  9362 D EGL_emulation: app_time_stats: avg=504.15ms min=25.40ms max=1434.96ms count=3
+09-26 02:17:55.999  9331  9362 D EGL_emulation: app_time_stats: avg=7529.53ms min=7.88ms max=15051.19ms count=2
+09-26 02:18:08.351  9331  9362 D EGL_emulation: app_time_stats: avg=759.05ms min=7.49ms max=11760.68ms count=16
+09-26 02:18:19.744  9331  9362 D EGL_emulation: app_time_stats: avg=617.40ms min=3.30ms max=10772.27ms count=18
+09-26 02:18:30.168  9331 10453 D TrafficStats: tagSocket(137) with statsTag=0xffffffff, statsUid=-1
+09-26 02:18:39.022  9331  9362 D EGL_emulation: app_time_stats: avg=1060.53ms min=4.98ms max=18704.15ms count=18
+09-26 02:18:57.369  9331  9362 D EGL_emulation: app_time_stats: avg=902.76ms min=2.98ms max=17727.83ms count=20
+09-26 02:18:57.758  9331  9336 I sujin.perchable: Background concurrent mark compact GC freed 10MB AllocSpace bytes, 24(480KB) LOS objects, 50% free, 15MB/30MB, paused 1.097ms,6.602ms total 111.048ms
+09-26 02:19:11.049  9331  9362 D EGL_emulation: app_time_stats: avg=705.74ms min=5.82ms max=12687.50ms count=19
+09-26 02:19:13.539  9331  9362 D EGL_emulation: app_time_stats: avg=119.25ms min=3.77ms max=1898.91ms count=19
+09-26 02:19:26.267  9331  9362 D EGL_emulation: app_time_stats: avg=655.09ms min=3.51ms max=12155.17ms count=19
+09-26 02:19:38.993  9331  9362 D EGL_emulation: app_time_stats: avg=692.07ms min=5.45ms max=12132.17ms count=18
+09-26 02:19:52.633  9331  9362 D EGL_emulation: app_time_stats: avg=703.79ms min=3.18ms max=13069.37ms count=19
+09-26 02:19:54.875  9331  9331 W unknown:BridgelessReact: ReactHost{0}.onHostPause(activity)
+09-26 02:19:54.880  9331  9331 W unknown:BridgelessReact: ReactHost{0}.ReactContext.onHostPause()
+09-26 02:19:54.927  9331  9331 W unknown:BridgelessReact: ReactHost{0}.onHostResume(activity)
+09-26 02:19:54.936  9331  9331 W unknown:BridgelessReact: ReactHost{0}.ReactContext.onHostResume()
+09-26 02:19:54.959  9331 10352 D TrafficStats: tagSocket(129) with statsTag=0xffffffff, statsUid=-1
+09-26 02:19:55.317  9331  9362 D EGL_emulation: app_time_stats: avg=115.98ms min=3.35ms max=2068.76ms count=21
+09-26 02:20:07.278  9331  9362 D EGL_emulation: app_time_stats: avg=650.86ms min=3.31ms max=11397.02ms count=18
+09-26 02:20:19.968  9331  9362 D EGL_emulation: app_time_stats: avg=440.57ms min=3.55ms max=11696.88ms count=28
+09-26 02:20:47.331  9331  9362 D EGL_emulation: app_time_stats: avg=2258.53ms min=6.46ms max=26890.98ms count=12
+09-26 02:20:48.376  9331  9362 D EGL_emulation: app_time_stats: avg=15.62ms min=2.84ms max=46.77ms count=35
+09-26 02:21:22.273  9331  9362 D EGL_emulation: app_time_stats: avg=4827.58ms min=5.97ms max=33685.11ms count=7
+09-26 02:21:22.396  9331 10621 D TrafficStats: tagSocket(133) with statsTag=0xffffffff, statsUid=-1
+09-26 02:21:22.776  9331 10709 D TrafficStats: tagSocket(127) with statsTag=0xffffffff, statsUid=-1
+09-26 02:21:24.001  9331 10023 D TrafficStats: tagSocket(183) with statsTag=0xf001, statsUid=-1
+09-26 02:21:24.726  9331 10023 D TrafficStats: tagSocket(183) with statsTag=0xf001, statsUid=-1
+09-26 02:21:25.625  9331 10023 D TrafficStats: tagSocket(183) with statsTag=0xf001, statsUid=-1
