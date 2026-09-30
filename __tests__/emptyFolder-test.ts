@@ -57,6 +57,48 @@ describe("emptyFolder", () => {
   });
 });
 
+/** In-memory tree bucket: list returns direct children (folders have id null); remove ignores folder paths, like Storage. */
+function fakeTree(paths: string[]) {
+  const objects = new Set(paths);
+  const list = async (path: string, opts: { limit: number; offset: number }) => {
+    const children = new Map<string, string | null>();
+    for (const full of objects) {
+      if (!full.startsWith(`${path}/`)) continue;
+      const [head, ...rest] = full.slice(path.length + 1).split("/");
+      children.set(head, rest.length === 0 ? "obj" : null);
+    }
+    const entries = [...children].map(([name, id]) => ({ name, id }));
+    return { data: entries.slice(opts.offset, opts.offset + opts.limit), error: null };
+  };
+  const remove = async (toRemove: string[]) => {
+    toRemove.forEach((p) => objects.delete(p));
+    return { error: null };
+  };
+  return { bucket: { list, remove } as Bucket, remaining: () => [...objects] };
+}
+
+describe("emptyFolder with nested folders", () => {
+  it("empties sub-folders, a placeholder object and deeper levels", async () => {
+    const { bucket, remaining } = fakeTree([
+      "u/a.jpg",
+      "u/sub/x.jpg",
+      "u/sub/.emptyFolderPlaceholder",
+      "u/sub/deep/y.jpg",
+      "other/keep.jpg",
+    ]);
+    await emptyFolder(bucket, "u");
+    expect(remaining()).toEqual(["other/keep.jpg"]);
+  });
+
+  it("does not spin on a folder entry it cannot remove", async () => {
+    const stuck: Bucket = {
+      list: async () => ({ data: [{ name: "sub", id: null }], error: null }),
+      remove: async () => ({ error: null }),
+    };
+    await expect(emptyFolder(stuck, "u")).rejects.toThrow("did not finish");
+  });
+});
+
 const UID = "3f2b8c1e-9a4d-4e6f-8b7a-1c2d3e4f5a6b";
 const jwt = (claims: object) =>
   `h.${btoa(JSON.stringify(claims)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")}.s`;
