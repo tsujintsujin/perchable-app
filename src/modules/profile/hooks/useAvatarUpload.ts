@@ -15,6 +15,8 @@ export function useAvatarUpload(userId: string | undefined, initialAvatarUrl: st
   const runRef = useRef(0);
   // Ref, not state: read inside async code to avoid setState after unmount.
   const mountedRef = useRef(true);
+  // Ref, not state: blocks a second tap before React re-renders with isUploading.
+  const inFlightRef = useRef(false);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -33,7 +35,8 @@ export function useAvatarUpload(userId: string | undefined, initialAvatarUrl: st
   };
 
   const pickAndUpload = async () => {
-    if (isUploading || !userId) return;
+    if (inFlightRef.current || !userId) return;
+    inFlightRef.current = true;
     const run = ++runRef.current;
     const isStale = () => runRef.current !== run || !mountedRef.current;
     // What this attempt would replace, captured now.
@@ -59,10 +62,11 @@ export function useAvatarUpload(userId: string | undefined, initialAvatarUrl: st
       }
 
       await updateProfile(userId, { avatarUrl: publicUrl });
-      if (isStale()) return;
-      setAvatarUrlOverride(publicUrl);
-      setPhoto({ state: "idle" });
-      // Clean up the photo this replace just superseded.
+      if (!isStale()) {
+        setAvatarUrlOverride(publicUrl);
+        setPhoto({ state: "idle" });
+      }
+      // The DB now points at the new photo even if the screen went away, so the old one is always superseded.
       if (previousAvatarUrl) {
         await deleteAvatarObject(userId, previousAvatarUrl);
       }
@@ -70,6 +74,8 @@ export function useAvatarUpload(userId: string | undefined, initialAvatarUrl: st
       if (isStale()) return;
       Sentry.captureException(err);
       setPhoto({ state: "error" });
+    } finally {
+      inFlightRef.current = false;
     }
   };
 

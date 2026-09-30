@@ -1012,3 +1012,11 @@ Same chain as Queenie: change usertag, tap avatar, pick, crop, then in the same 
 
 ### Gates
 tsc pass, lint pass, jest 11 suites / 50 tests, 0 "act(" and 0 console.warn/error in the full output (stdout+stderr). Metro stopped, 8081 free.
+
+## Build 7 · Bug 3, round 3 — final review fixes (Bella)
+Base SHA: 06d1fb3. Unit tests only.
+- **Orphan after commit:** if cancel/unmount happened after `updateProfile` succeeded, the old avatar object was never deleted. Now, once `updateProfile` has succeeded, `previousAvatarUrl` is always deleted (the DB no longer references it); only the setState calls are skipped when stale. Test: cancel while `updateProfile` is pending, then resolve; old object deleted, state stays idle with the old URL.
+- **Double tap within one render:** `inFlightRef` (a ref, since `isUploading` in the closure can still be false) blocks a second `pickAndUpload`; cleared in `finally` on every exit path. Test: two synchronous calls open the picker once.
+- **Unmount mid-upload:** test that the landed object is deleted and `updateProfile` is not called (the `mountedRef` path).
+- Files: `src/modules/profile/hooks/useAvatarUpload.ts`, `__tests__/useAvatarUpload-test.tsx`.
+- Gates: tsc pass, lint pass, jest 11 suites / 53 tests, 0 "act(" and 0 console.warn/error in the full output (stdout+stderr).

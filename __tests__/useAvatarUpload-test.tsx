@@ -33,6 +33,14 @@ function Harness({ initialAvatarUrl }: { initialAvatarUrl: string | null }) {
     <>
       <Text testID="state">{JSON.stringify({ avatarUrl: upload.avatarUrl, photo: upload.photo })}</Text>
       <Pressable onPress={upload.pickAndUpload} accessibilityRole="button" accessibilityLabel="pick" />
+      <Pressable
+        onPress={() => {
+          void upload.pickAndUpload();
+          void upload.pickAndUpload();
+        }}
+        accessibilityRole="button"
+        accessibilityLabel="pick-twice"
+      />
       <Pressable onPress={upload.cancel} accessibilityRole="button" accessibilityLabel="cancel" />
     </>
   );
@@ -203,5 +211,61 @@ describe("useAvatarUpload", () => {
 
     expect(mockUploadAvatar).not.toHaveBeenCalled();
     expect(screen.getByTestId("state").props.children).toContain('"idle"');
+  });
+
+  // Once updateProfile has committed, the previous object is superseded even if the screen was cancelled.
+  it("still deletes the previous object when cancelled while updateProfile is pending", async () => {
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    mockUploadAvatar.mockResolvedValue("https://cdn.example/avatars/u1/avatar-new.jpg");
+    let finishUpdate: () => void = () => {};
+    mockUpdateProfile.mockReturnValue(new Promise<void>((resolve) => (finishUpdate = resolve)));
+    await render(<Harness initialAvatarUrl="https://cdn.example/avatars/u1/avatar-old.jpg" />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick" }));
+    });
+    await waitFor(() => expect(mockUpdateProfile).toHaveBeenCalled());
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "cancel" }));
+    });
+    await act(async () => finishUpdate());
+
+    expect(mockDeleteAvatarObject).toHaveBeenCalledWith(
+      "u1",
+      "https://cdn.example/avatars/u1/avatar-old.jpg",
+    );
+    expect(screen.getByTestId("state").props.children).toContain("avatar-old.jpg");
+    expect(screen.getByTestId("state").props.children).toContain('"idle"');
+  });
+
+  it("opens the picker once when pickAndUpload is called twice in one render", async () => {
+    mockPickAvatar.mockReturnValue(new Promise(() => {}));
+    await render(<Harness initialAvatarUrl={null} />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick-twice" }));
+    });
+
+    expect(mockPickAvatar).toHaveBeenCalledTimes(1);
+  });
+
+  it("deletes the landed object and does not save when unmounted mid-upload", async () => {
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    let resolveUpload: (url: string) => void = () => {};
+    mockUploadAvatar.mockReturnValue(new Promise<string>((resolve) => (resolveUpload = resolve)));
+    const view = await render(<Harness initialAvatarUrl={null} />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick" }));
+    });
+    await waitFor(() => expect(mockUploadAvatar).toHaveBeenCalled());
+    await view.unmount();
+    await act(async () => resolveUpload("https://cdn.example/avatars/u1/avatar-unmounted.jpg"));
+
+    expect(mockUpdateProfile).not.toHaveBeenCalled();
+    expect(mockDeleteAvatarObject).toHaveBeenCalledWith(
+      "u1",
+      "https://cdn.example/avatars/u1/avatar-unmounted.jpg",
+    );
   });
 });
