@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { AppState } from "react-native";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -27,6 +28,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (clearedRef.current) {
         if (event !== "SIGNED_IN") return;
         clearedRef.current = false;
+        // clearSession stopped refresh; restart it here (same foreground rule as src/lib/supabase.ts).
+        if (AppState.currentState === "active") supabase.auth.startAutoRefresh();
       }
       setSession(newSession);
       setIsLoading(false);

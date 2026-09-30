@@ -56,7 +56,7 @@ Promise.allSettled for independent cleanup steps; auth-js event ordering (storag
 | 1 offline | scope local; error reported, session removed by auth-js; hook clears anyway | signOut-test "still signs out of Google when Supabase fails on the network" |
 | 2 Google side | `GoogleSignin.signOut()` runs after `ensureGoogleConfigured()`; each step independent | signOut-test (Google fails; Supabase fails) |
 | 3 double tap | `inFlightRef` + busy row (disabled + spinner) | useSignOut-test "one sign-out for two taps"; settings-test "ignores taps while running" |
-| 4 no data left | owner-tagged result in useOwnProfile; auth gate unmounts tabs | useOwnProfile-test (drops previous user's data) |
+| 4 no data left | owner-tagged result in useOwnProfile; auth gate unmounts tabs | useOwnProfile-test (signed-out drop + direct u1 -> u2 switch, see Bug 1) |
 | 5 cold relaunch | session removed from storage by auth-js | device: bella-03-relaunch.png |
 | 6 sign back in | not touched (Queenie, needs account picker) | not tested by Bella |
 | 7 Sentry | failures captured, success not; `Sentry.setUser(null)` | signOut-test (no capture on success; setUser(null)) |
@@ -154,3 +154,40 @@ Observation (not a Build 8 failure, for Ruby): My Profile's small Settings chip 
 UNTESTABLE: none. The Sentry side (failures reported, success not) cannot be seen from the device; covered by jest only.
 
 VERDICT: PASS, 0 Bugs.
+
+---
+
+# Build 8 · Bug 1 — Bella (from Ruby's review; Queenie QA passed 9/9)
+
+## Cause and fix
+1. **Test gap, item 4.** The earlier row 4 claimed the "drops previous user's data" test proved the owner check, but it only covers user -> signed out (which the old effect-reset also handled). Added `useOwnProfile-test` "shows loading ... switches straight to another user" (u1 loaded, session -> u2, u2 fetch pending). Verified it FAILS with the `ownerId` comparison removed. Row 4 in the table above now cites both tests.
+2. **Accessibility.** Back chip has `accessibilityLabel="Back"` and a `hitSlop` of `(size.minTouch - size.iconButton) / 2` (new token `size.minTouch` = 48) so the target is 48dp. `Toast` is `accessible`, `accessibilityRole="alert"`, `accessibilityLiveRegion="polite"`. `ListRow` passes `busy` to `GlassCard`, which sets `accessibilityState={{ disabled, busy }}`. `GlassCard` also gained `accessibilityLabel` and `hitSlop` props (needed for the chip).
+3. **Silent re-sign-in after a failed clear (item 8).** `clearSession()` now sets a ref latch and calls `supabase.auth.stopAutoRefresh()`. While latched, the AuthProvider listener ignores every event except `SIGNED_IN`, which lifts the latch. The AppState listener in `src/lib/supabase.ts` restarts auto-refresh on foreground; the latch is what stops that from signing the user back in. **Remaining limit:** if neither store could be cleared, a cold relaunch reads the stored session and restores it (there is no in-memory record to keep it out); Sentry gets the store error.
+4. **Offline spam.** `signOut.ts` skips `captureException` for `isAuthRetryableFetchError` (expected offline); every other failure is still reported. The local sign-out still completes.
+5. **Dead code.** Removed `Sentry.setUser(null)` and its test (`setUser` is never called anywhere). Failure-mode 7's "cleared if ever set" clause is therefore n/a until a user is set.
+6. **Comments.** `signOut.ts` and `useSignOut.ts` doc comments split to two short lines.
+7. **Nits.** Blank lines inside `act()` removed from `settings-test.tsx`.
+
+## Spec-trace for the changes
+| Ask | Implemented at | Test |
+|---|---|---|
+| 1 u1 -> u2 shows loading | `useOwnProfile.ts` ownerId compare (unchanged) | useOwnProfile-test (new; fails without compare) |
+| 2 Back label + 48dp | `settings.tsx` backChip props, `tokens.ts` size.minTouch | settings-test "labels the back chip" |
+| 2 Toast alert/live region | `Toast.tsx` | settings-test (getByRole "alert") |
+| 2 ListRow busy state | `ListRow.tsx`, `GlassCard.tsx` | settings-test "marks the Sign out row busy" |
+| 3 latch + stopAutoRefresh | `AuthProvider.tsx` clearSession + listener | AuthProvider-test (TOKEN_REFRESHED ignored; SIGNED_IN accepted, later events flow) |
+| 4 offline not reported | `signOut.ts` | signOut-test (offline not captured; 500 captured) |
+| 5 setUser removed | `signOut.ts` | test removed |
+| 6 comments, 7 nits | `signOut.ts`, `useSignOut.ts`, `settings-test.tsx` | n/a |
+
+## Files touched outside the original Build scope
+None beyond the above (all traced to the items).
+
+## Gates
+tsc clean, lint clean, `npx jest`: 14 suites, 75 tests passed, 0 "act(" and 0 console warnings in out.txt.
+
+## Round 2 (Manager finding in efe3f24)
+- **Cause:** `useSignOut` calls `clearSession()` on every sign-out, so `stopAutoRefresh()` ran every time, and nothing restarted it after the next `SIGNED_IN` unless AppState went background -> active (the Google account picker may not cause that). The new session would then never refresh.
+- **Fix:** when `SIGNED_IN` lifts the latch, `AuthProvider` calls `supabase.auth.startAutoRefresh()` if `AppState.currentState === "active"` (same rule as the listener in `src/lib/supabase.ts`).
+- **Tests:** AuthProvider-test: `clearSession()` then `SIGNED_IN` while active -> `startAutoRefresh` called once; while background -> not called.
+- Files: `src/modules/auth/AuthProvider.tsx`, `__tests__/AuthProvider-test.tsx`. Gates: see the report; jest 14 suites, 77 tests, 0 act()/warnings.

@@ -1,14 +1,16 @@
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
-import { Pressable, Text } from "react-native";
+import { AppState, Pressable, Text } from "react-native";
 import type { Session } from "@supabase/supabase-js";
 
 let mockEmit: (event: string, session: Session | null) => void = () => {};
 const mockUnsubscribe = jest.fn();
 const mockStopAutoRefresh = jest.fn();
+const mockStartAutoRefresh = jest.fn();
 jest.mock("@/lib/supabase", () => ({
   supabase: {
     auth: {
       stopAutoRefresh: () => mockStopAutoRefresh(),
+      startAutoRefresh: () => mockStartAutoRefresh(),
       onAuthStateChange: (cb: typeof mockEmit) => {
         mockEmit = cb;
         return { data: { subscription: { unsubscribe: mockUnsubscribe } } };
@@ -35,9 +37,15 @@ function Probe() {
 const state = () => screen.getByTestId("state").props.children;
 
 describe("AuthProvider", () => {
+  const originalAppState = AppState.currentState;
+  afterEach(() => {
+    Object.defineProperty(AppState, "currentState", { value: originalAppState, configurable: true, writable: true });
+  });
+
   beforeEach(() => {
     mockUnsubscribe.mockReset();
     mockStopAutoRefresh.mockReset();
+    mockStartAutoRefresh.mockReset();
   });
 
   it("is loading until the listener fires", async () => {
@@ -126,5 +134,30 @@ describe("AuthProvider", () => {
 
     await act(async () => mockEmit("TOKEN_REFRESHED", sessionC));
     expect(state()).toBe('{"token":"C","isLoading":false}');
+  });
+
+  /** Clears the session, then signs in again, with AppState reporting `appState`. */
+  async function clearThenSignIn(appState: "active" | "background") {
+    Object.defineProperty(AppState, "currentState", { value: appState, configurable: true, writable: true });
+    await render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>,
+    );
+    await act(async () => mockEmit("INITIAL_SESSION", sessionB));
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText("clear"));
+    });
+    await act(async () => mockEmit("SIGNED_IN", sessionB));
+  }
+
+  it("restarts auto-refresh when SIGNED_IN lifts the latch while the app is active", async () => {
+    await clearThenSignIn("active");
+    expect(mockStartAutoRefresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not restart auto-refresh when the app is not active", async () => {
+    await clearThenSignIn("background");
+    expect(mockStartAutoRefresh).not.toHaveBeenCalled();
   });
 });
