@@ -1,12 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, type Href } from "expo-router";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { GlassCard } from "@/ui/GlassCard";
 import { Avatar } from "@/ui/Avatar";
 import { EmptyState } from "@/ui/EmptyState";
-import { colors, iconSize, radius, size, spacing, type } from "@/ui/tokens";
+import {
+  avatarSize,
+  colors,
+  iconButtonHitSlop,
+  iconSize,
+  radius,
+  shimmerBar,
+  size,
+  spacing,
+  type,
+} from "@/ui/tokens";
 import { useOwnProfile } from "@/modules/profile";
 
 /** My Profile screen — collection grid (movies watched) is a later module. */
@@ -23,10 +33,16 @@ export default function MyProfile() {
   );
 
   // Pushes a route once per focus, so a double tap can't stack two screens.
-  const go = (path: "/profile/edit" | "/profile/settings") => {
+  // A failed push re-arms the guard so the chips don't stay dead.
+  const go = (target: Href) => {
     if (pushedRef.current) return;
     pushedRef.current = true;
-    router.push(path);
+    try {
+      router.push(target);
+    } catch (err) {
+      pushedRef.current = false;
+      throw err;
+    }
   };
 
   return (
@@ -39,6 +55,8 @@ export default function MyProfile() {
         <GlassCard
           tier="chip"
           onPress={() => go("/profile/settings")}
+          accessibilityLabel="Settings"
+          hitSlop={iconButtonHitSlop}
           style={styles.settingsChip}
         >
           <Text style={styles.settingsIcon}>⚙</Text>
@@ -69,7 +87,7 @@ export default function MyProfile() {
           {/* One chip in both states: tapping it opens Edit profile. */}
           <Pressable
             style={styles.usertagChip}
-            onPress={() => go("/profile/edit")}
+            onPress={() => go({ pathname: "/profile/edit", params: { focus: "usertag" } })}
             accessibilityRole="button"
             accessibilityLabel={
               profile.profile.usertag
@@ -112,12 +130,15 @@ function LoadingBody() {
 
   return (
     <View style={styles.body}>
-      <Animated.View style={[styles.shimmerCircle, { opacity: pulse }]} />
-      <Animated.View style={[styles.shimmerBar, styles.shimmerName, { opacity: pulse }]} />
+      <Animated.View testID="shimmer-avatar" style={[styles.shimmerCircle, { opacity: pulse }]} />
+      <Animated.View testID="shimmer-name" style={[styles.shimmerBar, styles.shimmerName, { opacity: pulse }]} />
       <View style={styles.shimmerTagSlot}>
-        <Animated.View style={[styles.shimmerBar, styles.shimmerTag, { opacity: pulse }]} />
+        <Animated.View testID="shimmer-usertag" style={[styles.shimmerBar, styles.shimmerTag, { opacity: pulse }]} />
       </View>
-      <Animated.View style={[styles.shimmerBar, styles.shimmerTag, styles.shimmerCount, { opacity: pulse }]} />
+      <Animated.View
+        testID="shimmer-count"
+        style={[styles.shimmerBar, styles.shimmerTag, styles.shimmerCount, { opacity: pulse }]}
+      />
     </View>
   );
 }
@@ -132,12 +153,12 @@ const styles = StyleSheet.create({
   },
   headerTitle: { ...type.subhead, color: colors.text.secondary },
   settingsChip: {
-    width: 36,
-    height: 36,
+    width: size.iconButton,
+    height: size.iconButton,
     borderRadius: radius.sm,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 44,
+    marginRight: size.headerTrailingInset,
     // Distinct from glass.chip's own token values, per DESIGN.md.
     backgroundColor: colors.surface.chip,
     borderWidth: 1,
@@ -172,7 +193,7 @@ const styles = StyleSheet.create({
   },
   moviesGrid: {
     width: "100%",
-    minHeight: 96,
+    minHeight: size.collectionGridMin,
     marginTop: spacing[12],
     borderRadius: radius.md,
     borderWidth: 1,
@@ -180,14 +201,14 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
   },
   shimmerCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
+    width: avatarSize.lg,
+    height: avatarSize.lg,
+    borderRadius: avatarSize.lg / 2,
     backgroundColor: colors.bg.elevatedFlat,
   },
   shimmerBar: { borderRadius: radius.sm, backgroundColor: colors.bg.elevatedFlat },
-  shimmerName: { width: 160, height: 22, marginTop: spacing[16] },
-  shimmerTag: { width: 120, height: 16 },
+  shimmerName: { ...shimmerBar.name, marginTop: spacing[16] },
+  shimmerTag: { ...shimmerBar.line },
   shimmerTagSlot: { marginTop: spacing[12], minHeight: size.minTouch, justifyContent: "center" },
   shimmerCount: { marginTop: spacing[24], alignSelf: "flex-start" },
 });

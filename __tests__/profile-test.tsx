@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { size } from "@/ui/tokens";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react-native";
 
 // No <SafeAreaProvider> in the test tree — fixed insets stand in for it.
@@ -120,7 +121,7 @@ describe("My Profile screen", () => {
     await render(<MyProfile />);
     const chip = screen.getByRole("button", { name: "Add a usertag" });
     await fireEvent.press(chip);
-    expect(mockPush).toHaveBeenCalledWith("/profile/edit");
+    expect(mockPush).toHaveBeenCalledWith({ pathname: "/profile/edit", params: { focus: "usertag" } });
   });
 
   it("@usertag chip pushes Edit profile, has role button, a label and a 44dp+ tap height", async () => {
@@ -129,7 +130,7 @@ describe("My Profile screen", () => {
     const chip = screen.getByRole("button", { name: "Edit usertag, currently @cineowl" });
     expect(StyleSheet.flatten(chip.props.style).minHeight).toBeGreaterThanOrEqual(44);
     await fireEvent.press(chip);
-    expect(mockPush).toHaveBeenCalledWith("/profile/edit");
+    expect(mockPush).toHaveBeenCalledWith({ pathname: "/profile/edit", params: { focus: "usertag" } });
   });
 
   it("the header Settings chip is the only Settings entry and opens Settings", async () => {
@@ -156,11 +157,38 @@ describe("My Profile screen", () => {
     expect(mockPush).toHaveBeenCalledTimes(2);
   });
 
-  it("loading state shows no entry rows and no loaded content", async () => {
+  it("a failed push re-arms the guard so the next tap works", async () => {
+    loaded("cineowl");
+    mockPush.mockImplementationOnce(() => {
+      throw new Error("nav failed");
+    });
+    await render(<MyProfile />);
+    const chip = screen.getByRole("button", { name: /Edit usertag/ });
+    let thrown: unknown;
+    try {
+      await fireEvent.press(chip);
+    } catch (err) {
+      thrown = err;
+    }
+    expect(thrown).toBeInstanceOf(Error);
+    await fireEvent.press(chip);
+    expect(mockPush).toHaveBeenCalledTimes(2);
+  });
+
+  it("the Settings chip is labelled and grown to the minimum touch size", async () => {
+    loaded(null);
+    await render(<MyProfile />);
+    const chip = screen.getByRole("button", { name: "Settings" });
+    expect(chip.props.hitSlop).toBe((size.minTouch - size.iconButton) / 2);
+  });
+
+  it("loading state shows exactly the four shimmer bars, no rows or loaded content", async () => {
     mockUseOwnProfile.mockReturnValue({ state: "loading", refetch: jest.fn() });
     await render(<MyProfile />);
+    expect(
+      screen.getAllByTestId(/^shimmer-/).map((n) => n.props.testID),
+    ).toEqual(["shimmer-avatar", "shimmer-name", "shimmer-usertag", "shimmer-count"]);
     expect(screen.queryByText(/Edit profile/)).toBeNull();
-    expect(screen.queryByText(/Settings/)).toBeNull();
     expect(screen.queryByText("0 movies watched")).toBeNull();
   });
 });

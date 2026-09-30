@@ -38,31 +38,31 @@ usertag" row was verified, not changed (still `router.push("/profile/edit")`, ex
   push and cleared by `useFocusEffect` when the screen regains focus lets one push through per
   focus. A ref (not state) because the second tap arrives before a re-render. Covers both chips.
 - Tap height: existing token `size.minTouch` (48dp, above the 44 spec); no new token.
-- Top-right icons untouched (Justin's choice). No `__DEV__` switch.
+- Top-right icons stay where they are (Justin's choice), no `__DEV__` switch. The Settings chip's onPress does now go through the double-tap guard (Bug 1 adds its label and hit area).
 - Loading: the usertag shimmer sits in a `minHeight: size.minTouch` slot so the layout does not
   jump when the 48dp chip replaces it.
 
 Concepts used: `useFocusEffect` (runs when a screen regains focus, unlike `useEffect`, which runs
 on mount), `Pressable` + `accessibilityRole/Label`, refs for values read inside handlers.
 
-Note: DESIGN says Edit opens "with the usertag field focused". The empty chip never did this
+Note (superseded by Bug 1 below): DESIGN says Edit opens "with the usertag field focused". The empty chip never did this
 (plain `push("/profile/edit")`, and `edit.tsx` has no focus param), so `@usertag` does the same.
 On device Edit opened with no keyboard. Not built here (out of scope): needs a route param plus
 `autoFocus` in `edit.tsx`, a Manager/Priya call.
 
-## Spec-trace (DESIGN.md line -> code)
+## Spec-trace (DESIGN.md line -> code, after Bug 1; `src/app/(tabs)/profile/index.tsx` unless noted)
 | DESIGN.md line | Implemented at |
 |---|---|
-| No entry rows (Build 6; §8 Changes) | removed rows block; `src/app/(tabs)/profile/index.tsx:87-89` chip then count |
-| Settings chip is the only Settings entry | `index.tsx:44-51` (unchanged) |
-| Chip tappable, both states, pushes edit | `index.tsx:70-87` |
-| Same 44px-min tap height | `index.tsx:156` (`size.minTouch`) |
-| Empty copy "No usertag yet — add a usertag" | `index.tsx:83-85` |
-| 24px chip -> count | `index.tsx:168` |
-| 12px count -> grid | `index.tsx:176` |
-| Loading: avatar, name, usertag bars, count bar at 24, no rows | `index.tsx:113-121`, styles `190-192` |
-| Load-error state unchanged | `index.tsx:53-58` (unchanged) |
-| Build 7 route note / Build 9 Settings row | `settings.tsx:62` (verified, unchanged) |
+| No entry rows (Build 6; §8 Changes) | rows removed; chip then count, `index.tsx:88-107` |
+| Settings chip is the only Settings entry | `index.tsx:55-63` (its onPress goes through the double-tap guard `go`, `index.tsx:36-46`; label + hitSlop added in Bug 1) |
+| Chip tappable, both states, pushes edit with the usertag field focused | `index.tsx:88-90` (param `focus: "usertag"`); `edit.tsx:19` reads it, `edit.tsx:133` `autoFocus` |
+| Same 44px-min tap height | `index.tsx:177` (`size.minTouch`) |
+| Empty copy "No usertag yet — add a usertag" | `index.tsx:102` |
+| 24px chip -> count | `index.tsx:189` |
+| 12px count -> grid | `index.tsx:197` |
+| Loading: avatar, name, usertag bars, count bar at 24, no rows | `index.tsx:117-142`, styles `index.tsx:203-213` |
+| Load-error state unchanged | `index.tsx:67-75` |
+| Build 7 route note / Build 9 Settings row (no auto focus) | `settings.tsx:61` pushes `/profile/edit` without the param (unchanged) |
 
 ## Failure-mode items -> handling and test (`__tests__/profile-test.tsx`)
 1. Edit reachable: chip pushes `/profile/edit` in both states. Tests "empty-usertag chip pushes...", "@usertag chip pushes..."; Settings row: existing `settings-test.tsx` "opens Edit profile from the first row".
@@ -117,3 +117,30 @@ No on-screen warnings/banners seen in any screenshot.
 
 Bug list: **Build N · Bug 1** (item 2 above). No other failures.
 Untestable here: empty-usertag chip state on device (Justin's profile has a usertag; jest-only), Save-then-Profile refresh.
+
+---
+# Bella — Change 2026-09-30 · Bug 1 (base ffec954)
+
+## Fixes
+1. **Focus (must-fix).** The chip pushes `{ pathname: "/profile/edit", params: { focus: "usertag" } }`. `edit.tsx` reads `focus` with `useLocalSearchParams` and sets `autoFocus` on the usertag `TextInput`. Settings' row pushes with no param, so no keyboard. `autoFocus` is enough: it raised the keyboard on td_emu (screenshot below).
+2. **Guard sticking.** `go()` wraps `router.push` in try/catch: on throw the ref is reset and the error rethrown, so a failed push can't kill both chips until refocus.
+3. **Settings chip.** `accessibilityLabel="Settings"` and `hitSlop={iconButtonHitSlop}` (token = (minTouch - iconButton)/2 = 6dp). Position and 36dp visual size unchanged.
+4. **Literals -> tokens** (`src/ui/tokens.ts`): `avatarSize` {sm 32, md 48, lg 88} (Avatar.tsx now reads it, so the shimmer circle and the avatar share one source), `size.headerTrailingInset` 44, `size.collectionGridMin` 96, `iconButtonHitSlop`, `shimmerBar` {name 160x22, line 120x16}. Chip width/height use `size.iconButton`. Values are identical, so there is no visual change.
+5. **Loading test** now finds testIDs `shimmer-avatar/-name/-usertag/-count` and asserts exactly those four (a row bar would fail it).
+6. Log wording and spec-trace numbers fixed above.
+
+## Out-of-scope files touched (reason)
+- `src/ui/Avatar/Avatar.tsx`: reads `avatarSize` instead of its own 88/48/32 map (item 4, avoid two sources for 88).
+- `src/app/(tabs)/profile/settings.tsx`: the local `backHitSlop` const became the shared `iconButtonHitSlop` token (item 3 needs the same value; one source). No behaviour change.
+- `__tests__/edit-profile-test.tsx`: mocks `useLocalSearchParams`; new focus test.
+
+## Tests added
+chip pushes with the param (both states, in updated existing tests); edit autofocus true with param / false without; failed push re-arms guard; Settings chip label + hitSlop; exact shimmer bars.
+
+## Gates
+tsc exit 0 · `npx expo lint` exit 0 · `npx jest`: 19 suites, 132 tests passed, 0 failed, 0 "act(", 0 console output. (A first jest run failed 8 edit-profile tests: my new test called `screen.unmount()` then rendered again, which overlapped act() scopes; split into two tests, then green. tsc/lint ran before that test-only change.)
+
+## Device (td_emu, Justin's real profile, nothing saved; Metro started by me and stopped, 8081 free)
+- Profile chip (`@tsujintsujin`) -> Edit opened with the input method shown (`dumpsys input_method` `mInputShown=true`): `logs/evidence/change-2026-09-30/bug1-chip-focus.png`. The emulator's keyboard showed as Gboard's floating side toolbar, not a full-width keyboard, so the screenshot alone is less clear than the dumpsys check.
+- Back (keyboard hidden, `mInputShown=false`), header Settings chip -> Settings -> "Edit profile photo / usertag" -> Edit: no keyboard (`mInputShown=false`).
+- Profile layout after the token change looked identical to before.
