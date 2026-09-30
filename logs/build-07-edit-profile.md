@@ -1020,3 +1020,17 @@ Base SHA: 06d1fb3. Unit tests only.
 - **Unmount mid-upload:** test that the landed object is deleted and `updateProfile` is not called (the `mountedRef` path).
 - Files: `src/modules/profile/hooks/useAvatarUpload.ts`, `__tests__/useAvatarUpload-test.tsx`.
 - Gates: tsc pass, lint pass, jest 11 suites / 53 tests, 0 "act(" and 0 console.warn/error in the full output (stdout+stderr).
+
+## Build 7 — CLOSED (Manager, 2026-09-30)
+- Commits: f2244fa build · fe9932b Bug 1 · ab235cf Bug 1b · 31779cf..0d31d26 standards pass ·
+  5c65cd4 + f9fd67a Bug 2 · d911db3 + 06d1fb3 + 2aef266 Bug 3.
+- Gates (Manager rerun at 2aef266): tsc clean, jest 53/53, 0 act()/console warnings in full output.
+- QA: Queenie QA 2 (items 1–7 PASS) + QA 3 (fonts PASS, 4/4 normal uploads). Bella race 10/10.
+- Review: Ruby PASS on Bug 2 r2, Bug 3 r1–r3.
+- Manager spot re-run: pick → crop → 25 Save taps chained; Save stayed disabled ("Uploading photo…"),
+  DB avatar_url changed, 1 object in bucket, usertag untouched (`evidence/build-07/manager-race-spotcheck.png`).
+- Known limits: (1) after cancel(), a new photo tap is ignored until the old run settles — unreachable
+  today (edit.tsx navigates away on cancel); fix if cancel ever stays on screen: clear inFlightRef in
+  cancel() and only clear in finally when runRef.current === run. (2) If the native picker never
+  resolves, photo taps stay ignored while mounted (same as before).
+- UNTESTABLE → Justin: "That usertag is already taken." copy needs a 2nd Google account.

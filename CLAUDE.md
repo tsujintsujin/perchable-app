@@ -62,4 +62,4 @@ The CLI needs `SUPABASE_ACCESS_TOKEN` (from `Credentials/perchable/.env`).
 both contain a line starting "Approved by Justin:" — which only Justin types.
 
 ## Current Build
-Build 7 — Edit profile, open (Module 2, branch `module/auth`). **Start with HANDOFF.md.** Modules: 1 done; 2 in progress (5, 6 done; 7 open; 8, 9 to do).
+Build 8 — Sign out (Module 2, branch `module/auth`). Modules: 1 done; 2 in progress (5, 6, 7 done; 8 open; 9 to do).
