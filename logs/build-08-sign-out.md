@@ -119,3 +119,38 @@ bella-01-settings.png (Settings), bella-01b-toast.png (comments toast), bella-02
   Comments-row toast copy "Comment settings are coming soon." accepted.
 - For Build 9: an avatar upload finishing after sign-out can't delete its object (no
   session) → possible orphan; Build 9's account deletion removes the whole avatars/<uid>/ folder.
+
+---
+
+# QA - Queenie (Phase 3, HEAD 83ff714, 2026-09-30)
+
+Emulator td_emu, own Metro (stopped, 8081 confirmed free). Evidence: `logs/evidence/build-08/qa-*.png`. Nothing written to /sdcard. Ended SIGNED IN as @justin94test.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Sign back in with Google (account picker shows; profile intact) | PASS | qa-01a-picker, qa-01b-after-signin, qa-01c-profile |
+| 2 | Settings vs DESIGN/board | PASS | qa-02-settings |
+| 3 | Comments row toast | PASS | qa-03-toast |
+| 4 | Sign out lands on sign-in; no old data; re-sign-in no flash | PASS | qa-04a, 04b, 04c, 04d-resignin-1/3 |
+| 5 | 5 taps on Sign out in one adb call | PASS | qa-05a, qa-05b |
+| 6 | Cold relaunch after sign-out | PASS | qa-06-cold-relaunch |
+| 7 | Offline sign-out | PASS | qa-07a, qa-07b |
+| 8 | Regression: Home, My Profile, Edit profile + Cancel | PASS | qa-08a/08c/08d/08e/08g |
+| 9 | Logcat | PASS with 1 new line to report | see below |
+
+Notes
+- 1: picker listed Justin Masiga (failure-mode 2 confirmed). After sign-in: name in Poppins bold, @justin94test, default sunrise avatar, same as before sign-out.
+- 2: copy matches the board verbatim (Settings, ACCOUNT, Edit profile photo / usertag, Comments on my collection: On (gold), door emoji + Sign out, ABOUT, The Movie Database, TMDB sentence, Perchable v1.0.0 - version differs from board's v0.1 by Manager decision). TMDB chip small (22x14) with secondary-coloured 10-12px text, clearly less prominent than the Poppins header. No Danger zone. Top-right 64x64 zone empty (only the dev gear). Rows/About card/tokens look right; Poppins on the header, Inter on body.
+- 3: tap shows "Comment settings are coming soon." toast at the bottom.
+- 4: Sign out goes straight to sign-in. Back key from sign-in leaves the app (launcher) - no tab/profile reachable. Re-opening the app shows sign-in; re-sign-in went sign-in -> "Signing in..." -> Home with no old-profile frame in the frames captured (1 s apart).
+- 5: exactly one sign-out, ended on sign-in, no error screen or toast. No app errors in logcat.
+- 6: force-stop + relaunch opens sign-in.
+- 7: wifi + data off (status bar shows no-data icon), Sign out landed on sign-in with no error. Network re-enabled, sign-in worked afterwards.
+- 8 (QA slip, not an app bug): my first Cancel tap landed on the Settings row because the back key had already left Edit profile; redone in qa-08g: typed "x" in the usertag (Save turned enabled, qa-08e), Cancel returned to My Profile with @justin94test unchanged.
+- 9: no crash, no red error from the app. Lines seen: IME FrameTracker missed frames / "force finish cuj, time out" (known). NEW, exact text: `E ImeBackDispatcher: Ime callback not found. Ignoring unregisterReceivedCallback. callbackId: 223959887` (03:39:12, when leaving Edit profile with the keyboard/handwriting toolbar open; Android system class, for Ruby to judge). Other E lines are emulator audio HAL and Google Play Services favicon fetches, not the app. Logcat was cleared before items 5 and 7, so it covers those actions plus the final stretch.
+
+Observation (not a Build 8 failure, for Ruby): My Profile's small Settings chip (qa-01c-profile) sits directly against the dev gear zone (right edge ~x=760 of 900, gear starts ~752). It predates this Build.
+
+UNTESTABLE: none. The Sentry side (failures reported, success not) cannot be seen from the device; covered by jest only.
+
+VERDICT: PASS, 0 Bugs.
