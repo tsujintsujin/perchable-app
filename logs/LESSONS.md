@@ -48,3 +48,9 @@ Handle each one up front; say in the Build log how (or "n/a").
       "act(" warnings — pass count alone hid one (Standards pass, Manager missed it).
 - [ ] Never commit a file you didn't write in this task under an unrelated
       message; new server code gets its own commit + log entry.
+
+## Testing environment (Build 7 blank avatar — twice)
+- [ ] QA never saves screenshots/dumps to `/sdcard` — the gallery indexes them
+      and a screenshot gets picked as a "test photo". Use `/data/local/tmp`.
+      Test photos only in `/sdcard/Pictures/`. Check a stored image's pixels
+      before calling a pipeline broken.

@@ -801,3 +801,23 @@ with the blob-orphan risk above accepted. Not doing either unilaterally.
 `npx tsc --noEmit` — pass. `npx expo lint` — pass. `npx jest` — pass, 6
 suites / 27 tests (7 new: 5 in `deleteAvatarObject-test.tsx`, 2 in
 `edit-profile-test.tsx`).
+
+## Manager — blank-avatar diagnosis (2026-09-30)
+**Not an app bug.** The blank avatar (`avatar-1790637215640.jpg`, solid 250 grey)
+came from the source image, not the pipeline:
+- QA screenshots saved to `/sdcard/*.png` (162 of them) were indexed by Android
+  into the photo gallery. `screen3.png` (added 1790636523, 11 min before the
+  upload) has a centre 1080×1080 square of exactly RGB 250 — the default 1:1
+  crop of it is the blank avatar.
+- The logcat line `Bitmap from LOCAL ... [-2147483648x-2147483648]` is Glide's
+  `SIZE_ORIGINAL` constant (Integer.MIN_VALUE), not a corrupt decode. It appears
+  on the good run too.
+- Re-run on td_emu with the current bundle (0d31d26): pick `test-avatar.jpg` →
+  native crop → upload. Stored object `avatar-1790734341563.jpg` is 512×512,
+  8.9 KB, full colour range; Edit profile shows the sunset. Old blank object now
+  returns 404 NoSuchKey (replace-cleanup works). Evidence: `evidence/build-07/manager-avatar-rerun.png`.
+- No "reject blank image" validation: a solid-colour photo is a legal user
+  choice, and the pipeline is faithful.
+- Fix is process: 247 QA files moved from `/sdcard` to `/data/local/tmp/qa`
+  (gallery now holds only `Pictures/test-avatar.*`); `queenie.md` now forbids
+  saving to `/sdcard`. Added to LESSONS.md.
