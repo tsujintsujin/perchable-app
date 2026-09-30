@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { pickAvatar } from "../pickAvatar";
+import { pickAvatarAsset, prepareAvatar } from "../pickAvatar";
 import { uploadAvatar } from "../api/uploadAvatar";
 import { updateProfile } from "../api/updateProfile";
 import { deleteAvatarObject } from "../api/deleteAvatarObject";
@@ -33,12 +33,15 @@ export function useAvatarUpload(userId: string | undefined, initialAvatarUrl: st
     // of this call regardless of what the pick/upload below does later.
     const previousAvatarUrl = avatarUrl;
     try {
-      const picked = await pickAvatar();
+      const asset = await pickAvatarAsset();
       if (cancelledRef.current) return;
-      if (!picked) return; // cancelled or permission denied — not an error
+      if (!asset) return; // cancelled or permission denied — not an error
 
+      // Busy from here so Save stays disabled while the resize runs.
       setPhoto({ state: "uploading" });
-      const publicUrl = await uploadAvatar(userId, picked.uri);
+      const prepared = await prepareAvatar(asset.uri);
+      if (cancelledRef.current) return;
+      const publicUrl = await uploadAvatar(userId, prepared.uri);
       if (cancelledRef.current) {
         // Already landed in Storage under a unique path — clean it up.
         await deleteAvatarObject(userId, publicUrl);

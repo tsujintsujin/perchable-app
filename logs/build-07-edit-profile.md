@@ -921,3 +921,31 @@ Final state restored: usertag `justin94test`, 1 object in `avatars/<uid>/`, refe
 
 ### Verdict (QA 2)
 PARTIAL — all functional items (1-7, 9) pass with DB/Storage proof; item 8 fails on 1 Bug (Build 7 · Bug 3, heading font).
+
+## Build 7 · Bug 3 — fonts, pick/resize race, silent upload (Bella)
+Base SHA: fb6603f.
+
+### 1. Headings in the system font
+- **Cause:** the standards pass spread `type.*` tokens into styles; the tokens carried `fontWeight` next to a single-weight custom family (`Poppins_800ExtraBold`), which makes Android fall back to Roboto.
+- **Fix:** `fontWeight` removed from every `type` token in `src/ui/tokens.ts` (the family name already encodes the weight). No other `fontWeight` beside a custom family in `src/` (only `debug.tsx`, dev screen, left alone). Test: `__tests__/tokens-test.ts`.
+- **Evidence:** `logs/evidence/build-07/bug3-fonts.png` (My Profile, Poppins headings). Edit profile also checked on device: Poppins header, Inter body/labels.
+
+### 2. Photo picked then Save within ~0.2 s dropped
+- **Cause:** `uploading` was set only after `pickAvatar()` returned, and that included the resize, so Save was enabled during the resize.
+- **Fix:** `pickAvatar` split into `pickAvatarAsset` (picker + crop) and `prepareAvatar` (resize) in `src/modules/profile/pickAvatar.ts`. `useAvatarUpload` sets `uploading` as soon as the picker returns an asset, before the resize. Resize failure goes through the same catch as upload failure (error state, Sentry). Cancel is re-checked after the resize.
+- Tests (`__tests__/useAvatarUpload-test.tsx`): uploading while resize pending, upload waits for resize; resize failure gives error and no upload; picker cancel stays idle.
+
+### 3. One of five uploads did nothing — investigated
+Paths where `pickAndUpload` returns with no state change: (a) `isUploading` already true; (b) `userId` undefined (profile not loaded); (c) `cancelledRef` true after the picker (set by unmount or Cancel; but it is reset to false at the start of every call, so it cannot be stale-true across calls); (d) picker returns canceled / no asset; (e) media permission not granted (silent).
+- (a) and (c) are not reachable on the reported flow. (b) needs the profile unloaded, but the screen had loaded data. The stale-closure window (`isUploading` false until re-render) exists only during the pick/resize, where a second tap can't reach the avatar while the picker covers it; the resize window is now closed by fix 2.
+- **Conclusion: no code path found that explains it, so no guess-fix.** The most likely cause is the picker itself returning canceled: expo-image-picker crop on Android can return `canceled` if the activity result is lost (activity recreated) or the crop is dismissed. Not reproducible from code. Note (e): a denied permission also returns silently with no message — a UX gap, not this report; flagged for the Manager.
+
+### Spec-trace
+| Item | Where | Test |
+|---|---|---|
+| Poppins/Inter render | `src/ui/tokens.ts` type tokens | `tokens-test.ts`, bug3-fonts.png |
+| Busy before resize | `src/modules/profile/hooks/useAvatarUpload.ts` (setPhoto before prepareAvatar) | `useAvatarUpload-test.tsx` |
+| Resize failure = error path | same try/catch | `useAvatarUpload-test.tsx` |
+
+### Gates
+tsc pass, lint pass, jest 11 suites / 47 tests, 0 "act(" and 0 console.warn/error in the full output (stdout+stderr). Metro started and stopped, 8081 free.

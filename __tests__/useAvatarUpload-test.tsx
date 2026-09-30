@@ -2,12 +2,14 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-
 import { Pressable, Text } from "react-native";
 
 const mockPickAvatar = jest.fn();
+const mockPrepareAvatar = jest.fn();
 const mockUploadAvatar = jest.fn();
 const mockUpdateProfile = jest.fn();
 const mockDeleteAvatarObject = jest.fn();
 
 jest.mock("@/modules/profile/pickAvatar", () => ({
-  pickAvatar: (...args: unknown[]) => mockPickAvatar(...args),
+  pickAvatarAsset: (...args: unknown[]) => mockPickAvatar(...args),
+  prepareAvatar: (...args: unknown[]) => mockPrepareAvatar(...args),
 }));
 jest.mock("@/modules/profile/api/uploadAvatar", () => ({
   uploadAvatar: (...args: unknown[]) => mockUploadAvatar(...args),
@@ -39,6 +41,7 @@ function Harness({ initialAvatarUrl }: { initialAvatarUrl: string | null }) {
 describe("useAvatarUpload", () => {
   beforeEach(() => {
     mockPickAvatar.mockReset();
+    mockPrepareAvatar.mockReset().mockImplementation(async (uri: string) => ({ uri }));
     mockUploadAvatar.mockReset();
     mockUpdateProfile.mockReset().mockResolvedValue(undefined);
     mockDeleteAvatarObject.mockReset().mockResolvedValue(undefined);
@@ -110,5 +113,48 @@ describe("useAvatarUpload", () => {
       ),
     );
     expect(mockDeleteAvatarObject).toHaveBeenCalledTimes(1);
+  });
+
+  // A photo picked then Save tapped during the resize must not be dropped.
+  it("is uploading while the resize is pending", async () => {
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    let finishResize: (r: { uri: string }) => void = () => {};
+    mockPrepareAvatar.mockReturnValue(new Promise((resolve) => (finishResize = resolve)));
+    mockUploadAvatar.mockResolvedValue("https://cdn.example/avatars/u1/avatar-new.jpg");
+    await render(<Harness initialAvatarUrl={null} />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick" }));
+    });
+    await waitFor(() => expect(screen.getByTestId("state").props.children).toContain('"uploading"'));
+    expect(mockUploadAvatar).not.toHaveBeenCalled();
+
+    await act(async () => finishResize({ uri: "file:///small.jpg" }));
+    await waitFor(() => expect(mockUploadAvatar).toHaveBeenCalledWith("u1", "file:///small.jpg"));
+  });
+
+  it("shows an error state when the resize fails", async () => {
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    mockPrepareAvatar.mockRejectedValue(new Error("resize failed"));
+    await render(<Harness initialAvatarUrl={null} />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick" }));
+    });
+
+    await waitFor(() => expect(screen.getByTestId("state").props.children).toContain('"error"'));
+    expect(mockUploadAvatar).not.toHaveBeenCalled();
+  });
+
+  it("stays idle when the picker is cancelled", async () => {
+    mockPickAvatar.mockResolvedValue(null);
+    await render(<Harness initialAvatarUrl={null} />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick" }));
+    });
+
+    expect(screen.getByTestId("state").props.children).toContain('"idle"');
+    expect(mockPrepareAvatar).not.toHaveBeenCalled();
   });
 });

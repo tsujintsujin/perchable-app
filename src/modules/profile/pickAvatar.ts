@@ -5,9 +5,9 @@ import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 const MAX_DIMENSION = 512;
 const JPEG_QUALITY = 0.8;
 
-/** Opens the OS photo picker with a native 1:1 crop, then resizes and
- * re-encodes as JPEG. Returns `null` on cancel/denied permission. */
-export async function pickAvatar(): Promise<{ uri: string } | null> {
+/** Opens the OS photo picker with a native 1:1 crop. Returns `null` on
+ * cancel/denied permission. */
+export async function pickAvatarAsset(): Promise<{ uri: string } | null> {
   const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!permission.granted) return null;
 
@@ -19,7 +19,12 @@ export async function pickAvatar(): Promise<{ uri: string } | null> {
   });
   if (result.canceled || !result.assets[0]) return null;
 
-  const context = ImageManipulator.manipulate(result.assets[0].uri);
+  return { uri: result.assets[0].uri };
+}
+
+/** Resizes and re-encodes a picked image as JPEG, ready to upload. */
+export async function prepareAvatar(uri: string): Promise<{ uri: string }> {
+  const context = ImageManipulator.manipulate(uri);
   context.resize({ width: MAX_DIMENSION, height: MAX_DIMENSION });
   const rendered = await context.renderAsync();
   const saved = await rendered.saveAsync({ compress: JPEG_QUALITY, format: SaveFormat.JPEG });

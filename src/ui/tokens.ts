@@ -109,16 +109,17 @@ export const elevation = {
 } as const;
 
 /** DESIGN.md §1.6. `fontFamily` values match the keys `useFonts()` loads in
- * the root layout — see src/app/_layout.tsx. */
+ * the root layout — see src/app/_layout.tsx. No `fontWeight`: on Android it makes a
+ * single-weight custom family fall back to the system font. */
 export const type = {
-  micro: { fontSize: 11, fontWeight: "500", fontFamily: "Inter_500Medium" },
-  small: { fontSize: 12, fontWeight: "400", fontFamily: "Inter_400Regular" },
-  label: { fontSize: 14, fontWeight: "600", fontFamily: "Inter_600SemiBold" },
-  caption: { fontSize: 12, fontWeight: "500", fontFamily: "Inter_500Medium" },
-  body: { fontSize: 15, fontWeight: "400", fontFamily: "Inter_400Regular" },
-  bodyStrong: { fontSize: 15, fontWeight: "600", fontFamily: "Inter_600SemiBold" },
-  subhead: { fontSize: 19, fontWeight: "700", fontFamily: "Poppins_700Bold" },
-  title: { fontSize: 24, fontWeight: "800", fontFamily: "Poppins_800ExtraBold" },
-  display: { fontSize: 30, fontWeight: "800", fontFamily: "Poppins_800ExtraBold" },
-  hero: { fontSize: 38, fontWeight: "800", fontFamily: "Poppins_800ExtraBold" },
+  micro: { fontSize: 11, fontFamily: "Inter_500Medium" },
+  small: { fontSize: 12, fontFamily: "Inter_400Regular" },
+  label: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
+  caption: { fontSize: 12, fontFamily: "Inter_500Medium" },
+  body: { fontSize: 15, fontFamily: "Inter_400Regular" },
+  bodyStrong: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
+  subhead: { fontSize: 19, fontFamily: "Poppins_700Bold" },
+  title: { fontSize: 24, fontFamily: "Poppins_800ExtraBold" },
+  display: { fontSize: 30, fontFamily: "Poppins_800ExtraBold" },
+  hero: { fontSize: 38, fontFamily: "Poppins_800ExtraBold" },
 } as const;
