@@ -85,3 +85,35 @@ Settings chip -> Settings -> "Edit profile photo / usertag" -> Edit:
 `logs/evidence/change-2026-09-30/bella-settings-to-edit.png`. The profile already had usertag
 `@tsujintsujin` (brief said none), so the on-device chip test was the `@usertag` state; the empty
 state is covered by jest only. Nothing saved.
+
+---
+# QA (Queenie) — 2026-09-30, HEAD ca1e96f, td_emu, dev build, Justin's real profile (nothing saved/changed)
+
+Evidence: `logs/evidence/change-2026-09-30/qa-*`. Metro started by me (PID 24956), stopped, 8081 confirmed free.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Layout vs DESIGN Build 6 | PASS | qa-01-profile-layout.png, qa-01-ui.xml |
+| 2 | Chip opens Edit; usertag field focused + keyboard | FAIL (opens, NOT focused, no keyboard) | qa-02-chip-opens-edit.png, qa-02b-back-to-profile.png |
+| 3 | Settings chip -> Settings -> Edit; back x2 | PASS | qa-03a..03d |
+| 4 | Double tap (4 chained taps) chip and Settings chip | PASS | qa-04a..04d |
+| 5 | Accessibility of usertag chip | PASS (see note on Settings chip label) | qa-01-ui.xml |
+| 6 | Loading state | PASS (frame captured) | qa-06-loading.png |
+| 7 | Load-error + Retry | PASS | qa-07a..07d |
+| 8 | Regression Settings / Edit / tab bar | PASS | qa-03a, qa-03b vs build-08/qa-02, build-09/qa-01 |
+| 9 | Logcat | PASS, nothing from Perchable JS | qa-09-logcat-errors.txt |
+
+## Details
+1. No "Edit profile" row, no "Settings" row. Order: header, avatar, name, chip, "0 movies watched", dashed grid container. UI dump (2.625 px/dp): chip bounds y 745-871 (126 px = 48 dp); "movies watched" text top y 934 -> gap chip-to-row = 63 px = **24.0 dp**. Grid container is not in the a11y tree; from the screenshot, count text bottom y 981 -> dashed grid top y ~1014 = ~33 px = **~12.6 dp** (within measuring error of 12; the text line box adds a couple px). Screenshot matches the spec's order.
+2. Tap on `@tsujintsujin` chip opens "Edit profile" (once). Usertag field is **not focused and no keyboard**: `dumpsys input_method` `mInputShown=false`; screenshot shows no caret/keyboard. DESIGN.md Build 6 says "(usertag field focused)" for both chips. Bella disclosed this in her log (needs a route param + autoFocus in edit.tsx). It is a spec gap, not a regression: the empty chip never focused either. **Build N · Bug 1 — Chip opens Edit without focusing the usertag field** (Manager/Priya decision: implement, or amend DESIGN.md). Back returned to Profile, nothing saved.
+3. Settings chip -> Settings; "Edit profile photo / usertag" -> Edit; Back -> Settings; Back -> Profile. All screenshots read.
+4. 4 chained `input tap` on chip in one adb call: one Back returned to Profile (qa-04b). Same for Settings chip: one Back returned to Profile (qa-04d). No stacked screens.
+5. Chip: `clickable=true`, content-desc "Edit usertag, currently @tsujintsujin", bounds 330x126 px = 125.7 x 48 dp (>= 44). **Observation (not caused by this change, for Ruby to judge):** the header Settings chip's content-desc is the literal glyph "⚙" (bounds 818,136-912,231 = 36 dp wide), i.e. a screen reader reads a symbol, not "Settings"; and it is 36x36 dp, below 44 dp (DESIGN specifies 36x36 for this chip). Not tested against history.
+6. Cold launch, tapped Profile tab, burst screencaps: one frame caught the skeleton: avatar circle, name bar, usertag bar, then one "movies watched" bar; no row shimmers. Gap usertag bar to count bar ~106 px = ~40 dp (the usertag shimmer sits in a 48 dp min-height slot, as Bella wrote); fine.
+7. With wifi+data off, Profile already open showed cached data (no error). Force-stop + relaunch offline (Metro via `adb reverse` + localhost, since 10.0.2.2 is unreachable offline): skeleton for ~60 s, then "Couldn't load your profile / Check your connection and try again. / Retry" with the owl icon, copy verbatim (qa-07c). Network on, Retry tapped: profile loaded (qa-07d). Note: error took about a minute to appear after skeletons (long request timeout) — not from this change, mention to Ruby if it matters.
+8. Settings screen identical to build-09/qa-01-settings-danger.png (all rows, Danger Zone, version). Edit profile screen renders normally (avatar + camera badge, USERTAG field, hint, Cancel/Save disabled). Tab bar fine on every screen. After-Save refresh not tested (would write Justin's usertag; not allowed).
+9. `logcat *:E` (295 lines): nothing from app JS. Seen, all known harmless / environment: `ReactHost: ReactNoCrashSoftException ... Tried to access onWindowFocusChange while context is not ready` (dev-client startup), `ReactNative: Unable to display loading message because react activity isn't active` x2 (dev-client reload), `ReconnectingWebSocket: Software caused connection abort / Websocket exception` x3 (Metro socket while I toggled wifi), plus emulator audio/wifi/netd/TaskPersister/GCM noise. Reported verbatim per rule; judgement is Ruby's.
+No on-screen warnings/banners seen in any screenshot.
+
+Bug list: **Build N · Bug 1** (item 2 above). No other failures.
+Untestable here: empty-usertag chip state on device (Justin's profile has a usertag; jest-only), Save-then-Profile refresh.
