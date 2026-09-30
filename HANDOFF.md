@@ -1,6 +1,6 @@
 # HANDOFF — Perchable Manager session (written 2026-09-30, PAUSED)
 
-**Paused by Justin after Build 8.** Do not start Build 9 until Justin says so.
+**Resumed 2026-09-30 — Build 9 in progress** (see TIMELINE.md).
 A new Manager session starts here: read this, then TIMELINE.md (last ~15
 lines), then `logs/LESSONS.md`. Branch: `module/auth` (pushed to origin).
 
