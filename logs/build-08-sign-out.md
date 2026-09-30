@@ -191,3 +191,16 @@ tsc clean, lint clean, `npx jest`: 14 suites, 75 tests passed, 0 "act(" and 0 co
 - **Fix:** when `SIGNED_IN` lifts the latch, `AuthProvider` calls `supabase.auth.startAutoRefresh()` if `AppState.currentState === "active"` (same rule as the listener in `src/lib/supabase.ts`).
 - **Tests:** AuthProvider-test: `clearSession()` then `SIGNED_IN` while active -> `startAutoRefresh` called once; while background -> not called.
 - Files: `src/modules/auth/AuthProvider.tsx`, `__tests__/AuthProvider-test.tsx`. Gates: see the report; jest 14 suites, 77 tests, 0 act()/warnings.
+
+## Build 8 — CLOSED (Manager, 2026-09-30)
+- Commits: 83ff714 build · efe3f24 Bug 1 · 008cccf Bug 1 r2 (auto-refresh restart, Manager finding).
+- Gates (Manager rerun at 008cccf): tsc clean, jest 77/77, 0 act()/console warnings, lint clean, no secrets.
+- QA: Queenie PASS 9/9 (re-sign-in via picker, offline, 5-tap, relaunch, no stale data).
+- Review: Ruby FIX NEEDED → PASS after Bug 1 + r2.
+- Manager spot re-run: Profile → Settings → Sign out → sign-in screen (`manager-spot-signedout.png`);
+  next Sign in shows the Google account picker. Manager did not complete the Google sign-in
+  (outside identity provider) — backed out; **app is left signed out** on td_emu.
+- Known limits: if BOTH session stores fail to clear, a relaunch restores the session (latch can't
+  span relaunch). Avatar upload finishing after sign-out may orphan an object (Build 9 deletes the folder).
+- Design note for Justin/Dianne: backing out of the Google picker shows "Couldn't sign in. Check
+  your connection…" — as DESIGN.md:437 specifies (one copy for cancel + network). Possible tweak.
