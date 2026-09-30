@@ -877,3 +877,47 @@ Base 64fa661. No emulator/Metro used; unit tests only.
 | removeItem: AsyncStorage throws | SecureStore key still deleted, error rethrown. Test. |
 
 Gates: tsc pass, lint pass, jest 10 suites / 43 tests; full output (stdout+stderr) has 0 "act(" and 0 console.warn/error.
+
+## QA 2 (combined) — Queenie, 2026-09-30, HEAD 5c65cd4
+Run on td_emu, dev build, Metro started by me (stopped, port 8081 confirmed free). Signed in as @justin94test the whole run. Nothing written to /sdcard (screens via /data/local/tmp). Test photo: `/sdcard/Pictures/test-avatar.jpg` only. Storage/DB state read with read-only SELECTs (Management API) after each action. Evidence: `evidence/build-07/qa2-*.png` (the older `evidence/build-07/qa2/` folder is the cut-off run, not used).
+Final state restored: usertag `justin94test`, 1 object in `avatars/<uid>/`, referenced by `profiles.avatar_url`.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Save disabled during upload | PASS | qa2-01-save-disabled-uploading.png (usertag edited to valid `justin94qb`, Save was enabled, then during upload: Save + field dimmed, caption "Uploading photo…"); qa2-01-picker-with-edit.png (before) |
+| 2 | Cancel mid-upload keeps old photo, no stray object | PASS | qa2-02-cancel-midupload.png (Edit sliding away mid-upload), qa2-02-profile-after-cancel.png. DB `avatar_url` and `updated_at` unchanged 2 checks (6 s and 11 s after), bucket still exactly 1 object |
+| 3 | Loading label = DESIGN copy | PASS | qa2-03-saving-label.png (spinner + "Saving", Cancel dimmed) |
+| 4 | Replace deletes old object | PASS | qa2-04-after-replace.png. Old URL `.../avatar-1790734341563.jpg` → HTTP 404 `NoSuchKey`; new `.../avatar-1790735267719.jpg` → 200, 8954 B, 512x512, full colour range (not blank); bucket had 1 object. Checked via public URLs + `storage.objects` SELECT (/debug shows no URLs) |
+| 5 | Usertag invalid / valid / revert | PASS (taken-error UNTESTABLE) | qa2-05-invalid-digit-start.png (`9abc`: Save disabled, always-on helper text); qa2-05-usertag-valid.png (Save enabled); qa2-05-profile-new-usertag.png (@justin94qa on My Profile, DB matches); qa2-05-profile-reverted.png (@justin94test) |
+| 6 | Session survives force-stop → cold start | PASS | qa2-06-cold-relaunch.png (Home with avatar, no sign-in) |
+| 7 | /debug opens and works | PASS | qa2-07-debug.png, qa2-07-debug-check.png ("Supabase: connected") |
+| 8 | Standards-pass regression | FAIL (1 Bug) | qa2-08-profile.png, qa2-03-edit-idle.png, qa2-06-cold-relaunch.png vs build-06/bug1-profile-settings-chip.png, build-06/home.png, build-06/bug1-tabbar.png, build-07/edit-idle.png |
+| 9 | Logcat | PASS, no crashes (2 error-level messages listed below) | `logcat -b crash` empty |
+
+### Bug
+**Build 7 · Bug 3 — Poppins headings now render in the system sans-serif (standards-pass regression)**
+- Steps: open Profile tab, open Edit profile.
+- Expected (DESIGN.md §1.5: `subhead`/`title`/`display` = Poppins 700/800): "My Profile", "Justin Masiga", "Edit profile" in geometric Poppins.
+- Actual: they render in a Roboto/Inter-like bold. Before: `build-06/bug1-profile-settings-chip.png` ("My Profile", "Justin Masiga") and `build-07/edit-idle.png` ("Edit profile") are Poppins. Now: `qa2-08-profile.png`, `qa2-03-edit-idle.png`. Body text (Inter) is unchanged. Fonts are still loaded in `_layout.tsx` (`Poppins_700Bold`, `Poppins_800ExtraBold`), and `tokens.ts` `type.title` etc. set both `fontFamily: "Poppins_800ExtraBold"` and `fontWeight: "800"`. Unconfirmed guess for Ruby: on Android a `fontWeight` next to a custom family can bypass the custom file — check with the weights removed. Commits touching tokens: 31779cf, 7a955e2 (Standards).
+
+### Other design differences vs earlier evidence (no other bug)
+- Vertical layout shifted up: My Profile header title 157→153, avatar top 272→263, "Edit profile" row 851→820 (display px, 900 wide); Edit profile: title 154→148, avatar 265→249, buttons 915→899. Header no longer overlaps the status bar; no clipped text. Consistent with the safe-area change; Ruby to confirm it is intended.
+- Settings chip on Profile now has a bordered chip (matches Build 6 Bug 1 fix). Tab bar colours pixel-identical to Build 6 Bug 1 fix (30,26,38).
+- Uploading state is a small spinner over the dimmed old photo, not the DESIGN.md determinate ring with a centred percentage. Not asked in this QA; Ruby judge (supabase-js has no upload progress event, per Build 7 log).
+
+### Observations for Ruby (not asserted as bugs)
+1. Race: qa2-01-race-save-tapped-before-upload-state.png. If Save is tapped in the ~0.2 s after the crop closes and before "Uploading photo…" appears, Save is still enabled; the save went through ("Saving"), the screen closed, and the picked photo was silently never uploaded (DB `avatar_url` unchanged, no new object, no error). Too fast for a human but a real window.
+2. One upload out of 5 (the first one, under emulator `network speed gsm`) silently did nothing: crop closed, screen stayed idle ("Tap to change photo"), no spinner, no error, no object created, DB unchanged, even after restoring the network. Not reproduced in 4 later attempts (including one under gsm throttle), so cause unknown. Screenshots of it: qa2-01-uploading-a/b/c.png show the idle screen; qa2-01-after-restore.png.
+3. Debug screen (qa2-07-debug.png) is a light unstyled page; status-bar icons/clock are white on near-white and hard to read.
+
+### Logcat (exact text, package com.tsujintsujin.perchable, *:E)
+- `E unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Loading from 10.0.2.2:8081…` and `... message: Reloading...` (at each dev-client launch, 4 lines).
+- `E FrameTracker: force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@1@com.tsujintsujin.perchable>` / `J<IME_INSETS_HIDE_ANIMATION::1@1@com.tsujintsujin.perchable>` (6 lines, on keyboard show/hide).
+- W-level (not errors): `ViewManagerPropertyUpdater: Could not find generated setter for class io.sentry.react.RNSentryOnDrawReporterManager` / `RNSentryReplayMaskManager` / `RNSentryReplayUnmaskManager`.
+- No FATAL EXCEPTION, no JS red screen, no Metro warnings.
+
+### UNTESTABLE
+- "That usertag is already taken." copy: only one profile exists, so no second account to collide with. Covered in the earlier QA section 3; Justin can check with a second Google account.
+
+### Verdict (QA 2)
+PARTIAL — all functional items (1-7, 9) pass with DB/Storage proof; item 8 fails on 1 Bug (Build 7 · Bug 3, heading font).

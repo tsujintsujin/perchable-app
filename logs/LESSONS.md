@@ -58,3 +58,9 @@ Handle each one up front; say in the Build log how (or "n/a").
       library path that replaces it and prove it can't hang when *our* code
       throws. supabase-js never fires INITIAL_SESSION if storage rejects —
       storage adapters must never reject. (B7 Bug 2)
+- [ ] Android custom fonts: text styles carry `fontFamily` only — a
+      `fontWeight` next to a single-weight family (Poppins_800ExtraBold)
+      silently falls back to Roboto. Check fonts on the emulator after any
+      style refactor. (B7 Bug 3, standards pass)
+- [ ] "Busy" state starts the moment the user's action is committed (picker
+      returned), not after later async prep (resize) — any gap re-enables Save. (B7 Bug 3)
