@@ -7,6 +7,12 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-
  * `findBy*` were already used after the press (Build 5 · Bug 1). */
 const flushMicrotasks = () => new Promise((resolve) => setTimeout(resolve, 0));
 
+// The Toast reads safe-area insets; no <SafeAreaProvider> in the test tree, and SafeAreaView is unused here.
+jest.mock("react-native-safe-area-context", () => ({
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+  SafeAreaView: jest.requireActual("react-native").View,
+}));
+
 // Jest doesn't run Expo's .env → process.env.EXPO_PUBLIC_* inlining (that's
 // a Metro/CLI-time step), so signInWithGoogle's own env read needs a stand-in
 // here to match what a real build always has set.
@@ -40,6 +46,7 @@ const mockCaptureException = jest.fn();
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: (...args: unknown[]) => mockCaptureException(...args) } }));
 
 import SignIn from "@/app/(auth)/sign-in";
+import { markAccountDeleted } from "@/modules/auth/accountDeletedNotice";
 
 const ERROR_TEXT = "⚠ Couldn't sign in. Check your connection and try again.";
 
@@ -96,5 +103,26 @@ describe("Sign-in screen", () => {
 
     expect(screen.getByText(ERROR_TEXT)).toBeTruthy();
     expect(mockCaptureException).not.toHaveBeenCalled();
+  });
+
+  it("shows no deleted-account toast on a normal launch", async () => {
+    await render(<SignIn />);
+    expect(screen.queryByText("✓ Your account was deleted.")).toBeNull();
+  });
+
+  it("shows the account-deleted toast once after a deletion, then it auto-dismisses", async () => {
+    markAccountDeleted();
+    const view = await render(<SignIn />);
+    expect(screen.getByText("✓ Your account was deleted.")).toBeTruthy();
+
+    // Real timers: the toast's 2.5s auto-dismiss is what is under test.
+    await waitFor(() => expect(screen.queryByText("✓ Your account was deleted.")).toBeNull(), {
+      timeout: 4000,
+    });
+
+    // A later visit to sign-in must not repeat it.
+    await view.unmount();
+    await render(<SignIn />);
+    expect(screen.queryByText("✓ Your account was deleted.")).toBeNull();
   });
 });

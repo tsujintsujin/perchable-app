@@ -13,9 +13,18 @@ jest.mock("expo-router", () => ({
 
 const mockSignOut = jest.fn();
 let mockIsSigningOut = false;
-jest.mock("@/modules/auth", () => ({
-  useSignOut: () => ({ signOut: mockSignOut, isSigningOut: mockIsSigningOut }),
-}));
+jest.mock("@/modules/auth", () => {
+  const { Pressable, Text } = jest.requireActual("react-native");
+  return {
+    useSignOut: () => ({ signOut: mockSignOut, isSigningOut: mockIsSigningOut }),
+    // Stand-in for the real sheet (covered by its own test): visible only while mounted.
+    DeleteAccountSheet: ({ onClose }: { onClose: () => void }) => (
+      <Pressable accessibilityRole="button" accessibilityLabel="close-sheet" onPress={onClose}>
+        <Text>sheet-open</Text>
+      </Pressable>
+    ),
+  };
+});
 
 import ProfileSettings from "@/app/(tabs)/profile/settings";
 
@@ -27,7 +36,7 @@ describe("Settings screen", () => {
     mockIsSigningOut = false;
   });
 
-  it("shows the Account rows, About with the verbatim TMDB sentence, and no Danger zone", async () => {
+  it("shows the Account rows, About with the verbatim TMDB sentence, and the Danger zone", async () => {
     await render(<ProfileSettings />);
 
     expect(screen.getByText("Settings")).toBeTruthy();
@@ -40,8 +49,23 @@ describe("Settings screen", () => {
         "This application uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.",
       ),
     ).toBeTruthy();
-    expect(screen.queryByText("Danger zone")).toBeNull();
-    expect(screen.queryByText(/Delete my account/)).toBeNull();
+    expect(screen.getByText("Danger zone")).toBeTruthy();
+    expect(screen.getByText("🗑 Delete my account")).toBeTruthy();
+  });
+
+  it("opens the delete sheet from the Danger zone row and closes it again, deleting nothing itself", async () => {
+    await render(<ProfileSettings />);
+    expect(screen.queryByText("sheet-open")).toBeNull();
+
+    await act(async () => {
+      fireEvent.press(screen.getByText("🗑 Delete my account"));
+    });
+    expect(screen.getByText("sheet-open")).toBeTruthy();
+
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText("close-sheet"));
+    });
+    expect(screen.queryByText("sheet-open")).toBeNull();
   });
 
   it("calls signOut when the Sign out row is tapped", async () => {

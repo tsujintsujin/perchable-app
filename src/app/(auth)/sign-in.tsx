@@ -1,17 +1,32 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { ErrorCard } from "@/ui/ErrorCard";
+import { Toast, useToast } from "@/ui/Toast";
 import { colors, spacing, type } from "@/ui/tokens";
-import { GoogleSignInButton, GoogleSignInCancelledError, signInWithGoogle } from "@/modules/auth";
+import {
+  consumeAccountDeleted,
+  GoogleSignInButton,
+  GoogleSignInCancelledError,
+  signInWithGoogle,
+} from "@/modules/auth";
 import { Sentry } from "@/lib/sentry";
+
+// DESIGN.md "Build 9" copy table: shown once after an account deletion.
+const ACCOUNT_DELETED_MESSAGE = "✓ Your account was deleted.";
 
 type Status = { state: "idle" } | { state: "signing-in" } | { state: "error" };
 
 /** Google sign-in screen — the route guard renders it only when signed out. */
 export default function SignIn() {
   const [status, setStatus] = useState<Status>({ state: "idle" });
+  const { message: toastMessage, show: showToast } = useToast();
+
+  // Announces a just-deleted account once on arrival.
+  useEffect(() => {
+    if (consumeAccountDeleted()) showToast(ACCOUNT_DELETED_MESSAGE);
+  }, [showToast]);
 
   const handlePress = useCallback(async () => {
     setStatus({ state: "signing-in" });
@@ -49,6 +64,7 @@ export default function SignIn() {
           <GoogleSignInButton loading={isSigningIn} onPress={handlePress} />
         </View>
       </SafeAreaView>
+      <Toast message={toastMessage} variant="info" />
     </View>
   );
 }

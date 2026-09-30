@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -18,7 +19,7 @@ import {
   tmdbChip,
   type,
 } from "@/ui/tokens";
-import { useSignOut } from "@/modules/auth";
+import { DeleteAccountSheet, useSignOut } from "@/modules/auth";
 
 // DESIGN.md §6: required TMDB attribution, verbatim.
 const TMDB_ATTRIBUTION =
@@ -30,11 +31,12 @@ const backHitSlop = (size.minTouch - size.iconButton) / 2;
 // Shown when the not-yet-built comments setting is tapped (DESIGN.md §5 pattern).
 const COMMENTS_COMING_SOON = "Comment settings are coming soon.";
 
-/** Settings screen: Account (edit profile, comments setting, sign out) and About (TMDB attribution). */
+/** Settings screen: Account (edit profile, comments setting, sign out), About (TMDB attribution) and the Danger zone. */
 export default function ProfileSettings() {
   const insets = useSafeAreaInsets();
   const { signOut, isSigningOut } = useSignOut();
   const toast = useToast();
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   return (
     <View style={styles.root}>
@@ -81,10 +83,17 @@ export default function ProfileSettings() {
           <Text style={styles.attribution}>{TMDB_ATTRIBUTION}</Text>
         </View>
 
+        <Text style={styles.sectionLabel}>Danger zone</Text>
+        <ListRow danger onPress={() => setDeleteOpen(true)}>
+          <Text style={styles.dangerLabel}>🗑 Delete my account</Text>
+        </ListRow>
+
         {Constants.expoConfig?.version ? (
           <Text style={styles.version}>Perchable v{Constants.expoConfig.version}</Text>
         ) : null}
       </ScrollView>
+
+      {deleteOpen && <DeleteAccountSheet onClose={() => setDeleteOpen(false)} />}
 
       <Toast message={toast.message} variant="coming-soon" />
     </View>
@@ -123,6 +132,7 @@ const styles = StyleSheet.create({
   },
   rows: { gap: spacing[12] },
   rowLabel: { ...type.body, color: colors.text.primary },
+  dangerLabel: { ...type.bodyStrong, color: colors.danger },
   rowValue: { fontFamily: type.bodyStrong.fontFamily, color: colors.accent.gold },
 
   // About card with the TMDB chip and the required attribution sentence.

@@ -37,3 +37,111 @@ delete-account` only — never push config.toml.
 
 Plus `logs/LESSONS.md` checklist and the spec-trace table (DESIGN.md "Build 9" — Danger
 zone, delete-confirmation, deleting, post-delete landing, copy table) before commit.
+
+---
+
+# Phase 1-2 - Bella
+
+Base SHA 0f66e82. Function commit `5f4893e`; app commit in the report.
+
+## What was built and why
+- **Edge Function** (`supabase/functions/delete-account/`): the storage cleanup moved to
+  `cleanup.ts` (`emptyFolder(bucket, folder)`), free of Deno APIs so Jest can import it.
+  It lists with an explicit `limit: 100, offset: 0`, removes what it got, and repeats until a
+  listing comes back empty. Offset stays 0 because removed objects drop out of the next page.
+  A 100-round cap throws instead of looping forever if removal silently does nothing.
+  `index.ts` still takes the uid only from the JWT and returns generic error bodies. **Not deployed.**
+- **App**: `api/deleteAccount.ts` (invoke; 401 = already gone = resolves; network failure =
+  `DeleteAccountOfflineError`; anything else rethrown), `hooks/useDeleteAccount.ts` (one run at a
+  time, then the sign-out path), `components/DeleteAccountSheet.tsx` (the sheet), and
+  `accountDeletedNotice.ts` (the toast signal). The route only composes: a "Danger zone" row
+  and `{open && <DeleteAccountSheet/>}`.
+- **Success path**: `markAccountDeleted()`, then the existing `signOut()` (Supabase local scope + Google
+  `signOut`, so the next sign-in shows the picker), then `clearSession()` (the Build 8 latch path).
+  Local-scope Supabase sign-out tolerates the user being gone (the library ignores 401/403/404 there).
+- **Toast signal: a module-level flag**, not a route param. The auth gate moves the user to
+  sign-in by itself (no router call exists to carry a param). Sign-in consumes it in a mount
+  effect, so it shows once.
+- **Sheet mount = open**: Settings mounts the sheet to open it and unmounts to close, so typed text and
+  the error reset every time. Cost: no slide-out animation on close.
+- **Shared UI changes**: `GlassCard` gets `tier="sheet"` (token already existed); `ListRow` gets a
+  `danger` prop; `Button` `destructive` is now a solid danger fill with dark text (the board's
+  confirm button; nothing used the old outlined one); new tokens: `surface.dangerTint`,
+  `overlay.scrim`, `size.dragHandle`, `dangerGlow`, `letterSpacing.input`.
+
+## Flagged for the Manager
+1. **Error copy (not in DESIGN.md):** "⚠ Couldn't delete your account. Check your connection and try again."
+   modelled on the sign-in failure card. Used for offline and server errors alike.
+2. **401 caveat:** a 401 also occurs if the caller's access token is expired/invalid while the
+   account still exists (e.g. refresh failed). Per the brief the app then treats it as done: local
+   sign-out, "deleted" toast, account not actually deleted. Worth a decision.
+3. **Drag-to-dismiss** is not implemented; the handle bar is decorative. Dismiss = backdrop tap,
+   Android back, Cancel (all blocked while deleting).
+4. **Android glow:** RN draws no coloured shadow on Android, so the glow shows on iOS only; the sheet
+   border uses `border.danger` so it still reads as dangerous. Sheet fill is opaque `bg.elevatedFlat`
+   (no real blur on Android, per LESSONS).
+5. **Keyboard:** `KeyboardAvoidingView behavior="padding"` inside the Modal. Unverified on device
+   (Settings unreachable while signed out).
+6. Row/confirm text uses `type.bodyStrong` (Inter 600) for "weight 700"; the title uses `type.subhead`
+   (Poppins 700) for the board's 800 at 18px: nearest tokens, no fontWeight.
+7. `verify_jwt`: `supabase/config.toml` has no entry for this function, so the platform default (on)
+   applies. Worth confirming at deploy.
+8. Sentry `environment` is set once in `initSentry`, so every captured error carries it.
+
+## Manager: how to verify the function
+`npx jest __tests__/emptyFolder-test.ts` covers the loop (0, 1, 205 objects, list/remove errors, stuck
+folder). After deploy: upload more than 100 objects under `avatars/<test uid>/`, call the function with
+that user's JWT, confirm the folder is empty and a second call returns 401.
+
+## Failure-mode items -> handling -> test
+| # | Handling | Test |
+|---|---|---|
+| 1 | Confirm disabled unless `typed === "DELETE"`; Cancel closes, no call | DeleteAccountSheet-test (6 wrong inputs, exact, disabled tap, Cancel/backdrop/back) |
+| 2 | `inFlightRef` in hook; Button loading; Cancel disabled; backdrop and `onRequestClose` blocked while deleting | useDeleteAccount-test "two taps"; Sheet-test "while deleting" |
+| 3 | Offline -> `failed` -> ErrorCard, retry works, no Sentry, nothing cleared | useDeleteAccount-test offline+retry; deleteAccount-test offline; Sheet-test failure card |
+| 4 | Function: storage first then user, not-found = ok (unchanged). App: 401 = done | deleteAccount-test 401; 500 rejects |
+| 5 | `emptyFolder` loops until empty | emptyFolder-test (more than one page) |
+| 6 | mark -> signOut (Supabase local + Google) -> clearSession; toast once on sign-in | useDeleteAccount-test order; sign-in-test toast once; accountDeletedNotice-test |
+| 7 | `mountedRef` guards setState | useDeleteAccount-test unmount mid-delete |
+| 8 | Fresh user/profile is server behaviour | UNTESTABLE in jest: Queenie on device |
+| 9 | Function unchanged in auth: uid from `getUser(token)` only; generic errors; no client path takes a uid | review of index.ts |
+| 10 | Unexpected errors -> `Sentry.captureException`; offline not | useDeleteAccount-test Sentry / offline |
+
+## LESSONS checklist
+- Spec-trace: below. Copy verbatim: `COPY` table in the sheet; Button text via `label`/`loadingLabel`.
+- Async failure/cancel/double-tap/unmount: items 2, 3, 7. Sentry only unexpected: item 10.
+- Server input validation / generic errors: function reads no body. Orphans: item 5.
+- act(): 0 in jest output. Android blur: flat opaque fill. Tokens only: new tokens added, no literals in screens.
+- Safe area: sheet bottom padding from `useSafeAreaInsets`. Shared state: `useAuthSession`. Types: n/a (no table query).
+- Comments 1-2 lines, no history. Other people's files: `discord_modal.png` left untracked.
+- Fonts: no `fontWeight`. Busy state starts at the tap (`setIsDeleting` before the await). Storage adapter: untouched.
+- Section 7 standing rules: TMDB attribution still on Settings (settings-test). Dev-client corner: sheet is a modal, header unchanged.
+
+## Spec-trace (DESIGN.md "Build 9")
+| Spec line | Where |
+|---|---|
+| Sign out row (Build 8) | settings.tsx ListRow "🚪 Sign out" |
+| Danger zone section below About | settings.tsx:86 |
+| "🗑 Delete my account" row, tint fill/border, danger text | settings.tsx:87-89, 135; ListRow.tsx `danger`; tokens `surface.dangerTint`, `border.danger` |
+| Row opens sheet, deletes nothing | settings.tsx `setDeleteOpen(true)` |
+| Sheet tier `sheet` GlassCard, drag handle | DeleteAccountSheet.tsx:71-75, styles.handle |
+| Danger glow | DeleteAccountSheet.tsx:69 styles.glow, `dangerGlow` token |
+| Title "Delete your account?" danger colour | COPY.title (:25), styles.title (:154) |
+| Intro "This permanently deletes:" | COPY.listIntro, :83 |
+| Four bullet items, body/primary | COPY.listItems, :84 |
+| Irreversibility note, secondary | COPY.irreversible, :87 |
+| Prompt "Type DELETE to confirm:" | COPY.prompt, :88 |
+| Exact case-sensitive gate | :117 `typed !== DELETE_CONFIRM_WORD` |
+| Confirm "Delete my account", destructive | COPY.confirm, :113 |
+| Cancel secondary-glass dismisses | COPY.cancel, :106-110 |
+| Deleting status line | COPY.status, :80 |
+| Confirm "Deleting…" spinner, Cancel disabled | COPY.confirming :114, `loading` :118, Cancel `disabled` :109 |
+| Not dismissable while deleting | `dismiss` :55, Modal `onRequestClose` :60 |
+| Post-delete: sign-in idle + info Toast, once, auto-dismiss | sign-in.tsx:17, 26-29, 67 |
+| Toast "✓ Your account was deleted." | sign-in.tsx:17 |
+
+## Gates
+- `npx tsc --noEmit`: clean. `npx expo lint`: clean.
+- `npx jest > out.txt 2>&1`: 19 suites, 110 tests passed (77 before, 33 new); 0 "act(", 0 console warnings.
+- Device (td_emu): own Metro started and stopped; app bundled (2002 modules) and launched to the
+  sign-in screen, no red screen; 8081 confirmed free. Settings and the sheet are not reachable while signed out.

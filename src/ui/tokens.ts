@@ -35,9 +35,11 @@ export const colors = {
   surface: {
     input: "rgba(76,29,149,0.28)",
     chip: "rgba(76,29,149,0.3)",
+    dangerTint: "rgba(255,138,138,0.1)",
   },
   overlay: {
     spinnerTrack: "rgba(255,255,255,0.3)",
+    scrim: "rgba(18,16,22,0.6)",
   },
 } as const;
 
@@ -109,6 +111,16 @@ export const size = {
   iconButton: 36,
   /** Minimum touch target side (dp). */
   minTouch: 48,
+  /** Bottom-sheet drag-handle bar. */
+  dragHandle: { width: 40, height: 5 },
+} as const;
+
+/** Danger-tinted glow behind the delete-confirmation sheet (iOS shadow; Android draws none). */
+export const dangerGlow = {
+  shadowColor: colors.danger,
+  shadowOpacity: 0.15,
+  shadowRadius: 40,
+  shadowOffset: { width: 0, height: 0 },
 } as const;
 
 /** TMDB logo chip on Settings > About, drawn as text: no logo asset is bundled. */
@@ -127,6 +139,8 @@ export const opacity = {
 /** Letter spacing for uppercase section labels. */
 export const letterSpacing = {
   label: 1,
+  /** Spaced-out characters in the type-DELETE input. */
+  input: 2,
 } as const;
 
 /** Line-height multipliers, applied to a type token's fontSize. */

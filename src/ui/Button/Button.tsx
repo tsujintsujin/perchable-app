@@ -108,7 +108,7 @@ const variantStyles: Record<Variant, { container: object; label: object }> = {
     label: { color: colors.text.secondary },
   },
   destructive: {
-    container: { backgroundColor: "transparent", borderWidth: 1, borderColor: colors.danger },
-    label: { color: colors.danger },
+    container: { backgroundColor: colors.danger },
+    label: { color: colors.text.onGold },
   },
 };

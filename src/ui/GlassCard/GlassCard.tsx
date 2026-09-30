@@ -3,7 +3,7 @@ import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle }
 import { BlurView } from "expo-blur";
 import { glass, opacity } from "@/ui/tokens";
 
-type Tier = "card" | "hero" | "chip";
+type Tier = "card" | "hero" | "sheet" | "chip";
 
 type Props = {
   tier?: Tier;
