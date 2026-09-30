@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { signOut } from "../api/signOut";
 import { useAuthSession } from "../AuthProvider";
 
-/** Sign-out action for a screen: one run at a time, and the app ends up signed out even when the session store can't be cleared. */
+/** Sign-out action for a screen: one run at a time.
+ * The app ends up signed out even if the session store can't be cleared. */
 export function useSignOut() {
   const { clearSession } = useAuthSession();
   const [isSigningOut, setIsSigningOut] = useState(false);

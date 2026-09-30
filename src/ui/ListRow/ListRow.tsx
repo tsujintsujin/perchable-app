@@ -13,7 +13,7 @@ type Props = {
 /** Tappable glass list row (DESIGN.md "card list-row"): content on the left, spinner while busy. */
 export function ListRow({ onPress, busy = false, children }: Props) {
   return (
-    <GlassCard tier="card" onPress={onPress} disabled={busy} style={styles.row}>
+    <GlassCard tier="card" onPress={onPress} disabled={busy} busy={busy} style={styles.row}>
       <View style={styles.content}>
         {children}
         {busy && <ActivityIndicator color={colors.text.secondary} />}

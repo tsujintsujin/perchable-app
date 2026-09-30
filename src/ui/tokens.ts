@@ -107,6 +107,8 @@ export const iconSize = {
 /** Square icon-button side (settings chip, back chip). */
 export const size = {
   iconButton: 36,
+  /** Minimum touch target side (dp). */
+  minTouch: 48,
 } as const;
 
 /** TMDB logo chip on Settings > About, drawn as text: no logo asset is bundled. */

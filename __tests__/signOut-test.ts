@@ -12,14 +12,13 @@ jest.mock("@react-native-google-signin/google-signin", () => ({
 }));
 
 const mockCaptureException = jest.fn();
-const mockSetUser = jest.fn();
 jest.mock("@/lib/sentry", () => ({
   Sentry: {
     captureException: (...args: unknown[]) => mockCaptureException(...args),
-    setUser: (...args: unknown[]) => mockSetUser(...args),
   },
 }));
 
+import { AuthRetryableFetchError, AuthApiError } from "@supabase/supabase-js";
 import { signOut } from "@/modules/auth/api/signOut";
 
 describe("signOut", () => {
@@ -27,7 +26,6 @@ describe("signOut", () => {
     mockSupabaseSignOut.mockReset().mockResolvedValue({ error: null });
     mockGoogleSignOut.mockReset().mockResolvedValue(null);
     mockCaptureException.mockReset();
-    mockSetUser.mockReset();
   });
 
   it("signs out of Supabase (this device only) and Google, and reports nothing on success", async () => {
@@ -38,19 +36,24 @@ describe("signOut", () => {
     expect(mockCaptureException).not.toHaveBeenCalled();
   });
 
-  it("clears the Sentry user", async () => {
-    await signOut();
-    expect(mockSetUser).toHaveBeenCalledWith(null);
-  });
-
-  it("still signs out of Google when Supabase fails on the network, and reports it", async () => {
-    const offline = new Error("Network request failed");
-    mockSupabaseSignOut.mockResolvedValue({ error: offline });
+  it("still signs out of Google when Supabase is offline, without reporting it", async () => {
+    mockSupabaseSignOut.mockResolvedValue({
+      error: new AuthRetryableFetchError("Network request failed", 0),
+    });
 
     await expect(signOut()).resolves.toBeUndefined();
 
     expect(mockGoogleSignOut).toHaveBeenCalledTimes(1);
-    expect(mockCaptureException).toHaveBeenCalledWith(offline);
+    expect(mockCaptureException).not.toHaveBeenCalled();
+  });
+
+  it("reports other Supabase errors", async () => {
+    const serverError = new AuthApiError("Server error", 500, "unexpected_failure");
+    mockSupabaseSignOut.mockResolvedValue({ error: serverError });
+
+    await expect(signOut()).resolves.toBeUndefined();
+
+    expect(mockCaptureException).toHaveBeenCalledWith(serverError);
   });
 
   it("still signs out of Supabase when Google fails, and reports it", async () => {

@@ -13,11 +13,16 @@ type Props = {
   onPress?: () => void;
   /** Dims the card and ignores taps (e.g. while its action is running). */
   disabled?: boolean;
+  /** Announced to screen readers as busy (a running action). */
+  busy?: boolean;
+  accessibilityLabel?: string;
+  /** Extra touch area around the card, in dp. */
+  hitSlop?: number;
   style?: StyleProp<ViewStyle>;
   children: ReactNode;
 };
 
-export function GlassCard({ tier = "card", blur = false, onPress, disabled = false, style, children }: Props) {
+export function GlassCard({ tier = "card", blur = false, onPress, disabled = false, busy = false, accessibilityLabel, hitSlop, style, children }: Props) {
   const t = glass[tier];
   // `glass.chip` has no borderColor in tokens.ts; every other tier does.
   // `in` narrows `t`'s union type directly, unlike a separate tier check.
@@ -54,7 +59,9 @@ export function GlassCard({ tier = "card", blur = false, onPress, disabled = fal
       onPress={onPress}
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityState={{ disabled }}
+      accessibilityLabel={accessibilityLabel}
+      hitSlop={hitSlop}
+      accessibilityState={{ disabled, busy }}
       style={({ pressed }) => [
         baseStyle,
         pressed && !disabled && styles.pressed,

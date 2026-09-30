@@ -18,7 +18,13 @@ export function Toast({ message, variant = "info" }: Props) {
   const insets = useSafeAreaInsets();
   if (message === null) return null;
   return (
-    <View pointerEvents="none" style={[styles.wrap, { bottom: insets.bottom + spacing[24] }]}>
+    <View
+      pointerEvents="none"
+      accessible
+      accessibilityRole="alert"
+      accessibilityLiveRegion="polite"
+      style={[styles.wrap, { bottom: insets.bottom + spacing[24] }]}
+    >
       <View style={[styles.toast, variant === "error" && styles.toastError]}>
         <Text style={[styles.text, variant === "error" && styles.textError]}>{message}</Text>
       </View>

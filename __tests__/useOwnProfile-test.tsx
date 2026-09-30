@@ -127,4 +127,22 @@ describe("useOwnProfile", () => {
     expect(state).toContain('"loading"');
     expect(state).not.toContain("Justin");
   });
+
+  it("shows loading, not the previous user's data, when the session switches straight to another user", async () => {
+    mockUseAuthSession.mockReturnValue({ session: { user: { id: "u1" } } });
+    mockGetOwnProfile.mockResolvedValueOnce(PROFILE);
+    const { rerender } = await render(<Harness />);
+    await waitFor(() => expect(screen.getByTestId("state").props.children).toContain("Justin"));
+
+    // u2's fetch never resolves during the assertion.
+    mockGetOwnProfile.mockReturnValueOnce(new Promise(() => {}));
+    mockUseAuthSession.mockReturnValue({ session: { user: { id: "u2" } } });
+    await act(async () => {
+      await rerender(<Harness />);
+    });
+
+    const state = screen.getByTestId("state").props.children;
+    expect(state).toContain('"loading"');
+    expect(state).not.toContain("Justin");
+  });
 });

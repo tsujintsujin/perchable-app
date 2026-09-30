@@ -4,9 +4,11 @@ import type { Session } from "@supabase/supabase-js";
 
 let mockEmit: (event: string, session: Session | null) => void = () => {};
 const mockUnsubscribe = jest.fn();
+const mockStopAutoRefresh = jest.fn();
 jest.mock("@/lib/supabase", () => ({
   supabase: {
     auth: {
+      stopAutoRefresh: () => mockStopAutoRefresh(),
       onAuthStateChange: (cb: typeof mockEmit) => {
         mockEmit = cb;
         return { data: { subscription: { unsubscribe: mockUnsubscribe } } };
@@ -33,7 +35,10 @@ function Probe() {
 const state = () => screen.getByTestId("state").props.children;
 
 describe("AuthProvider", () => {
-  beforeEach(() => mockUnsubscribe.mockReset());
+  beforeEach(() => {
+    mockUnsubscribe.mockReset();
+    mockStopAutoRefresh.mockReset();
+  });
 
   it("is loading until the listener fires", async () => {
     await render(
@@ -87,5 +92,39 @@ describe("AuthProvider", () => {
       fireEvent.press(screen.getByLabelText("clear"));
     });
     expect(state()).toBe('{"token":null,"isLoading":false}');
+  });
+
+  it("stops auto-refresh and ignores a later TOKEN_REFRESHED after clearSession", async () => {
+    await render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>,
+    );
+    await act(async () => mockEmit("INITIAL_SESSION", sessionB));
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText("clear"));
+    });
+    expect(mockStopAutoRefresh).toHaveBeenCalledTimes(1);
+
+    await act(async () => mockEmit("TOKEN_REFRESHED", sessionB));
+    expect(state()).toBe('{"token":null,"isLoading":false}');
+  });
+
+  it("accepts a real SIGNED_IN after clearSession, and events flow again afterwards", async () => {
+    const sessionC = { access_token: "C" } as Session;
+    await render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>,
+    );
+    await act(async () => mockEmit("INITIAL_SESSION", sessionB));
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText("clear"));
+    });
+    await act(async () => mockEmit("SIGNED_IN", sessionB));
+    expect(state()).toBe('{"token":"B","isLoading":false}');
+
+    await act(async () => mockEmit("TOKEN_REFRESHED", sessionC));
+    expect(state()).toBe('{"token":"C","isLoading":false}');
   });
 });

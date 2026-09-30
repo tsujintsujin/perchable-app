@@ -24,6 +24,9 @@ import { useSignOut } from "@/modules/auth";
 const TMDB_ATTRIBUTION =
   "This application uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.";
 
+// Grows the back chip's touch area to the minimum target size.
+const backHitSlop = (size.minTouch - size.iconButton) / 2;
+
 // Shown when the not-yet-built comments setting is tapped (DESIGN.md §5 pattern).
 const COMMENTS_COMING_SOON = "Comment settings are coming soon.";
 
@@ -37,7 +40,13 @@ export default function ProfileSettings() {
     <View style={styles.root}>
       <GlassBackdrop blobs={["purple", "gold"]} />
       <View style={[styles.header, { paddingTop: insets.top }]}>
-        <GlassCard tier="chip" onPress={() => router.back()} style={styles.backChip}>
+        <GlassCard
+          tier="chip"
+          onPress={() => router.back()}
+          accessibilityLabel="Back"
+          hitSlop={backHitSlop}
+          style={styles.backChip}
+        >
           <Text style={styles.backIcon}>←</Text>
         </GlassCard>
         <Text style={styles.headerTitle}>Settings</Text>

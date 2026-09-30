@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
@@ -17,10 +17,17 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  // Ref, not state: read inside the auth listener. Set by clearSession; only SIGNED_IN lifts it.
+  const clearedRef = useRef(false);
 
   // Follows the auth listener only; its INITIAL_SESSION event (null when signed out) ends loading.
   useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
+      // After a forced clear, a background token refresh must not sign the user back in.
+      if (clearedRef.current) {
+        if (event !== "SIGNED_IN") return;
+        clearedRef.current = false;
+      }
       setSession(newSession);
       setIsLoading(false);
     });
@@ -28,8 +35,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // Sets the session to null without waiting for a SIGNED_OUT event.
-  const clearSession = useCallback(() => setSession(null), []);
+  // Sets the session to null now, stops token refresh, and ignores auth events until a real sign-in.
+  const clearSession = useCallback(() => {
+    clearedRef.current = true;
+    supabase.auth.stopAutoRefresh();
+    setSession(null);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ session, isLoading, clearSession }}>

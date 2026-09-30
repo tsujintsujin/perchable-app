@@ -62,6 +62,17 @@ describe("Settings screen", () => {
     expect(screen.getByRole("button", { name: /Sign out/ })).toBeDisabled();
   });
 
+  it("labels the back chip for screen readers", async () => {
+    await render(<ProfileSettings />);
+    expect(screen.getByRole("button", { name: "Back" })).toBeTruthy();
+  });
+
+  it("marks the Sign out row busy while signing out", async () => {
+    mockIsSigningOut = true;
+    await render(<ProfileSettings />);
+    expect(screen.getByRole("button", { name: /Sign out/ })).toBeBusy();
+  });
+
   it("opens Edit profile from the first row and goes back from the header chip", async () => {
     await render(<ProfileSettings />);
     await act(async () => {
@@ -79,11 +90,10 @@ describe("Settings screen", () => {
     expect(screen.queryByText("Comment settings are coming soon.")).toBeNull();
 
     await act(async () => {
-
       fireEvent.press(screen.getByText(/Comments on my collection/));
-
     });
     expect(screen.getByText("Comment settings are coming soon.")).toBeTruthy();
+    expect(screen.getByRole("alert")).toBeTruthy();
 
     // Real timers: the toast's auto-dismiss (2.5s) is what is under test.
     await waitFor(() => expect(screen.queryByText("Comment settings are coming soon.")).toBeNull(), {
