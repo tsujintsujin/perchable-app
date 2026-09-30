@@ -1,6 +1,6 @@
 # Build 8 — Sign out (Module: Auth)
 
-Base SHA: (recorded at Phase 1 start)
+Base SHA: fd74252 (recorded 2026-09-30, Phase 1 start)
 
 ## Failure-mode list (Manager, before Phase 1) — each is a Done-means line + a test
 1. **Offline when tapping Sign out** — `supabase.auth.signOut()` can fail on

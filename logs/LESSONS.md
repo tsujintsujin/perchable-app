@@ -64,3 +64,7 @@ Handle each one up front; say in the Build log how (or "n/a").
       style refactor. (B7 Bug 3, standards pass)
 - [ ] "Busy" state starts the moment the user's action is committed (picker
       returned), not after later async prep (resize) — any gap re-enables Save. (B7 Bug 3)
+- [ ] DESIGN.md §7 "must render from Build N on" rules: the Build that first
+      makes the screen reachable builds them — TMDB attribution on Settings was
+      due from Build 3 and sat as a "Coming soon" placeholder through Build 7.
+      Queenie checks §7 standing rules every Build, not only the Build's own items.
