@@ -31,11 +31,13 @@ export const colors = {
     hairlineStrong: "rgba(214,196,233,0.30)",
     danger: "rgba(255,138,138,0.35)",
     dangerStrong: "rgba(255,138,138,0.5)",
+    gold: "#B8860B",
   },
   surface: {
     input: "rgba(76,29,149,0.28)",
     chip: "rgba(76,29,149,0.3)",
     dangerTint: "rgba(255,138,138,0.1)",
+    goldTint: "rgba(184,134,11,0.16)",
   },
   overlay: {
     spinnerTrack: "rgba(255,255,255,0.3)",
@@ -76,7 +78,9 @@ export const glass = {
 
 export const spacing = {
   4: 4,
+  6: 6,
   8: 8,
+  10: 10,
   12: 12,
   16: 16,
   20: 20,
@@ -120,6 +124,16 @@ export const size = {
   collectionGridMin: 96,
   /** Bottom-sheet drag-handle bar. */
   dragHandle: { width: 40, height: 5 },
+  /** Reason-row radio circle, its inner dot and its ring width. */
+  radio: 22,
+  radioDot: 10,
+  radioRing: 2,
+  /** Gold check badge on the "sent" / "blocked" sheet states. */
+  badge: 56,
+  /** Min height of the report "Something else" details box. */
+  detailsInput: 96,
+  /** Sheets never grow taller than this share of the screen; the body scrolls instead. */
+  sheetMaxHeightRatio: 0.9,
 } as const;
 
 /** Extra touch area that grows an icon button to the minimum touch target. */
@@ -129,6 +143,9 @@ export const iconButtonHitSlop = (size.minTouch - size.iconButton) / 2;
 export const shimmerBar = {
   name: { width: 160, height: 22 },
   line: { width: 120, height: 16 },
+  /** Blocked-users loading row: usertag line and Unblock button block. */
+  tag: { width: 80, height: 12 },
+  button: { width: 88, height: 48 },
 } as const;
 
 /** Danger-tinted glow behind the delete-confirmation sheet (iOS shadow; Android draws none). */
@@ -184,4 +201,6 @@ export const type = {
   title: { fontSize: 24, fontFamily: "Poppins_800ExtraBold" },
   display: { fontSize: 30, fontFamily: "Poppins_800ExtraBold" },
   hero: { fontSize: 38, fontFamily: "Poppins_800ExtraBold" },
+  /** Dev-only harness text. */
+  mono: { fontSize: 12, fontFamily: "monospace" },
 } as const;

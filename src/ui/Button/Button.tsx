@@ -14,6 +14,8 @@ type Props = {
    * "Save" idle but "Saving" while loading. Defaults to `label` for callers
    * that don't need the wording to change. */
   loadingLabel?: string;
+  /** Screen-reader name when it should say more than the visible label. Defaults to `label`. */
+  accessibilityLabel?: string;
   style?: object;
 };
 
@@ -25,6 +27,7 @@ export function Button({
   disabled = false,
   loading = false,
   loadingLabel = label,
+  accessibilityLabel = label,
   style,
 }: Props) {
   const [spin] = useState(() => new Animated.Value(0));
@@ -44,7 +47,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled: isDisabled }}
       onPress={onPress}
       disabled={isDisabled}

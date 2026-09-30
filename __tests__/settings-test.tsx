@@ -53,6 +53,22 @@ describe("Settings screen", () => {
     expect(screen.getByText("🗑 Delete my account")).toBeTruthy();
   });
 
+  it("lists the Account rows in order with Blocked users before Sign out, and that row opens the screen", async () => {
+    await render(<ProfileSettings />);
+    const labels = ["Edit profile photo / usertag", "Blocked users", "🚪 Sign out"];
+    const order = labels.map((l) => screen.getByText(l));
+    expect(screen.getByText(/Comments on my collection/)).toBeTruthy();
+    expect(screen.queryByText("Terms & community rules")).toBeNull();
+    // Rendered order follows the JSON tree order of the rows.
+    const flat = JSON.stringify(screen.toJSON());
+    const at = labels.map((l) => flat.indexOf(l));
+    expect(at).toEqual([...at].sort((a, b) => a - b));
+    expect(order).toHaveLength(3);
+
+    await act(async () => void fireEvent.press(screen.getByText("Blocked users")));
+    expect(mockPush).toHaveBeenCalledWith("/profile/blocked-users");
+  });
+
   it("opens the delete sheet from the Danger zone row and closes it again, deleting nothing itself", async () => {
     await render(<ProfileSettings />);
     expect(screen.queryByText("sheet-open")).toBeNull();

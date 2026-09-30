@@ -29,7 +29,7 @@ const TMDB_ATTRIBUTION =
 // Shown when the not-yet-built comments setting is tapped (DESIGN.md §5 pattern).
 const COMMENTS_COMING_SOON = "Comment settings are coming soon.";
 
-/** Settings screen: Account (edit profile, comments setting, sign out), About (TMDB attribution) and the Danger zone. */
+/** Settings screen: Account (edit profile, comments setting, blocked users, sign out), About (TMDB attribution) and the Danger zone. */
 export default function ProfileSettings() {
   const insets = useSafeAreaInsets();
   const { signOut, isSigningOut } = useSignOut();
@@ -64,6 +64,9 @@ export default function ProfileSettings() {
             <Text style={styles.rowLabel}>
               Comments on my collection: <Text style={styles.rowValue}>On</Text>
             </Text>
+          </ListRow>
+          <ListRow onPress={() => router.push("/profile/blocked-users")}>
+            <Text style={styles.rowLabel}>Blocked users</Text>
           </ListRow>
           <ListRow onPress={signOut} busy={isSigningOut}>
             <Text style={styles.rowLabel}>🚪 Sign out</Text>
