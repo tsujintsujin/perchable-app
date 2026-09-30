@@ -109,3 +109,13 @@ Note on 9: an avatar upload finishing after sign-out is already stale-guarded in
 
 ## Device evidence (`logs/evidence/build-08/`)
 bella-01-settings.png (Settings), bella-01b-toast.png (comments toast), bella-02-signed-out.png (after Sign out: sign-in screen), bella-03-relaunch.png (force-stop + relaunch: still sign-in). Did not sign back in.
+
+## Manager — Phase 1–2 check + decisions (2026-09-30)
+- Rerun at 83ff714: tsc clean, jest 70/70, 0 act()/console warnings (full output), lint clean,
+  no secret files in the commit. `bella-01-settings.png` read: Sign out row, verbatim TMDB
+  sentence, no Danger zone, gear zone clear.
+- Decisions on Bella's flags: TMDB chip 22×14 per board v6 (board newer than §6 prose);
+  About card fill per board; version footer reads app.json (board "v0.1" was placeholder);
+  Comments-row toast copy "Comment settings are coming soon." accepted.
+- For Build 9: an avatar upload finishing after sign-out can't delete its object (no
+  session) → possible orphan; Build 9's account deletion removes the whole avatars/<uid>/ folder.
