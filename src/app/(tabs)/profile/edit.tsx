@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Animated, Easing, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { Avatar } from "@/ui/Avatar";
 import { Button } from "@/ui/Button";
@@ -15,6 +15,8 @@ export default function EditProfile() {
   const profile = useOwnProfile();
   const loaded = profile.state === "loaded" ? profile.profile : undefined;
   const insets = useSafeAreaInsets();
+  // `focus=usertag` (sent by the profile chip) raises the keyboard on the usertag field.
+  const { focus } = useLocalSearchParams<{ focus?: string }>();
   const avatarUpload = useAvatarUpload(loaded?.id, loaded?.avatarUrl);
 
   // `undefined` means "not yet touched" — the TextInput below falls back to
@@ -128,6 +130,7 @@ export default function EditProfile() {
             value={usertagInput}
             onChangeText={handleUsertagChange}
             editable={!saving && !isUploading}
+            autoFocus={focus === "usertag"}
             autoCapitalize="none"
             autoCorrect={false}
             style={styles.usertagInput}

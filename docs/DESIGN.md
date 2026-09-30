@@ -484,6 +484,10 @@ Board: canvas https://claude.ai/artifact/M5TbevikF4q3dyGEh2S7XH, board
 "Build 6 — My Profile" (v6). Source: `design-src/build-06-my-profile.dc.html`.
 3 states: loading, loaded, load-error.
 
+**2026-09-30 revision (Justin, phone test): this text supersedes board v6 by
+removing both entry rows (Edit profile, Settings). The board is updated the
+next time it is touched.**
+
 **Route:** `(tabs)/profile/index.tsx` (already in §3's route tree — no route
 change this Build).
 
@@ -502,7 +506,8 @@ icon while never fabricating a photo the user didn't provide.
   entry** as a 36×36 `GlassCard`-chip icon button (`rgba(76,29,149,.3)`,
   `border.hairline`, `radius: sm`) inset with `margin-right: 44px` so it sits
   left of the reserved 64×64 dev-client gear corner (§7) — never a bare
-  top-right icon.
+  top-right icon. This chip is the **only** Settings entry on this screen;
+  it pushes `(tabs)/profile/settings.tsx`.
 - Centered avatar block: `Avatar size: lg` (88px in the mock — treat as the
   large end of `Avatar`'s `lg` size), `title` weight name below (Google
   display name, verbatim, no truncation logic beyond normal text overflow),
@@ -512,15 +517,21 @@ icon while never fabricating a photo the user didn't provide.
   part is a tap target that pushes `(tabs)/profile/edit.tsx` (Build 7) with
   the usertag field focused. Once a usertag exists, this chip is replaced by
   `@usertag` in the same visual slot (no separate component needed, same
-  chip re-purposed).
-- Two entry rows below, both `GlassCard` tier `card` list-row style (matches
-  Settings screen's existing row pattern, §6): "✏️ Edit profile" → pushes
-  `(tabs)/profile/edit.tsx`; "⚙ Settings" → pushes
-  `(tabs)/profile/settings.tsx`. (The header icon and this row are two
-  different entry points to the same Settings screen — keep both; the header
-  icon is the fast path, the row is the discoverable one for anyone who
-  misses the icon.)
-- Below: "`N` movies watched" (`caption`, `text.secondary`) + the same
+  chip re-purposed). **The `@usertag` chip stays tappable** and pushes
+  `(tabs)/profile/edit.tsx` (usertag field focused), exactly like the empty
+  chip — one chip, one behavior in both states. Why: with the "Edit profile"
+  row gone, this is the only on-screen path to editing besides Settings, it
+  adds no new element, and tapping your own handle to edit it is the common
+  pattern. Give it the same 44px-min tap height as the empty chip.
+- **No entry rows.** The former "✏️ Edit profile" and "⚙ Settings" rows are
+  removed (2026-09-30). Edit profile is reached from (a) the usertag chip
+  above (either state) and (b) Settings → "Edit profile photo / usertag"
+  (Build 9 section), which pushes `(tabs)/profile/edit.tsx`.
+- **Vertical order and spacing (top to bottom):** header row → avatar block
+  (`lg` avatar, name below, unchanged gaps) → usertag chip → **24px**
+  (spacing scale 24, §1.7) → "`N` movies watched" row → **12px** (scale 12) →
+  grid container. Nothing else sits between the chip and the count.
+- "`N` movies watched" (`caption`, `text.secondary`) + the same
   3-column collection grid pattern as the Build-0 `My Collection` mock
   (reuses `PosterCard`/grid, not a new layout) — `N` is 0 at first sign-in
   per Build 6's actual scope (`profiles` row just created); the grid itself
@@ -529,7 +540,9 @@ icon while never fabricating a photo the user didn't provide.
 
 ### Loading state
 - Shimmer placeholders in the exact shape of the loaded layout: circular
-  avatar shimmer, two text-bar shimmers (name, usertag), two row shimmers.
+  avatar shimmer, two text-bar shimmers (name, usertag), then the "movies watched" text-bar
+  shimmer at the same 24px gap (no row shimmers; the entry rows no longer
+  exist).
   Same shimmer treatment `PosterCard` already uses for its `loading` state —
   no new shimmer component.
 
@@ -542,8 +555,6 @@ icon while never fabricating a photo the user didn't provide.
 | Where | Text |
 |---|---|
 | Empty usertag chip | No usertag yet — add a usertag |
-| Edit profile row | ✏️ Edit profile |
-| Settings row | ⚙ Settings |
 | Error title | Couldn't load your profile |
 | Error body | Check your connection and try again. |
 | Error action | Retry |
@@ -558,8 +569,9 @@ Board: canvas https://claude.ai/artifact/M5TbevikF4q3dyGEh2S7XH, board
 upload-error, usertag-taken, saving.
 
 **Route (new):** `(tabs)/profile/edit.tsx` — add this line to §3's route
-tree under `profile/`, pushed from `profile/index.tsx`'s "Edit profile" row
-or its usertag chip. Not a `formSheet` — a normal pushed screen (back arrow
+tree under `profile/`, pushed from `profile/index.tsx`'s usertag chip (empty or `@usertag`) and from
+Settings' "Edit profile photo / usertag" row (Build 9 section). The former
+"Edit profile" row on My Profile was removed 2026-09-30. Not a `formSheet` — a normal pushed screen (back arrow
 header), consistent with `movie/[id].tsx`'s pattern, since this is a
 full-attention task, not a quick popover.
 
@@ -652,9 +664,18 @@ element (the "Sign out" row) is drawn on this board instead.
 **Route:** `(tabs)/profile/settings.tsx` (already in §3's route tree — no
 route change).
 
+2026-09-30 (Justin, phone test): this text records the existing "Edit profile
+photo / usertag" row below, which the board doesn't show; the board is
+updated the next time it is touched.
+
 ### Settings idle
 - Same screen as the Build-0 Settings mock (§6, TMDB attribution — unchanged,
-  still required), with two additions:
+  still required), with three additions:
+  - **Account section, "Edit profile photo / usertag" row** (already coded
+    in `settings.tsx`; exact label, no emoji) — same
+    `card` list-row style as the other Account rows, `text.primary`; pushes
+    `(tabs)/profile/edit.tsx` (Build 7). This is now the Settings-side entry
+    to Edit profile, since My Profile no longer has an Edit row.
   - **Account section** gets a third row: "🚪 Sign out" — same `card`
     list-row style as the existing rows, `text.primary`, no danger styling
     (signing out is reversible and low-stakes, doesn't need the danger
@@ -713,6 +734,7 @@ route change).
 ### Copy strings (verbatim)
 | Where | Text |
 |---|---|
+| Edit profile row | Edit profile photo / usertag |
 | Sign out row | 🚪 Sign out |
 | Delete row | 🗑 Delete my account |
 | Sheet title | Delete your account? |
@@ -732,6 +754,14 @@ route change).
 - **Light theme — no light theme in v1.** §1.3's light tokens stay in this
   doc for completeness/future use, but they are explicitly **not built** —
   no toggle UI, no theme-switch logic anywhere in v1. Single dark theme only.
+- **Changes, 2026-09-30 (Justin, from the release-APK phone test):** "edit
+  profile also should not be here, just the movies watched." My Profile loses
+  its "Edit profile" and "Settings" rows; Edit profile is reached from the
+  usertag chip (both states) and a new Settings row "Edit profile photo /
+  usertag" — Build 6, 7, 9. Text supersedes board v6; board updated next time
+  it's touched.
+- Top-right icon inset (dev-gear zone) kept during development at Justin's
+  choice (2026-09-30); revisit before the Play Store release.
 - **Tier badges — no plan change.** S/A/B/C tiers stay UI-only per Justin's
   direction (§5); this is a note for whoever eventually specs a real ratings
   feature, not a gap to fix now. No PLAN.md revision, no Priya round.

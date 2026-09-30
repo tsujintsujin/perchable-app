@@ -75,3 +75,5 @@ Handle each one up front; say in the Build log how (or "n/a").
   `-PreactNativeArchitectures=arm64-v8a,x86_64`, and run `./gradlew --stop` before
   restarting — a stopped shell leaves the Gradle daemon building, and two builds
   collide (ninja "Permission denied"). Don't run Metro/QA on td_emu during it (CPU). (2026-09-30)
+- Release APKs are built only when Justin asks for one — never per change or per Build.
+  (Manager built one unasked after the Profile rows change, 2026-09-30.)
