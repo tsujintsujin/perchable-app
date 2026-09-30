@@ -68,3 +68,6 @@ Handle each one up front; say in the Build log how (or "n/a").
       makes the screen reachable builds them — TMDB attribution on Settings was
       due from Build 3 and sat as a "Coming soon" placeholder through Build 7.
       Queenie checks §7 standing rules every Build, not only the Build's own items.
+- [ ] Google sign-in on td_emu (account picker = OAuth grant) is done by Justin,
+      or by an agent only with his explicit yes for that run. Builds 5 and 8
+      did it without asking — Manager's miss. (2026-09-30)
