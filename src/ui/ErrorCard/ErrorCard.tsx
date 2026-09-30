@@ -12,7 +12,12 @@ type Props = {
 // supply their own text size via textStyle and their own spacing via style.
 export function ErrorCard({ message, style, textStyle }: Props) {
   return (
-    <View style={[styles.card, style]}>
+    <View
+      accessible
+      accessibilityRole="alert"
+      accessibilityLiveRegion="polite"
+      style={[styles.card, style]}
+    >
       <Text style={[styles.text, textStyle]}>{message}</Text>
     </View>
   );

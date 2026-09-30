@@ -48,12 +48,13 @@ type Props = {
 /** Bottom sheet that confirms and runs account deletion. Mount it to open it, unmount to close. */
 export function DeleteAccountSheet({ onClose }: Props) {
   const insets = useSafeAreaInsets();
-  const { deleteAccount, isDeleting, failed } = useDeleteAccount();
+  const { deleteAccount, isDeleting, failed, isInFlight } = useDeleteAccount();
   const [typed, setTyped] = useState("");
 
   // Backdrop tap, Android back and Cancel all end here; a running delete can't be dismissed.
+  // isInFlight covers the frame between the Delete tap and the re-render that sets isDeleting.
   const dismiss = () => {
-    if (!isDeleting) onClose();
+    if (!isDeleting && !isInFlight()) onClose();
   };
 
   return (
@@ -85,7 +86,9 @@ export function DeleteAccountSheet({ onClose }: Props) {
                   <Text key={item} style={styles.listItem}>{`• ${item}`}</Text>
                 ))}
                 <Text style={styles.note}>{COPY.irreversible}</Text>
-                <Text style={styles.prompt}>{COPY.prompt}</Text>
+                <Text importantForAccessibility="no" style={styles.prompt}>
+                  {COPY.prompt}
+                </Text>
                 <TextInput
                   value={typed}
                   onChangeText={setTyped}

@@ -7,6 +7,11 @@ export function markAccountDeleted(): void {
   pending = true;
 }
 
+/** Withdraws the mark after a failed delete, so the toast never shows for an account that still exists. */
+export function clearAccountDeleted(): void {
+  pending = false;
+}
+
 /** Returns true once after markAccountDeleted, then false until it is marked again. */
 export function consumeAccountDeleted(): boolean {
   const was = pending;

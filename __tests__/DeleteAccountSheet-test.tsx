@@ -7,8 +7,13 @@ jest.mock("react-native-safe-area-context", () => ({
 
 const mockDeleteAccount = jest.fn();
 let mockState = { isDeleting: false, failed: false };
+let mockInFlight = false;
 jest.mock("@/modules/auth/hooks/useDeleteAccount", () => ({
-  useDeleteAccount: () => ({ deleteAccount: mockDeleteAccount, ...mockState }),
+  useDeleteAccount: () => ({
+    deleteAccount: mockDeleteAccount,
+    isInFlight: () => mockInFlight,
+    ...mockState,
+  }),
 }));
 
 import { DeleteAccountSheet } from "@/modules/auth/components/DeleteAccountSheet";
@@ -23,6 +28,7 @@ describe("DeleteAccountSheet", () => {
     onClose.mockReset();
     mockDeleteAccount.mockReset();
     mockState = { isDeleting: false, failed: false };
+    mockInFlight = false;
   });
 
   it("shows the verbatim copy, the deletion list and a disabled confirm button", async () => {
@@ -85,6 +91,16 @@ describe("DeleteAccountSheet", () => {
     expect(screen.queryByText("This permanently deletes:")).toBeNull();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
 
+    await act(async () => fireEvent.press(screen.getByLabelText("Close")));
+    await act(async () => screen.getByTestId("delete-account-sheet").props.onRequestClose());
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("cannot be dismissed in the frame between the Delete tap and the re-render", async () => {
+    mockInFlight = true;
+    await render(<DeleteAccountSheet onClose={onClose} />);
+
+    await act(async () => fireEvent.press(screen.getByText("Cancel")));
     await act(async () => fireEvent.press(screen.getByLabelText("Close")));
     await act(async () => screen.getByTestId("delete-account-sheet").props.onRequestClose());
     expect(onClose).not.toHaveBeenCalled();

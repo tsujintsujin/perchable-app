@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Sentry } from "@/lib/sentry";
 import { deleteAccount, DeleteAccountOfflineError } from "../api/deleteAccount";
 import { signOut } from "../api/signOut";
-import { markAccountDeleted } from "../accountDeletedNotice";
+import { clearAccountDeleted, markAccountDeleted } from "../accountDeletedNotice";
 import { useAuthSession } from "../AuthProvider";
 
 /** Delete-account action for the confirmation sheet: one run at a time.
@@ -29,9 +29,12 @@ export function useDeleteAccount() {
     inFlightRef.current = true;
     setFailed(false);
     setIsDeleting(true);
+    // Marked before the request: a sign-out from a background refresh can mount sign-in mid-delete.
+    markAccountDeleted();
     try {
       await deleteAccount();
     } catch (err) {
+      clearAccountDeleted();
       // Offline is expected and nothing was deleted, so only other failures are reported.
       if (!(err instanceof DeleteAccountOfflineError)) Sentry.captureException(err);
       inFlightRef.current = false;
@@ -41,8 +44,7 @@ export function useDeleteAccount() {
       }
       return;
     }
-    // The account is gone: announce it on sign-in, then clear Supabase + Google and the in-app session.
-    markAccountDeleted();
+    // The account is gone: clear Supabase + Google and the in-app session.
     try {
       await signOut();
     } finally {
@@ -50,5 +52,8 @@ export function useDeleteAccount() {
     }
   };
 
-  return { deleteAccount: run, isDeleting, failed };
+  // Reads the ref, so it is true from the tap itself, before isDeleting re-renders.
+  const isInFlight = () => inFlightRef.current;
+
+  return { deleteAccount: run, isDeleting, failed, isInFlight };
 }

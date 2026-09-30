@@ -50,7 +50,7 @@ Base SHA 0f66e82. Function commit `5f4893e`; app commit in the report.
   It lists with an explicit `limit: 100, offset: 0`, removes what it got, and repeats until a
   listing comes back empty. Offset stays 0 because removed objects drop out of the next page.
   A 100-round cap throws instead of looping forever if removal silently does nothing.
-  `index.ts` still takes the uid only from the JWT and returns generic error bodies. **Not deployed.**
+  `index.ts` still takes the uid only from the JWT and returns generic error bodies. **Deployed by the Manager (v1, verify_jwt on)** - after Bug 1 it needs a redeploy.
 - **App**: `api/deleteAccount.ts` (invoke; any HTTP error is a real error - see the 401 fix below; network failure =
   `DeleteAccountOfflineError`; anything else rethrown), `hooks/useDeleteAccount.ts` (one run at a
   time, then the sign-out path), `components/DeleteAccountSheet.tsx` (the sheet), and
@@ -84,8 +84,7 @@ Base SHA 0f66e82. Function commit `5f4893e`; app commit in the report.
    (Settings unreachable while signed out).
 6. Row/confirm text uses `type.bodyStrong` (Inter 600) for "weight 700"; the title uses `type.subhead`
    (Poppins 700) for the board's 800 at 18px: nearest tokens, no fontWeight.
-7. `verify_jwt`: `supabase/config.toml` has no entry for this function, so the platform default (on)
-   applies. Worth confirming at deploy.
+7. `verify_jwt`: now explicit in `supabase/config.toml`; the Manager deployed the function with it on.
 8. Sentry `environment` is set once in `initSentry`, so every captured error carries it.
 
 ## Manager: how to verify the function
@@ -99,12 +98,12 @@ that user's JWT, confirm the folder is empty and a second call returns 401.
 | 1 | Confirm disabled unless `typed === "DELETE"`; Cancel closes, no call | DeleteAccountSheet-test (6 wrong inputs, exact, disabled tap, Cancel/backdrop/back) |
 | 2 | `inFlightRef` in hook; Button loading; Cancel disabled; backdrop and `onRequestClose` blocked while deleting | useDeleteAccount-test "two taps"; Sheet-test "while deleting" |
 | 3 | Offline -> `failed` -> ErrorCard, retry works, no Sentry, nothing cleared | useDeleteAccount-test offline+retry; deleteAccount-test offline; Sheet-test failure card |
-| 4 | Function: storage first then user, not-found = ok. Retry after the user is gone: the function itself returns 200 (see 401 fix). App: 401 is an error | emptyFolder-test subFromJwt/isUserGone; deleteAccount-test 401 rejects |
+| 4 | Function: storage first then user, not-found = ok. Retry after the user is gone: the function should return 200 (see 401 fix); that decision is covered only by the pure-function tests (subFromJwt/isUserGone), **the live check is pending in QA**. App: a 401 is an error | emptyFolder-test subFromJwt/isUserGone; deleteAccount-test 401 rejects |
 | 5 | `emptyFolder` loops until empty | emptyFolder-test (more than one page) |
 | 6 | mark -> signOut (Supabase local + Google) -> clearSession; toast once on sign-in | useDeleteAccount-test order; sign-in-test toast once; accountDeletedNotice-test |
 | 7 | `mountedRef` guards setState | useDeleteAccount-test unmount mid-delete |
 | 8 | Fresh user/profile is server behaviour | UNTESTABLE in jest: Queenie on device |
-| 9 | Function unchanged in auth: uid from `getUser(token)` only; generic errors; no client path takes a uid | review of index.ts |
+| 9 | uid never comes from the body. Normally it is `getUser(token).id`; if that fails, it is the JWT `sub` (decoded by `subFromJwt`, UUID-checked), trusted only because verify_jwt (explicit in config.toml) has already verified signature and expiry, and only used to continue when `getUserById` proves the user is gone; otherwise 401. Generic error bodies; no client path takes a uid | review of index.ts; subFromJwt/isUserGone tests |
 | 10 | Unexpected errors -> `Sentry.captureException`; offline not | useDeleteAccount-test Sentry / offline |
 
 ## LESSONS checklist
@@ -159,3 +158,29 @@ that user's JWT, confirm the folder is empty and a second call returns 401.
 - Flag 2 resolved. Flag 7 (verify_jwt) resolved by the explicit config entry.
 - Tests: emptyFolder-test now has 6 loop tests + 3 subFromJwt + 3 isUserGone.
 - Gates: tsc clean, lint clean, jest 19 suites / 116 tests, 0 "act(", 0 console warnings.
+
+## Bug 1 (Ruby's review, Manager agreed)
+1. **Nested folders (function):** Storage RLS allows `<uid>/sub/x.jpg`, so `list(uid)` can return a folder
+   entry (`id === null`) that `remove()` silently ignores; the loop spun to its cap and every attempt
+   returned 500. `emptyFolder` now removes only real objects (`id !== null`) and recurses into folder
+   entries, with the 100-round cap shared across the whole tree. Tests: nested tree with a
+   `.emptyFolderPlaceholder` and a deeper level ends empty (other users' files untouched); an
+   unremovable folder entry fails at the cap instead of spinning. **Needs a redeploy (Manager).**
+2. **Unmount test was fake:** React 19 no longer warns on state updates after unmount, so the old
+   assertion could not fail. The test now wraps `useState` setters and counts calls after unmount
+   (verified: it fails with the `mountedRef` guard removed). Added: unmount mid-delete, then the call
+   succeeds -> mark, signOut and clearSession still run, no late setState.
+3. **Toast could be missed:** a background-refresh `SIGNED_OUT` mid-delete could mount sign-in before
+   the mark. The hook now marks before the request and calls `clearAccountDeleted()` on any failure, so a
+   failed delete never shows the toast. Tests: mark precedes the request; success does not clear;
+   offline and server failures clear.
+4. **Accessibility:** `ErrorCard` is `accessible` with `accessibilityRole="alert"` and a polite live
+   region (sign-in tests unchanged and green). The input keeps its `accessibilityLabel` (RN has no
+   portable way to tie a visible `Text` to an input); the visible prompt is marked
+   `importantForAccessibility="no"` so it is not read twice.
+5. **Same-frame Cancel:** the hook returns `isInFlight()` (reads the ref, true from the tap itself);
+   the sheet's `dismiss` (Cancel, scrim, Android back) is blocked while it is true. Tests: hook reports
+   in flight in the same frame; sheet ignores all three dismissals with `isDeleting` still false.
+6. Log corrections above (items 4 and 9, deployment state, flag 7).
+- Not done, per the Manager: error copy unchanged; StrictMode double-run toast timer is dev-only.
+- Gates: tsc clean, lint clean, jest 19 suites / 123 tests, 0 "act(", 0 console warnings.
