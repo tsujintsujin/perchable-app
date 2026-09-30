@@ -10,6 +10,7 @@ import { Toast, useToast } from "@/ui/Toast";
 import {
   colors,
   glass,
+  iconButtonHitSlop,
   iconSize,
   leading,
   letterSpacing,
@@ -24,9 +25,6 @@ import { DeleteAccountSheet, useSignOut } from "@/modules/auth";
 // DESIGN.md §6: required TMDB attribution, verbatim.
 const TMDB_ATTRIBUTION =
   "This application uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.";
-
-// Grows the back chip's touch area to the minimum target size.
-const backHitSlop = (size.minTouch - size.iconButton) / 2;
 
 // Shown when the not-yet-built comments setting is tapped (DESIGN.md §5 pattern).
 const COMMENTS_COMING_SOON = "Comment settings are coming soon.";
@@ -46,7 +44,7 @@ export default function ProfileSettings() {
           tier="chip"
           onPress={() => router.back()}
           accessibilityLabel="Back"
-          hitSlop={backHitSlop}
+          hitSlop={iconButtonHitSlop}
           style={styles.backChip}
         >
           <Text style={styles.backIcon}>←</Text>

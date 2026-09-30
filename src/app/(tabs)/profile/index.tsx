@@ -1,18 +1,49 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useFocusEffect, type Href } from "expo-router";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { GlassCard } from "@/ui/GlassCard";
 import { Avatar } from "@/ui/Avatar";
 import { EmptyState } from "@/ui/EmptyState";
-import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
+import {
+  avatarSize,
+  colors,
+  iconButtonHitSlop,
+  iconSize,
+  radius,
+  shimmerBar,
+  size,
+  spacing,
+  type,
+} from "@/ui/tokens";
 import { useOwnProfile } from "@/modules/profile";
 
 /** My Profile screen — collection grid (movies watched) is a later module. */
 export default function MyProfile() {
   const profile = useOwnProfile();
   const insets = useSafeAreaInsets();
+  const pushedRef = useRef(false);
+
+  // Re-arms navigation each time this screen regains focus.
+  useFocusEffect(
+    useCallback(() => {
+      pushedRef.current = false;
+    }, []),
+  );
+
+  // Pushes a route once per focus, so a double tap can't stack two screens.
+  // A failed push re-arms the guard so the chips don't stay dead.
+  const go = (target: Href) => {
+    if (pushedRef.current) return;
+    pushedRef.current = true;
+    try {
+      router.push(target);
+    } catch (err) {
+      pushedRef.current = false;
+      throw err;
+    }
+  };
 
   return (
     <View style={styles.root}>
@@ -23,7 +54,9 @@ export default function MyProfile() {
          * glass.chip's own, applied via a style override. */}
         <GlassCard
           tier="chip"
-          onPress={() => router.push("/profile/settings")}
+          onPress={() => go("/profile/settings")}
+          accessibilityLabel="Settings"
+          hitSlop={iconButtonHitSlop}
           style={styles.settingsChip}
         >
           <Text style={styles.settingsIcon}>⚙</Text>
@@ -51,33 +84,25 @@ export default function MyProfile() {
           />
           <Text style={styles.name}>{profile.profile.displayName ?? "Unnamed"}</Text>
 
-          {profile.profile.usertag ? (
-            <View style={styles.usertagChip}>
+          {/* One chip in both states: tapping it opens Edit profile. */}
+          <Pressable
+            style={styles.usertagChip}
+            onPress={() => go({ pathname: "/profile/edit", params: { focus: "usertag" } })}
+            accessibilityRole="button"
+            accessibilityLabel={
+              profile.profile.usertag
+                ? `Edit usertag, currently @${profile.profile.usertag}`
+                : "Add a usertag"
+            }
+          >
+            {profile.profile.usertag ? (
               <Text style={styles.usertagText}>@{profile.profile.usertag}</Text>
-            </View>
-          ) : (
-            <Pressable
-              style={styles.usertagChip}
-              onPress={() => router.push("/profile/edit")}
-            >
+            ) : (
               <Text style={styles.usertagText}>
                 No usertag yet — <Text style={styles.usertagBold}>add a usertag</Text>
               </Text>
-            </Pressable>
-          )}
-
-          <View style={styles.rows}>
-            <GlassCard tier="card" onPress={() => router.push("/profile/edit")} style={styles.row}>
-              <Text style={styles.rowLabel}>✏️ Edit profile</Text>
-            </GlassCard>
-            <GlassCard
-              tier="card"
-              onPress={() => router.push("/profile/settings")}
-              style={styles.row}
-            >
-              <Text style={styles.rowLabel}>⚙ Settings</Text>
-            </GlassCard>
-          </View>
+            )}
+          </Pressable>
 
           <Text style={styles.moviesCount}>0 movies watched</Text>
           <View style={styles.moviesGrid} />
@@ -105,13 +130,15 @@ function LoadingBody() {
 
   return (
     <View style={styles.body}>
-      <Animated.View style={[styles.shimmerCircle, { opacity: pulse }]} />
-      <Animated.View style={[styles.shimmerBar, styles.shimmerName, { opacity: pulse }]} />
-      <Animated.View style={[styles.shimmerBar, styles.shimmerTag, { opacity: pulse }]} />
-      <View style={styles.rows}>
-        <Animated.View style={[styles.shimmerRow, { opacity: pulse }]} />
-        <Animated.View style={[styles.shimmerRow, { opacity: pulse }]} />
+      <Animated.View testID="shimmer-avatar" style={[styles.shimmerCircle, { opacity: pulse }]} />
+      <Animated.View testID="shimmer-name" style={[styles.shimmerBar, styles.shimmerName, { opacity: pulse }]} />
+      <View style={styles.shimmerTagSlot}>
+        <Animated.View testID="shimmer-usertag" style={[styles.shimmerBar, styles.shimmerTag, { opacity: pulse }]} />
       </View>
+      <Animated.View
+        testID="shimmer-count"
+        style={[styles.shimmerBar, styles.shimmerTag, styles.shimmerCount, { opacity: pulse }]}
+      />
     </View>
   );
 }
@@ -126,12 +153,12 @@ const styles = StyleSheet.create({
   },
   headerTitle: { ...type.subhead, color: colors.text.secondary },
   settingsChip: {
-    width: 36,
-    height: 36,
+    width: size.iconButton,
+    height: size.iconButton,
     borderRadius: radius.sm,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 44,
+    marginRight: size.headerTrailingInset,
     // Distinct from glass.chip's own token values, per DESIGN.md.
     backgroundColor: colors.surface.chip,
     borderWidth: 1,
@@ -147,6 +174,8 @@ const styles = StyleSheet.create({
   },
   usertagChip: {
     marginTop: spacing[12],
+    minHeight: size.minTouch,
+    justifyContent: "center",
     paddingVertical: spacing[8],
     paddingHorizontal: spacing[16],
     borderRadius: radius.pill,
@@ -156,36 +185,30 @@ const styles = StyleSheet.create({
   },
   usertagText: { ...type.body, color: colors.text.secondary },
   usertagBold: { fontFamily: type.bodyStrong.fontFamily, color: colors.text.primary },
-  rows: { width: "100%", marginTop: spacing[32], gap: spacing[12] },
-  row: { padding: spacing[16], borderRadius: radius.md },
-  rowLabel: { ...type.body, color: colors.text.primary },
   moviesCount: {
-    marginTop: spacing[32],
+    marginTop: spacing[24],
     ...type.caption,
     color: colors.text.secondary,
     alignSelf: "flex-start",
   },
   moviesGrid: {
     width: "100%",
-    minHeight: 96,
-    marginTop: spacing[8],
+    minHeight: size.collectionGridMin,
+    marginTop: spacing[12],
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border.hairline,
     borderStyle: "dashed",
   },
   shimmerCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
+    width: avatarSize.lg,
+    height: avatarSize.lg,
+    borderRadius: avatarSize.lg / 2,
     backgroundColor: colors.bg.elevatedFlat,
   },
   shimmerBar: { borderRadius: radius.sm, backgroundColor: colors.bg.elevatedFlat },
-  shimmerName: { width: 160, height: 22, marginTop: spacing[16] },
-  shimmerTag: { width: 120, height: 16, marginTop: spacing[12] },
-  shimmerRow: {
-    height: 52,
-    borderRadius: radius.md,
-    backgroundColor: colors.bg.elevatedFlat,
-  },
+  shimmerName: { ...shimmerBar.name, marginTop: spacing[16] },
+  shimmerTag: { ...shimmerBar.line },
+  shimmerTagSlot: { marginTop: spacing[12], minHeight: size.minTouch, justifyContent: "center" },
+  shimmerCount: { marginTop: spacing[24], alignSelf: "flex-start" },
 });

@@ -1,13 +1,12 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { colors, type } from "@/ui/tokens";
+import { avatarSize, colors, type } from "@/ui/tokens";
 
 type Size = "sm" | "md" | "lg";
 
-// DESIGN.md §2: sm/md/lg. lg is the 88px mock value; sm is the Home header
-// chip's 28-32px range (use the top of it).
-const DIMENSIONS: Record<Size, number> = { sm: 32, md: 48, lg: 88 };
+// Diameters per size come from the avatarSize token.
+const DIMENSIONS: Record<Size, number> = avatarSize;
 
 type Props = {
   /** Google account photo, when there is one. */

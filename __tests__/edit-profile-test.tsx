@@ -32,7 +32,11 @@ jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: jest.fn() } }));
 // it here makes every test's use of `router.back()` correct on its own
 // terms instead of by test-order accident.
 const mockRouterBack = jest.fn();
-jest.mock("expo-router", () => ({ router: { back: (...args: unknown[]) => mockRouterBack(...args) } }));
+let mockParams: Record<string, string> = {};
+jest.mock("expo-router", () => ({
+  router: { back: (...args: unknown[]) => mockRouterBack(...args) },
+  useLocalSearchParams: () => mockParams,
+}));
 
 import EditProfile from "@/app/(tabs)/profile/edit";
 
@@ -54,6 +58,7 @@ describe("Edit profile screen", () => {
     mockUseUsertagAvailability.mockReturnValue({ status: "unchanged" });
     mockUpdateProfile.mockReset().mockResolvedValue(undefined);
     mockRouterBack.mockReset();
+    mockParams = {};
     mockPickAndUpload.mockReset();
     mockCancel.mockReset();
     mockUseAvatarUpload.mockReset().mockReturnValue({
@@ -63,6 +68,17 @@ describe("Edit profile screen", () => {
       pickAndUpload: mockPickAndUpload,
       cancel: mockCancel,
     });
+  });
+
+  it("does not autofocus the usertag field without the focus param", async () => {
+    await render(<EditProfile />);
+    expect(screen.getByPlaceholderText("usertag").props.autoFocus).toBe(false);
+  });
+
+  it("autofocuses the usertag field when opened with focus=usertag", async () => {
+    mockParams = { focus: "usertag" };
+    await render(<EditProfile />);
+    expect(screen.getByPlaceholderText("usertag").props.autoFocus).toBe(true);
   });
 
   it("renders the idle state and disables Save with no change", async () => {

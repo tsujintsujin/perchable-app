@@ -1,0 +1,295 @@
+--------- beginning of main
+09-30 08:06:05.090   602  2805 E IPCThreadState: Binder transaction failure. id: 8932142, BR_*: 29189, error: -22 (Invalid argument)
+09-30 08:06:06.196   472   472 E BpTransactionCompletedListener: Failed to transact (-32)
+--------- beginning of system
+09-30 08:06:09.057   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:06:17.657   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:06:22.176   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:06:55.682   602  2367 E IPCThreadState: Binder transaction failure. id: 8938906, BR_*: 29189, error: -22 (Invalid argument)
+09-30 08:06:56.939   472   472 E BpTransactionCompletedListener: Failed to transact (-32)
+09-30 08:06:59.627   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:07:03.853   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: Unhandled SoftException
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: com.facebook.react.bridge.ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException(ReactHostImpl.kt:919)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException$default(ReactHostImpl.kt:910)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.onWindowFocusChange(ReactHostImpl.kt:682)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at com.facebook.react.ReactDelegate.onWindowFocusChanged(ReactDelegate.kt:229)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at com.facebook.react.ReactActivityDelegate.onWindowFocusChanged(ReactActivityDelegate.java:235)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invokeSuspend(ReactActivityDelegateWrapper.kt:320)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:8)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:4)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$launchLifecycleScopeWithLock$1.invokeSuspend(ReactActivityDelegateWrapper.kt:452)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at kotlinx.coroutines.internal.DispatchedContinuationKt.resumeCancellableWith(DispatchedContinuation.kt:375)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at kotlinx.coroutines.intrinsics.CancellableKt.startCoroutineCancellable(Cancellable.kt:26)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at kotlinx.coroutines.CoroutineStart.invoke(CoroutineStart.kt:358)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at kotlinx.coroutines.AbstractCoroutine.start(AbstractCoroutine.kt:134)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch(Builders.common.kt:53)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch(Unknown Source:1)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch$default(Builders.common.kt:44)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch$default(Unknown Source:1)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock(ReactActivityDelegateWrapper.kt:450)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock$default(ReactActivityDelegateWrapper.kt:446)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.onWindowFocusChanged(ReactActivityDelegateWrapper.kt:318)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at com.facebook.react.ReactActivity.onWindowFocusChanged(ReactActivity.java:161)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at androidx.appcompat.view.WindowCallbackWrapper.onWindowFocusChanged(WindowCallbackWrapper.java:124)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at expo.modules.devmenu.detectors.InterceptingWindowCallback.onWindowFocusChanged(Unknown Source:2)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at com.android.internal.policy.DecorView.onWindowFocusChanged(DecorView.java:1772)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.view.View.dispatchWindowFocusChanged(View.java:16743)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.view.ViewGroup.dispatchWindowFocusChanged(ViewGroup.java:1505)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.view.ViewRootImpl.dispatchFocusEvent(ViewRootImpl.java:4697)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.view.ViewRootImpl.handleWindowFocusChanged(ViewRootImpl.java:4601)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged(Unknown Source:0)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl(ViewRootImpl.java:6773)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessage(ViewRootImpl.java:6683)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.os.Looper.loopOnce(Looper.java:232)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.os.Looper.loop(Looper.java:317)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at java.lang.reflect.Method.invoke(Native Method)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+09-30 08:07:12.294  4282  4282 E unknown:ReactHost: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+09-30 08:07:15.325   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:07:15.866  4282  4344 E chromium: [0930/080715.865576:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+09-30 08:07:49.168   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:07:49.168   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:07:49.168   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: failed to dump window to file
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: java.io.FileNotFoundException: Files/Git/data/local/tmp/ui.xml: open failed: ENOENT (No such file or directory)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at libcore.io.IoBridge.open(IoBridge.java:574)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at java.io.FileOutputStream.<init>(FileOutputStream.java:259)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at java.io.FileOutputStream.<init>(FileOutputStream.java:208)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at java.io.FileWriter.<init>(FileWriter.java:96)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at com.android.uiautomator.core.AccessibilityNodeInfoDumper.dumpWindowToFile(AccessibilityNodeInfoDumper.java:89)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at com.android.commands.uiautomator.DumpCommand.run(DumpCommand.java:111)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at com.android.commands.uiautomator.Launcher.main(Launcher.java:83)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:369)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at libcore.io.Linux.open(Native Method)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	at libcore.io.IoBridge.open(IoBridge.java:560)
+09-30 08:07:55.088  4410  4410 E AccessibilityNodeInfoDumper: 	... 8 more
+09-30 08:08:18.134   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:08:18.135   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:08:18.135   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+09-30 08:08:35.171   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:08:35.171   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:08:35.172   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+09-30 08:08:46.017   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:08:46.017   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:08:46.017   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+09-30 08:09:01.856   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:09:01.856   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:09:01.857   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+09-30 08:09:10.029   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:09:10.030   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:09:10.030   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+09-30 08:09:28.689   602  1275 E IPCThreadState: Binder transaction failure. id: 8969457, BR_*: 29189, error: -22 (Invalid argument)
+09-30 08:09:29.582   472   472 E BpTransactionCompletedListener: Failed to transact (-32)
+09-30 08:09:32.713   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:09:34.303  4669  4669 E unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Loading from 10.0.2.2:8081…
+09-30 08:09:34.364  4669  4669 E unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Reloading...
+09-30 08:09:36.514   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:09:42.752  4669  4731 E chromium: [0930/080942.751669:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+09-30 08:09:44.056   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:10:09.364   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:10:09.364   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:10:09.365   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+--------- beginning of kernel
+09-30 08:10:10.791     0     0 E audit   : rate limit exceeded
+09-30 08:10:27.708   992  1249 E ApfFilter: Read error
+09-30 08:10:27.708   992  1249 E ApfFilter: android.system.ErrnoException: read failed: ENETDOWN (Network is down)
+09-30 08:10:27.708   992  1249 E ApfFilter: 	at libcore.io.Linux.readBytes(Native Method)
+09-30 08:10:27.708   992  1249 E ApfFilter: 	at libcore.io.Linux.read(Linux.java:190)
+09-30 08:10:27.708   992  1249 E ApfFilter: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+09-30 08:10:27.708   992  1249 E ApfFilter: 	at libcore.io.BlockGuardOs.read(BlockGuardOs.java:325)
+09-30 08:10:27.708   992  1249 E ApfFilter: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+09-30 08:10:27.708   992  1249 E ApfFilter: 	at android.system.Os.read(Os.java:571)
+09-30 08:10:27.708   992  1249 E ApfFilter: 	at com.android.networkstack.android.net.apf.ApfFilter$ReceiveThread.run(ApfFilter.java:229)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: readPacket error: 
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: android.system.ErrnoException: read failed: ENETDOWN (Network is down)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at libcore.io.Linux.readBytes(Native Method)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at libcore.io.Linux.read(Linux.java:190)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at libcore.io.BlockGuardOs.read(BlockGuardOs.java:325)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at android.system.Os.read(Os.java:571)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.PacketReader.readPacket(PacketReader.java:57)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.PacketReader.readPacket(PacketReader.java:32)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.handleInput(FdEventsReader.java:248)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.lambda$createAndRegisterFd$0(FdEventsReader.java:228)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.$r8$lambda$jjSC4hVD2AlVH3T-DbWnF2T3fK8(FdEventsReader.java:0)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader$$ExternalSyntheticLambda0.onFileDescriptorEvents(R8$$SyntheticClass:0)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at android.os.MessageQueue.dispatchEvents(MessageQueue.java:304)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at android.os.MessageQueue.nativePollOnce(Native Method)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at android.os.MessageQueue.next(MessageQueue.java:346)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at android.os.Looper.loopOnce(Looper.java:189)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at android.os.Looper.loop(Looper.java:317)
+09-30 08:10:27.739   992  1184 E ConnectivityPacketTracker.wlan0: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+09-30 08:10:27.802   602   787 E SupplicantStaIfaceHalAidlImpl: Can't call disableCurrentNetwork, SupplicantStaNetwork for iface=wlan0 is null.
+09-30 08:10:27.805   602   787 E SupplicantStaIfaceHalAidlImpl: Can't call listNetworks, ISupplicantStaIface is null for iface=wlan0
+09-30 08:10:27.805   602   787 E SupplicantStaIfaceHalAidlImpl: removeAllNetworks failed, got null networks
+09-30 08:10:27.805   602   787 E WifiClientModeImpl[54536962:wlan0]: Failed to remove networks on exiting connect mode
+09-30 08:10:27.809   602   787 E SupplicantStaIfaceHalAidlImpl: Can't call setPowerSave, ISupplicantStaIface is null for iface=wlan0
+09-30 08:10:27.809   602   787 E SupplicantStaIfaceHalAidlImpl: Can't call setBtCoexistenceMode, ISupplicantStaIface is null for iface=wlan0
+09-30 08:10:27.816   992  1184 E DhcpClient: readPacket error: 
+09-30 08:10:27.816   992  1184 E DhcpClient: android.system.ErrnoException: read failed: ENETDOWN (Network is down)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at libcore.io.Linux.readBytes(Native Method)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at libcore.io.Linux.read(Linux.java:190)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at libcore.io.BlockGuardOs.read(BlockGuardOs.java:325)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at android.system.Os.read(Os.java:571)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at com.android.networkstack.android.net.dhcp.DhcpClient$DhcpPacketHandler.readPacket(DhcpClient.java:721)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at com.android.networkstack.android.net.dhcp.DhcpClient$DhcpPacketHandler.readPacket(DhcpClient.java:667)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.handleInput(FdEventsReader.java:248)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.lambda$createAndRegisterFd$0(FdEventsReader.java:228)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.$r8$lambda$jjSC4hVD2AlVH3T-DbWnF2T3fK8(FdEventsReader.java:0)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader$$ExternalSyntheticLambda0.onFileDescriptorEvents(R8$$SyntheticClass:0)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at android.os.MessageQueue.dispatchEvents(MessageQueue.java:304)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at android.os.MessageQueue.nativePollOnce(Native Method)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at android.os.MessageQueue.next(MessageQueue.java:346)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at android.os.Looper.loopOnce(Looper.java:189)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at android.os.Looper.loop(Looper.java:317)
+09-30 08:10:27.816   992  1184 E DhcpClient: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: java.net.SocketException: Software caused connection abort
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead0(Native Method)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-30 08:10:27.915  4669  4702 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: java.net.SocketException: Software caused connection abort
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead0(Native Method)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-30 08:10:27.921  4669  4720 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: java.net.SocketException: Software caused connection abort
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead0(Native Method)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+09-30 08:10:27.922  4669  4693 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+09-30 08:10:27.933  1204  4137 E WakeLock: GCM_HB_ALARM release without a matched acquire!
+09-30 08:10:27.940  1204  4137 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+09-30 08:10:27.954   602   791 E WifiNl80211Manager: No valid wificond scanner interface handler for iface=wlan0
+09-30 08:10:27.958   602   787 E WifiDataStall: onDataConnectionStateChanged unexpected State: 4
+09-30 08:10:27.970   602  1557 E WifiService: Attempt to retrieve passpoint with invalid scanResult List
+09-30 08:10:30.943   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:10:30.943   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:10:30.944   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+09-30 08:10:44.788   602   960 E IPCThreadState: Binder transaction failure. id: 8984571, BR_*: 29189, error: -22 (Invalid argument)
+09-30 08:10:45.667   472   472 E BpTransactionCompletedListener: Failed to transact (-32)
+09-30 08:10:48.848   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:10:53.735   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:11:33.625   602  2366 E IPCThreadState: Binder transaction failure. id: 8990136, BR_*: 29189, error: -22 (Invalid argument)
+09-30 08:11:34.318   472   472 E BpTransactionCompletedListener: Failed to transact (-32)
+09-30 08:11:37.919   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:11:42.340  4924  4987 E chromium: [0930/081142.339839:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+09-30 08:11:44.093   602  1606 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+09-30 08:12:18.901   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:12:18.901   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:12:18.902   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+09-30 08:13:06.878   602   787 E WifiChipAidlImpl: getMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+09-30 08:13:06.880   420   420 E android.hardware.wifi-service: Unknown iface name: wlan0
+09-30 08:13:06.880   420   420 E android.hardware.wifi-service: Unknown iface name: wlan0
+09-30 08:13:06.888   602   787 E WifiChipAidlImpl: getMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+09-30 08:13:06.888   420   420 E android.hardware.wifi-service: Unknown iface name: wlan0
+09-30 08:13:06.889   420   420 E android.hardware.wifi-service: Unknown iface name: wlan0
+09-30 08:13:06.903   420   420 E android.hardware.wifi-service: Failed to register radio mode change callback
+09-30 08:13:06.905   420   420 E android.hardware.wifi-service: Failed to get SupportedIfaceCombinations matrix from legacy HAL: NOT_SUPPORTED
+09-30 08:13:06.908   420   420 E android.hardware.wifi-service: Failed to set DFS flag; DFS channels may be unavailable.
+09-30 08:13:06.914   420   420 E android.hardware.wifi-service: twtRegisterEvents failed - %d-4
+09-30 08:13:06.930   602   787 E SupplicantStaIfaceHalAidlImpl: Can't call getKeyMgmtCapabilities, ISupplicantStaIface is null for iface=wlan0
+09-30 08:13:06.935   602   787 E SupplicantStaIfaceHalAidlImpl: Can't call getWpaDriverCapabilities, ISupplicantStaIface is null for iface=wlan0
+09-30 08:13:06.936   602   787 E WifiStaIfaceAidlImpl: getTwtCapabilities failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:06.937   602   787 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:06.941   602   787 E WifiChipAidlImpl: enableStaChannelForPeerNetwork failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:07.242  5041  5041 E wpa_supplicant: nl80211: kernel reports: Registration to specific type not supported
+09-30 08:13:07.289   602   787 E WifiStaIfaceAidlImpl: getTwtCapabilities failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:07.293   602   787 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:07.328   602   791 E WifiStaIfaceAidlImpl: getBackgroundScanCapabilities failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:07.333   602   787 E WifiChipAidlImpl: setMultiStaUseCase failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:07.335   602   787 E WifiChipAidlImpl: setMultiStaPrimaryConnection failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:07.341   396   436 E Netd    : no such netId 108
+09-30 08:13:07.353   602   791 E WifiScanningService: wifi driver loaded received while already loaded
+09-30 08:13:07.355   602   794 E ConnectivityService: exception in interfaceSetMtu()android.os.ServiceSpecificException: Remote I/O error (code 121)
+09-30 08:13:07.361   396   436 E Netd    : no such netId 108
+09-30 08:13:07.362   602   794 E ConnectivityService: Exception in addRoute for non-gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+09-30 08:13:07.362   396   436 E Netd    : no such netId 108
+09-30 08:13:07.362   602   794 E ConnectivityService: Exception in addRoute for gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+09-30 08:13:07.382   602   787 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+09-30 08:13:07.423   602   787 E WifiDataStall: onDataConnectionStateChanged unexpected State: 1
+09-30 08:13:07.439   602   794 E ConnectivityService: exception in interfaceSetMtu()android.os.ServiceSpecificException: Remote I/O error (code 121)
+09-30 08:13:07.448   602   787 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:07.511   396   423 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'INTERFACE' not found
+09-30 08:13:07.512   396   423 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'STATE' not found
+09-30 08:13:07.513   396   423 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'TIME_NS' not found
+09-30 08:13:07.513   396   423 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+09-30 08:13:08.253  1204  5074 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+09-30 08:13:09.360  1278  5077 E HandwritingSuperpacksUtil: HandwritingSuperpacksUtil.getPackMappingPackName():40 No pack mapping pack found in []
+09-30 08:13:15.674   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+09-30 08:13:15.674   405  2901 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+09-30 08:13:15.675   405  2901 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+09-30 08:13:16.091   602   787 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:16.092   396   396 E Netd    : no such netId 109
+09-30 08:13:16.093   396   396 E Netd    : no such netId 109
+09-30 08:13:16.186   396   396 E Netd    : no such netId 109
+09-30 08:13:16.187   602   794 E ConnectivityService: Exception in addRoute for non-gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+09-30 08:13:16.188   396   396 E Netd    : no such netId 109
+09-30 08:13:16.190   602   794 E ConnectivityService: Exception in addRoute for gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+09-30 08:13:16.263   602   787 E WifiStaIfaceAidlImpl: setRoamingMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:16.264   602   787 E WifiRoamingModeManager: Failed to set roaming mode due to unknown error.
+09-30 08:13:16.298   602  2366 E WifiService: Attempt to retrieve passpoint with invalid scanResult List
+09-30 08:13:16.481   396   423 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'INTERFACE' not found
+09-30 08:13:16.482   602   787 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+09-30 08:13:16.483   396   423 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'STATE' not found
+09-30 08:13:16.483   396   423 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'TIME_NS' not found
+09-30 08:13:16.483   396   423 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+09-30 08:13:17.237   396   436 E netd    : Error adding route ::/0 -> fe80::2 wlan0 to table 1016: File exists
+09-30 08:13:17.317   602   787 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+09-30 08:13:19.270  1278  5086 E HandwritingSuperpacksUtil: HandwritingSuperpacksUtil.getPackMappingPackName():40 No pack mapping pack found in []
+09-30 08:13:23.675  1204  5074 E WakeLock: GCM_HB_ALARM release without a matched acquire!
+09-30 08:13:23.754  1204  4179 E WakeLock: GCM_CONN_ALARM release without a matched acquire!

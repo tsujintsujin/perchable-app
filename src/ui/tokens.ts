@@ -106,13 +106,29 @@ export const iconSize = {
   emoji: 32,
 } as const;
 
+/** Avatar circle diameters (DESIGN.md §2). */
+export const avatarSize = { sm: 32, md: 48, lg: 88 } as const;
+
 /** Square icon-button side (settings chip, back chip). */
 export const size = {
   iconButton: 36,
   /** Minimum touch target side (dp). */
   minTouch: 48,
+  /** Right inset that keeps a header chip clear of the dev-client gear corner. */
+  headerTrailingInset: 44,
+  /** Minimum height of the empty collection-grid container on My Profile. */
+  collectionGridMin: 96,
   /** Bottom-sheet drag-handle bar. */
   dragHandle: { width: 40, height: 5 },
+} as const;
+
+/** Extra touch area that grows an icon button to the minimum touch target. */
+export const iconButtonHitSlop = (size.minTouch - size.iconButton) / 2;
+
+/** Loading-skeleton bar sizes on My Profile (name line, usertag/count line). */
+export const shimmerBar = {
+  name: { width: 160, height: 22 },
+  line: { width: 120, height: 16 },
 } as const;
 
 /** Danger-tinted glow behind the delete-confirmation sheet (iOS shadow; Android draws none). */
