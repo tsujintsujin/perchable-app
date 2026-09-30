@@ -3,6 +3,7 @@
 // the auth user is deleted, so a retry after a partial failure is safe.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { emptyFolder } from "./cleanup.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -49,20 +50,8 @@ Deno.serve(async (req) => {
 
   try {
     // 1) Remove every object under avatars/<uid>/ via the Storage API —
-    // listing an already-empty folder is a safe no-op, so this can retry.
-    const { data: files, error: listError } = await admin.storage
-      .from("avatars")
-      .list(uid);
-    if (listError) {
-      throw new Error(`storage list failed: ${listError.message}`);
-    }
-    if (files && files.length > 0) {
-      const paths = files.map((f) => `${uid}/${f.name}`);
-      const { error: removeError } = await admin.storage.from("avatars").remove(paths);
-      if (removeError) {
-        throw new Error(`storage remove failed: ${removeError.message}`);
-      }
-    }
+    // an already-empty folder is a no-op, so this can retry.
+    await emptyFolder(admin.storage.from("avatars"), uid);
 
     // 2) Delete the auth user. The profiles row cascades (ON DELETE
     // CASCADE). A retry after a partial failure fails with "not found" —
