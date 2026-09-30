@@ -25,41 +25,58 @@ insert into o(step, result)
 select 'a_open_reports', coalesce(jsonb_agg(to_jsonb(t)), '[]') from (
   select r.id as report_id, r.created_at, r.reason, r.details, r.target_type, r.target_id,
          rp.display_name as reporter_name, rp.usertag as reporter_tag,
-         tp.display_name as reported_name, tp.usertag as reported_tag, r.reported_user_id
+         tp.display_name as reported_name, tp.usertag as reported_tag, tu.email as reported_email, r.reported_user_id
   from public.reports r
   left join public.profiles rp on rp.id = r.reporter_id
   left join public.profiles tp on tp.id = r.reported_user_id
+  left join auth.users tu on tu.id = r.reported_user_id
   where r.status = 'open'
   order by r.created_at
 ) t;
 
--- (b) mark a report actioned
-update public.reports set status = 'actioned', reviewed_at = now() where id = '99999999-0000-0000-0000-000000000009';
-insert into o(step, result)
-select 'b_after_mark_actioned', to_jsonb(t) from (select id, status, reviewed_at is not null as has_reviewed_at from public.reports where id = '99999999-0000-0000-0000-000000000009') t;
+-- (b) mark a report actioned (returning shows the changed row; a wrong id returns no row)
+with u as (
+  update public.reports set status = 'actioned', reviewed_at = now()
+  where id = '99999999-0000-0000-0000-000000000009'
+  returning id, status, reviewed_at
+)
+insert into o(step, result) select 'b_update_returning', to_jsonb(u) from u;
+with u as (
+  update public.reports set status = 'actioned', reviewed_at = now()
+  where id = '00000000-0000-0000-0000-000000000000'
+  returning id
+)
+insert into o(step, result) select 'b_wrong_id_rows_returned', to_jsonb(count(*)) from u;
 insert into o(step, result)
 select 'b_open_reports_left', to_jsonb(count(*)) from public.reports where status = 'open';
 
 -- (c) list the avatar files, then clear the profile
 insert into o(step, result)
 select 'c_avatar_files', coalesce(jsonb_agg(name), '[]') from storage.objects where bucket_id = 'avatars' and name like '22222222-0000-0000-0000-000000000002/%';
-update public.profiles set avatar_url = null, usertag = null, display_name = null where id = '22222222-0000-0000-0000-000000000002';
-insert into o(step, result)
-select 'c_profile_after_clear', to_jsonb(t) from (select display_name, usertag, avatar_url from public.profiles where id = '22222222-0000-0000-0000-000000000002') t;
+with u as (
+  update public.profiles set avatar_url = null, usertag = null, display_name = null
+  where id = '22222222-0000-0000-0000-000000000002'
+  returning id, display_name, usertag, avatar_url
+)
+insert into o(step, result) select 'c_update_returning', to_jsonb(u) from u;
 
--- (d) ban, check, remove sessions, unban
-update auth.users set banned_until = 'infinity' where id = '22222222-0000-0000-0000-000000000002';
-insert into o(step, result)
-select 'd_after_ban', to_jsonb(t) from (select email, banned_until from auth.users where id = '22222222-0000-0000-0000-000000000002') t;
+-- (d) the ban block exactly as in the doc: update, two deletes, then a final select
+update auth.users set banned_until = now() + interval '100 years' where id = '22222222-0000-0000-0000-000000000002';
 delete from auth.sessions where user_id = '22222222-0000-0000-0000-000000000002';
 delete from auth.refresh_tokens where user_id = '22222222-0000-0000-0000-000000000002';
+insert into o(step, result)
+select 'd_ban_block_final_select', to_jsonb(t) from (select email, banned_until from auth.users where id = '22222222-0000-0000-0000-000000000002') t;
+insert into o(step, result)
+select 'd_wrong_id_final_select_rows', to_jsonb(count(*)) from auth.users where id = '00000000-0000-0000-0000-000000000000';
 insert into o(step, result)
 select 'd_sessions_and_tokens_left', to_jsonb(t) from (select
   (select count(*) from auth.sessions where user_id = '22222222-0000-0000-0000-000000000002') as sessions,
   (select count(*) from auth.refresh_tokens where user_id = '22222222-0000-0000-0000-000000000002') as refresh_tokens) t;
-update auth.users set banned_until = null where id = '22222222-0000-0000-0000-000000000002';
-insert into o(step, result)
-select 'd_after_unban', to_jsonb(t) from (select email, banned_until from auth.users where id = '22222222-0000-0000-0000-000000000002') t;
+with u as (
+  update auth.users set banned_until = null where id = '22222222-0000-0000-0000-000000000002'
+  returning email, banned_until
+)
+insert into o(step, result) select 'd_unban_returning', to_jsonb(u) from u;
 
 select json_agg(json_build_object('step', step, 'result', result) order by seq) from o;
 rollback;

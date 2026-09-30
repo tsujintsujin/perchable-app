@@ -1,8 +1,7 @@
--- Build 10a: moderation base. Adds public.reports, public.blocked_users and
+-- Moderation base. Adds public.reports, public.blocked_users and
 -- the public.is_blocked_between helper. Touches nothing else.
 
--- Reports filed by users. target_id has no FK on purpose: it points at
--- different tables per target_type, and a report must outlive its content.
+-- Reports filed by users. target_id has no FK: it is polymorphic and must outlive its content.
 -- reported_user_id is client-supplied, so an admin treats a report as a lead.
 create table public.reports (
   id uuid primary key default gen_random_uuid(),
@@ -59,9 +58,8 @@ alter table public.blocked_users enable row level security;
 revoke all on public.reports from anon, authenticated;
 revoke all on public.blocked_users from anon, authenticated;
 
--- Reports: insert-only, and only the client-settable columns. reporter_id
--- fills from its default; status, reviewed_at, id, created_at never come
--- from a client. No select/update/delete: a reporter never reads reports back.
+-- Reports: insert-only, client-settable columns only (reporter_id fills from its default).
+-- No select/update/delete: a reporter never reads reports back.
 grant insert (target_type, target_id, reported_user_id, reason, details)
   on public.reports to authenticated;
 

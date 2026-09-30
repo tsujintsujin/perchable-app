@@ -120,7 +120,15 @@ select pg_temp.fails('5','self_block','23514',
 select pg_temp.fails('5','duplicate_block','23505',
   $q$insert into public.blocked_users(blocker_id,blocked_id) values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')$q$);
 
+-- ===== Item 3 (defaults): a fresh client report is open and unreviewed =====
+reset role;
+select pg_temp.eq('3','fresh_report_status_is_open','open', $q$select status from public.reports where reporter_id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' and target_type='profile'$q$);
+select pg_temp.eq('3','fresh_report_reviewed_at_is_null','true', $q$select (reviewed_at is null)::text from public.reports where reporter_id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' and target_type='profile'$q$);
+
 -- ===== Item 6: block privacy and helper answers =====
+-- B blocks C (admin-side seed), so the caller-in-pair check has a real block to hide from A.
+insert into public.blocked_users(blocker_id,blocked_id) values ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','cccccccc-cccc-cccc-cccc-cccccccccccc');
+set local role authenticated;
 select pg_temp.eq('6','A_sees_own_block','1', $q$select count(*)::text from public.blocked_users$q$);
 select pg_temp.eq('6','helper_A_in_pair_AB','true', $q$select public.is_blocked_between('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')::text$q$);
 select pg_temp.eq('6','helper_A_in_pair_BA_symmetric','true', $q$select public.is_blocked_between('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')::text$q$);
@@ -129,25 +137,27 @@ select pg_temp.eq('6','helper_A_not_in_pair_BC','false', $q$select public.is_blo
 
 -- B (the blocked user) sees nothing and cannot remove the block.
 select set_config('request.jwt.claims','{"sub":"bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb","role":"authenticated"}',true);
-select pg_temp.eq('6','B_lists_blocked_users_rows','0', $q$select count(*)::text from public.blocked_users$q$);
+select pg_temp.eq('6','B_sees_only_own_block_row','1', $q$select count(*)::text from public.blocked_users$q$);
 select pg_temp.eq('6','B_cannot_see_blocker_via_filter','0', $q$select count(*)::text from public.blocked_users where blocked_id = auth.uid()$q$);
 select pg_temp.eq('6','helper_B_in_pair_true','true', $q$select public.is_blocked_between('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')::text$q$);
-delete from public.blocked_users;
+select pg_temp.eq('6','helper_B_in_pair_BC_true','true', $q$select public.is_blocked_between('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','cccccccc-cccc-cccc-cccc-cccccccccccc')::text$q$);
+delete from public.blocked_users where blocker_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 
 -- C (uninvolved) sees no blocks and cannot remove A's.
 select set_config('request.jwt.claims','{"sub":"cccccccc-cccc-cccc-cccc-cccccccccccc","role":"authenticated"}',true);
-select pg_temp.eq('6','C_reads_As_blocks','0', $q$select count(*)::text from public.blocked_users$q$);
+select pg_temp.eq('6','C_reads_others_blocks','0', $q$select count(*)::text from public.blocked_users$q$);
 select pg_temp.eq('6','helper_C_not_in_pair_AB','false', $q$select public.is_blocked_between('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')::text$q$);
-delete from public.blocked_users;
+delete from public.blocked_users where blocker_id in ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb');
 reset role;
-select pg_temp.eq('6','block_survived_B_and_C_deletes','1', $q$select count(*)::text from public.blocked_users where blocker_id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'$q$);
+select pg_temp.eq('6','B_block_survived_C_delete','1', $q$select count(*)::text from public.blocked_users where blocker_id='bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'$q$);
+select pg_temp.eq('6','A_block_survived_B_and_C_deletes','1', $q$select count(*)::text from public.blocked_users where blocker_id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'$q$);
 
 -- A can remove their own block.
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa","role":"authenticated"}',true);
 delete from public.blocked_users where blocked_id = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 reset role;
-select pg_temp.eq('6','A_can_unblock','0', $q$select count(*)::text from public.blocked_users$q$);
+select pg_temp.eq('6','A_can_unblock','0', $q$select count(*)::text from public.blocked_users where blocker_id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'$q$);
 
 -- ===== Item 4: anon =====
 set local role anon;
@@ -219,6 +229,26 @@ select pg_temp.eq('9','profiles_policies_unchanged','profiles_select_authenticat
   $q$select string_agg(policyname, ',' order by policyname) from pg_policies where schemaname='public' and tablename='profiles'$q$);
 select pg_temp.eq('9','avatars_policies_unchanged','4',
   $q$select count(*)::text from pg_policies where schemaname='storage' and tablename='objects' and policyname like 'avatars%'$q$);
+
+-- ===== Item 4/3 (privileges): nothing beyond the grants, for anon and authenticated =====
+do $$
+declare who text; priv text;
+begin
+  foreach who in array array['anon','authenticated'] loop
+    foreach priv in array array['SELECT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'] loop
+      perform pg_temp.eq('4', 'priv_reports_' || who || '_no_table_' || priv, 'false',
+        format('select has_table_privilege(%L, ''public.reports'', %L)::text', who, priv));
+    end loop;
+    perform pg_temp.eq('4', 'priv_reports_' || who || '_no_column_select_update_references', 'false',
+      format('select (has_any_column_privilege(%L, ''public.reports'', ''SELECT'') or has_any_column_privilege(%L, ''public.reports'', ''UPDATE'') or has_any_column_privilege(%L, ''public.reports'', ''REFERENCES''))::text', who, who, who) );
+    foreach priv in array array['UPDATE','TRUNCATE','REFERENCES','TRIGGER'] loop
+      perform pg_temp.eq('4', 'priv_blocked_users_' || who || '_no_table_' || priv, 'false',
+        format('select has_table_privilege(%L, ''public.blocked_users'', %L)::text', who, priv));
+    end loop;
+    perform pg_temp.eq('4', 'priv_blocked_users_' || who || '_no_column_update', 'false',
+      format('select has_any_column_privilege(%L, ''public.blocked_users'', ''UPDATE'')::text', who));
+  end loop;
+end $$;
 
 select json_agg(json_build_object('item',item,'check',k,'expected',expected,'actual',actual,'result',case when ok then 'PASS' else 'FAIL' end) order by seq) from r
 union all
