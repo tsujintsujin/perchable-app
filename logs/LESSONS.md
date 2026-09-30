@@ -44,3 +44,7 @@ Handle each one up front; say in the Build log how (or "n/a").
 - [ ] 1–2 line purpose comment above every block; no Build/Bug history in code.
 - (Ruby's checklist named tokens + secure-store and both were still missed
   across 7 Builds — Ruby now greps the diff for literals.)
+- [ ] Gates mean zero warnings too: `npx jest` output must contain no
+      "act(" warnings — pass count alone hid one (Standards pass, Manager missed it).
+- [ ] Never commit a file you didn't write in this task under an unrelated
+      message; new server code gets its own commit + log entry.

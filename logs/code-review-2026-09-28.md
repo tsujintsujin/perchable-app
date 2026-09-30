@@ -153,3 +153,15 @@ previously-signed-in session did not carry over (the old plain-AsyncStorage
 session isn't readable by the new storage) — one re-sign-in is required.
 Couldn't complete a real Google sign-in myself; Queenie/Justin should sign
 in once and confirm Home/Profile/Edit/Settings each open.
+
+## Manager correction after Ruby's re-review (2026-09-29)
+- `supabase/functions/delete-account/index.ts` first entered git in eafbfe8
+  ("comments" commit). It was written by Bella on 2026-09-26 at the Manager's
+  request as Build 9 prep, left untracked by the Manager, then swept into the
+  comment pass. It is **not deployed and not wired to any UI**. Ruby's
+  2026-09-29 review is its first logic review (sound: uid from the caller's
+  JWT only, storage cleanup before deleteUser, "not found" retry = success).
+  It gets a full review again when Build 9 wires it up.
+- Correction to "Second pass": only `delete-account` calls `auth.getUser(token)`.
+  `tmdb` relies on the platform `verify_jwt` gate alone, which is enough —
+  it serves no user-scoped data.

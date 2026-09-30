@@ -62,4 +62,4 @@ The CLI needs `SUPABASE_ACCESS_TOKEN` (from `Credentials/perchable/.env`).
 both contain a line starting "Approved by Justin:" — which only Justin types.
 
 ## Current Build
-Build 1 — dev build boots (Module 1 Foundation, branch `module/foundation`). Stage A done 2026-09-24: RESEARCH.md, PLAN.md, DESIGN.md all signed. Stack decided: Supabase + TMDB proxy (see PLAN.md §2).
+Build 7 — Edit profile, open (Module 2, branch `module/auth`). **Start with HANDOFF.md.** Modules: 1 done; 2 in progress (5, 6 done; 7 open; 8, 9 to do).
