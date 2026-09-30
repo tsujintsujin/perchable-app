@@ -184,3 +184,61 @@ that user's JWT, confirm the folder is empty and a second call returns 401.
 6. Log corrections above (items 4 and 9, deployment state, flag 7).
 - Not done, per the Manager: error copy unchanged; StrictMode double-run toast timer is dev-only.
 - Gates: tsc clean, lint clean, jest 19 suites / 123 tests, 0 "act(", 0 console warnings.
+
+---
+
+# QA - Queenie (Phase 3), 2026-09-30, HEAD 08fe19d
+td_emu, signed in as @justin94test (Justin), own Metro (started, stopped, 8081 confirmed free). Evidence: `logs/evidence/build-09/qa-*.png`, `qa-logcat-errors-delete.txt`. Nothing written to /sdcard. Did not sign back in; the emulator is left on the sign-in screen.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Danger zone row: "DANGER ZONE" header below About, "🗑 Delete my account", tinted fill/border, red text; only the dev-client gear is in the top-right 64x64 (Settings header has nothing there). TMDB attribution verbatim (§7) | PASS | qa-01-settings-danger.png |
+| 2 | Sheet: title, intro, 4 bullets, note, prompt, Cancel / "Delete my account" all verbatim; Delete visibly dimmed and its node `enabled=false` | PASS | qa-02-sheet.png |
+| 3 | Gate by UI dump: empty, `delete`, ` DELETE`, `DELETE ` all `enabled=false`; exact `DELETE` `enabled=true`. Keyboard: sheet lifts, input and both buttons stay visible | PASS (gate). Keyboard part PARTIAL, see note 1 | qa-03-gate-keyboard.png |
+| 4 | Cancel, backdrop tap, Android back each close the sheet (dump: sheet absent); reopened sheet has empty input; Profile still @justin94test | PASS | qa-04-dismissed-profile.png |
+| 5 | Wifi+data off, typed DELETE, tapped Delete: error card "⚠ Couldn't delete your account. Check your connection and try again." shown, sheet back in confirm state with Delete enabled. Network back on: Profile still @justin94test | PASS | qa-05-offline-error.png, qa-05b-after-offline-account-exists.png |
+| 6 | 5 taps chained in one shell call. Deleting frame: status line "Deleting your data — this may take a moment.", button "Deleting…" with spinner, Cancel dimmed. Android back during it did not dismiss (see note 2). Landed on sign-in with toast "✓ Your account was deleted." | PASS | qa-06a-before-delete.png, qa-06b-deleting-frame1.png, qa-06c-deleting-after-back.png, qa-06d-after-delete.png |
+| 7 | Force-stop and relaunch: opens on sign-in, no toast | PASS | qa-07-relaunch.png |
+| 8 | Logcat | see below | qa-logcat-errors-delete.txt |
+
+Delete completion time: last "Deleting…" frame 13:47:59 local (05:47:59 device UTC); sign-in with toast seen by 13:48:10 local (05:48:10 UTC). Device clock is UTC, host is UTC+8. So the server-side delete finished between 05:47:59 and 05:48:10 UTC on 2026-09-30.
+
+Double-tap: 5 taps landed, UI showed a single Deleting state and one sign-out. I did not count server calls (no access to function logs); the Manager can confirm one invocation server-side.
+
+Note 1 (keyboard, flag 5): Gboard on td_emu runs in hardware-keyboard mode, so only a floating toolbar shows, not the full-height keyboard. Layout did lift the sheet ~50px and input and buttons stayed visible, but a real full-height keyboard is UNTESTABLE on this emulator. Justin to check on a phone that the input and both buttons stay visible with the keyboard up.
+
+Note 2 (back during deleting): the frame after back shows the sheet dropped ~50px, so that back press may have gone to hiding the IME first, not to the app. The sheet stayed. Weak proof for the back block; the unit test covers it. Same-frame Cancel/scrim were not tapped during deleting.
+
+Logcat (cleared just before item 6; the offline phase is not in it). Red lines from the app process (pid 31540), exact text:
+- `E/unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception` with `java.net.SocketException: Software caused connection abort` (3 times, 05:47:58.313-.321, i.e. during the delete/sign-out). NOT on the known-harmless list. Native okhttp websocket, most likely the dev-client Metro connection, but I did not prove that. Ruby to judge.
+- `E/ImeBackDispatcher: Ime callback not found. Ignoring unregisterReceivedCallback.` (known)
+- `E/FrameTracker: force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION / IME_INSETS_HIDE_ANIMATION ...>` (known)
+No FATAL, AndroidRuntime, ANR or app crash. Non-app red lines: emulator audio HAL `pcmOpen ... failed`, Gboard `InputConnectionWrapper ... TimeoutException`, `TaskPersister`, `IPCThreadState Binder transaction failure`, `chromium variations_seed_loader`, `audit rate limit exceeded`.
+No warning or error banners on screen at any point.
+
+Design check: sheet matches the Manager decisions (danger border, flat fill, no glow, handle decorative). Title is red Poppins, list/note/prompt in the spec hierarchy. Not measured to the pixel against the board.
+
+Not tested (Manager to set up): item 8 sign back in creating a fresh profile; server side that auth user, profile rows and avatars folder are gone; a 401-with-account-still-existing path.
+
+Bugs: none.
+
+## Build 9 — CLOSED (Manager, 2026-09-30)
+- Commits: 5f4893e + 878bde9 + 8f171c2 function · a337c1e + 786094f + 08fe19d app.
+  Function deployed by Manager: v2, verify_jwt on.
+- Gates (Manager rerun at 08fe19d): tsc clean, jest 123/123, 0 act()/console warnings, no secrets.
+- QA: Queenie PASS 8/8 (gate, dismissal, offline, 5-tap delete, toast once, relaunch).
+- Review: Ruby FIX NEEDED → PASS after Bug 1.
+- Manager live checks:
+  - no auth / malformed JWT / GET → 401 from the platform.
+  - Seeded 150 objects + `nested/seed-deep.jpg` under the test uid before the on-device delete;
+    after it: auth user 0, profile 0, storage objects 0 (multi-page + nested cleanup proven).
+  - Item 8: Justin signed in again → new uid 43fae9b2… (old 5d77892a…), usertag null, Google
+    photo, 0 storage objects. Screen: `evidence/build-09/manager-fresh-profile-release.png`.
+- Not proven live: single server invocation on 5 taps (logs API query failed — unit test +
+  one "Deleting…" state only); deleted-user-token → 200 path (pure-function tests only).
+- UNTESTABLE → Justin: full-height soft keyboard on a real phone keeps input + buttons visible.
+- Release APK (Justin asked): `builds/perchable-test-2026-09-30.apk` (gitignored), arm64-v8a +
+  x86_64, debug-keystore signed. Installed on td_emu with no Metro: launches, signed in, Profile +
+  Settings render, no crash. Dev build reinstalled afterwards.
+  Build command that works (one at a time — two Gradle runs collide):
+  `GRADLE_USER_HOME="C:/g/perchable" SENTRY_DISABLE_AUTO_UPLOAD=true ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a,x86_64` (~29 min).

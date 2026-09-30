@@ -71,3 +71,7 @@ Handle each one up front; say in the Build log how (or "n/a").
 - [ ] Google sign-in on td_emu (account picker = OAuth grant) is done by Justin,
       or by an agent only with his explicit yes for that run. Builds 5 and 8
       did it without asking — Manager's miss. (2026-09-30)
+- Release APK: always `GRADLE_USER_HOME="C:/g/perchable"`, limit ABIs with
+  `-PreactNativeArchitectures=arm64-v8a,x86_64`, and run `./gradlew --stop` before
+  restarting — a stopped shell leaves the Gradle daemon building, and two builds
+  collide (ninja "Permission denied"). Don't run Metro/QA on td_emu during it (CPU). (2026-09-30)

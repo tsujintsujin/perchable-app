@@ -50,3 +50,6 @@ example
 !.env.example
 design-src/
 *.keystore
+
+# local test APKs
+builds/
