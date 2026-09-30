@@ -33,3 +33,10 @@ Plan: PLAN.md "Build 10a" (A1–A10, B1–B3). Manager defaults D1–D4 apply (J
     written to the repo, logs, or the report.
 
 B3 (ban proof on a real sign-in) is UNTESTABLE until Justin's second Google account exists.
+
+## Ruby plan recheck (0ca5fd5): PASS — notes carried into the briefs
+- 10a: every function body schema-qualifies all objects (`public.…`, `auth.uid()`), since
+  `search_path = ''` breaks unqualified names silently. tsc/lint/jest are trivially green in 10a
+  (no client code) — they are regression gates only, NOT evidence; the SQL test is the evidence.
+- 10b: the dev harness is assigned at module scope (`const Harness = __DEV__ ? require(...).X : null`);
+  the bundle check has a control — the dev bundle must contain the marker, the release export must not.
