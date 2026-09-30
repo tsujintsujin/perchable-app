@@ -19,7 +19,10 @@ Base SHA: (recorded at Phase 1 start)
    is not deletion).
 7. **Sentry** — sign-out failures are reported, a normal sign-out is not; if
    a Sentry user is ever set, it is cleared.
-8. **In-flight requests** — a profile fetch/upload finishing after sign-out
+8. **Local clear fails** — `LargeSecureStore.removeItem` rethrows if either
+   store's delete fails (Build 7 Bug 2). `signOut` then rejects: the user must
+   still land on sign-in, the error goes to Sentry, no stuck loading button.
+9. **In-flight requests** — a profile fetch/upload finishing after sign-out
    must not write state or show an error screen.
 
 Plus `logs/LESSONS.md` checklist and the spec-trace table (DESIGN.md

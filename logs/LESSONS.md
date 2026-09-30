@@ -54,3 +54,7 @@ Handle each one up front; say in the Build log how (or "n/a").
       and a screenshot gets picked as a "test photo". Use `/data/local/tmp`.
       Test photos only in `/sdcard/Pictures/`. Check a stored image's pixels
       before calling a pipeline broken.
+- [ ] Removing a `.catch`/fallback (e.g. dropping `getSession()`): trace the
+      library path that replaces it and prove it can't hang when *our* code
+      throws. supabase-js never fires INITIAL_SESSION if storage rejects —
+      storage adapters must never reject. (B7 Bug 2)
