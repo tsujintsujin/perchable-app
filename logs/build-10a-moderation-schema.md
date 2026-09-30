@@ -546,3 +546,29 @@ profiles_rls.sql and avatars_storage_rls.sql give the same rows as baseline. tsc
 
 **Files outside the Build's original scope:** the new migration and test touch `public.profiles` (a Build 6 object);
 that is exactly what this Bug is about. Nothing else.
+
+## Build 10a — CLOSED (Manager, 2026-09-30)
+- Commits: ee6bef4 migration + test · 3862fa6 admin doc · a54f646 Bug 1 · da437ad Bug 2.
+- QA: Queenie independent re-run 66/0 (pre-Bug 1), coverage complete; doc usability → Bug 1.
+- Review: Ruby FIX NEEDED (doc/runner/tests; migration sound) → PASS after Bug 1 + Bug 2.
+- Manager reruns: `moderation_rls.sql` 94/0, `profiles_privileges.sql` 24/0.
+- **Phase 5 — applied to the live project (Management API, one query each, in order):**
+  `20260930000000_moderation.sql`, then `20260930010000_profiles_revoke_default_privileges.sql`.
+  No `supabase_migrations.schema_migrations` table exists (earlier Builds were applied the same
+  way) — never use `supabase db push` on this project without reconciling history first.
+- Live verification after apply: both tables exist with RLS on; policies exactly
+  reports_insert_own, blocked_users_{select,insert,delete}_own, profiles_{select_authenticated,
+  update_own}; TRUNCATE/REFERENCES/TRIGGER for anon/authenticated on all three tables = 0;
+  reports select/update/delete for authenticated = false; blocked_users select/delete true,
+  update false; helper EXECUTE anon false / authenticated true; 0 rows in both tables;
+  Justin's profile row identical before and after (43fae9b2 | tsujintsujin | updated_at unchanged);
+  1 user, 0 banned. Storage: `storage.objects` RLS on, the four avatars_* policies present.
+- `src/lib/database.types.ts` regenerated (`npx supabase gen types typescript --project-id …`):
+  +58 lines (reports, blocked_users, is_blocked_between); tsc clean, lint clean, jest 132/132.
+- Admin doc wording nit fixed by the Manager ("signs out on every device" → stops sign-in/refresh).
+- B3 (ban refuses a real Google sign-in): UNTESTABLE until Justin's second Google account exists —
+  carried to Build 10b Phase 3.
+- Pre-launch decision for Justin: a banned user can still delete their account within ~1 h and
+  re-register; a persistent ban list checked at sign-up would be a new feature.
+- Needs from Justin: open `docs/ADMIN-MODERATION.md`, run query (a) in the Supabase SQL editor
+  once (an empty result is correct — no reports yet).

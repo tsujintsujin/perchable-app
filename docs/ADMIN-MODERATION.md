@@ -125,7 +125,7 @@ What it does: a banned user cannot sign in again. Use this rather than
 deleting the account: a deleted user can just sign up again with Google, a
 banned one cannot.
 
-**Warning first: this signs the user out on every device.** The block below
+**Warning first: this stops the user signing in or refreshing on every device** (a pass they already hold can keep working for up to about an hour — see the honest limit below). The block below
 does three things together, so run it as one block (all four lines) and
 promptly. Have the person's email from (a) (`reported_email`) noted first.
 

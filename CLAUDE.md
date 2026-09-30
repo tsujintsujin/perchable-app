@@ -62,4 +62,4 @@ The CLI needs `SUPABASE_ACCESS_TOKEN` (from `Credentials/perchable/.env`).
 both contain a line starting "Approved by Justin:" — which only Justin types.
 
 ## Current Build
-Build 10 — Moderation schema + UI, NOT started (Module 3). Modules: 1, 2 done. **Start with HANDOFF.md.**
+Build 10b — Report/block UI (Module 3, branch `module/moderation`). 10a (schema + admin doc) done and applied live. Modules: 1, 2 done. **Start with HANDOFF.md.**
