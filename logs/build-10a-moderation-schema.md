@@ -254,3 +254,248 @@ on any real user (the ban ran on a seeded user inside the rolled-back transactio
 - **B1(a)** uses `left join` on profiles so a missing profile row can never hide a report.
 - Test-file shape: the file holds a marker and `run-sql.mjs` pastes the migration in, so it is not runnable
   as-is in the SQL editor (paste the migration at the marker).
+
+---
+# QA (Queenie, Phase 3) — no UI, no emulator, no screenshots
+
+Re-ran both SQL tests myself (rolled back, live DB unchanged; no ban/data touched, emulator untouched).
+Evidence: `logs/evidence/build-10a/qa-moderation-rls.txt` (pass=66 fail=0, 66 rows identical to Bella's table,
+checked by diff) and `qa-admin-doc-queries.txt` (8 rows, same shapes as Bella's). Secret scan of both files: no
+`sbp_` / bearer / JWT strings (the only "token" hit is the row name `d_sessions_and_tokens_left`).
+
+## Coverage: PLAN line / failure-mode item -> proving rows
+| Line | Proving row(s) | Result |
+|---|---|---|
+| A1 columns, default uid, 500 max, cascade FKs | report_as_self_ok (default reporter_id), details_500_chars_ok, details_501_chars, delete_D_* | PASS |
+| A1 `status` default open, `reviewed_at` null on fresh insert | no direct row; only indirect (partial_open_index, admin query (a) returns the report as open) | WEAK: no explicit row |
+| A1 no FK on target_id | other_target_types_ok inserts random uuids for comment/dm_message/collection_item | PASS (indirect) |
+| A2 CHECKs, other needs details | unknown_target_type, unknown_reason, unknown_status, other_without_details, other_blank_details, other_with_details_ok, other_target_types_ok | PASS |
+| A3 self-report, profile id match, one per target | self_report, profile_target_id_mismatch, duplicate_report | PASS |
+| A4 grants/RLS/anon | insert_status/reviewed_at/id/created_at, select_reports_denied, select_own_report_denied, update_status_denied, update_details_denied, delete_report_denied, report_spoofed_reporter_id(+_rls_policy_alone), anon_select/insert_reports | PASS |
+| A5 PK, self-block | duplicate_block, self_block | PASS |
+| A6 blocked_users grants/policies | update_block_denied, B_lists_blocked_users_rows, B_cannot_see_blocker_via_filter, C_reads_As_blocks, A_sees_own_block, A_can_unblock, block_survived_B_and_C_deletes, block_spoofed_blocker_id, anon_*_blocked_users | PASS |
+| A7 indexes | partial_open_index, reported_user_index, blocked_id_index, rls_enabled_on_both_tables | PASS |
+| A8 helper | helper_A_in_pair_AB/BA, _AC_no_block, _not_in_pair_BC, _B_in_pair_true, _C_not_in_pair_AB, _no_caller_false, security_definer, search_path_empty, body_names_are_schema_qualified, anon_has_no_execute, anon_execute_is_blocked_between, authenticated_has_execute, public_pseudo_role_has_no_execute | PASS |
+| A9 cascade both sides, both tables | delete_D_reports/blocks_left (seed has D as reporter, reported, blocker, blocked), delete_D_unrelated_*_kept, delete_F_rows_left | PASS |
+| A10 only two tables + helper, nothing else touched | profiles_policies_unchanged, avatars_policies_unchanged (policies only; file-level scope is Mgr's read of the migration, not re-checked by me) | PASS (partly Mgr) |
+| B1 doc | see readability below | see below |
+| B2 doc queries run | qa-admin-doc-queries.txt rows a..d | PASS |
+| B3 ban on real sign-in | **UNTESTABLE — Justin to check** once second Google account exists | UNTESTABLE |
+| FM2 spoofing | item-2 rows (6) | PASS |
+| FM3 column limits | item-3 rows (10) | PASS |
+| FM4 anon | item-4 rows (5) | PASS |
+| FM5 data rules | item-5 rows (13) | PASS |
+| FM6 block privacy | item-6 rows | PASS |
+| FM7 cascade | item-7 rows (5) | PASS |
+| FM8 hardening | item-8 rows (6) | PASS |
+| FM9 existing behaviour | profiles_policies_unchanged, avatars_policies_unchanged. I did NOT re-run profiles_rls.sql / avatars_storage_rls.sql (not asked); Bella's log claims identical output | PASS on policy rows; regression suites unverified by me |
+
+No plan line is fully without a row. One weak line (A1 default status / null reviewed_at).
+
+## Admin doc readability (read as Justin)
+Good: plain intro, every query has a "What it does" line, (b)/(c)/(d) name the choices, the "a report is a lead"
+warning is at the top, and the Storage-delete step says up front it cannot be undone.
+
+Findings:
+1. **No "what you will see / how to tell it worked" for most queries.** (a) does not say "an empty result means no
+   open reports". (b), (c) step 1 and (d) ban/unban are `update`/`delete` statements: the editor just says
+   "Success. No rows returned" (or "N rows affected"), and the doc never says so or tells him to re-run (a) or the
+   check query. Only the last query in (d) is a check, and it is placed after unban and never described
+   ("banned_until shows infinity when banned, empty when not").
+2. **Two placeholders differ and are not explained.** `'<report_id from query (a)>'` reads like a sentence; he may
+   paste "from query (a)" literally or drop the quotes. `<user_id>` is never said to be the `reported_user_id` column
+   from (a). The intro says "keep the quotes" but (c) step 2 is `'<user_id>/%'`: the `<user_id>` sits inside the
+   quotes with `/%`, so "replace the placeholder" needs care. Quote: `name like '<user_id>/%'`.
+3. **Wrong-id risk is not warned.** A typo or unquoted/missing where-id gives 0 rows changed silently; nothing says to
+   check the "1 row affected" count. Nothing warns that deleting the `where` line changes every row.
+4. **Warnings after the query, not before.** (d) "Make it bite right now" deletes sessions/tokens (cannot be undone,
+   but harmless: user just signs in again) with no caution. (c) step 1 blanks `usertag` and display_name with no
+   note that the old values are lost (no way to restore; he should copy them from (a) first). "The user can set them
+   again later" is above the query, but not that the previous values are gone.
+5. **`(c)` order:** step 1 (clear profile) then step 2 (list files) then step 3 (delete, cannot be undone) is OK, but
+   step 3 is written as one dense paragraph; "select all, Delete" is easy to skim past. Suggest a bold "Cannot be
+   undone" label as the first words.
+6. **`'infinity'` fallback is a hidden branch.** The last paragraph of (d) says the ban may not work and to use
+   `'2999-12-31'` instead, but this is unresolved until B3. Justin cannot tell whether to believe the ban works
+   today. Quote: "If that check shows the ban does not stop sign-in, use a far date". He should be told plainly now
+   that the ban is unproven on a real sign-in (or the doc should default to the far date, as Bella suggested).
+7. **Jargon:** "RLS", "service role", "access token", "refresh tokens", "dm_message", "collection_item" are used
+   without a gloss (RLS appears in the intro and in the limits list). "Storage" vs "storage.objects" both appear.
+8. **Ban wording.** "a banned one cannot" sign up again is asserted from Build 9 reasoning, not proven (B3).
+9. The doc says the SQL was run "against the real database schema" — true, but it does not mention that reports do
+   not exist live until the Manager applies the migration; running (a) before that gives "relation does not exist".
+
+## Verdict
+**PARTIAL.** Database evidence is solid: 66/66 independently reproduced, byte-for-byte same rows, no secret leaks,
+coverage complete except one weak line (A1 default status/reviewed_at, no explicit row). B3 UNTESTABLE — Justin to
+check with the second Google account. Doc findings 1, 2, 4 and 6 are real usability gaps for a non-database reader
+(recommend a small doc fix, not a Bug against the schema). Nothing was changed in the live database.
+
+---
+# Build 10a · Bug 1 (Bella) — from Ruby's review and Queenie's QA
+
+Base: c1f1ae2. Migration logic unchanged; nothing applied live; no emulator.
+
+## Cause and fix, per item
+1. **Ban was several separate steps and overclaimed.** Cause: the doc gave the update and the session deletes as
+   separate snippets, and said deleting sessions makes the ban bite immediately. Fix: (d) is now ONE block
+   (update, `delete from auth.sessions`, `delete from auth.refresh_tokens`, final `select`). `auth.refresh_tokens.user_id`
+   is `character varying` (checked in `information_schema`), `auth.sessions.user_id` and `session_id` are uuid, so the
+   uuid is passed as a plain quoted literal for both (no `::uuid` cast on the refresh_tokens compare). The doc now
+   says sessions stop *refresh* only; an issued access token works up to about an hour, in which a banned user could
+   delete their own account and sign up again (erasing reports about them); run the block promptly, note the email first.
+2. **Ban value**: `'infinity'` replaced by `now() + interval '100 years'` in the doc and `admin_doc_queries.sql`;
+   fallback paragraph removed; doc states the ban is proven at SQL level only until B3. PLAN.md untouched.
+3. **Doc usability**: what-you'll-see line for every query; concrete example uuid and exact source column;
+   "replace the whole <...> including angle brackets"; row-count guidance implemented with `returning` on (b), (c)
+   step 1 and unban, and a final `select` in the ban block (the editor only shows the last statement; a bare
+   update says "Success. No rows returned", which cannot show a row count); warnings placed before (c) and (d);
+   "one block at a time / highlighted text only"; 5-line glossary; Notes gained "no cap on blocks" and "user id
+   existence via FK errors". Query (a) now also returns `reported_email` (join `auth.users`), because the brief
+   says to note the email from (a) and (a) had no email.
+4. **run-sql.mjs**: exits 1 on any FAIL row or `fail=` > 0; exits 2 with a message if `--migration` is given and the
+   anchor is missing. The anchor is now strictly the `-- @@MIGRATION@@` marker; the `begin;` fallback used for the
+   older profiles/avatars regression files is now an explicit `--after-begin` flag (so a forgotten marker cannot
+   silently fall back). Checked: marker-less file with `--migration` -> exit 2; mutant -> exit 1; real -> exit 0.
+5. **moderation_rls.sql**: 24 new privilege rows (28 new rows in total, 66 to 94) (`has_table_privilege` SELECT/UPDATE/DELETE/TRUNCATE/REFERENCES/
+   TRIGGER on reports; UPDATE/TRUNCATE/REFERENCES/TRIGGER on blocked_users; `has_any_column_privilege` SELECT/UPDATE/
+   REFERENCES on reports and UPDATE on blocked_users; all for both `anon` and `authenticated`), fresh-report default
+   rows (`fresh_report_status_is_open`, `fresh_report_reviewed_at_is_null`), and a seeded B-to-C block so
+   `helper_A_not_in_pair_BC` is meaningful (plus `helper_B_in_pair_BC_true`). Block-privacy rows were adjusted for the
+   extra block (B now legitimately sees its own one row: `B_sees_only_own_block_row`), and two survival rows added.
+6. **Mutation checks**: (a) dropping both `revoke all ... from anon, authenticated` gave `pass=80 fail=14`, all in
+   the new privilege rows (TRUNCATE / REFERENCES / TRIGGER for both roles on both tables, plus the column-privilege
+   rows for anon and authenticated). The table SELECT/UPDATE/DELETE rows stayed PASS in that mutant, i.e. this
+   project's default privileges do not grant those, but they DO grant TRUNCATE/REFERENCES/TRIGGER: without the
+   revoke a signed-in client could `TRUNCATE public.reports` (RLS does not apply to TRUNCATE). The new rows are what
+   guards this. (b) removing the caller-in-pair clause from the helper gave `pass=92 fail=2`:
+   `helper_A_not_in_pair_BC` and `helper_C_not_in_pair_AB` FAIL (before the B-to-C seed the first could not fail).
+7. **Migration comments only**: header "Build 10a:" -> "Moderation base."; the two 3-line comment blocks cut to 2
+   lines. Verified: `git diff -U0` of the migration shows no changed line that is not a `--` comment.
+
+## Files touched outside the Build's original scope
+None. All changes are the files Bug 1 names (doc, migration comments, run-sql.mjs, moderation_rls.sql,
+admin_doc_queries.sql, this log). I did NOT stage this log file: it also carries Queenie's uncommitted QA section, which
+is the Manager's to commit (the Manager can commit the log as is).
+
+## Gates
+tsc exit 0; lint exit 0; jest 19 suites / 132 tests, 0 `act(`, 0 console warnings (regression only).
+Regression with the migration applied (`--after-begin`): profiles_rls.sql and avatars_storage_rls.sql same rows as
+baseline, exit 0. Live DB unchanged (all runs rolled back).
+
+## New SQL result table: `moderation_rls.sql` (pass=94 fail=0, exit 0)
+```
+2 | report_as_self_ok | ok | ok | PASS
+2 | report_spoofed_reporter_id | 42501 | 42501 | PASS
+2 | block_as_self_ok | ok | ok | PASS
+2 | block_spoofed_blocker_id | 42501 | 42501 | PASS
+2 | report_spoofed_reporter_id_rls_policy_alone | 42501 | 42501 | PASS
+2 | report_own_reporter_id_rls_passes | ok | ok | PASS
+3 | insert_status | 42501 | 42501 | PASS
+3 | insert_reviewed_at | 42501 | 42501 | PASS
+3 | insert_id | 42501 | 42501 | PASS
+3 | insert_created_at | 42501 | 42501 | PASS
+3 | select_reports_denied | 42501 | 42501 | PASS
+3 | select_own_report_denied | 42501 | 42501 | PASS
+3 | update_status_denied | 42501 | 42501 | PASS
+3 | update_details_denied | 42501 | 42501 | PASS
+3 | delete_report_denied | 42501 | 42501 | PASS
+3 | update_block_denied | 42501 | 42501 | PASS
+5 | other_without_details | 23514 | 23514 | PASS
+5 | other_blank_details | 23514 | 23514 | PASS
+5 | other_with_details_ok | ok | ok | PASS
+5 | details_500_chars_ok | ok | ok | PASS
+5 | details_501_chars | 23514 | 23514 | PASS
+5 | self_report | 23514 | 23514 | PASS
+5 | duplicate_report | 23505 | 23505 | PASS
+5 | profile_target_id_mismatch | 23514 | 23514 | PASS
+5 | unknown_target_type | 23514 | 23514 | PASS
+5 | unknown_reason | 23514 | 23514 | PASS
+5 | other_target_types_ok | ok | ok | PASS
+5 | self_block | 23514 | 23514 | PASS
+5 | duplicate_block | 23505 | 23505 | PASS
+3 | fresh_report_status_is_open | open | open | PASS
+3 | fresh_report_reviewed_at_is_null | true | true | PASS
+6 | A_sees_own_block | 1 | 1 | PASS
+6 | helper_A_in_pair_AB | true | true | PASS
+6 | helper_A_in_pair_BA_symmetric | true | true | PASS
+6 | helper_A_pair_AC_no_block | false | false | PASS
+6 | helper_A_not_in_pair_BC | false | false | PASS
+6 | B_sees_only_own_block_row | 1 | 1 | PASS
+6 | B_cannot_see_blocker_via_filter | 0 | 0 | PASS
+6 | helper_B_in_pair_true | true | true | PASS
+6 | helper_B_in_pair_BC_true | true | true | PASS
+6 | C_reads_others_blocks | 0 | 0 | PASS
+6 | helper_C_not_in_pair_AB | false | false | PASS
+6 | B_block_survived_C_delete | 1 | 1 | PASS
+6 | A_block_survived_B_and_C_deletes | 1 | 1 | PASS
+6 | A_can_unblock | 0 | 0 | PASS
+4 | anon_select_reports | 42501 | 42501 | PASS
+4 | anon_insert_reports | 42501 | 42501 | PASS
+4 | anon_select_blocked_users | 42501 | 42501 | PASS
+4 | anon_insert_blocked_users | 42501 | 42501 | PASS
+4 | anon_execute_is_blocked_between | 42501 | 42501 | PASS
+5 | unknown_status | 23514 | 23514 | PASS
+5 | status_reviewed_ok_via_admin | ok | ok | PASS
+6 | helper_no_caller_false | false | false | PASS
+7 | delete_D_reports_left_involving_D | 0 | 0 | PASS
+7 | delete_D_blocks_left_involving_D | 0 | 0 | PASS
+7 | delete_D_unrelated_report_kept | 1 | 1 | PASS
+7 | delete_D_unrelated_block_kept | 1 | 1 | PASS
+7 | delete_F_rows_left_involving_F | 0 | 0 | PASS
+8 | security_definer | true | true | PASS
+8 | search_path_empty | true | true | PASS
+8 | anon_has_no_execute | false | false | PASS
+8 | authenticated_has_execute | true | true | PASS
+8 | public_pseudo_role_has_no_execute | 0 | 0 | PASS
+8 | body_names_are_schema_qualified | true | true | PASS
+A7 | rls_enabled_on_both_tables | 2 | 2 | PASS
+A7 | partial_open_index | true | true | PASS
+A7 | reported_user_index | 1 | 1 | PASS
+A7 | blocked_id_index | 1 | 1 | PASS
+9 | profiles_policies_unchanged | profiles_select_authenticated,profiles_update_own | profiles_select_authenticated,profiles_update_own | PASS
+9 | avatars_policies_unchanged | 4 | 4 | PASS
+4 | priv_reports_anon_no_table_SELECT | false | false | PASS
+4 | priv_reports_anon_no_table_UPDATE | false | false | PASS
+4 | priv_reports_anon_no_table_DELETE | false | false | PASS
+4 | priv_reports_anon_no_table_TRUNCATE | false | false | PASS
+4 | priv_reports_anon_no_table_REFERENCES | false | false | PASS
+4 | priv_reports_anon_no_table_TRIGGER | false | false | PASS
+4 | priv_reports_anon_no_column_select_update_references | false | false | PASS
+4 | priv_blocked_users_anon_no_table_UPDATE | false | false | PASS
+4 | priv_blocked_users_anon_no_table_TRUNCATE | false | false | PASS
+4 | priv_blocked_users_anon_no_table_REFERENCES | false | false | PASS
+4 | priv_blocked_users_anon_no_table_TRIGGER | false | false | PASS
+4 | priv_blocked_users_anon_no_column_update | false | false | PASS
+4 | priv_reports_authenticated_no_table_SELECT | false | false | PASS
+4 | priv_reports_authenticated_no_table_UPDATE | false | false | PASS
+4 | priv_reports_authenticated_no_table_DELETE | false | false | PASS
+4 | priv_reports_authenticated_no_table_TRUNCATE | false | false | PASS
+4 | priv_reports_authenticated_no_table_REFERENCES | false | false | PASS
+4 | priv_reports_authenticated_no_table_TRIGGER | false | false | PASS
+4 | priv_reports_authenticated_no_column_select_update_references | false | false | PASS
+4 | priv_blocked_users_authenticated_no_table_UPDATE | false | false | PASS
+4 | priv_blocked_users_authenticated_no_table_TRUNCATE | false | false | PASS
+4 | priv_blocked_users_authenticated_no_table_REFERENCES | false | false | PASS
+4 | priv_blocked_users_authenticated_no_table_TRIGGER | false | false | PASS
+4 | priv_blocked_users_authenticated_no_column_update | false | false | PASS
+pass=94 fail=0
+```
+
+## Admin doc queries, rolled back, new output (exit 0)
+```
+a_open_reports | [{"reason":"harassment","details":"abusive name","report_id":"99999999-0000-0000-0000-000000000009","target_id":"22222222-0000-0000-0000-000000000002","created_at":"2026-09-30T13:01:00.669596+00:00","target_type":"profile","reported_tag":"badactory","reporter_tag":"reporterx","reported_name":"Bad Actor Y","reporter_name":"Reporter X","reported_email":"y@example.test","reported_user_id":"22222222-0000-0000-0000-000000000002"}]
+b_update_returning | {"id":"99999999-0000-0000-0000-000000000009","status":"actioned","reviewed_at":"2026-09-30T13:01:00.669596+00:00"}
+b_wrong_id_rows_returned | 0
+b_open_reports_left | 0
+c_avatar_files | ["22222222-0000-0000-0000-000000000002/avatar.jpg"]
+c_update_returning | {"id":"22222222-0000-0000-0000-000000000002","usertag":null,"avatar_url":null,"display_name":null}
+d_ban_block_final_select | {"email":"y@example.test","banned_until":"2126-09-30T13:01:00.669596+00:00"}
+d_wrong_id_final_select_rows | 0
+d_sessions_and_tokens_left | {"sessions":0,"refresh_tokens":0}
+d_unban_returning | {"email":"y@example.test","banned_until":null}
+```
+
+## Disagreements / notes
+- None on substance. Note: the doc says the SQL editor shows only the last statement; that is the editor's documented behaviour, confirmed by the final-select design, but I did not open the Dashboard to see it.
+- Query (a) now exposes the reported user's email to the admin; fine for the admin, flagged because it is personal data.
