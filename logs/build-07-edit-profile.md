@@ -949,3 +949,25 @@ Paths where `pickAndUpload` returns with no state change: (a) `isUploading` alre
 
 ### Gates
 tsc pass, lint pass, jest 11 suites / 47 tests, 0 "act(" and 0 console.warn/error in the full output (stdout+stderr). Metro started and stopped, 8081 free.
+
+## QA 3 — Queenie, 2026-09-30, Bug 3 re-test (d911db3; tree at 71112d4 on module/auth)
+Own Metro (`timeout 1800`, stopped, port 8081 free). Nothing written to /sdcard; test photo `test-avatar.jpg` only. Stored objects checked with SELECTs on `storage.objects` and the public URL. Final state: usertag `justin94test`, 1 object in `avatars/<uid>/`, referenced by `avatar_url`, 512x512, 8954 B, full colour range (not blank). No crash in `logcat -b crash`; no new error-level lines from the app beyond the known FrameTracker IME / "Unable to display loading message" ones.
+
+| # | Item | Result | Evidence (`evidence/build-07/`) |
+|---|---|---|---|
+| 1 | Poppins headings, Inter body | PASS | qa3-01-fonts-profile.png ("My Profile", "Justin Masiga" Poppins; rows/usertag Inter), qa3-01-fonts-edit.png ("Edit profile" Poppins). Glyphs match build-06/bug1-profile-settings-chip.png. Home has no heading (placeholder text only) |
+| 2 | Race: tap Save right after crop closes | FAIL, intermittent (1 of 7) | see below |
+| 3 | One normal photo change | PASS | qa3-03-profile-before.png, qa3-03-normal-change.png (new object, old one deleted, `avatar_url` = new object, 1 object) |
+| 4 | 3 more normal uploads: any do nothing? | PASS, none lost | qa3-04-normal-1/2/3.png. Each: `avatar_url` moved to a new object, old deleted, count 1 |
+
+### Item 2 detail
+Method: edit usertag to a new valid value (Save enabled), tap avatar, pick sunset, crop, then chained `input tap` on Save (792,1150) in one adb call starting with the CROP tap (12-30 taps, 0.05 s apart), background screenshot at ~0.9 s, then check DB + bucket ~6 s later.
+- Runs 2-7 PASS (qa3-02-race-run2-frame.png, qa3-02-race-justin94qd-frame.png / -end.png, qa3-02-race-justin94test-frame.png, qa3-02-race-justin94qe-*.png, qa3-02-race-justin94qf-*.png, qa3-02-race-justin94test-end.png): frame shows "Uploading photo…" with Save and field dimmed; the Save taps are ignored; the photo uploads (new object, `avatar_url` moved, 1 object); the typed usertag stays on screen with Save enabled afterwards, and Save then persists it (qa3-02-run2-after-save.png shows @justin94test).
+- **Run 1 FAIL** (qa3-02-race-run1-saving-no-upload.png, qa3-02-race-run1-end-settings.png): frame at 1.0 s shows the idle screen ("Tap to change photo", no "Uploading photo…") with Save in the "Saving" state. Result: usertag `justin94qc` saved, screen closed, photo NOT uploaded (`avatar_url` unchanged from ...708984, `updated_at` only from the usertag save, no new object, no error). So a Save tap can still land between the crop closing and the busy state being set — the same window as QA 2 observation 1, narrowed but not closed (1 of 7 runs hit it). Stray taps from that run then hit the Settings row on My Profile ("Coming soon" screen in qa3-02-race-run1-end-settings.png); that is my tap storm, not an app fault.
+- For Ruby/Bella: busy must be set before `pickAvatar()` resolves back into JS (e.g. at the start of the pick call), not after; or Save must stay disabled while the picker/crop activity is open.
+
+### Item 4 note
+Lost-upload (QA 2 observation 2): 10 uploads this session (6 race runs + 4 normal) all completed; the only dropped photo is the run 1 race above. The single unexplained QA 2 case (first upload, no Save tapped) has still not recurred.
+
+### Verdict (QA 3)
+PARTIAL — Bug 3 font regression is fixed (item 1); the Save race is reduced but not eliminated (item 2, 1 of 7); items 3 and 4 pass.
