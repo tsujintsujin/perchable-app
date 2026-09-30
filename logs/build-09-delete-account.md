@@ -51,7 +51,7 @@ Base SHA 0f66e82. Function commit `5f4893e`; app commit in the report.
   listing comes back empty. Offset stays 0 because removed objects drop out of the next page.
   A 100-round cap throws instead of looping forever if removal silently does nothing.
   `index.ts` still takes the uid only from the JWT and returns generic error bodies. **Not deployed.**
-- **App**: `api/deleteAccount.ts` (invoke; 401 = already gone = resolves; network failure =
+- **App**: `api/deleteAccount.ts` (invoke; any HTTP error is a real error - see the 401 fix below; network failure =
   `DeleteAccountOfflineError`; anything else rethrown), `hooks/useDeleteAccount.ts` (one run at a
   time, then the sign-out path), `components/DeleteAccountSheet.tsx` (the sheet), and
   `accountDeletedNotice.ts` (the toast signal). The route only composes: a "Danger zone" row
@@ -99,7 +99,7 @@ that user's JWT, confirm the folder is empty and a second call returns 401.
 | 1 | Confirm disabled unless `typed === "DELETE"`; Cancel closes, no call | DeleteAccountSheet-test (6 wrong inputs, exact, disabled tap, Cancel/backdrop/back) |
 | 2 | `inFlightRef` in hook; Button loading; Cancel disabled; backdrop and `onRequestClose` blocked while deleting | useDeleteAccount-test "two taps"; Sheet-test "while deleting" |
 | 3 | Offline -> `failed` -> ErrorCard, retry works, no Sentry, nothing cleared | useDeleteAccount-test offline+retry; deleteAccount-test offline; Sheet-test failure card |
-| 4 | Function: storage first then user, not-found = ok (unchanged). App: 401 = done | deleteAccount-test 401; 500 rejects |
+| 4 | Function: storage first then user, not-found = ok. Retry after the user is gone: the function itself returns 200 (see 401 fix). App: 401 is an error | emptyFolder-test subFromJwt/isUserGone; deleteAccount-test 401 rejects |
 | 5 | `emptyFolder` loops until empty | emptyFolder-test (more than one page) |
 | 6 | mark -> signOut (Supabase local + Google) -> clearSession; toast once on sign-in | useDeleteAccount-test order; sign-in-test toast once; accountDeletedNotice-test |
 | 7 | `mountedRef` guards setState | useDeleteAccount-test unmount mid-delete |
@@ -145,3 +145,17 @@ that user's JWT, confirm the folder is empty and a second call returns 401.
 - `npx jest > out.txt 2>&1`: 19 suites, 110 tests passed (77 before, 33 new); 0 "act(", 0 console warnings.
 - Device (td_emu): own Metro started and stopped; app bundled (2002 modules) and launched to the
   sign-in screen, no red screen; 8081 confirmed free. Settings and the sheet are not reachable while signed out.
+
+## Pre-QA fix: a 401 no longer means "deleted" (Manager, from flag 2)
+- **Cause:** the app treated any 401 as done, so an invalid token showed "Your account was deleted" with nothing deleted.
+- **Function (own commit):** when `getUser(token)` fails, the function decodes the token's `sub`
+  (`subFromJwt` in `cleanup.ts`: base64url, must be a UUID; safe to trust only because verify_jwt has
+  already checked signature and expiry) and asks `admin.auth.admin.getUserById(sub)`. `isUserGone` is
+  true only for a not-found result. Gone: fall through to the idempotent `emptyFolder` + `deleteUser`
+  (not-found already counts as success) and return 200. User exists, other lookup error, or no sub: 401.
+- **config.toml:** appended only `[functions.delete-account] verify_jwt = true`.
+- **App:** removed the 401 branch from `deleteAccount.ts`; the 401 test now expects a rejection.
+  A 401 goes through the hook's failure path: error card and Sentry.
+- Flag 2 resolved. Flag 7 (verify_jwt) resolved by the explicit config entry.
+- Tests: emptyFolder-test now has 6 loop tests + 3 subFromJwt + 3 isUserGone.
+- Gates: tsc clean, lint clean, jest 19 suites / 116 tests, 0 "act(", 0 console warnings.

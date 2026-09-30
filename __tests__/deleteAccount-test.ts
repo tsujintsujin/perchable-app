@@ -15,9 +15,10 @@ describe("deleteAccount", () => {
     expect(mockInvoke).toHaveBeenCalledWith("delete-account");
   });
 
-  it("treats a 401 from the function as already deleted", async () => {
-    mockInvoke.mockResolvedValue({ data: null, error: new FunctionsHttpError({ status: 401 }) });
-    await expect(deleteAccount()).resolves.toBeUndefined();
+  it("rejects on a 401: an invalid token is not a finished deletion", async () => {
+    const unauthorized = new FunctionsHttpError({ status: 401 });
+    mockInvoke.mockResolvedValue({ data: null, error: unauthorized });
+    await expect(deleteAccount()).rejects.toBe(unauthorized);
   });
 
   it("rejects with the original error on a 500", async () => {
