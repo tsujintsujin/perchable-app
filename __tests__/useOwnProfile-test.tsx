@@ -1,5 +1,5 @@
-import { act, render, screen, waitFor } from "@testing-library/react-native";
-import { Text } from "react-native";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { Pressable, Text } from "react-native";
 
 // Mirrors react-navigation's real behavior closely enough for this test:
 // reruns only when the passed callback's identity changes.
@@ -31,6 +31,17 @@ function Harness() {
   return <Text testID="state">{JSON.stringify(profile)}</Text>;
 }
 
+/** Same as Harness, plus a Retry button wired to refetch. */
+function HarnessWithRetry() {
+  const profile = useOwnProfile();
+  return (
+    <>
+      <Text testID="state">{JSON.stringify(profile)}</Text>
+      <Pressable onPress={profile.refetch} accessibilityRole="button" accessibilityLabel="retry" />
+    </>
+  );
+}
+
 const PROFILE = {
   id: "u1",
   displayName: "Justin",
@@ -56,6 +67,61 @@ describe("useOwnProfile", () => {
     await act(async () => {
       await rerender(<Harness />);
     });
+
+    const state = screen.getByTestId("state").props.children;
+    expect(state).toContain('"loading"');
+    expect(state).not.toContain("Justin");
+  });
+
+  it("does not apply a fetch that finishes after sign-out", async () => {
+    let resolveFetch: (profile: typeof PROFILE) => void = () => {};
+    mockUseAuthSession.mockReturnValue({ session: { user: { id: "u1" } } });
+    mockGetOwnProfile.mockReturnValue(new Promise((resolve) => (resolveFetch = resolve)));
+
+    const { rerender } = await render(<Harness />);
+    mockUseAuthSession.mockReturnValue({ session: null });
+    await act(async () => {
+      await rerender(<Harness />);
+    });
+    await act(async () => resolveFetch(PROFILE));
+
+    const state = screen.getByTestId("state").props.children;
+    expect(state).toContain('"loading"');
+    expect(state).not.toContain("Justin");
+  });
+
+  it("does not show an error from a fetch that fails after sign-out", async () => {
+    let rejectFetch: (err: Error) => void = () => {};
+    mockUseAuthSession.mockReturnValue({ session: { user: { id: "u1" } } });
+    mockGetOwnProfile.mockReturnValue(new Promise((_, reject) => (rejectFetch = reject)));
+
+    const { rerender } = await render(<Harness />);
+    mockUseAuthSession.mockReturnValue({ session: null });
+    await act(async () => {
+      await rerender(<Harness />);
+    });
+    await act(async () => rejectFetch(new Error("JWT expired")));
+
+    expect(screen.getByTestId("state").props.children).not.toContain('"error"');
+  });
+
+  it("does not apply a Retry fetch that finishes after sign-out", async () => {
+    let resolveRetry: (profile: typeof PROFILE) => void = () => {};
+    mockUseAuthSession.mockReturnValue({ session: { user: { id: "u1" } } });
+    mockGetOwnProfile.mockRejectedValueOnce(new Error("offline"));
+    mockGetOwnProfile.mockReturnValueOnce(new Promise((resolve) => (resolveRetry = resolve)));
+
+    const { rerender } = await render(<HarnessWithRetry />);
+    await waitFor(() => expect(screen.getByTestId("state").props.children).toContain('"error"'));
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText("retry"));
+    });
+
+    mockUseAuthSession.mockReturnValue({ session: null });
+    await act(async () => {
+      await rerender(<HarnessWithRetry />);
+    });
+    await act(async () => resolveRetry(PROFILE));
 
     const state = screen.getByTestId("state").props.children;
     expect(state).toContain('"loading"');

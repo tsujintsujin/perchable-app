@@ -8,6 +8,8 @@ export const colors = {
     gold500: "#B8860B",
     lavender200: "#D6C4E9",
     ink950: "#121016",
+    tmdbBlue: "#01b4e4",
+    tmdbNavy: "#0d253f",
   },
   bg: {
     base: "#121016",
@@ -100,6 +102,34 @@ export const iconSize = {
   lg: 22,
   tab: 20,
   emoji: 32,
+} as const;
+
+/** Square icon-button side (settings chip, back chip). */
+export const size = {
+  iconButton: 36,
+} as const;
+
+/** TMDB logo chip on Settings > About, drawn as text: no logo asset is bundled. */
+export const tmdbChip = {
+  width: 22,
+  height: 14,
+  radius: 3,
+  fontSize: 6,
+  fontFamily: "Inter_600SemiBold",
+} as const;
+
+export const opacity = {
+  disabled: 0.5,
+} as const;
+
+/** Letter spacing for uppercase section labels. */
+export const letterSpacing = {
+  label: 1,
+} as const;
+
+/** Line-height multipliers, applied to a type token's fontSize. */
+export const leading = {
+  relaxed: 1.5,
 } as const;
 
 export const elevation = {

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import { BlurView } from "expo-blur";
-import { glass } from "@/ui/tokens";
+import { glass, opacity } from "@/ui/tokens";
 
 type Tier = "card" | "hero" | "chip";
 
@@ -11,11 +11,13 @@ type Props = {
    * §1.5's table (never inside a FlashList or gesture-driven re-render). */
   blur?: boolean;
   onPress?: () => void;
+  /** Dims the card and ignores taps (e.g. while its action is running). */
+  disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   children: ReactNode;
 };
 
-export function GlassCard({ tier = "card", blur = false, onPress, style, children }: Props) {
+export function GlassCard({ tier = "card", blur = false, onPress, disabled = false, style, children }: Props) {
   const t = glass[tier];
   // `glass.chip` has no borderColor in tokens.ts; every other tier does.
   // `in` narrows `t`'s union type directly, unlike a separate tier check.
@@ -50,7 +52,14 @@ export function GlassCard({ tier = "card", blur = false, onPress, style, childre
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [baseStyle, pressed && styles.pressed]}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      style={({ pressed }) => [
+        baseStyle,
+        pressed && !disabled && styles.pressed,
+        disabled && styles.disabled,
+      ]}
     >
       {content}
     </Pressable>
@@ -61,4 +70,5 @@ const styles = StyleSheet.create({
   base: { overflow: "hidden" },
   blurFill: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
   pressed: { transform: [{ scale: 0.98 }] },
+  disabled: { opacity: opacity.disabled },
 });
