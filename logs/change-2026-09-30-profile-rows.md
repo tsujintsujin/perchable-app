@@ -144,3 +144,18 @@ tsc exit 0 · `npx expo lint` exit 0 · `npx jest`: 19 suites, 132 tests passed,
 - Profile chip (`@tsujintsujin`) -> Edit opened with the input method shown (`dumpsys input_method` `mInputShown=true`): `logs/evidence/change-2026-09-30/bug1-chip-focus.png`. The emulator's keyboard showed as Gboard's floating side toolbar, not a full-width keyboard, so the screenshot alone is less clear than the dumpsys check.
 - Back (keyboard hidden, `mInputShown=false`), header Settings chip -> Settings -> "Edit profile photo / usertag" -> Edit: no keyboard (`mInputShown=false`).
 - Profile layout after the token change looked identical to before.
+
+## Manager — checks and close-out (2026-09-30)
+- Gates rerun at 4912c4c: tsc clean, lint clean, jest 132/132, 0 act()/console warnings.
+- Queenie QA at ca1e96f: layout (24.0dp / ~12.6dp gaps measured), double-tap, loading, error +
+  Retry, regression all PASS; 1 bug (Edit unfocused) → fixed in Bug 1.
+- Ruby: FIX NEEDED at ca1e96f → PASS at 4912c4c.
+- Manager spot re-run on td_emu (dev build, nothing saved): Profile has no Edit/Settings rows;
+  chip "Edit usertag, currently @tsujintsujin" → Edit with cursor in the usertag field,
+  `mInputShown=true` (`manager-chip-edit-focused.png`); header "Settings" chip → Settings →
+  "Edit profile photo / usertag" → Edit with `mInputShown=false`
+  (`manager-settings-edit-no-keyboard.png`).
+- Not run on device (would write Justin's data): Save in Edit → Profile shows the new value;
+  empty-usertag chip state (his profile has a usertag). Both covered by jest.
+- Follow-up (pre-existing, not this change): offline cold launch shows the Profile skeleton
+  ~60 s before the error state — needs a request timeout. Logged in TIMELINE.
