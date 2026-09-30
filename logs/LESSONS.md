@@ -100,3 +100,6 @@ Handle each one up front; say in the Build log how (or "n/a").
       before any grant: this project's default privileges hand both roles
       TRUNCATE/REFERENCES/TRIGGER (found on `profiles`, 10a Bug 2; RLS does not
       guard TRUNCATE). The SQL test asserts it with `has_table_privilege`.
+- The emulator is one shared device: never run an agent on td_emu while Justin is using it, and
+  tell him when it is in use. Queenie's run overloaded it while he was adding a Google account
+  ("System UI isn't responding", 2026-09-30). Check load (`cat /proc/loadavg` < 3) before QA.

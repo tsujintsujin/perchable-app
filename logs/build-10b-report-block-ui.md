@@ -192,3 +192,14 @@ so the control is `expo export --dev`, not a fetch of the entry bundle.
 - `bella-blocked-empty.png`: Blocked users screen, empty state.
 - `bella-harness.png`: harness on the debug screen, "No other profiles yet".
 - `bella-report-sheet.png`: report sheet, "Something else" selected, details typed, keyboard up: input and both buttons visible. Cancelled; no report submitted.
+
+## Manager — state at pause (2026-09-30)
+- Gates rerun at dfc1ccf: tsc clean, lint clean, jest 190/190, 0 act()/console warnings.
+- Ruby review: FIX NEEDED — 0 must-fix; should-fix: (1) keyboard proof invalid (floating emulator
+  keyboard) → retest docked; (2) shimmer pulse duplicated → extract; (3) `isInFlight()` guard in
+  BlockUserSheet not exercised by a test. Nits: README callback wording, radios `checked`, focus on
+  sent state (SUSPECTED), harness query error, tokens + null-name copy into DESIGN.md. No security
+  or privacy defect; copy verbatim; harness absent from the release export.
+- Queenie QA part 1: **stopped by the Manager before any result** (she was driving td_emu while
+  Justin tried to add a Google account; emulator overloaded). Only `qa-00-launch.png` exists. Redo.
+- Bug 1 not yet sent to Bella. See HANDOFF.md for the ordered next steps.
