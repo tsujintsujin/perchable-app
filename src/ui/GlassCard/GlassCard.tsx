@@ -18,11 +18,12 @@ type Props = {
   accessibilityLabel?: string;
   /** Extra touch area around the card, in dp. */
   hitSlop?: number;
+  testID?: string;
   style?: StyleProp<ViewStyle>;
   children: ReactNode;
 };
 
-export function GlassCard({ tier = "card", blur = false, onPress, disabled = false, busy = false, accessibilityLabel, hitSlop, style, children }: Props) {
+export function GlassCard({ tier = "card", blur = false, onPress, disabled = false, busy = false, accessibilityLabel, hitSlop, testID, style, children }: Props) {
   const t = glass[tier];
   // `glass.chip` has no borderColor in tokens.ts; every other tier does.
   // `in` narrows `t`'s union type directly, unlike a separate tier check.
@@ -51,7 +52,7 @@ export function GlassCard({ tier = "card", blur = false, onPress, disabled = fal
   );
 
   if (!onPress) {
-    return <View style={baseStyle}>{content}</View>;
+    return <View testID={testID} style={baseStyle}>{content}</View>;
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useFocusEffect, type Href } from "expo-router";
@@ -6,6 +6,7 @@ import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { GlassCard } from "@/ui/GlassCard";
 import { Avatar } from "@/ui/Avatar";
 import { EmptyState } from "@/ui/EmptyState";
+import { usePulse } from "@/ui/Shimmer";
 import {
   avatarSize,
   colors,
@@ -112,21 +113,9 @@ export default function MyProfile() {
   );
 }
 
-/** Shimmer placeholders matching the loaded layout's shape. No shared
- * shimmer component exists yet, so a local pulse animation stands in. */
+/** Shimmer placeholders matching the loaded layout's shape. */
 function LoadingBody() {
-  const [pulse] = useState(() => new Animated.Value(0.4));
-
-  useEffect(() => {
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, { toValue: 0.9, duration: 700, useNativeDriver: true }),
-        Animated.timing(pulse, { toValue: 0.4, duration: 700, useNativeDriver: true }),
-      ]),
-    );
-    animation.start();
-    return () => animation.stop();
-  }, [pulse]);
+  const pulse = usePulse();
 
   return (
     <View style={styles.body}>

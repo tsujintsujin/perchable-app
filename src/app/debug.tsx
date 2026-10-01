@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Button, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Button, ScrollView, StyleSheet, Text, View } from "react-native";
 import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase";
 import { getPopularMovies, type Movie } from "@/modules/movies";
 import { Sentry } from "@/lib/sentry";
@@ -9,6 +9,11 @@ import { Sentry } from "@/lib/sentry";
 // they were read. Reuse the same values instead of re-reading process.env.
 const SUPABASE_URL = supabaseUrl;
 const SUPABASE_KEY = supabaseAnonKey;
+
+// Dev-only test section, resolved once at module load so a release bundle drops the require.
+// A static import would keep it in release, so this must stay a require behind __DEV__.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const Harness = __DEV__ ? require("@/modules/moderation/components/ModerationDevHarness").ModerationDevHarness : null;
 
 type Status =
   | { state: "idle" }
@@ -93,7 +98,7 @@ export default function Debug() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Supabase debug</Text>
 
       {status.state === "checking" && <ActivityIndicator />}
@@ -135,13 +140,15 @@ export default function Debug() {
         </Text>
       )}
       {sentryStatus.state === "idle" && <Text>Sentry: no test error sent yet</Text>}
-    </View>
+
+      {Harness && <Harness />}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
     gap: 16,
