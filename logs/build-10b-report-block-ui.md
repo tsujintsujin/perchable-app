@@ -359,3 +359,12 @@ the admin-doc ban block applied to the test account (banned_until 2126, sessions
 deleted); after its access token expired the app's refresh was **refused** and the app signed out
 (0 sessions). Not run: a fresh Google sign-in attempt while banned — recorded as UNTESTED; the
 refused refresh exercises the same server-side ban check. Test account unbanned (0 banned users).
+
+## Manager device check of Bug 2 (2026-10-01, td_emu 720x1600 @ 280 = 1.75 px/dp, main account)
+- **Bottom gap FIXED:** ReportSheet with a docked Gboard — buttons end at y=977, keyboard top at
+  ~1018 → 41 px = **23.4dp ≈ 24dp** (was ~48dp). `manager-bug2-report-docked.png`.
+- **Status-bar overlap NOT fixed:** the lifted sheet's top edge is at ~8 px, its handle in the
+  status-bar row (y≈41). The `maxHeight` cap doesn't keep it below the status bar → Bug 2 round 2.
+- DeleteAccountSheet: same shared hook; a clean docked-keyboard reading wasn't possible (Gboard
+  reverted to floating + stylus prompt). Nothing typed into the DELETE box.
+- Gboard tip: `pm clear com.google.android.inputmethod.latin` docks it once; it can revert.
