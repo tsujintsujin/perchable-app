@@ -1,6 +1,8 @@
+import { useRef } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Button } from "@/ui/Button";
 import { colors, iconSize, radius, size, spacing, type } from "@/ui/tokens";
+import { useFocusOnMount } from "../hooks/useFocusOnMount";
 
 type Props = {
   title: string;
@@ -10,12 +12,15 @@ type Props = {
 
 /** Confirmation content shared by the report and block sheets: gold check badge, title, body and a Done button. */
 export function SheetSuccess({ title, body, onDone }: Props) {
+  const titleRef = useRef<Text>(null);
+  useFocusOnMount(titleRef);
+
   return (
     <View style={styles.wrap}>
       <View accessible={false} importantForAccessibility="no-hide-descendants" style={styles.badge}>
         <Text style={styles.check}>✓</Text>
       </View>
-      <Text accessibilityRole="header" accessibilityLiveRegion="polite" style={styles.title}>
+      <Text ref={titleRef} accessibilityRole="header" accessibilityLiveRegion="polite" style={styles.title}>
         {title}
       </Text>
       <Text style={styles.body}>{body}</Text>

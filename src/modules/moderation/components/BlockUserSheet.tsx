@@ -26,7 +26,7 @@ type Props = {
   displayName?: string;
   /** Closes the sheet: Cancel, scrim, Android back (never while blocking), or Done. */
   onClose: () => void;
-  /** Fires once when the block is stored (or already was). */
+  /** Fires on success while the sheet is still mounted (already blocked counts). */
   onBlocked?: () => void;
 };
 

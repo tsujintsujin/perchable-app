@@ -9,14 +9,15 @@ Report and block UI plus the objectionable-content list. Backed by `reports` and
 <ReportSheet
   target={{ type: "comment", id: commentId, ownerId: authorId }}
   onClose={() => setOpen(false)}
-  onReported={() => {}}   // optional; fires once when the report is stored
+  onReported={() => {}}   // optional; fires on success while the sheet is mounted
 />
 ```
 
 - `type` is `profile | comment | dm_message | collection_item`. For `profile`, `id` must equal `ownerId`
   (the DB checks it). `ownerId` is the user who wrote the content.
 - Mount it to open it, unmount to close. `onClose` fires on Cancel, scrim, Android back and Done.
-  `onReported` fires on success only; the sheet stays open on its "sent" state until Done.
+  `onReported` fires on success only, and only while the sheet is still mounted; the sheet stays open on its
+  "sent" state until Done. A caller that navigates away mid-request must refetch instead of waiting for it.
 - Renders nothing and calls `onClose` when `ownerId` is the signed-in user.
 - An already-reported target (23505) shows the same "sent" state, so a user learns nothing about earlier reports.
 
@@ -26,7 +27,8 @@ Report and block UI plus the objectionable-content list. Backed by `reports` and
 <BlockUserSheet userId={id} displayName={name} onClose={close} onBlocked={() => {}} />
 ```
 
-`displayName` is optional ("this user" is used without it). Cancel, scrim and back are inert while the
+`displayName` is optional ("this user" is used without it). `onBlocked` fires on success while the sheet is
+still mounted; a caller that navigates away mid-request must refetch. Cancel, scrim and back are inert while the
 write is running. Already blocked (23505) lands on the "blocked" state. `useBlockUser(userId, onBlocked?)`
 is the hook behind it.
 

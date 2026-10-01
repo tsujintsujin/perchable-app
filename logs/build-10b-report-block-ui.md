@@ -203,3 +203,23 @@ so the control is `expo export --dev`, not a fetch of the entry bundle.
 - Queenie QA part 1: **stopped by the Manager before any result** (she was driving td_emu while
   Justin tried to add a Google account; emulator overloaded). Only `qa-00-launch.png` exists. Redo.
 - Bug 1 not yet sent to Bella. See HANDOFF.md for the ordered next steps.
+
+## Bug 1 — Ruby's review findings (Bella, 2026-10-01)
+Base 2c93199. Unit tests only; no emulator, no Metro.
+
+| # | Finding | Fix (file:line) | Test |
+|---|---|---|---|
+| 1 | Shimmer pulse duplicated | New `src/ui/Shimmer/usePulse.ts:6` (hook returns the looping Animated.Value); values are the `shimmerPulse` token (`src/ui/tokens.ts`, min 0.4 / max 0.9 / 700 ms). Used at `src/app/(tabs)/profile/index.tsx:118` and `BlockedUsersScreen.tsx:132`. Same values, same one-value-per-screen sharing, so look and timing are unchanged. | Existing shimmer testID tests in `profile-test` / `BlockedUsersScreen-test` unchanged and green |
+| 2 | `isInFlight()` guard untested | Guard is reachable (the Block press and a dismiss can land before the re-render). Kept at `BlockUserSheet.tsx:41`. | `BlockUserSheet-test` "a dismiss fired in the same act as the Block press...". Fails with the guard removed (checked), restored |
+| 3 | README wording | `README.md:12,19-20,30-31`; the two `onReported`/`onBlocked` prop doc comments match | n/a |
+| 4 | Radio state + focus | `ReportSheet.tsx:107` adds `checked`. New `hooks/useFocusOnMount.ts` is used by `SheetShell.tsx:39` (replaces its inline effect) and `SheetSuccess.tsx:16` (success title) | `ReportSheet-test` "radios expose selected and checked...", and "moves screen-reader focus..." in both sheet tests; each fails when its line is removed (checked) |
+| 5 | Harness ignored query error | `ModerationDevHarness.tsx:41,58,79` shows "Couldn't load profiles: <message>" and stops saying "Loading" | `ModerationDevHarness-test` "a failed profiles query..." |
+| 6 | Self-guards untested | n/a (tests only for `useReportContent.ts:34`, `useBlockUser.ts:29`) | new `__tests__/moderationHooks-test.tsx`, one test each |
+
+Focus tests mock `findNodeHandle` (host nodes have no native handle under the test renderer) so the `setAccessibilityFocus(42)` call can be seen.
+
+Out of scope touched: `src/app/(tabs)/profile/index.tsx` (Build 4 file) only to swap its local pulse for `usePulse` (finding 1).
+
+Gates: tsc clean, lint clean, jest 26 suites / 197 tests pass, 0 `act(` and 0 console warnings in the output.
+Note: the first full run had two first-test 5 s timeouts (ModerationDevHarness, ReportSheet) while the PC was busy; both passed alone and on the full rerun.
+Bundle check: `expo export --platform android` has 0 hits for "Moderation dev harness"; the `--dev` export has 1. Both temp folders deleted.

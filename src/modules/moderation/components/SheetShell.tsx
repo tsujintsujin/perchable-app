@@ -1,8 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import type { ReactNode } from "react";
 import {
-  AccessibilityInfo,
-  findNodeHandle,
   KeyboardAvoidingView,
   Modal,
   Pressable,
@@ -13,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useFocusOnMount } from "../hooks/useFocusOnMount";
 import { colors, elevation, glass, radius, size, spacing, type } from "@/ui/tokens";
 
 type Props = {
@@ -37,11 +36,7 @@ export function SheetShell({ testID, onDismiss, dismissable, title, titleLines, 
   const { height } = useWindowDimensions();
   const titleRef = useRef<Text>(null);
 
-  // Moves screen-reader focus to the title when the sheet opens.
-  useEffect(() => {
-    const node = titleRef.current ? findNodeHandle(titleRef.current) : null;
-    if (node) AccessibilityInfo.setAccessibilityFocus(node);
-  }, []);
+  useFocusOnMount(titleRef);
 
   const dismiss = () => {
     if (dismissable) onDismiss();

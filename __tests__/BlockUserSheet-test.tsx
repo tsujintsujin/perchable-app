@@ -1,4 +1,11 @@
+import { AccessibilityInfo } from "react-native";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
+
+// Host nodes have no native handle under the test renderer; a fixed one lets the focus call be observed.
+jest.mock("react-native/Libraries/ReactNative/RendererProxy", () => ({
+  ...jest.requireActual("react-native/Libraries/ReactNative/RendererProxy"),
+  findNodeHandle: () => 42,
+}));
 
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
@@ -94,6 +101,29 @@ describe("BlockUserSheet", () => {
 
     await act(async () => void pending.resolve());
     expect(screen.getByText("Maya Lim is blocked")).toBeTruthy();
+  });
+
+  it("a dismiss fired in the same act as the Block press (before any re-render) does not close the sheet", async () => {
+    const pending = deferred();
+    mockBlock.mockReturnValue(pending.promise);
+    await show();
+    const requestClose = screen.getByTestId("block-sheet").props.onRequestClose;
+    await act(async () => {
+      fireEvent.press(blockButton());
+      requestClose();
+    });
+    expect(onClose).not.toHaveBeenCalled();
+    await act(async () => void pending.resolve());
+  });
+
+  it("moves screen-reader focus to the success title when the sheet flips to blocked", async () => {
+    const focus = jest.spyOn(AccessibilityInfo, "setAccessibilityFocus").mockImplementation(() => {});
+    await show();
+    focus.mockClear();
+    await act(async () => void fireEvent.press(blockButton()));
+    expect(screen.getByText("Maya Lim is blocked")).toBeTruthy();
+    expect(focus).toHaveBeenCalledWith(42);
+    focus.mockRestore();
   });
 
   it("a failure shows the error card, Try again and an enabled Cancel; retry succeeds", async () => {

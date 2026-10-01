@@ -38,6 +38,7 @@ export function ModerationDevHarness() {
   const [people, setPeople] = useState<Person[] | null>(null);
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [sheet, setSheet] = useState<Sheet>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [result, setResult] = useState("—");
   // With nobody else to pick, sheets target a made-up user id: they open, but a submit fails in the DB.
   const [stubId] = useState(randomUuid);
@@ -51,8 +52,12 @@ export function ModerationDevHarness() {
       .select("id, display_name, usertag")
       .neq("id", myId)
       .limit(PICKER_LIMIT)
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         if (cancelled) return;
+        if (error) {
+          setLoadError(error.message);
+          return;
+        }
         const list = (data ?? []).map((p) => ({ id: p.id, displayName: p.display_name, usertag: p.usertag }));
         setPeople(list);
         setPickedId((current) => current ?? list[0]?.id ?? null);
@@ -70,7 +75,8 @@ export function ModerationDevHarness() {
     <View style={styles.box}>
       <Text style={styles.heading}>Moderation dev harness</Text>
       {!myId && <Text style={styles.text}>Sign in first.</Text>}
-      {myId && people === null && <Text style={styles.text}>Loading profiles…</Text>}
+      {myId && people === null && !loadError && <Text style={styles.text}>Loading profiles…</Text>}
+      {loadError && <Text style={styles.text}>Couldn&apos;t load profiles: {loadError}</Text>}
       {people !== null && people.length === 0 && (
         <Text style={styles.text}>
           No other profiles yet. Sheets use a made-up user id: they open, but sending fails.

@@ -1,6 +1,13 @@
+import { AccessibilityInfo } from "react-native";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 // No <SafeAreaProvider> in the test tree — fixed insets stand in for it.
+// Host nodes have no native handle under the test renderer; a fixed one lets the focus call be observed.
+jest.mock("react-native/Libraries/ReactNative/RendererProxy", () => ({
+  ...jest.requireActual("react-native/Libraries/ReactNative/RendererProxy"),
+  findNodeHandle: () => 42,
+}));
+
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
 }));
@@ -93,6 +100,29 @@ describe("ReportSheet", () => {
     expect(radio("Hate speech")).not.toBeSelected();
     expect(send()).toBeEnabled();
     expect(screen.queryByLabelText("Tell us more")).toBeNull();
+  });
+
+  it("radios expose selected and checked together, and disabled while sending", async () => {
+    const pending = deferred();
+    mockReport.mockReturnValue(pending.promise);
+    await show();
+    await pick("Hate speech");
+    expect(radio("Hate speech").props.accessibilityState).toEqual({ selected: true, checked: true, disabled: false });
+    expect(radio("Spam or scam").props.accessibilityState).toEqual({ selected: false, checked: false, disabled: false });
+    await act(async () => void fireEvent.press(send()));
+    expect(radio("Hate speech").props.accessibilityState).toEqual({ selected: true, checked: true, disabled: true });
+    await act(async () => void pending.resolve());
+  });
+
+  it("moves screen-reader focus to the success title when the sheet flips to sent", async () => {
+    const focus = jest.spyOn(AccessibilityInfo, "setAccessibilityFocus").mockImplementation(() => {});
+    await show();
+    await pick("Spam or scam");
+    focus.mockClear();
+    await act(async () => void fireEvent.press(send()));
+    expect(screen.getByText("Report sent")).toBeTruthy();
+    expect(focus).toHaveBeenCalledWith(42);
+    focus.mockRestore();
   });
 
   it("Something else reveals a labelled details box; Send needs non-blank text, capped at 500 with a counter", async () => {

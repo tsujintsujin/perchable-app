@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Animated, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -6,6 +6,7 @@ import { EmptyState } from "@/ui/EmptyState";
 import { ErrorCard } from "@/ui/ErrorCard";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { GlassCard } from "@/ui/GlassCard";
+import { usePulse } from "@/ui/Shimmer";
 import {
   avatarSize,
   colors,
@@ -128,19 +129,7 @@ export function BlockedUsersScreen() {
 
 /** Pulsing placeholder rows in the shape of a blocked-user row. */
 function ShimmerRows() {
-  const [pulse] = useState(() => new Animated.Value(0.4));
-
-  // Loops the pulse while the placeholders are on screen.
-  useEffect(() => {
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, { toValue: 0.9, duration: 700, useNativeDriver: true }),
-        Animated.timing(pulse, { toValue: 0.4, duration: 700, useNativeDriver: true }),
-      ]),
-    );
-    animation.start();
-    return () => animation.stop();
-  }, [pulse]);
+  const pulse = usePulse();
 
   return (
     <>

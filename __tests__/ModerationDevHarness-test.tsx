@@ -25,6 +25,16 @@ describe("ModerationDevHarness", () => {
     mockSession = { user: { id: "me" } };
   });
 
+  it("a failed profiles query shows an error line instead of loading forever", async () => {
+    mockNeq.mockReset().mockReturnValue({
+      limit: () => Promise.resolve({ data: null, error: { message: "permission denied" } }),
+    });
+    mockFrom.mockReset().mockReturnValue({ select: () => ({ neq: mockNeq }) });
+    await render(<ModerationDevHarness />);
+    expect(await screen.findByText(/Couldn't load profiles: permission denied/)).toBeTruthy();
+    expect(screen.queryByText("Loading profiles…")).toBeNull();
+  });
+
   it("with no other profiles says so, and still opens the report and block sheets", async () => {
     profilesReturn([]);
     await render(<ModerationDevHarness />);

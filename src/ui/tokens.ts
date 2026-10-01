@@ -148,6 +148,9 @@ export const shimmerBar = {
   button: { width: 88, height: 48 },
 } as const;
 
+/** Loading-skeleton pulse: opacity range and the duration of each half-cycle (ms). */
+export const shimmerPulse = { min: 0.4, max: 0.9, duration: 700 } as const;
+
 /** Danger-tinted glow behind the delete-confirmation sheet (iOS shadow; Android draws none). */
 export const dangerGlow = {
   shadowColor: colors.danger,

@@ -35,7 +35,7 @@ type Props = {
   target: ReportTarget;
   /** Closes the sheet: Cancel, scrim, Android back, or Done after sending. */
   onClose: () => void;
-  /** Fires once when the report is stored (or was already stored). */
+  /** Fires on success while the sheet is still mounted (a repeat report counts). */
   onReported?: () => void;
 };
 
@@ -104,7 +104,7 @@ export function ReportSheet({ target, onClose, onReported }: Props) {
               key={category.key}
               accessibilityRole="radio"
               accessibilityLabel={category.label}
-              accessibilityState={{ selected, disabled: submitting }}
+              accessibilityState={{ selected, checked: selected, disabled: submitting }}
               disabled={submitting}
               onPress={() => setReason(category.key)}
               style={[styles.row, selected && styles.rowSelected]}
