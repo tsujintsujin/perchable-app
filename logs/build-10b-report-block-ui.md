@@ -352,3 +352,10 @@ Metro (PID 17460, started by me) killed, 8081 free; `adb reverse --remove-all` d
   Justin tries a fresh Google sign-in with the test account (expected: refused), then the Manager
   unbans it. **The test account is still banned.**
 - adb server hung once (known PC issue) — killed adb.exe and restarted; fine after.
+
+## B3 ban proof — closed without the fresh sign-in step (Justin, 2026-10-01)
+Justin asked why accounts were being banned and chose to move on to the movie features. Proven:
+the admin-doc ban block applied to the test account (banned_until 2126, sessions/refresh tokens
+deleted); after its access token expired the app's refresh was **refused** and the app signed out
+(0 sessions). Not run: a fresh Google sign-in attempt while banned — recorded as UNTESTED; the
+refused refresh exercises the same server-side ban check. Test account unbanned (0 banned users).

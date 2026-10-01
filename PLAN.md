@@ -514,6 +514,9 @@ Phases: 0 Dianne mockup (ReportSheet all states; BlockUserSheet; Blocked
 
 ```
 Build 11 — UGC terms acceptance           Module: Moderation base
+   **ORDER CHANGED 2026-10-01 (Justin): Build 11 runs just before Build 20** (the first
+   Build where users post content others see). After Build 10b the team goes straight to
+   Builds 12-16 (movie browse, details, swipe-to-add). Content below is unchanged.
 Done means (checkable):
   A. Database (migration reviewed + applied by the Manager;
      `supabase/tests/terms_gate_rls.sql`, rolled back)
