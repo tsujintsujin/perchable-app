@@ -1,15 +1,18 @@
-import { useEffect, type ReactElement } from "react";
-import { AccessibilityInfo, StyleSheet, Text, View } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+import { useEffect, useRef, type ReactElement } from "react";
+import { AccessibilityInfo, RefreshControl, StyleSheet, Text, View } from "react-native";
+import { FlashList, type FlashListRef } from "@shopify/flash-list";
 import { EmptyState } from "@/ui/EmptyState";
 import { PosterCard, PosterCardSkeleton } from "@/ui/PosterCard";
 import { colors, lineHeight, size, spacing, type } from "@/ui/tokens";
 import { IMAGE_SIZE, tmdbImage } from "../tmdbImage";
 import { releaseYear } from "../releaseYear";
-import type { PopularState } from "../hooks/usePopularMovies";
+import type { PopularFooter, PopularState } from "../hooks/usePopularMovies";
+import { PagingFooter } from "./PagingFooter";
 import type { Movie } from "../types";
 
 const SKELETON_COUNT = 12;
+// Load the next page when the list end is within this many screen heights.
+const END_REACHED_THRESHOLD = 1;
 // Placeholder rows for the loading state: null renders a skeleton tile.
 const SKELETONS: null[] = Array.from({ length: SKELETON_COUNT }, () => null);
 
@@ -17,6 +20,14 @@ type Props = {
   state: PopularState;
   movies: Movie[];
   onRetry: () => void;
+  footer: PopularFooter;
+  /** Fires near the bottom of the list. */
+  onEndReached: () => void;
+  /** Retry on the footer's failed-load row. */
+  onRetryMore: () => void;
+  refreshing: boolean;
+  /** Pull-to-refresh; resolves true when page 1 reloaded. */
+  onRefresh: () => Promise<boolean>;
   /** Scrolls with the grid, above the section title (Home passes the Roulette card). */
   header: ReactElement;
 };
@@ -40,7 +51,9 @@ function Cell({ item }: { item: Movie | null }) {
 }
 
 /** Popular posters in a 3-column grid under `header`; also draws the loading, empty and error states. */
-export function PosterGrid({ state, movies, onRetry, header }: Props) {
+export function PosterGrid({ state, movies, onRetry, footer, onEndReached, onRetryMore, refreshing, onRefresh, header }: Props) {
+  const listRef = useRef<FlashListRef<Movie | null>>(null);
+
   // A live region present at first render is not announced on Android, so speak "Loading movies" when loading starts.
   useEffect(() => {
     if (state === "loading") AccessibilityInfo.announceForAccessibility("Loading movies");
@@ -67,13 +80,31 @@ export function PosterGrid({ state, movies, onRetry, header }: Props) {
       />
     ) : null;
 
+  // Pulls page 1 again and, when it worked, returns to the top.
+  const handleRefresh = async () => {
+    if (await onRefresh()) listRef.current?.scrollToOffset({ offset: 0, animated: false });
+  };
+
   return (
     <FlashList
+      ref={listRef}
+      testID="popular-list"
       data={data}
       numColumns={size.gridColumns}
       keyExtractor={(item, index) => (item ? String(item.id) : `skeleton-${index}`)}
       renderItem={({ item }) => <Cell item={item} />}
       contentContainerStyle={styles.content}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={END_REACHED_THRESHOLD}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => void handleRefresh()}
+          colors={[colors.accent.gold]}
+          progressBackgroundColor={colors.bg.elevatedFlat}
+        />
+      }
+      ListFooterComponent={<PagingFooter footer={footer} onRetry={onRetryMore} />}
       ListHeaderComponent={
         <View style={styles.header}>
           {header}

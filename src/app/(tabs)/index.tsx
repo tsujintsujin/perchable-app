@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { Link, router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,13 +9,19 @@ import { colors, size, spacing, type } from "@/ui/tokens";
 import { PosterGrid, RouletteCard, usePopularMovies } from "@/modules/movies";
 import { useOwnProfile } from "@/modules/profile";
 
+// Shown when pull-to-refresh fails and the earlier posters stay.
+const REFRESH_FAILED_MESSAGE = "Couldn't refresh. Check your connection.";
+
 /** Home ("Perch"): wordmark and avatar header, the Roulette shell, and the Popular poster grid. */
 export default function Home() {
   const profile = useOwnProfile();
   const loaded = profile.state === "loaded" ? profile.profile : undefined;
   const insets = useSafeAreaInsets();
-  const { state, movies, retry } = usePopularMovies();
   const toast = useToast();
+  const { show } = toast;
+  // Stable so the hook's refresh callback is not rebuilt every render.
+  const onRefreshError = useCallback(() => show(REFRESH_FAILED_MESSAGE, "error"), [show]);
+  const popular = usePopularMovies({ onRefreshError });
 
   return (
     <View style={styles.root}>
@@ -37,12 +44,17 @@ export default function Home() {
       </View>
 
       <PosterGrid
-        state={state}
-        movies={movies}
-        onRetry={retry}
-        header={<RouletteCard onPress={() => toast.show("Smart picks are coming soon.")} />}
+        state={popular.state}
+        movies={popular.movies}
+        onRetry={popular.retry}
+        footer={popular.footer}
+        onEndReached={popular.loadMore}
+        onRetryMore={popular.retryMore}
+        refreshing={popular.refreshing}
+        onRefresh={popular.refresh}
+        header={<RouletteCard onPress={() => toast.show("Smart picks are coming soon.", "coming-soon")} />}
       />
-      <Toast message={toast.message} variant="coming-soon" />
+      <Toast message={toast.message} variant={toast.variant} />
     </View>
   );
 }

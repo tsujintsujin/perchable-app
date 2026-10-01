@@ -1,1 +1,1 @@
-export { Toast, useToast } from "./Toast";
+export { Toast, useToast, type ToastVariant } from "./Toast";

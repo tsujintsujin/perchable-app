@@ -40,6 +40,7 @@ const movie = (id: number, title: string, poster: string | null, date = "2021-03
   release_date: date,
 });
 
+// A single page, so the short test list has nothing more to load.
 const PAGE = {
   results: [
     movie(1, "Dune", "/dune.jpg"),
@@ -47,7 +48,7 @@ const PAGE = {
     movie(3, "Untitled Year Unknown", "/u.jpg", ""),
   ],
   page: 1,
-  total_pages: 5,
+  total_pages: 1,
 };
 
 const httpError = (status: number) => new FunctionsHttpError({ status, json: async () => ({ error: "x" }) });

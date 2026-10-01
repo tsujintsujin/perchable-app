@@ -146,6 +146,10 @@ export const size = {
   homeHeaderInset: 72,
   /** Touch wrapper around the 32 Home avatar. */
   avatarSlot: 48,
+  /** List footer rows (loading more, end of list). */
+  footerRow: 56,
+  /** Diameter of the indeterminate spinner ring. */
+  spinner: 20,
 } as const;
 
 /** Extra touch area that grows an icon button to the minimum touch target. */
