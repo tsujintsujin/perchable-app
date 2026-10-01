@@ -1,6 +1,6 @@
 # Build 12a — Home poster grid, first page (Module 4: Movie browse/details)
 
-Base SHA: (recorded at Phase 1 start, on branch `module/movie-browse` from main)
+Base SHA: 257330b (2026-10-01, branch `module/movie-browse` from main)
 Plan: PLAN.md "Build 12a" A1–A7, B1–B9 + Module 4 decisions M1–M10 (Priya 5c5981c, revised
 f7b0498 + 1f8af87 after two Ruby reviews). NEEDS JUSTIN N1–N7: defaults apply (Justin away,
 asked that work continue). Phase 0: Dianne (DESIGN.md "Build 12").
