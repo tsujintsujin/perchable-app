@@ -14,6 +14,9 @@ published or overwritten. The boards exist as source files in `design-src/`
 (listed in the Build 10b and Build 11 sections) and in `design-src/canvas.json`
 (orders 8-13), ready to publish once the canvas is reachable.
 
+Build 12 / 13 boards (2026-10-01, Module 4) are also source-only in `design-src/` (see the Build 12 and Build 13
+sections; `design-src/canvas.json` orders 14-18).
+
 This is the rulebook. Bella builds from it. Ruby enforces it against every
 Build. No one-off values outside `src/ui/tokens.ts` — if a value isn't in
 section 1 or 4, it doesn't go in a component.
@@ -105,7 +108,7 @@ SDK 57 — confirmed against Expo's docs 2026-09-24), but real blur needs:
 |---|---|---|
 | `TabBar` (`glass.nav`) | Yes | static, one instance per screen, cheap |
 | `ProfileSheet` (`glass.sheet`) | Yes | static, one instance, opens rarely |
-| Home hero card (Perch Roulette) | Yes | static, one instance |
+| Home hero card (Perch Roulette), spoiler-lounge panel | **Android: no, flat `glass.hero` fill + hairline** (iOS may use `BlurView` later) | the backdrop behind them is flat circles, so a blur has nothing to blur; the Roulette card is also a `FlashList` header (decided Build 12, 2026-10-01) |
 | `PosterCard` inside `FlashList` (Collection grid, Home carousels) | **No** — flat `bg.elevatedFlat`-based `rgba` fill, no blur | `expo-blur`'s own known-issue note: blur doesn't update correctly ahead of dynamic list content, and re-blurring N list rows on every scroll frame is the actual Android perf risk, not blur-on-static-chrome |
 | `SwipeDeck` top card | **No** — flat `rgba(18,16,22,0.55)` fill behind title, per the mock | swipe gesture re-renders this view every frame during a drag; blur recompute per frame is the exact case to avoid |
 
@@ -166,6 +169,31 @@ load, it's two small variable-adjacent weight sets.
 
 Everything else (`surface.input`, `border.hairline*`, `border.danger`, `overlay.scrim`, `bg.elevatedFlat`, type roles, spacing, radius) is existing.
 
+### 1.9 Tokens added for Build 12 / 13 (add to `src/ui/tokens.ts`; nothing else is new)
+
+| Token | Value | Use |
+|---|---|---|
+| `size.posterAspect` | `2 / 3` (width over height) | every poster: grid tile, details poster |
+| `size.gridColumns` / `size.gridGap` | 3 / 10 | Home grid (sides use `spacing[20]`) |
+| `size.homeHeaderInset` | 72 | right inset of the Home header: avatar slot's right edge from the screen edge (20 + `headerTrailingInset` 44 + 8) |
+| `size.avatarSlot` | 48 | touch wrapper around the 32 Home avatar |
+| `size.footerRow` | 56 | list footer rows (loading more, end of list) |
+| `size.detailsBackdrop` | 220 | details backdrop height |
+| `size.detailsPosterWidth` / `size.detailsPosterOverlap` | 120 / 64 | details poster width (height = width x 1.5) and how far it overlaps the backdrop |
+| `size.detailsTitleOffset` | 76 | top padding of the title column beside the poster |
+| `size.detailsBarShowAt` | 150 | scroll offset where the compact top bar appears |
+| `size.chipHeight` | 36 (= `size.iconButton`) | rating and tier chips |
+| `size.castItem` / `size.castGap` | 88 (= `avatarSize.lg`) / 12 | cast row |
+| `size.popoverWidth` | 260 | TierBadge legend popover |
+| `colors.overlay.fadeStart` | `rgba(18,16,22,0)` | start of the backdrop fade to `bg.base` |
+| `colors.overlay.shimmerWash` | `rgba(214,196,233,0.10)` | wash over a loading poster tile |
+| `lineHeight` | `caption/small 16` / `body 22` / `subhead 24` / `title 30` | explicit line heights for the type roles used here |
+| `motion.imageFade` | 200 (ms) | poster fade-in; the compact bar's fade is 150 |
+
+Existing and reused: `bg.elevatedFlat`, `surface.input`, `surface.goldTint`, `border.*`, `glass.hero`,
+`colors.brand.purple900`, `overlay.spinnerTrack`, `shimmerPulse`, `iconSize.lg`, `avatarSize`, `size.minTouch`,
+`iconButtonHitSlop`, type roles, spacing, radius, `elevation.card`.
+
 ---
 
 ## 2. Shared components
@@ -178,14 +206,14 @@ small ones), `index.ts`.
 |---|---|---|
 | `GlassBackdrop` | `blobs?: ('purple'\|'gold')[]` (decorative halo blur shapes) | static |
 | `GlassCard` | `tier: 'card'\|'hero'\|'chip'`, `blur: boolean` (real BlurView vs. flat fallback — caller decides per §1.5 rule), `children` | default, pressed (scale 0.98) |
-| `PosterCard` | `posterUrl`, `title`, `watched?: boolean`, `tier?: 'S'\|'A'\|'B'\|'C'`, `caption?: string`, `onPress` | loading (shimmer), loaded, error (fallback poster icon) |
+| `PosterCard` | `posterUrl: string \| null`, `title`, `year?` (Build 12); `onPress` (Build 13); later `watched?`, `tier?`, `caption?` | loading (shimmer), loaded, error / no poster (🎬 icon + title). Pressed (scale 0.98) only once `onPress` exists (Build 13). Spec: Build 12 section |
 | `Button` | `variant: 'primary-gold'\|'secondary-glass'\|'ghost'\|'destructive'`, `disabled?`, `loading?` | default, pressed, disabled, loading (spinner replaces label) |
-| `TierBadge` | `tier: 'S'\|'A'\|'B'\|'C'`, `size: 'sm'\|'md'` | static — **UI shell, not functional in v1** (no tap handler; tapping opens a static legend popover only, see §5) |
+| `TierBadge` | `tier?: 'S'\|'A'\|'B'\|'C'` (absent = the "🏆 Tier" chip on details), `size: 'sm'\|'md'`, `onPress?` | **UI shell, not functional in v1**: the details chip toggles a static legend popover (§5, Build 13); no rating is settable or stored |
 | `TabBar` | fixed 5 items: Perch / Search / Chat / Leaderboards / Profile — `activeRoute` | per-tab active/inactive; **rendered on every tab screen** (`(tabs)/_layout.tsx`, not per-screen) |
 | `ProfileSheet` | `userId`, `isSelf: boolean` | loading, loaded, error, not-found |
 | `SwipeDeckCard` | `movie`, `onSwipeLeft`, `onSwipeRight` | idle, dragging, exiting-left, exiting-right |
 | `Avatar` | `uri?`, `size: 'sm'\|'md'\|'lg'`, `ringGradient?: boolean` (purple→gold ring for own profile) | loaded, fallback-initials |
-| `EmptyState` | `icon`, `title`, `body`, `action?: {label, onPress}` | one component, used by every data screen's empty case |
+| `EmptyState` | `icon`, `title`, `body`, `action?: {label, onPress}` | one component, used by every data screen's empty case; the action button is at least 48 high (`size.minTouch`, fixed in Build 12) |
 | `Toast` | `message`, `variant: 'info'\|'error'\|'coming-soon'` | shown, dismissing |
 
 **Rule:** every data screen (Home feed, Search results, Collection,
@@ -205,7 +233,8 @@ src/app/
     sign-in.tsx                Google sign-in screen
   (tabs)/
     _layout.tsx                Tabs navigator — renders <TabBar> (5 items)
-    index.tsx                  Home ("Perch") — roulette (UI-only), have-you-watched, friend activity
+    index.tsx                  Home ("Perch") — Build 12: header, Roulette shell (UI-only), Popular poster grid (3 columns,
+                                infinite scroll, pull-to-refresh). have-you-watched and friend activity wait for Builds 19 / 23
     search.tsx                 Search / Add movie (module: movies)
     chat/
       index.tsx                DM conversation list
@@ -217,7 +246,8 @@ src/app/
       edit.tsx                 Edit profile (Build 7)
       blocked-users.tsx        Blocked users list (Build 10b) — pushed from Settings
   movie/
-    [id].tsx                   Movie details — pushed from Home/Search/Collection/deck
+    [id].tsx                   Movie details (Build 13) — full-screen push, NO tab bar, own back chip; pushed from Home/Search/Collection/deck.
+                                Deep link perchable://movie/<id>; id must be a positive integer, else the not-found state
   quick-add.tsx                Quick Add swipe deck — pushed from Home, outside the tab bar (full-screen focus)
   terms.tsx                    Terms & community rules (Build 11) — root-level push, outside the tabs so the
                                 gate can open it from any screen; under the session guard in root _layout.
@@ -236,9 +266,12 @@ Home / movie details (§5).
 
 Navigation: tab bar is the top-level chrome (`(tabs)/_layout.tsx`); `movie/`,
 `quick-add`, and `user/` are non-tab stack routes reachable from any tab and
-push over it — `TabBar` stays visible under `movie/` and `quick-add` (they're
-plain pushed screens), but `user/[id]` as a `formSheet` covers it (matches
-the mock: "feed dimmed behind modal").
+push over it. **They are root-level siblings of `(tabs)`, so the `TabBar` is
+covered, not visible, on `movie/[id]`, `quick-add`, `terms`, `user/[id]`** (corrected
+2026-10-01, Build 13: the old line said it stayed visible under `movie/`, which a
+root-level route cannot do). `movie/[id]` draws its own back chip and the Android back
+returns to where it was opened; Home stays mounted underneath, so its loaded pages
+and scroll position survive.
 
 ---
 
@@ -260,19 +293,25 @@ src/
                                                                these, it only imports them through moderation/index.ts
                                                                when a later Build needs a caller. Module README.md too)
 
-    movies/       api/ components/ hooks/ types.ts index.ts   (Perchable-specific: TMDB browse/search/details)
+    movies/       api/ components/ hooks/ tmdbImage.ts types.ts index.ts   (Perchable-specific: TMDB browse/search/details.
+                                                               OWNS everything TMDB: `api/` (getPopularMovies, getMovieDetails, the
+                                                               only Supabase/proxy touchpoint), `hooks/` (usePopularMovies infinite
+                                                               query, useMovieDetails), `components/` (PosterGrid + its footer,
+                                                               MovieDetailsView, CastRow, RouletteCard, LoungePanel), `tmdbImage.ts`
+                                                               (base URL + the w185 / w342 / w500 / w780 size constants). Imports
+                                                               only `@/ui` and `@/lib`; routes use it through `index.ts`)
     quick-add/    api/ components/ hooks/ types.ts index.ts   (Perchable-specific: SwipeDeck logic/state)
     collection/   api/ components/ hooks/ types.ts index.ts   (Perchable-specific: captions, collection grid)
     rankings/     api/ components/ hooks/ types.ts index.ts   (Perchable-specific: leaderboard views)
 
   ui/                          shared design system — no business logic, no Supabase imports
     tokens.ts                  §1 as code: colors, glass, type scale, spacing, radius
-    GlassBackdrop/ GlassCard/ PosterCard/ Button/ TierBadge/ TabBar/ ProfileSheet/
+    GlassBackdrop/ GlassCard/ PosterCard/ Button/ TierBadge/ TabBar/ ProfileSheet/   (PosterCard: Build 12a; TierBadge: Build 13)
     SwipeDeckCard/ Avatar/ EmptyState/ Toast/   (each: Component.tsx, index.ts)
 
   lib/                         cross-cutting singletons, not modules
     supabase.ts                Supabase client
-    queryClient.ts              TanStack Query client
+    queryClient.ts              TanStack Query client (created in Build 12a; `REQUEST_TIMEOUT_MS` 8000 lives next to it)
     sentry.ts                   Sentry init
 
   app/                         routes ONLY — thin screens: compose ui/ + modules/, no fetching/business logic inline
@@ -301,9 +340,9 @@ signals "not wired" only via the disabled/toast behavior below.
 
 | Feature | Where | Tap behavior in v1 |
 |---|---|---|
-| Perch Roulette | Home hero card | `Toast` (`variant: coming-soon`): "Smart picks are coming soon." Button is a real `Button` component in `disabled` visual state but still tappable (so the toast fires) — never a dead, unstyled tap target. |
-| Tier badge (S/A/B/C) | Movie details, Collection `PosterCard` | Opens a small static legend popover (`GlassCard` chip: "S/A/B/C — Justin's rating tiers, coming soon") — no rating is settable or stored in v1. |
-| `#spoiler-free-lounge` panel | Movie details | Panel renders with the mock's sample content (static, not from any comments table). The composer (`"Hoot your thoughts…"`) renders in `text.disabled`-styled, non-focusable state; **becomes real once Module 9 (Comments) ships** — this exact panel's composer is what Bella wires then, not a new component. |
+| Perch Roulette | Home hero card | `Toast` (`variant: coming-soon`): "Smart picks are coming soon." The button is a real `Button primary-gold` at **full strength** (revised Build 12: a dimmed look reads as broken and TalkBack would say "disabled" for a control that answers). Not `accessibilityState.disabled`. Never a silent tap. |
+| Tier badge (S/A/B/C) | Movie details, Collection `PosterCard` | Details (Build 13): the "🏆 Tier" chip toggles a static legend popover ("Tier ratings", S A B C badges, "coming soon"; exact layout and copy in the Build 13 section). No rating is settable or stored in v1. |
+| `#spoiler-free-lounge` panel | Movie details | Panel renders with the mock's sample content (static, not from any comments table). The composer (`"Hoot your thoughts…"`) renders in `text.disabled`-styled, non-focusable state, and **tapping it shows a Toast** "Comments are coming soon."; a "Preview only. Comments are coming soon." line sits above it (Build 13); **becomes real once Module 9 (Comments) ships** — this exact panel's composer is what Bella wires then, not a new component. |
 
 ---
 
@@ -375,7 +414,8 @@ Layout inside the About `glass.card`:
     shifted to make room — exact positions get finalized when Home itself is
     mocked (it's UI-only content, out of scope through Build 9). No change to
     the Build 5 canvas board itself; this is a forward note for whoever mocks
-    Home.
+    Home. **Done in Build 12** (below): avatar slot right edge 72 dp from the
+    screen edge; the trophy chip waits for the collection (Build 19).
 
 ---
 
@@ -1028,6 +1068,275 @@ Accessibility: header chip "Back"; body is a scrollable region; section labels `
 
 ---
 
+## Build 12 — Home poster grid (Module 4: Movies; Builds 12a and 12b)
+
+Boards (source in `design-src/`, drawn at 390 wide; the emulator is 411 dp wide, same layout):
+`build-12a-home-states.dc.html` (loading / filled / empty / error),
+`build-12a-home-parts.dc.html` (Roulette toast, PosterCard states, measurements),
+`build-12b-home-paging.dc.html` (next page loading / end / next page failed / pull-to-refresh /
+refresh failed). Canvas: not published (the old canvas is not reachable from this account);
+`design-src/` and this text are the source. 12a builds the first two boards; 12b builds the third.
+
+**Decisions (Dianne, Phase 0, 2026-10-01)**
+- **N5: 3 columns, kept.** Tile 110 dp at 390 wide (117 at 411, 100 at 360). Two columns would make 175 dp
+  tiles and show about two rows per screen instead of three, so a browse list would look sparse; 3
+  columns also matches the My Collection grid, so a poster looks the same everywhere. A 100 dp tile is
+  still readable because the poster art carries the title.
+- **No title under the tile.** Posters carry their own title; the tile is poster-only (denser, matches the
+  inspo). The title is shown only in the image-failed fallback, and always in the accessibility label.
+- **Roulette card is flat on Android** (`glass.hero` fill + 1px `border.hairline`, no `BlurView`, no gold halo glow).
+  Why: the backdrop behind it is flat circles (`GlassBackdrop`), so a blur has nothing to blur, and the
+  card is a `FlashList` header, so the §1.5 list rule applies. iOS may use `BlurView` here later; it is not
+  part of this Build. This overrides the "Home hero card: Yes" row in §1.5 (updated).
+- **Roulette button is full-strength `primary-gold`, not the dimmed disabled look** that §5 first described.
+  It is tappable and answers with a Toast, so it must look alive; a dimmed look reads as broken, and
+  TalkBack would announce "disabled" for a control that does something. §5 is updated. It is not
+  `accessibilityState.disabled`.
+- **Header:** wordmark "🦉 perchable" (`subhead`, `accent.gold`) left, from the Build 0 Home mock. The 🏆 "N Watched"
+  trophy chip is NOT built here (it needs the collection, Build 19; PLAN M1). Avatar: `ui/Avatar sm` (32)
+  centred in a 48x48 touch wrapper, wrapper right edge **72 dp from the screen edge** (clear of the 64 dp
+  gear zone; the placeholder used 84). Tap opens the Profile tab. The header is fixed, outside the list.
+- **Tab bar stays** on Home (it is a tab). The boards draw the shipped two-tab bar (Perch, Profile); later
+  tabs appear as their Builds land. Flat fill on Android, as shipped.
+
+### Layout (top to bottom; all values dp)
+1. Header (fixed): `paddingTop` = safe-area top inset; row 48 high; padding-left 20; avatar slot as above.
+2. `FlashList` (`numColumns` 3), content padding top 0 / sides 20 / bottom 16.
+   `ListHeaderComponent` = 12 top space, Roulette card, section title. It scrolls with the grid.
+3. **Roulette card:** radius `lg` 20, padding 20, fill `glass.hero.backgroundColor`, 1px `border.hairline`. Eyebrow
+   "Perch Roulette" (`caption`, uppercase, `letterSpacing.label`, `colors.brand.lavender200`); 6; title
+   (`title` 24/30, `text.primary`); 14; `Button primary-gold` full width, 48 high. Tap shows `Toast`
+   variant `coming-soon`; nothing else happens.
+4. **Section title** "Popular right now": `subhead` (19/24), `colors.brand.lavender200`, 24 above, 12 below,
+   `accessibilityRole="header"`.
+5. **Grid:** 3 columns, gap 10 both ways, tile width = (screen width - 40 - 20) / 3, tile height = width x 3/2
+   (`size.posterAspect`). Row pitch = tile height + 10.
+6. **Footer** (12b): below.
+
+### PosterCard (new, `src/ui/PosterCard/`; §2 updated)
+Props in 12a: `posterUrl: string | null`, `title: string`, `year?: number | null`. (`watched`, `tier`,
+`caption` arrive with later Builds; `onPress` arrives in Build 13.) Fills its parent's width, aspect 2:3,
+radius `sm` 12, 1px `border.hairline`, `overflow: hidden`, flat fill, never `BlurView`.
+- **Loading:** `bg.elevatedFlat` fill with the `usePulse` opacity (0.4 to 0.9) plus a
+  `rgba(214,196,233,0.10)` wash (`colors.overlay.shimmerWash`). Not announced one by one.
+- **Loaded:** `expo-image`, `contentFit="cover"`, `cachePolicy="memory-disk"`, `recyclingKey` = movie id,
+  `motion.imageFade` (200 ms) fade-in over the loading fill. No overlay or text on the tile.
+- **Failed / no `posterUrl`:** `bg.elevatedFlat`, centred column, padding 8: icon 🎬 (`iconSize.lg`, 22), 8,
+  title (`caption`, `text.secondary`, centred, max 3 lines, ellipsis). Year not drawn. Emoji and RTL titles
+  must not break it. A failed image (`onError`) switches to this state; a tile is never left blank.
+- **Pressed:** none in 12a (posters are not tappable, PLAN M7). Build 13 adds scale 0.98 (same as
+  `GlassCard`) and role button.
+- **Accessibility:** `accessible`, `accessibilityRole="image"` in 12a, label "{title}, {year}" (title only
+  when the year is unknown). Loading tiles are `importantForAccessibility="no-hide-descendants"`.
+
+### Screen states (`(tabs)/index.tsx` composes `usePopularMovies` + `ui/` + the module's grid; no fetching in the route)
+| State | What shows |
+|---|---|
+| Loading | Header, Roulette card, section title, 12 loading tiles (4 rows). One polite live region "Loading movies". |
+| Filled | Header, Roulette card, title, grid of loaded tiles (a tile whose image failed shows the fallback). |
+| Empty (zero usable results) | Header, Roulette card, `EmptyState` (icon 🎬) with Retry; section title hidden; 32 between card and `EmptyState`. |
+| Error (first page failed) | Same shell, `EmptyState` (icon 🦉) with Retry. Retry reloads page 1; a double tap sends one request. |
+| Roulette tapped | `Toast` coming-soon above the tab bar. Nothing else changes. |
+
+`EmptyState` change (applies everywhere): the action button gets `minHeight: size.minTouch` (48). It was
+about 44 high; PLAN B7 needs 48.
+
+### 12b — paging and refresh
+- **Next page loading:** footer row `size.footerRow` (56) high, centred: 20 dp spinner (2px ring
+  `overlay.spinnerTrack`, top arc `accent.gold`), 10, "Loading more…" (`caption`, `text.secondary`). Polite
+  live region "Loading more movies". Loaded posters stay.
+- **End of list** (last page = min(total_pages, 500)): footer row 56 high, "You've reached the end."
+  (`caption`, `text.secondary`, centred). No request after it.
+- **Next page failed:** footer: "⚠ Couldn't load more movies." (`small`, `danger`, `accessibilityRole="alert"`), 8,
+  then `Button secondary-glass` "Retry" (48 high, padding 0/24, `accessibilityLabel` "Retry loading more
+  movies"). Posters stay; never the full-screen error, never an empty footer that looks like the end.
+- **Pull to refresh:** `FlashList` `refreshControl`: `colors={[accent.gold]}`,
+  `progressBackgroundColor={bg.elevatedFlat}`. Fetches page 1 only, drops later pages, returns to the top.
+- **Refresh failed while posters show:** posters stay; `Toast` variant `error`; the screen never flips to
+  the error state.
+- `Toast` pins at the screen's bottom inset + 24; on a tab screen that is above the tab bar (the boards
+  draw it 98 from the phone's bottom edge).
+
+### Copy (verbatim, Build 12)
+| Where | Text |
+|---|---|
+| Wordmark | 🦉 perchable |
+| Avatar, `accessibilityLabel` (existing) | Open My Profile |
+| Roulette eyebrow | Perch Roulette |
+| Roulette title | Can't decide tonight? |
+| Roulette button | 🎬 Surprise Me |
+| Roulette button, `accessibilityLabel` | Surprise me |
+| Roulette button, `accessibilityHint` | Smart picks are coming soon |
+| Roulette Toast | Smart picks are coming soon. |
+| Section title | Popular right now |
+| Loading, live region | Loading movies |
+| Empty title | No movies to show |
+| Empty body | We couldn't find any movies right now. Try again in a moment. |
+| Error title | Couldn't load movies |
+| Error body | Check your connection and try again. |
+| Retry (empty, error, footer) | Retry |
+| Poster label | {title}, {year} (title only if no year) |
+| Poster fallback icon | 🎬 |
+| Loading more | Loading more… |
+| Loading more, live region | Loading more movies |
+| End of list | You've reached the end. |
+| Next page failed | ⚠ Couldn't load more movies. |
+| Next page Retry, `accessibilityLabel` | Retry loading more movies |
+| Refresh failed Toast | Couldn't refresh. Check your connection. |
+
+Year rule: the first four digits of `release_date` when it matches `^\d{4}`; otherwise omitted (never "NaN",
+"0" or blank).
+
+### Accessibility notes (Build 12)
+The section title is a header. Every control is at least 48 dp: avatar slot 48, Roulette button 48, Retry 48
+(EmptyState fix and footer). Posters are not interactive in 12a. Nothing depends on colour alone (the footer
+error carries the ⚠ and words). Contrast: `text.secondary` on `bg.base` about 8:1, `danger` about 9:1,
+`accent.gold` about 5.6:1 (used only for the wordmark and the spinner arc, never body text). Gear zone:
+nothing in the top-right 64x64 (dashed on the boards).
+
+---
+
+## Build 13 — Movie details (Module 4: Movies)
+
+Boards: `build-13-details-states.dc.html` (loading / loaded / error / not found) and
+`build-13-details-variants.dc.html` (sparse data / long text / tier legend / scrolled with the top bar,
+long cast names and the lounge Toast).
+
+**Route and the tab-bar question (settled):** `src/app/movie/[id].tsx`, a root-level Stack route inside the
+session-guarded group. It is a **full-screen push with no tab bar**, as Priya defaulted. Why: a root-level
+sibling of `(tabs)` covers the bar anyway, and keeping it would mean nesting the route under every tab; the
+screen is long and the 74 dp bar costs about 9% of a short phone; Edit profile, Terms and Quick Add already
+work this way; and a deep link then needs no tab context. §3's "TabBar stays visible under `movie/`" is
+corrected. Back = the back chip and the Android hardware back (same result). Cold-start deep link:
+`router.canGoBack()` false means `router.replace('/')`. The navigator header is off (`headerShown: false`);
+the screen draws its own chip.
+
+### Layout (loaded; dp; drawn at 390 wide; one scrolling column)
+- **Backdrop:** full width, `size.detailsBackdrop` 220 high, from y = 0 (under the status bar), `expo-image`
+  `w780`, cover, scrolls with the content. Bottom fade: `LinearGradient` from `colors.overlay.fadeStart` to
+  `bg.base`, 40% to 100%. Decorative. No backdrop: flat `colors.brand.purple900` with the same fade.
+- **Back chip:** floating, 36x36, radius `sm`, fill `bg.elevatedFlat`, 1px `border.hairlineStrong`, "←" in
+  lavender200; position left 20, top = inset + 8; `hitSlop` = `iconButtonHitSlop` (6) so it is 48; label
+  "Back". Always visible (floats above the scroll).
+- **Compact top bar:** once the scroll offset passes `size.detailsBarShowAt` (150), a solid bar fades in
+  (150 ms) at the top: `bg.base`, height = inset + 48, 1px `border.hairline` bottom; the chip stays on it;
+  the movie title (`subhead`, lavender200, one line, ellipsis) at left 76 / right 72, so it clears the gear
+  zone. This stops text sliding under the chip.
+- **Header row:** starts at y = 156 (`size.detailsBackdrop` minus `size.detailsPosterOverlap` 64). Poster
+  `size.detailsPosterWidth` 120 x 180 (`PosterCard` states, radius 12, source `w500`, border
+  `hairlineStrong`), gap 16, then a column with 76 top padding: title (`title` 24/30, `text.primary`, up to
+  3 lines, ellipsis, `accessibilityRole="header"`); 8; meta line "{year} · {runtime}" (`body`,
+  `text.secondary`; omitted when both are missing, a lone part shown alone); 6; genres joined by " · "
+  (`caption`, `text.secondary`, wraps; omitted when empty).
+- **Chip row** (20 under the header row, gap 12): rating chip and **TierBadge** chip, both 36 high, pill
+  radius, fill `surface.input`, 1px `border.hairline` (the tier chip `border.gold`). Rating chip: "★"
+  (`accent.gold`), "8.4" (`bodyStrong`), "of 10" (`small`, `text.secondary`); no votes: "Not rated yet"
+  (`bodyStrong`, `text.secondary`, no star). Tier chip: "🏆 Tier" (`bodyStrong`, `accent.gold`), `hitSlop` 6.
+- **Tagline** (16 under): `bodyStrong`, `text.secondary`, wraps; omitted when empty.
+- **Synopsis:** heading "Synopsis" (`subhead`, lavender200, header, 24 above / 8 below), text `body`
+  (15/22) `text.primary`.
+- **Cast** (heading and row omitted when the list is empty): heading "Cast" (24 above, 12 below); a
+  horizontal `FlatList` (`accessibilityRole="list"`), content padding-left 20 and padding-right 20, items 88
+  wide, gap 12. Item: `ui/Avatar lg` (88; photo `w185`, initials fallback), 8, name (`caption`,
+  `text.primary`, 2 lines, ellipsis), 2, character (`small`, `text.secondary`, 2 lines, ellipsis; omitted when
+  empty). Not tappable. At most 15 (the server sends 15).
+- **`#spoiler-free-lounge`** (UI shell): heading "#spoiler-free-lounge" (`subhead`, lavender200, 24 above / 4
+  below), subline (`small`, `text.secondary`, 12 below), then one card: radius `md` 16, padding 16/16/4,
+  fill `glass.hero.backgroundColor` (flat, as Roulette), 1px `border.hairline`. Inside: two static sample
+  messages (`Avatar sm` + author `small` 600 `accent.gold` + text `small` `text.primary`, 12 apart), the line
+  "Preview only. Comments are coming soon." (`small`, `text.secondary`, 12 below), then the composer: 48
+  high, pill, fill `bg.base` at 50% (the `glass.chip` family), 1px `border.hairline`, padding 0/16,
+  placeholder `body` `text.disabled`. The composer is **not focusable**; tapping it shows a `Toast`
+  "Comments are coming soon." (never a silent tap). The sample messages are the only invented content and the
+  "Preview only" line says so. Nothing is stored or fetched (Module 9 wires the panel).
+- **Bottom:** 32 padding plus the bottom inset.
+- **TierBadge popover:** tapping the chip toggles a static popover under the chip row: 260 wide, left edge 90
+  from the content left, radius `md` 16, padding 16, fill `bg.elevatedFlat`, 1px `border.hairlineStrong`,
+  `elevation.card`. Title "Tier ratings" (`bodyStrong`), 4, body (`small`, `text.secondary`), 12, four
+  36x36 letter badges S A B C (8 apart): S fill `accent.gold` with `text.onGold`; A `surface.goldTint` +
+  `border.gold` with gold text; B `surface.input` + `border.hairlineStrong` with `text.primary`; C
+  `surface.input` + `border.hairline` with `text.secondary`; letters Poppins 800 15 (`type.bodyStrong`
+  size, `Poppins_800ExtraBold`). Dismiss: tap the chip again, tap outside, or Android back (the first back
+  closes the popover). No rating is stored or settable.
+
+### States
+| State | What shows |
+|---|---|
+| Loading | Back chip; shimmers in the final layout: flat backdrop block, poster block, two title bars (100%, 70%, 24 high), a meta bar, a genre bar, two chip pills (110 and 90 x 36), a tagline bar, "Synopsis" heading bar (120 x 24) and four text bars, "Cast" bar (80 x 24) and four avatar circles each with two small bars. `usePulse`. One polite live region "Loading movie". |
+| Loaded | The layout above. |
+| Error (nothing cached) | Back chip; `EmptyState` (🦉) with Retry, vertically centred. |
+| Error on refetch with data | Keeps showing the loaded data; `Toast` error "Couldn't refresh. Check your connection." Data is never replaced by the error screen. |
+| Not found (404, adult title, invalid route id) | Back chip; `EmptyState` (🎬) with action "Back to Home" (`router.replace('/')`). An invalid id makes no proxy call. |
+| Empty | Does not apply to a single movie (it exists or it is not found); the Build log says so. |
+
+### Missing data
+| Missing | Rule |
+|---|---|
+| `overview` blank | Synopsis text is "No synopsis available." (same style) |
+| cast empty | Cast heading and row not rendered |
+| `vote_count` 0 | Rating chip reads "Not rated yet" (never 0.0) |
+| `poster_path` null or image fails | Poster uses the `PosterCard` fallback (🎬 and title) |
+| `backdrop_path` null | Flat `purple900` backdrop |
+| `release_date` empty or malformed | Year omitted |
+| `runtime` 0 or null | Runtime omitted |
+| genres empty | Genre line omitted |
+| tagline empty | Tagline omitted |
+| character empty | Character line omitted; name only |
+| `profile_path` null | Avatar initials fallback |
+
+Runtime format: under 60 min "45m"; exactly on the hour "2h"; otherwise "2h 28m". Rating: `vote_average` to one
+decimal. Long text: the title clamps to 3 lines with an ellipsis; tagline, synopsis and genres wrap in full;
+cast name and character clamp to 2 lines each.
+
+### Copy (verbatim, Build 13)
+| Where | Text |
+|---|---|
+| Back chip, `accessibilityLabel` | Back |
+| Synopsis heading | Synopsis |
+| Cast heading | Cast |
+| Lounge heading | #spoiler-free-lounge |
+| Lounge subline | Chat about this movie without spoilers. |
+| Lounge sample 1 | CineOwl / Just finished it. No spoilers, but wow. |
+| Lounge sample 2 | ReelMara / Rewatching it this weekend. Who's in? |
+| Lounge preview line | Preview only. Comments are coming soon. |
+| Composer placeholder | Hoot your thoughts… |
+| Composer Toast | Comments are coming soon. |
+| Tier chip | 🏆 Tier |
+| Tier popover title | Tier ratings |
+| Tier popover body | Soon you'll rank the movies you've watched from S (best) down to C. Coming soon. |
+| Rating chip | ★ {n.n} of 10 |
+| Rating, no votes | Not rated yet |
+| No synopsis | No synopsis available. |
+| Loading, live region | Loading movie |
+| Error title | Couldn't load this movie |
+| Error body | Check your connection and try again. |
+| Error action | Retry |
+| Refetch error Toast | Couldn't refresh. Check your connection. |
+| Not found title | Movie not found |
+| Not found body | We couldn't find that movie. It may have been removed. |
+| Not found action | Back to Home |
+
+### Accessibility notes (Build 13)
+- Back chip: button, "Back", 36 + `hitSlop` 6 = 48. The title is a header; Synopsis, Cast and the lounge heading
+  are headers. Reading order: back, title, meta, genres, rating, tier chip, tagline, synopsis, cast, lounge.
+- Rating chip: one accessible element, label "Rated 8.4 out of 10 on TMDB" (no votes: "Not rated yet on
+  TMDB"); the star glyph is not read separately.
+- Tier chip: button, label "Tier rating", hint "Opens an explanation. Tier ratings are coming soon." The
+  popover has `accessibilityLiveRegion="polite"`.
+- Poster: label "Poster for {title}", role image. Backdrop: decorative
+  (`importantForAccessibility="no-hide-descendants"`).
+- Cast row: `accessibilityRole="list"`; each item is one element labelled "{name} as {character}" (name only
+  with no character); avatars decorative.
+- Composer: `accessibilityRole="button"`, label "Hoot your thoughts", hint "Comments are coming soon". Not
+  `disabled` (it answers with a Toast).
+- Every control is at least 48 dp (chips via `hitSlop`, composer 48, Retry 48). Gear zone (top-right 64x64):
+  empty; the chip is top-left and the compact bar's title stops 72 from the right edge.
+- Contrast: `text.primary` and `text.secondary` on `bg.base` as in §1.5; gold "Tier" text on `surface.input`
+  about 4.7:1 (bold 15); the placeholder `text.disabled` sits on a not-focusable composer, and the preview
+  line next to it uses `text.secondary`.
+
+---
+
 ## 8. Decisions (Manager, Build 0 round 1)
 
 - **Light theme — no light theme in v1.** §1.3's light tokens stay in this
@@ -1044,3 +1353,6 @@ Accessibility: header chip "Back"; body is a scrollable region; section labels `
 - **Tier badges — no plan change.** S/A/B/C tiers stay UI-only per Justin's
   direction (§5); this is a note for whoever eventually specs a real ratings
   feature, not a gap to fix now. No PLAN.md revision, no Priya round.
+- **Build 12 / 13 (Dianne, 2026-10-01):** N5 = 3 columns kept; details = full-screen push, no tab bar;
+  Roulette and lounge cards flat on Android; Roulette button full strength (§5 revised); `EmptyState` action
+  at least 48 high. Reasons in the Build 12 and Build 13 sections.
