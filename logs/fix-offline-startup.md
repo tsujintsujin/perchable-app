@@ -121,3 +121,42 @@ movie calls off the client's auth wait; raise with the Manager if it matters.
 Optimistic UI + reconcile; a library's ready signal can be gated on retries you don't control; read the
 persisted store directly when the library's own accessor is gated on that same signal; guarding async
 reads with a monotonically increasing event counter; faking device time to expire a token.
+
+---
+
+# QA (Queenie, 2026-10-01) — commit 0ed5adb, td_emu restarted first, Justin's account (no sign-out/edits)
+
+Method: own Metro via `adb reverse` + `localhost:8081`; expired token forced with `adb root`, `auto_time 0`,
+`date 100115192026.00` (+3.5 h) and wifi+data off. Launching via the deep link only opens the dev launcher on
+this build, so each run = force-stop, open launcher, **tap the localhost entry, time from the tap** (poll
+`screencap`, ~1 s granularity, +/- 1 s). "JS start" = logcat `Running "main"`. Evidence: `logs/evidence/fix-offline-startup/qa-*.png`.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Offline + expired token, first app screen | **PASS.** Real expiry confirmed: `AuthRetryableFetchError ... UnknownHostException` logged 15:20:26.6, 29.8 s after JS start. App shell (Home, skeleton cards) first seen ~20.5 s after tap = **~8-9 s after JS start**; no blank after JS start | qa-01-first-screen.png (qa-01a = blank frame just before) |
+| 2 | Wait 40 s: still signed in; Home error; Profile error | **PASS, with the known slow part.** Signed in at 40 s+ (tab bar, owner avatar placeholder "?", not sign-in). Home showed "Couldn't load movies" + Retry at 15:21:01 (it was the skeleton at 15:20:26; error seen by 56 s after JS start). Profile opened at 15:21:03 stayed on skeleton for **1.5-2.5 min** (error first seen 15:24:02, still skeleton at 15:22:52), then "Couldn't load your profile" + Retry | qa-02, qa-02b (skeleton), qa-02c (error) |
+| 3 | Network on, clock still +3.5 h, Home Retry | **PASS.** Movies load within 8 s, avatar returns, still signed in | qa-03 |
+| 4 | Online + fresh token (clock auto, ~11:56) | **PASS.** Signed in, Home filled with posters | qa-04, qa-04b |
+| 5 | Offline + fresh token | **PASS.** Signed in, Home posters shown from cache, avatar "?" | qa-05, qa-05b |
+| 6 | Regression | **PASS.** Profile loads (Justin Masiga, @tsujintsujin); Settings shows Blocked users + "The Movie Database" TMDB attribution; Blocked users opens ("No blocked users"); Roulette "Surprise Me" toast "Smart picks are coming soon." | qa-06a/b/c/d |
+| 7 | am_anr / logcat | **0 ANRs from the app.** 1 `am_anr` in the whole buffer: `com.android.systemui ... executing service KeyguardService, waited 20711ms` at 11:31:51, i.e. at emulator snapshot restore, before any app launch. 0 red (`*:E`) lines from the app/ReactNativeJS/AndroidRuntime. Only warnings: the `AuthRetryableFetchError ... UnknownHostException` (exact text above, logged twice at 15:20:26.574/.607, expected offline) | logcat |
+
+## Timings (ms after tap on the dev-launcher entry; JS start from logcat)
+
+| Run | JS start ("Running main") | First app screen | First screen after JS start | Home filled |
+|---|---|---|---|---|
+| 1 Offline + expired | ~+12 s | ~+20.5 s | **~8-9 s** | n/a (skeleton, then error ~+57 s after JS start) |
+| 4 Online + fresh | +16.7 s | ~+28.5 s | ~12 s | ~+34.5 s (~18 s after JS start) |
+| 5 Offline + fresh | +14.3 s | ~+27.5 s | ~13 s | ~+30.5 s (~16 s after JS start) |
+
+Before the fix (Bella): ~32 s after JS start offline+expired; now ~8-9 s, so no long blank. Online/fresh runs
+were slower than offline/expired in this session (emulator noise, +/- 1 s sampling): the fix is not what
+slows them; the 2 s timer is inside the noise.
+
+## Observations to judge (not failures of this fix)
+- Profile offline skeleton lasts 1.5-2.5 min before its error + Retry (Home ~30 s). Done-means 2 asks for the error state; it does arrive but late. Likely react-query retry back-off on top of the auth-js wait; Ruby to judge the cause.
+- Home avatar showed "?" right after the network came back until Profile data loaded (qa-06c); resolves on its own.
+- Not tested (as agreed): refused/revoked refresh token on device. Unit tests only.
+
+## Cleanup
+Clock back to automatic (`auto_time 1`, device date 12:00 = host UTC), wifi + data on, my Metro (pid 22176, checked command line) stopped, 8081 free, `adb reverse --remove-all`, nothing written to /sdcard. Bella's earlier evidence files left untouched.
