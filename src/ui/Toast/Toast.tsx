@@ -17,7 +17,8 @@ type Props = {
 /** Transient message pinned 24 dp above the screen's bottom edge (DESIGN.md §2); never intercepts touches. */
 export function Toast({ message, variant = "info" }: Props) {
   const insets = useSafeAreaInsets();
-  // On a tab screen the tab bar already sits on the system inset, so the screen ends above it; counting the inset again would float the toast too high.
+  // On a tab screen the tab bar already sits on the system inset, so it is not added again.
+  // A Toast inside a Modal still sees the tab context but covers the tab bar: it must be given the bottom inset.
   const insideTabs = useContext(BottomTabBarHeightContext) !== undefined;
   const bottomInset = insideTabs ? 0 : insets.bottom;
   if (message === null) return null;

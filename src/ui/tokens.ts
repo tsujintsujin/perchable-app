@@ -148,8 +148,13 @@ export const size = {
   avatarSlot: 48,
   /** List footer rows (loading more, end of list). */
   footerRow: 56,
-  /** Diameter of the indeterminate spinner ring. */
+  /** Indeterminate spinner ring: default and large diameters, and the ring widths. */
   spinner: 20,
+  spinnerLg: 32,
+  spinnerStroke: 2,
+  spinnerStrokeLg: 3,
+  /** Height shared by the loading-more and failed-load list footers, so the list never re-clamps when one replaces the other. */
+  footerBlock: 88,
 } as const;
 
 /** Extra touch area that grows an icon button to the minimum touch target. */

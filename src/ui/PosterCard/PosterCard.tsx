@@ -10,6 +10,8 @@ type Props = {
   posterUrl: string | null;
   title: string;
   year?: number | null;
+  /** Changing this lets a poster whose image failed try its image again (the list bumps it on a pull-to-refresh). */
+  retryToken?: number;
 };
 
 // Pulsing placeholder fill with the lavender wash; fills its parent.
@@ -33,11 +35,11 @@ export function PosterCardSkeleton() {
 }
 
 /** 2:3 poster tile: shimmer until the image loads, then the image; no poster or a failed image shows the title. */
-export function PosterCard({ id, posterUrl, title, year }: Props) {
-  // Keyed by URL, not a boolean: a recycled list cell must not inherit the previous movie's state.
-  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+export function PosterCard({ id, posterUrl, title, year, retryToken = 0 }: Props) {
+  // Keyed by URL and token, not a boolean: a recycled cell must not inherit the previous movie's failure, and a new token retries.
+  const [failed, setFailed] = useState<{ url: string; token: number } | null>(null);
   const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
-  const showImage = posterUrl !== null && failedUrl !== posterUrl;
+  const showImage = posterUrl !== null && !(failed?.url === posterUrl && failed.token === retryToken);
 
   return (
     <View
@@ -58,7 +60,7 @@ export function PosterCard({ id, posterUrl, title, year }: Props) {
             recyclingKey={String(id)}
             transition={motion.imageFade}
             onLoad={() => setLoadedUrl(posterUrl)}
-            onError={() => setFailedUrl(posterUrl)}
+            onError={() => setFailed({ url: posterUrl, token: retryToken })}
           />
         </>
       ) : (

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { AccessibilityInfo, StyleSheet, Text, View } from "react-native";
 import { Button } from "@/ui/Button";
 import { Spinner } from "@/ui/Spinner";
-import { colors, size, spacing, type } from "@/ui/tokens";
+import { colors, lineHeight, size, spacing, type } from "@/ui/tokens";
 import type { PopularFooter } from "../hooks/usePopularMovies";
 
 type Props = {
@@ -16,7 +16,7 @@ function LoadingRow() {
     AccessibilityInfo.announceForAccessibility("Loading more movies");
   }, []);
   return (
-    <View style={styles.row} accessible accessibilityLiveRegion="polite" accessibilityLabel="Loading more movies">
+    <View style={[styles.row, styles.block]} accessible accessibilityLiveRegion="polite" accessibilityLabel="Loading more movies">
       <Spinner />
       <Text style={styles.caption}>Loading more…</Text>
     </View>
@@ -52,7 +52,7 @@ export function PagingFooter({ footer, onRetry }: Props) {
   return null;
 }
 
-// Footer rows: centred, one fixed-height line for loading and end; the error box grows to fit text and button.
+// Footer rows: centred. The end line is one 56 dp row; loading and failed-load share one taller block, so the list never re-clamps when one replaces the other.
 const styles = StyleSheet.create({
   row: {
     minHeight: size.footerRow,
@@ -61,8 +61,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: spacing[10],
   },
+  block: { minHeight: size.footerBlock },
+  errorBox: { minHeight: size.footerBlock, alignItems: "center", justifyContent: "center", paddingVertical: spacing[8] },
   caption: { ...type.caption, color: colors.text.secondary },
-  errorBox: { alignItems: "center", paddingVertical: spacing[8] },
-  errorText: { ...type.small, color: colors.danger, marginBottom: spacing[8] },
+  errorText: { ...type.small, lineHeight: lineHeight.caption, color: colors.danger, marginBottom: spacing[8] },
   retry: { paddingHorizontal: spacing[24] },
 });

@@ -51,6 +51,7 @@ export default function Home() {
         onEndReached={popular.loadMore}
         onRetryMore={popular.retryMore}
         refreshing={popular.refreshing}
+        retryToken={popular.refreshCount}
         onRefresh={popular.refresh}
         header={<RouletteCard onPress={() => toast.show("Smart picks are coming soon.", "coming-soon")} />}
       />

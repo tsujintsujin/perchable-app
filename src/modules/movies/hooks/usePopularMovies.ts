@@ -23,6 +23,8 @@ type Popular = {
   movies: Movie[];
   footer: PopularFooter;
   refreshing: boolean;
+  /** Goes up on every pull-to-refresh; posters that failed to load use it to try their image again. */
+  refreshCount: number;
   retry: () => void;
   loadMore: () => void;
   retryMore: () => void;
@@ -55,6 +57,7 @@ export function usePopularMovies({ onRefreshError }: Options = {}): Popular {
   });
 
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshCount, setRefreshCount] = useState(0);
   // Refs, not state: read inside async code and guards that must see the change before a re-render.
   const refreshingRef = useRef(false);
   const mountedRef = useRef(true);
@@ -67,7 +70,11 @@ export function usePopularMovies({ onRefreshError }: Options = {}): Popular {
     };
   }, []);
 
-  const movies = useMemo(() => flattenPages(query.data), [query.data]);
+  // `dataUpdatedAt` makes a refetch that returns identical pages still hand the list a new array: FlashList reports
+  // "end reached" once per data change, and a report swallowed during a refresh must be re-armed when it ends.
+  const { data, dataUpdatedAt } = query;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const movies = useMemo(() => flattenPages(data), [data, dataUpdatedAt]);
   const pages = query.data?.pages;
   const lastPage = pages?.[pages.length - 1];
 
@@ -107,6 +114,7 @@ export function usePopularMovies({ onRefreshError }: Options = {}): Popular {
     if (refreshingRef.current) return false;
     refreshingRef.current = true;
     setRefreshing(true);
+    setRefreshCount((count) => count + 1);
     try {
       await queryClient.cancelQueries({ queryKey: POPULAR_KEY });
       const snapshot = queryClient.getQueryData<PopularData>(POPULAR_KEY);
@@ -116,7 +124,8 @@ export function usePopularMovies({ onRefreshError }: Options = {}): Popular {
           pageParams: snapshot.pageParams.slice(0, 1),
         });
       }
-      await queryClient.refetchQueries({ queryKey: POPULAR_KEY, exact: true }, { throwOnError: false });
+      // cancelRefetch false: cancelQueries above is the only thing that ends an in-flight page, so a refetch never joins one.
+      await queryClient.refetchQueries({ queryKey: POPULAR_KEY, exact: true }, { throwOnError: false, cancelRefetch: false });
       if (queryClient.getQueryState(POPULAR_KEY)?.status !== "error") return true;
       // Putting the snapshot back also clears the error status, so the posters stay on screen.
       if (snapshot) {
@@ -130,5 +139,5 @@ export function usePopularMovies({ onRefreshError }: Options = {}): Popular {
     }
   }, [queryClient, onRefreshError]);
 
-  return { state, movies, footer, refreshing, retry, loadMore, retryMore, refresh };
+  return { state, movies, footer, refreshing, refreshCount, retry, loadMore, retryMore, refresh };
 }

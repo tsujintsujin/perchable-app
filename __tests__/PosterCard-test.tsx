@@ -56,6 +56,21 @@ describe("PosterCard", () => {
     expect(image().props.recyclingKey).toBe("2");
   });
 
+  it("a failed image tries again when the retry token changes, and not otherwise (no loop)", async () => {
+    const { rerender } = await render(<PosterCard id={1} posterUrl={URL_A} title="Dune" retryToken={0} />);
+    await act(async () => image().props.onError({ nativeEvent: { error: "offline" } }));
+    expect(screen.queryByTestId("poster-image")).toBeNull();
+
+    await rerender(<PosterCard id={1} posterUrl={URL_A} title="Dune" retryToken={0} />);
+    expect(screen.queryByTestId("poster-image")).toBeNull();
+
+    await rerender(<PosterCard id={1} posterUrl={URL_A} title="Dune" retryToken={1} />);
+    expect(image().props.source).toEqual([{ uri: URL_A }]);
+
+    await act(async () => image().props.onError({ nativeEvent: { error: "still offline" } }));
+    expect(screen.queryByTestId("poster-image")).toBeNull();
+  });
+
   it("copes with emoji and right-to-left titles", async () => {
     await render(<PosterCard id={1} posterUrl={null} title="🎃 Halloween مرحبا" />);
     expect(screen.getByText("🎃 Halloween مرحبا")).toBeTruthy();

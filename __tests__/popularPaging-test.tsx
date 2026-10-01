@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { act as rawAct, renderHook, waitFor } from "@testing-library/react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { FunctionsFetchError, FunctionsHttpError } from "@supabase/supabase-js";
@@ -70,12 +71,24 @@ afterEach(async () => {
 });
 
 // Renders the hook under a fresh client whose retry waits no time.
-async function setup(onRefreshError?: () => void) {
+// With `endReachedOnDataChange`, the hook is driven like FlashList: end-reached fires once each time the list data changes.
+async function setup(onRefreshError?: () => void, endReachedOnDataChange = false) {
   const client = createQueryClient();
   clients.push(client);
   client.setDefaultOptions({ queries: { ...client.getDefaultOptions().queries, retryDelay: 0 } });
   const wrapper = ({ children }: { children: ReactNode }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
-  return await renderHook(() => usePopularMovies({ onRefreshError }), { wrapper });
+  return await renderHook(
+    () => {
+      const popular = usePopularMovies({ onRefreshError });
+      // Once per new `movies` array, like FlashList's one-shot end-reached report.
+      useEffect(() => {
+        if (endReachedOnDataChange) popular.loadMore();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [popular.movies]);
+      return popular;
+    },
+    { wrapper },
+  );
 }
 
 // Renders and waits for page 1.
@@ -277,6 +290,32 @@ describe("pull-to-refresh (C5)", () => {
     expect(view.result.current.refreshing).toBe(false);
   });
 
+  it("keeps paging after a successful refresh: the list is re-armed and page 2 loads again (Bug 1)", async () => {
+    for (const n of [1, 2, 3]) replies[n] = ok(page(n, idsFor(n), 3));
+    const view = await setup(undefined, true);
+    await waitFor(() => expect(view.result.current.footer).toBe("end"));
+    expect(view.result.current.movies).toHaveLength(9);
+    requested = [];
+
+    // Hold page 1 so the trimmed list renders (and reports end-reached, which is refused) while the refresh runs.
+    const slow = deferred<Reply>();
+    replies[1] = () => slow.promise;
+    let pending: Promise<boolean> = Promise.resolve(true);
+    await act(async () => {
+      pending = view.result.current.refresh();
+    });
+    await waitFor(() => expect(view.result.current.movies).toHaveLength(3));
+    expect(requested).toEqual([1]);
+
+    await act(async () => {
+      slow.resolve(ok(page(1, idsFor(1), 3)));
+      await pending;
+    });
+    // The report made while trimmed was refused, so the list must report again once the refresh ends.
+    await waitFor(() => expect(view.result.current.movies.length).toBeGreaterThan(3));
+    expect(requested.slice(0, 2)).toEqual([1, 2]);
+  });
+
   it("puts all five pages back and calls onRefreshError once when the refetch fails; the screen stays filled", async () => {
     const onRefreshError = jest.fn();
     const second = await loadFive(onRefreshError);
@@ -357,24 +396,33 @@ describe("pull-to-refresh (C5)", () => {
 });
 
 describe("refresh races (C5b, C5c)", () => {
-  it("a pull while page 2 is in flight ignores page 2's late result", async () => {
-    const page2 = deferred<Reply>();
-    replies[2] = () => page2.promise;
+  it("a pull while page 4 is in flight cancels it: only page 1 is requested and page 4 never joins the list", async () => {
+    const page4 = deferred<Reply>();
+    replies[4] = () => page4.promise;
     const view = await setupLoaded();
+    await loadMoreUntil(view, 6);
+    await loadMoreUntil(view, 9);
     await act(async () => view.result.current.loadMore());
     expect(view.result.current.footer).toBe("loading");
+    requested = [];
 
     replies[1] = ok(page(1, [91, 92, 93]));
+    let pending: Promise<boolean> = Promise.resolve(true);
     await act(async () => {
-      await view.result.current.refresh();
+      pending = view.result.current.refresh();
     });
-    await act(async () => page2.resolve(ok(page(2, idsFor(2)))));
+    // Page 1 is requested without waiting for page 4 (a refetch that joined page 4's request would hang here).
+    await waitFor(() => expect(requested).toEqual([1]));
+    await act(async () => {
+      page4.resolve(ok(page(4, idsFor(4))));
+      await pending;
+    });
 
     expect(view.result.current.movies.map((m) => m.id)).toEqual([91, 92, 93]);
     expect(view.result.current.footer).toBe("none");
   });
 
-  it("end-reached while a refresh runs makes no request until it ends", async () => {
+  it("end-reached and Retry right after a pull starts, before any await, make no request until it ends", async () => {
     const view = await setupLoaded();
     const slow = deferred<Reply>();
     replies[1] = () => slow.promise;
@@ -383,9 +431,10 @@ describe("refresh races (C5b, C5c)", () => {
     let pending: Promise<boolean> = Promise.resolve(true);
     await act(async () => {
       pending = view.result.current.refresh();
+      // Same tick as the pull: only the refreshing ref knows a refresh has begun.
+      view.result.current.loadMore();
+      view.result.current.retryMore();
     });
-    await act(async () => view.result.current.loadMore());
-    await act(async () => view.result.current.retryMore());
     expect(requested).toEqual([1]);
 
     await act(async () => {
@@ -394,5 +443,20 @@ describe("refresh races (C5b, C5c)", () => {
     });
     expect(requested).toEqual([1]);
     expect(view.result.current.movies.map((m) => m.id)).toEqual([91, 92, 93]);
+  });
+});
+
+describe("image retry token", () => {
+  it("goes up once per pull, success or failure", async () => {
+    const view = await setupLoaded();
+    expect(view.result.current.refreshCount).toBe(0);
+    await act(async () => {
+      await view.result.current.refresh();
+    });
+    replies[1] = httpError(400);
+    await act(async () => {
+      await view.result.current.refresh();
+    });
+    expect(view.result.current.refreshCount).toBe(2);
   });
 });

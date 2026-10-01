@@ -26,6 +26,8 @@ type Props = {
   /** Retry on the footer's failed-load row. */
   onRetryMore: () => void;
   refreshing: boolean;
+  /** Passed to every poster so failed images retry after a pull-to-refresh. */
+  retryToken: number;
   /** Pull-to-refresh; resolves true when page 1 reloaded. */
   onRefresh: () => Promise<boolean>;
   /** Scrolls with the grid, above the section title (Home passes the Roulette card). */
@@ -33,7 +35,7 @@ type Props = {
 };
 
 // One grid cell: half the gap on each side and a full gap below, so tiles sit `gridGap` apart.
-function Cell({ item }: { item: Movie | null }) {
+function Cell({ item, retryToken }: { item: Movie | null; retryToken: number }) {
   return (
     <View style={styles.cell}>
       {item ? (
@@ -42,6 +44,7 @@ function Cell({ item }: { item: Movie | null }) {
           posterUrl={tmdbImage(item.poster_path, IMAGE_SIZE.poster)}
           title={item.title}
           year={releaseYear(item.release_date)}
+          retryToken={retryToken}
         />
       ) : (
         <PosterCardSkeleton />
@@ -51,7 +54,7 @@ function Cell({ item }: { item: Movie | null }) {
 }
 
 /** Popular posters in a 3-column grid under `header`; also draws the loading, empty and error states. */
-export function PosterGrid({ state, movies, onRetry, footer, onEndReached, onRetryMore, refreshing, onRefresh, header }: Props) {
+export function PosterGrid({ state, movies, onRetry, footer, onEndReached, onRetryMore, refreshing, retryToken, onRefresh, header }: Props) {
   const listRef = useRef<FlashListRef<Movie | null>>(null);
 
   // A live region present at first render is not announced on Android, so speak "Loading movies" when loading starts.
@@ -89,10 +92,11 @@ export function PosterGrid({ state, movies, onRetry, footer, onEndReached, onRet
     <FlashList
       ref={listRef}
       testID="popular-list"
+      extraData={retryToken}
       data={data}
       numColumns={size.gridColumns}
       keyExtractor={(item, index) => (item ? String(item.id) : `skeleton-${index}`)}
-      renderItem={({ item }) => <Cell item={item} />}
+      renderItem={({ item }) => <Cell item={item} retryToken={retryToken} />}
       contentContainerStyle={styles.content}
       onEndReached={onEndReached}
       onEndReachedThreshold={END_REACHED_THRESHOLD}
