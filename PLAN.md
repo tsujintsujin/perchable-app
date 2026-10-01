@@ -701,7 +701,13 @@ Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
   it), **checked by a dedicated tsc target, `supabase/functions/tsconfig.json`**
   (`include` only `_shared/`; new Phase 2 gate `npx tsc --noEmit -p
   supabase/functions/tsconfig.json`) and by Jest tests that import it by
-  relative path. The pure file holds: parameter validation (`/^\d+$/` first,
+  relative path **without the `.ts` suffix** (the main `tsc` follows the
+  import even though `supabase/functions` is excluded and would raise TS5097
+  on `./tmdb.ts`). `supabase/functions/tsconfig.json`: if it extends the app
+  base it drops `"types": ["jest"]` (the pure file needs no test globals; the
+  Jest files are checked by the main tsc), and sets `lib: ["ESNext"]` with no
+  DOM so a stray `window` or `document` in the pure file fails the gate.
+  The pure file holds: parameter validation (`/^\d+$/` first,
   then the range, for `id` and `page` — `Number()` alone accepts `1e2`, `0x10`
   and padded spaces), the config check (missing key: 500, fixed message),
   upstream-status mapping, response shaping, adult filtering and log
@@ -783,6 +789,11 @@ Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
   `network`, or `timeout` when it is an abort we did not request;
   `FunctionsRelayError` -> `http` 502; a body that fails the validator ->
   `shape`. Retry and Sentry decisions read only `kind`, `status` and `code`.
+  A `FunctionsRelayError` is therefore http 502 **with no `code`**: retried
+  once, **not** reported (an unmapped 502 is transient infrastructure, not a
+  known fault). `upstream_auth` (also 502) is likewise retried once under the
+  generic 5xx rule; harmless, since Sentry fires once per query, not per
+  attempt.
   **Response validators** (`parsePopular`, `parseDetails`): `results` is an
   array and every movie has a numeric `id` and a string `title` (details: a
   `movie` object with the same, `cast` an array); anything else throws
@@ -832,7 +843,7 @@ Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
   tag).** One place: the QueryClient's `QueryCache` `onError`. Reported:
   proxy 500 (`misconfigured`), **502 `upstream_auth` (a revoked or wrong
   TMDB key; otherwise silent)**, a `shape` error, anything unexpected.
-  **Not** reported: offline, timeout, 502 `upstream_network` (a TMDB hiccup),
+  **Not** reported: offline, timeout, 502 `upstream_network` (a TMDB hiccup), a 502 with no `code` (relay error),
   any 4xx, 404 (a movie that
   does not exist is data, not a bug), 429. Once per failed query, never per
   render or per retry. Never a user-typed value (none exist here).
@@ -1037,11 +1048,17 @@ Done means (checkable):
       more" row with Retry (at least 48 dp); Retry loads the page. It never
       replaces the whole screen with the error state, and never shows an empty
       footer that looks like the end of the list.
-  C4b. [Jest] An adult-filtered page that comes back empty or short never
-      stalls the list: when a fetched page has no usable results and more
-      pages exist, the hook fetches the next page itself (at most 3 in a row,
-      then the footer shows C4's Retry row), so there is always a footer
-      state; after the last page there is no spinner.
+  C4b. [Jest] An adult-filtered page that comes back empty never stalls the
+      list. The loop lives **inside the `queryFn`** (no effect calling
+      `fetchNextPage`, which the standards check bans): it fetches up to 3
+      consecutive TMDB pages and returns the first non-empty one;
+      `getNextPageParam` uses the real last page number fetched (not
+      `pages.length + 1`), so no TMDB page is skipped or repeated. Retry and
+      Sentry stay once per query, not per inner page. If all 3 are empty and
+      more pages exist, the query returns the empty page and the footer shows
+      C4's Retry row ("load more"), so there is always a footer state; after
+      the last page there is no spinner. Tests: first page empty then a full
+      one; three empties; the page-number bookkeeping.
   C5. [Jest] + [QA] Pull-to-refresh (FlashList's refresh control, tinted from
       tokens) fetches **page 1 only** and drops later pages. Mechanism
       (TanStack Query v5 has no `refetchPage`): on pull, `await
@@ -1049,10 +1066,16 @@ Done means (checkable):
       key, d => d && { pages: d.pages.slice(0, 1), pageParams:
       d.pageParams.slice(0, 1) })`, then `refetch()`. `maxPages` is not used
       (it bounds memory, not the refetch count). A Jest test counts exactly
-      one request with five pages loaded; the list returns to the top. If the
-      refresh fails while posters are showing, they stay and an error `Toast`
-      says so ("Couldn't refresh. Check your connection."); the screen does
-      not flip to the error state.
+      one request with five pages loaded; the list returns to the top. **Failed refresh:** the
+      trim must not lose the list. Before trimming, snapshot the
+      infinite-query data; if the refetch errors, `setQueryData(key,
+      snapshot)` restores it (all loaded posters and the page count as they
+      were, scroll position kept) and an error `Toast` says so ("Couldn't
+      refresh. Check your connection."); the screen does not flip to the
+      error state. A Jest case for the failure: five pages loaded, the page-1
+      refetch rejects, and the list is still five pages with the same ids,
+      and the toast shows. (If the user scrolled during the pull, the restore
+      still applies; C5c keeps next-page requests out until the refresh ends.)
   C5b. [Jest] A pull **while a next-page request is in flight**: the
       `cancelQueries` aborts it and its late result is ignored. Test with a
       deferred stub for page 2: pull, then resolve page 2; the list is the
@@ -1481,3 +1504,4 @@ this is marked NEEDS JUSTIN.
 - 2026-09-30 (Priya, revision 2 after Ruby FIX NEEDED, 4 must-fix; Manager defaults apply, Justin may overturn): Build 10 split into 10a (database + admin doc) and 10b (UI), number unchanged; Settings rows "Blocked users" and "Terms & community rules" kept; terms gate now also covers captions (Build 20); second-user QA = Justin's 2nd Google account (no Email provider, no agent-created accounts); `is_blocked_between` grants/claims corrected (M1); explicit revoke/grant for all tables and functions (M2); harness loaded via `require` under `__DEV__` and checked with `expo export` (M3); collection-entry report point owned by Build 25, caption terms gate by Build 20 (M4); owner tags per Done-means line; carry-forward pointers added to Builds 20/24/25/27/28. Build 23 follow-on-block question left open for Justin at Build 23.
 - 2026-10-01 (Priya, at the Manager's request; Justin reordered: movies, Builds 12-16, come right after Build 10b, Build 11 moves to just before Build 20): detailed Module 4 — Builds 12 and 13 — in section 5, replacing the two rough one-liners. Build 12 is split into **12a** (data layer + first page of posters on Home + Roulette shell) and **12b** (infinite scroll + pull-to-refresh), number unchanged (Manager default, N2). New module-wide decisions M1-M10 (TMDB Popular grid; proxy hardening in 12a and a `details` endpoint in 13, with Edge Function work inside those Builds; `@tanstack/react-query` + `@shopify/flash-list` via `npx expo install`, no native rebuild expected; one QueryClient at the root; 8 s timeout, one retry, offline cold start ends in an error state; image sizes and 2:3 posters; navigation and a free `perchable://movie/<id>` deep link; attribution stays on Settings; Sentry from the QueryCache only). The UI-only shells already approved (Perch Roulette on Home, tier badge and `#spoiler-free-lounge` panel on details, DESIGN §5) ride inside 12a and 13 as before. **NEEDS JUSTIN (none blocks; defaults apply):** N1 Home shows one Popular grid, no Trending/Now Playing, no "Have You Watched This?"/"Friend Activity" until Builds 19/23; N2 the 12a/12b split; N3 the details content set (and what it leaves out); N4 no stored cache, offline cold start shows an error state; N5 3-column grid. Two small additions beyond Vision Part 2 are flagged as N6 (deep link) and N7 (adult titles hidden), defaults applying; no other feature added or removed. DESIGN question for Dianne (not a plan problem): §3 says the tab bar stays visible under `movie/`, but a root-level Stack route covers it.
 - 2026-10-01 (Priya, Round 1 revision after Ruby FIX NEEDED on Module 4; no Build number or feature changed): (1) the api layer throws a typed `MovieApiError` (`kind`, `status`, `code`) so the retry tests run through the real mapping; (2) the proxy maps TMDB 401/403 to 502 `upstream_auth`, and M9 reports it (also for the details endpoint); (3) proxy logic moves to `supabase/functions/_shared/tmdb.ts`, covered by a dedicated tsc target (`supabase/functions/tsconfig.json`) and Jest, and the missing-key branch moved into it, so only the `Deno.serve`/fetch wiring is review-only; (4) pull-to-refresh mechanism named (`cancelQueries`, trim to page 1, `refetch`), `refetchOnMount: false` on Home, new lines C5b/C5c for pull during a next-page load and scroll during a refresh; (5) A2 reworded to what Jest can prove, with a Manager one-off abort proof; (6) `unstable_settings anchor "(tabs)"` for cold deep links; (7) `/^\d+$/` validation for `id` and `page`; (8) response validators with tests; (9) adult-filtered empty page cannot stall the list (C4b), 12a B1 reads "up to 20"; (10) failure lists: sign-out while loading, poster 404 with a set path, rotate dropped, back-mid-load abort and other-movie-data lines made owned Done-means (13 B7, B8); nits: native-code guard kept, attribution wording flagged for Rose, `Cache-Control` on `popular`, numeric details key, `getPopularMovies(page = 1, signal?)` stays call-compatible.
+- 2026-10-01 (Priya, Round 2 touch-ups after Ruby's recheck of f7b0498; no Build or feature changed): 12b C5 snapshots and restores the list when a pull-refresh fails, with a Jest case; C4b's empty-page loop moves inside the `queryFn` (up to 3 TMDB pages, `getNextPageParam` from the real last page number); M5/M9 say a relay-error 502 without `code` is retried once and not reported, and that `upstream_auth` is also retried once; M2 specifies the functions tsc target (no `types: jest` if extended, `lib: ["ESNext"]`, tests import `_shared/tmdb` without `.ts`).
