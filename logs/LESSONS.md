@@ -107,3 +107,8 @@ Handle each one up front; say in the Build log how (or "n/a").
   every QA run — its GPU path degrades with uptime (launcher 90th-pct frame 48 ms fresh vs 600 ms
   after a long session). Screenshots are now 720x1600 @ 280 dpi = **1.75 px/dp** (was 2.625).
   Full setup in CLAUDE.md "Emulator setup + health". (2026-10-01)
+- Emulator lag kept recurring because every agent restarted td_emu by rule — each restart is
+  minutes of boot-storm load. Use `scripts/emulator.sh ensure` (restart only when measured
+  unhealthy, then wait to settle). Cap jest (`--maxWorkers=50%`) and never overlap a QA run with
+  a full jest suite or Gradle build. (2026-10-01, Justin: "deal with that issue that's been
+  recurring")
