@@ -1,0 +1,299 @@
+--------- beginning of system
+10-01 07:10:43.801   604  1451 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+--------- beginning of radio
+10-01 07:10:45.919  1017  1283 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:10:49.499   604  1451 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+--------- beginning of main
+10-01 07:10:50.296  4006  4121 E chromium: [1001/071050.296438:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+10-01 07:10:55.918  1017  1283 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:11:05.919  1017  1207 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:11:15.919  1017  1207 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:11:25.919  1017  1207 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:11:29.444   409  2761 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-01 07:11:29.445   409  2761 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-01 07:11:29.446   409  2761 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-01 07:11:29.563   604   640 E DiscreteRegistry: Deleting file 1790231628038tl
+10-01 07:11:29.563   604   640 E DiscreteRegistry: Deleting file 1790232647247tl
+10-01 07:11:29.563   604   640 E DiscreteRegistry: Deleting file 1790233527155tl
+10-01 07:11:35.920  1017  1283 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:11:36.710   604   765 E WifiChipAidlImpl: getMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+10-01 07:11:36.710   424   449 E android.hardware.wifi-service: Unknown iface name: wlan0
+10-01 07:11:36.711   424   449 E android.hardware.wifi-service: Unknown iface name: wlan0
+10-01 07:11:36.719   604   765 E WifiChipAidlImpl: getMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+10-01 07:11:36.720   424   449 E android.hardware.wifi-service: Unknown iface name: wlan0
+10-01 07:11:36.720   424   449 E android.hardware.wifi-service: Unknown iface name: wlan0
+10-01 07:11:36.730   424   449 E android.hardware.wifi-service: Failed to register radio mode change callback
+10-01 07:11:36.733   424   449 E android.hardware.wifi-service: Failed to get SupportedIfaceCombinations matrix from legacy HAL: NOT_SUPPORTED
+10-01 07:11:36.737   424   449 E android.hardware.wifi-service: Failed to set DFS flag; DFS channels may be unavailable.
+10-01 07:11:36.742   424   449 E android.hardware.wifi-service: twtRegisterEvents failed - %d-4
+10-01 07:11:36.753   604   765 E SupplicantStaIfaceHalAidlImpl: Can't call getKeyMgmtCapabilities, ISupplicantStaIface is null for iface=wlan0
+10-01 07:11:36.757   604   765 E SupplicantStaIfaceHalAidlImpl: Can't call getWpaDriverCapabilities, ISupplicantStaIface is null for iface=wlan0
+10-01 07:11:36.758   604   765 E WifiStaIfaceAidlImpl: getTwtCapabilities failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:36.759   604   765 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:36.764   604   765 E WifiChipAidlImpl: enableStaChannelForPeerNetwork failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:36.876  4291  4291 E wpa_supplicant: nl80211: kernel reports: Registration to specific type not supported
+10-01 07:11:36.885   604   765 E WifiStaIfaceAidlImpl: getTwtCapabilities failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:36.886   604   765 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:36.901   604   765 E WifiChipAidlImpl: setMultiStaUseCase failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:36.903   604   765 E WifiChipAidlImpl: setMultiStaPrimaryConnection failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:36.905   604   769 E WifiStaIfaceAidlImpl: getBackgroundScanCapabilities failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:36.920   604   769 E WifiScanningService: wifi driver loaded received while already loaded
+10-01 07:11:36.923   604   765 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+10-01 07:11:36.957   604   765 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:36.967  1017  1017 E CarrierActionAgent: [0]Unsupported action: 5
+10-01 07:11:36.993   604   765 E WifiDataStall: onDataConnectionStateChanged unexpected State: 1
+10-01 07:11:36.993   604   765 E MboOceController: onDataConnectionStateChanged unexpected State: 1
+10-01 07:11:37.031  1017  1207 E RILUtils: convertHalDataCallResult: Failed to convert traffic descriptor. e=java.lang.IllegalArgumentException: Failed to decode 0
+10-01 07:11:37.035   400   400 E Netd    : no such netId 104
+10-01 07:11:37.039   604   772 E ConnectivityService: exception in interfaceSetMtu()android.os.ServiceSpecificException: Remote I/O error (code 121)
+10-01 07:11:37.040   400   400 E Netd    : no such netId 104
+10-01 07:11:37.041   604   772 E ConnectivityService: Exception in addRoute for non-gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-01 07:11:37.041   400   400 E Netd    : no such netId 104
+10-01 07:11:37.042   604   772 E ConnectivityService: Exception in addRoute for gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-01 07:11:37.106   604   772 E ConnectivityService: exception in interfaceSetMtu()android.os.ServiceSpecificException: Remote I/O error (code 121)
+10-01 07:11:37.136   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'INTERFACE' not found
+10-01 07:11:37.136   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'STATE' not found
+10-01 07:11:37.136   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'TIME_NS' not found
+10-01 07:11:37.137   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+10-01 07:11:37.524  2016  3883 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+10-01 07:11:38.073  1319  4325 E HandwritingSuperpacksUtil: HandwritingSuperpacksUtil.getPackMappingPackName():40 No pack mapping pack found in []
+10-01 07:11:39.606   604  4328 E GnssPsdsDownloader: No Long-Term PSDS servers were specified in the GnssConfiguration
+10-01 07:11:40.792   604   765 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:40.792   400   400 E Netd    : no such netId 105
+10-01 07:11:40.793   400   400 E Netd    : no such netId 105
+10-01 07:11:40.822   400   445 E Netd    : no such netId 105
+10-01 07:11:40.824   604   772 E ConnectivityService: Exception in addRoute for non-gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-01 07:11:40.825   400   445 E Netd    : no such netId 105
+10-01 07:11:40.826   604   772 E ConnectivityService: Exception in addRoute for gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-01 07:11:40.849   604   765 E WifiStaIfaceAidlImpl: setRoamingMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:40.849   604   765 E WifiRoamingModeManager: Failed to set roaming mode due to unknown error.
+10-01 07:11:40.858   604  1575 E WifiService: Attempt to retrieve passpoint with invalid scanResult List
+10-01 07:11:40.928   604   765 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+10-01 07:11:40.928   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'INTERFACE' not found
+10-01 07:11:40.928   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'STATE' not found
+10-01 07:11:40.928   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'TIME_NS' not found
+10-01 07:11:40.929   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+10-01 07:11:41.567   604   765 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:11:41.569   400   445 E netd    : Error adding route ::/0 -> fe80::2 wlan0 to table 1016: File exists
+10-01 07:11:42.968  1319  4327 E HandwritingSuperpacksUtil: HandwritingSuperpacksUtil.getPackMappingPackName():40 No pack mapping pack found in []
+10-01 07:11:43.331   409  2761 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-01 07:11:43.331   409  2761 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-01 07:11:43.332   409  2761 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-01 07:11:44.073  2016  4322 E WakeLock: GCM_HB_ALARM release without a matched acquire!
+10-01 07:11:44.144  2016  4322 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+10-01 07:11:45.920  1017  1037 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:11:55.920  1017  1283 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:12:05.920  1017  1283 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-01 07:12:07.223  1123  4390 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-01 07:12:07.527   604  1713 E IPCThreadState: Binder transaction failure. id: 287937, BR_*: 29189, error: -22 (Invalid argument)
+10-01 07:12:07.569   473   473 E BpTransactionCompletedListener: Failed to transact (-32)
+10-01 07:12:07.880   963  4330 E ApfFilter: Read error
+10-01 07:12:07.880   963  4330 E ApfFilter: android.system.ErrnoException: read failed: ENETDOWN (Network is down)
+10-01 07:12:07.880   963  4330 E ApfFilter: 	at libcore.io.Linux.readBytes(Native Method)
+10-01 07:12:07.880   963  4330 E ApfFilter: 	at libcore.io.Linux.read(Linux.java:190)
+10-01 07:12:07.880   963  4330 E ApfFilter: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+10-01 07:12:07.880   963  4330 E ApfFilter: 	at libcore.io.BlockGuardOs.read(BlockGuardOs.java:325)
+10-01 07:12:07.880   963  4330 E ApfFilter: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+10-01 07:12:07.880   963  4330 E ApfFilter: 	at android.system.Os.read(Os.java:571)
+10-01 07:12:07.880   963  4330 E ApfFilter: 	at com.android.networkstack.android.net.apf.ApfFilter$ReceiveThread.run(ApfFilter.java:229)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: readPacket error: 
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: android.system.ErrnoException: read failed: ENETDOWN (Network is down)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at libcore.io.Linux.readBytes(Native Method)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at libcore.io.Linux.read(Linux.java:190)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at libcore.io.BlockGuardOs.read(BlockGuardOs.java:325)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at android.system.Os.read(Os.java:571)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.PacketReader.readPacket(PacketReader.java:57)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.PacketReader.readPacket(PacketReader.java:32)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.handleInput(FdEventsReader.java:248)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.lambda$createAndRegisterFd$0(FdEventsReader.java:228)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.$r8$lambda$jjSC4hVD2AlVH3T-DbWnF2T3fK8(FdEventsReader.java:0)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader$$ExternalSyntheticLambda0.onFileDescriptorEvents(R8$$SyntheticClass:0)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at android.os.MessageQueue.dispatchEvents(MessageQueue.java:304)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at android.os.MessageQueue.nativePollOnce(Native Method)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at android.os.MessageQueue.next(MessageQueue.java:346)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at android.os.Looper.loopOnce(Looper.java:189)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at android.os.Looper.loop(Looper.java:317)
+10-01 07:12:07.892   963  4292 E ConnectivityPacketTracker.wlan0: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-01 07:12:07.912   963  4292 E DhcpClient: readPacket error: 
+10-01 07:12:07.912   963  4292 E DhcpClient: android.system.ErrnoException: read failed: ENETDOWN (Network is down)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at libcore.io.Linux.readBytes(Native Method)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at libcore.io.Linux.read(Linux.java:190)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at libcore.io.BlockGuardOs.read(BlockGuardOs.java:325)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at android.system.Os.read(Os.java:571)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at com.android.networkstack.android.net.dhcp.DhcpClient$DhcpPacketHandler.readPacket(DhcpClient.java:721)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at com.android.networkstack.android.net.dhcp.DhcpClient$DhcpPacketHandler.readPacket(DhcpClient.java:667)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.handleInput(FdEventsReader.java:248)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.lambda$createAndRegisterFd$0(FdEventsReader.java:228)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.$r8$lambda$jjSC4hVD2AlVH3T-DbWnF2T3fK8(FdEventsReader.java:0)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader$$ExternalSyntheticLambda0.onFileDescriptorEvents(R8$$SyntheticClass:0)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at android.os.MessageQueue.dispatchEvents(MessageQueue.java:304)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at android.os.MessageQueue.nativePollOnce(Native Method)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at android.os.MessageQueue.next(MessageQueue.java:346)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at android.os.Looper.loopOnce(Looper.java:189)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at android.os.Looper.loop(Looper.java:317)
+10-01 07:12:07.912   963  4292 E DhcpClient: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-01 07:12:07.918   604   765 E SupplicantStaIfaceHalAidlImpl: Can't call disableCurrentNetwork, SupplicantStaNetwork for iface=wlan0 is null.
+10-01 07:12:07.921   604   765 E SupplicantStaIfaceHalAidlImpl: Can't call listNetworks, ISupplicantStaIface is null for iface=wlan0
+10-01 07:12:07.921   604   765 E SupplicantStaIfaceHalAidlImpl: removeAllNetworks failed, got null networks
+10-01 07:12:07.921   604   765 E WifiClientModeImpl[944651:wlan0]: Failed to remove networks on exiting connect mode
+10-01 07:12:07.922   604   765 E SupplicantStaIfaceHalAidlImpl: Can't call setPowerSave, ISupplicantStaIface is null for iface=wlan0
+10-01 07:12:07.922   604   765 E SupplicantStaIfaceHalAidlImpl: Can't call setBtCoexistenceMode, ISupplicantStaIface is null for iface=wlan0
+10-01 07:12:07.956  1017  1017 E CarrierActionAgent: [0]Unsupported action: 5
+10-01 07:12:07.957  2016  4322 E WakeLock: GCM_HB_ALARM release without a matched acquire!
+10-01 07:12:07.961   604   769 E WifiNl80211Manager: No valid wificond scanner interface handler for iface=wlan0
+10-01 07:12:08.019   604  1713 E WifiService: Attempt to retrieve passpoint with invalid scanResult List
+10-01 07:12:08.059  1017  1405 E RILUtils: convertHalDataCallResult: Failed to convert traffic descriptor. e=java.lang.IllegalArgumentException: Failed to decode 0
+10-01 07:12:08.111  2016  4322 E WakeLock: GCM_HB_ALARM release without a matched acquire!
+10-01 07:12:08.137  2016  4322 E WakeLock: GCM_HB_ALARM release without a matched acquire!
+10-01 07:12:08.142  2016  4322 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+10-01 07:12:10.549   604  1451 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+10-01 07:12:15.345   604  1451 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+10-01 07:12:15.920  1017  1406 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:12:17.752  4422  4482 E chromium: [1001/071217.752051:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+10-01 07:12:19.852   604  1451 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+10-01 07:12:22.712  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.712  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.712  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.717  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.717  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.717  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.721  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.721  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.721  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.732  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.732  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.732  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.734  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.734  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.734  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.738  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.738  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.738  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.741  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.741  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.741  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.759  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.759  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.759  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.762  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.762  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.762  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.765  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.765  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.765  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.769  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.769  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.769  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.784  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.784  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.784  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.793  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.793  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.793  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.794  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.794  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.794  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.796  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.796  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.796  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.799  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.799  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.799  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.802  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.802  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.802  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.804  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.804  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.804  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.806  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.806  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.806  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:22.816  4422  4422 E ExpoImage: Failed to load resource
+10-01 07:12:22.816  4422  4422 E ExpoImage: There was 1 root cause:
+10-01 07:12:22.816  4422  4422 E ExpoImage: java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)
+10-01 07:12:25.920  1017  1405 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:12:35.920  1017  1405 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:12:41.983   604   765 E WifiChipAidlImpl: getMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+10-01 07:12:41.984   424   449 E android.hardware.wifi-service: Unknown iface name: wlan0
+10-01 07:12:41.985   424   449 E android.hardware.wifi-service: Unknown iface name: wlan0
+10-01 07:12:41.991   604   765 E WifiChipAidlImpl: getMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+10-01 07:12:41.992   424   449 E android.hardware.wifi-service: Unknown iface name: wlan0
+10-01 07:12:41.992   424   449 E android.hardware.wifi-service: Unknown iface name: wlan0
+10-01 07:12:41.999   424   449 E android.hardware.wifi-service: Failed to register radio mode change callback
+10-01 07:12:42.003   424   449 E android.hardware.wifi-service: Failed to get SupportedIfaceCombinations matrix from legacy HAL: NOT_SUPPORTED
+10-01 07:12:42.005   424   450 E android.hardware.wifi-service: Failed to set DFS flag; DFS channels may be unavailable.
+10-01 07:12:42.008   424   450 E android.hardware.wifi-service: twtRegisterEvents failed - %d-4
+10-01 07:12:42.019   604   765 E SupplicantStaIfaceHalAidlImpl: Can't call getKeyMgmtCapabilities, ISupplicantStaIface is null for iface=wlan0
+10-01 07:12:42.023   604   765 E SupplicantStaIfaceHalAidlImpl: Can't call getWpaDriverCapabilities, ISupplicantStaIface is null for iface=wlan0
+10-01 07:12:42.024   604   765 E WifiStaIfaceAidlImpl: getTwtCapabilities failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:42.025   604   765 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:42.031   604   765 E WifiChipAidlImpl: enableStaChannelForPeerNetwork failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:42.128  4541  4541 E wpa_supplicant: nl80211: kernel reports: Registration to specific type not supported
+10-01 07:12:42.139   604   765 E WifiStaIfaceAidlImpl: getTwtCapabilities failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:42.140   604   765 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:42.152   604   769 E WifiStaIfaceAidlImpl: getBackgroundScanCapabilities failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:42.154   604   765 E WifiChipAidlImpl: setMultiStaUseCase failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:42.156   604   765 E WifiChipAidlImpl: setMultiStaPrimaryConnection failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:42.172   604   769 E WifiScanningService: wifi driver loaded received while already loaded
+10-01 07:12:42.179   604   765 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+10-01 07:12:42.204   604   765 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:42.243  1017  1017 E CarrierActionAgent: [0]Unsupported action: 5
+10-01 07:12:42.265   604   765 E WifiDataStall: onDataConnectionStateChanged unexpected State: 1
+10-01 07:12:42.268   604   765 E MboOceController: onDataConnectionStateChanged unexpected State: 1
+10-01 07:12:42.312  1017  1406 E RILUtils: convertHalDataCallResult: Failed to convert traffic descriptor. e=java.lang.IllegalArgumentException: Failed to decode 0
+10-01 07:12:42.317   400   445 E Netd    : no such netId 106
+10-01 07:12:42.321   604   772 E ConnectivityService: exception in interfaceSetMtu()android.os.ServiceSpecificException: Remote I/O error (code 121)
+10-01 07:12:42.321   400   445 E Netd    : no such netId 106
+10-01 07:12:42.324   604   772 E ConnectivityService: Exception in addRoute for non-gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-01 07:12:42.325   400   445 E Netd    : no such netId 106
+10-01 07:12:42.328   604   772 E ConnectivityService: Exception in addRoute for gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-01 07:12:42.395   604   772 E ConnectivityService: exception in interfaceSetMtu()android.os.ServiceSpecificException: Remote I/O error (code 121)
+10-01 07:12:42.438   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'INTERFACE' not found
+10-01 07:12:42.439   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'STATE' not found
+10-01 07:12:42.439   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'TIME_NS' not found
+10-01 07:12:42.440   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+10-01 07:12:42.831  2016  4576 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+10-01 07:12:43.351  1319  4326 E HandwritingSuperpacksUtil: HandwritingSuperpacksUtil.getPackMappingPackName():40 No pack mapping pack found in []
+10-01 07:12:45.921  1017  1037 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:12:46.075   400   444 E Netd    : no such netId 107
+10-01 07:12:46.076   604   765 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:46.076   400   444 E Netd    : no such netId 107
+10-01 07:12:46.105   400   444 E Netd    : no such netId 107
+10-01 07:12:46.107   604   772 E ConnectivityService: Exception in addRoute for non-gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-01 07:12:46.107   400   444 E Netd    : no such netId 107
+10-01 07:12:46.109   604   772 E ConnectivityService: Exception in addRoute for gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-01 07:12:46.126   604   765 E WifiStaIfaceAidlImpl: setRoamingMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:46.127   604   765 E WifiRoamingModeManager: Failed to set roaming mode due to unknown error.
+10-01 07:12:46.141   604  1722 E WifiService: Attempt to retrieve passpoint with invalid scanResult List
+10-01 07:12:46.183   604   765 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+10-01 07:12:46.185   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'INTERFACE' not found
+10-01 07:12:46.185   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'STATE' not found
+10-01 07:12:46.185   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'TIME_NS' not found
+10-01 07:12:46.186   400   429 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+10-01 07:12:46.854   604   765 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-01 07:12:46.856   400   444 E netd    : Error adding route ::/0 -> fe80::2 wlan0 to table 1016: File exists
+10-01 07:12:48.449  1319  4327 E HandwritingSuperpacksUtil: HandwritingSuperpacksUtil.getPackMappingPackName():40 No pack mapping pack found in []
+10-01 07:12:48.708   409  2761 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-01 07:12:48.709   409  2761 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-01 07:12:48.709   409  2761 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-01 07:12:49.477  2016  3831 E WakeLock: GCM_HB_ALARM release without a matched acquire!
+10-01 07:12:49.541  2016  3831 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+10-01 07:12:55.921  1017  1290 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647
+10-01 07:12:57.809   409  2761 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-01 07:12:57.811   409  2761 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-01 07:12:57.812   409  2761 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-01 07:12:59.781  4624  4624 E d.configupdater: Not starting debugger since process cannot load the jdwp agent.
+10-01 07:13:05.921  1017  1290 E CellSignalStrengthLte: convertRssiAsuToDBm: invalid RSSI in ASU=2147483647

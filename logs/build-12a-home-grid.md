@@ -204,3 +204,60 @@ Files touched outside the Build's own scope: none.
 **Test flake found and fixed.** After removing the live-region View, the full Jest run failed about half the time with `act()` warnings in `home-test.tsx` (react-query and FlashList timer-driven updates landing after a test body). Fix: `afterEach` flushes one timer inside `act` before the console check. Five consecutive full runs afterwards were clean (0 `act(`); the first two runs of the new test count had one pass and one fail before the fix.
 
 Gates: tsc app and `supabase/functions/tsconfig.json` clean; lint clean; `npx jest`: 32 suites, **303 tests** passed (302 plus the new PosterCard fill test), 0 `act(`, 0 console warnings; out.txt deleted.
+
+---
+
+# QA — Queenie (2026-10-01, HEAD 5b1d0f6, tmdb v2 live)
+
+Setup: td_emu restarted (a first restart hung with adb "offline" for about 25 min; a second kill + relaunch booted; load 2.9 before testing), 720x1600 @ 280 dpi (1.75 px/dp), own Metro, Justin's account untouched (no sign-out/delete/profile change; Edit profile opened and backed out without saving). Evidence: `logs/evidence/build-12a/qa-*`. Logcat/events buffers cleared at the start of the first run and again before the offline cold-start run.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 B1 | Home filled | PASS | `qa-01-home-filled.png`, `qa-01-ui.xml` |
+| 2 B2 | Roulette Toast | PASS (position note below) | `qa-02-roulette-toast.png` |
+| 3 | Loading skeleton | PASS (caught in the offline run) | `qa-03-loading-skeleton.png`, `qa-04b-offline-loading-frame.png` |
+| 4 B6 | Offline cold start | PASS: error by about 18 s from launch, about 4 s skeleton to error | `qa-04-offline-error-state.png`, `qa-04c/04d/04e` |
+| 5 | Error copy, Retry 48 dp labelled | PASS | `qa-05-ui.xml` |
+| 6 B5 | Posters not tappable; fallback | PASS | `qa-06-poster-pressed.png`, `qa-06a-poster-tap.png`, `qa-06b-fallback-offline-uncached.png` |
+| 7 B7 | Accessibility | PASS; heading role / hint / announcement not checkable on device | `qa-01-ui.xml`, `qa-05-ui.xml` |
+| 8 | Regression | PASS | `qa-08a` to `qa-08f` |
+| 9 | Sign-out while loading | UNTESTABLE by agents (no sign-out allowed); Jest covers the abort | none |
+| 10 | Scroll | PASS | `qa-10-scrolled-bottom.png`, `qa-10-ui.xml` |
+| 11 | Logcat / ANR | 0 `am_anr`; no app red errors except the deliberate-offline ExpoImage lines | `qa-11-logcat-errors.txt` |
+
+## Details
+1. **Home filled.** Order: wordmark "🦉 perchable", "Debug" link (dev-only), avatar; the gear corner holds only the dev-client "Tools" gear (not the app). Avatar slot [510,49][594,133] = 84 px = 48 dp; right edge 126 px from the screen edge = **72 dp** (spec 72). Roulette card copy verbatim: "PERCH ROULETTE" (uppercase caption), "Can't decide tonight?", button "🎬 Surprise Me" (label "Surprise me"); button 576 x 84 px = full width x 48 dp. Section title "Popular right now". **20 posters, 3 columns**, last row 2 (counted by scrolling). Tile 205 px = 117.1 dp (spec (411.4-40-20)/3 = 117.1), tile height 307 px = 175.4 dp (2:3 = 175.7), gap 18 px = 10 dp, left edge 35 px = 20 dp, right edge 34 px = 19.4 dp, row pitch 325 px = 185.7 dp (spec 185.7). Bottom padding after the last row 28 px = 16 dp. All match DESIGN. Looks like the board (card, title colour, flat tiles, hairline).
+2. **Roulette.** Tap shows the Toast "Smart picks are coming soon." (verbatim); nothing else changed; it is above the tab bar. **Design note, not a fail:** on the board the Toast sits about 24 dp above the tab bar; on the device its bottom is about 73 dp above the tab-bar top (1293 vs 1420 px). Still above the bar and unobstructed. Ruby to judge. The Toast did not appear in the uiautomator dump.
+3. **Loading.** 9 of 12 skeleton tiles visible, flat `elevatedFlat` fill, same grid geometry as the posters, card and title above them (matches board 1).
+4. **Offline cold start.** Wifi + data off (ping: "Network is unreachable"), force-stop, relaunch via the dev-client link, screenshots about every 0.5 s. Timeline from the launch command: +14 s first app frame (the dev client's own bundle load; skeleton visible), error state by +18 s. So the error appears within about 4 s of the skeleton and 18 s of launch (under 20 s). The offline failure is fast (the 8 s timeout is not needed). Error state: 🦉, "Couldn't load movies", "Check your connection and try again.", "Retry" (verbatim), section title hidden. Retry offline (double tap): one skeleton, back to error, no stuck spinner. Network on, Retry: grid filled.
+   - **FINDING for Ruby (not a bug):** my first offline run (about 2 min after a successful load) did NOT show the error: the grid appeared at once, because the function sends `Cache-Control: public, max-age=300` and the Android HTTP cache (`cache/http-cache` exists in the app) served the response, and images came from the image disk cache (`qa-04a-offline-within-cache-window.png`). The B6 error state therefore shows only when the last successful fetch is older than 5 minutes (my valid run waited 5+ min). A real user offline within 5 min of the last load sees the grid, not the error. Fine as behaviour, but B6's wording should say "after the cache window".
+5. **Error copy + Retry.** Retry button [283,773][437,857] = 84 px = **48 dp**; `content-desc="Retry"`, class Button, clickable.
+6. **Posters.** Tap and a 2.5 s long press on a poster: no navigation, no pressed state, activity unchanged; uiautomator: all posters `clickable=false`. **Fallback happened for real:** I deleted only the app's image cache (`run-as ... rm -rf cache/image_manager_disk_cache`), cut the network, relaunched inside the 5 min HTTP-cache window: the list showed with all tiles in the fallback, 🎬 + title centred, wrapping to 2 lines ("Spider-Man: Brand New Day", "The End of Oak Street"), matches the board; none blank. No poster-less movie occurred in page 1 (all 20 had art), so the null-poster path is Jest only.
+7. **Accessibility.** Poster `content-desc` = "{title}, {year}", e.g. "Spider-Man: Brand New Day, 2026", "Resident Evil: Welcome to Raccoon City, 2021", class ImageView (image role). Roulette button `content-desc="Surprise me"`. Avatar "Open My Profile". Loading tiles: no skeleton node appears in the dump (hidden). Retry 48 dp + labelled. **Not checkable on device:** the heading role of "Popular right now" (uiautomator does not export it; the node is a plain View with text), the Roulette hint, and the "Loading movies" announcement (need TalkBack). Jest covers those. **UNTESTABLE — Justin to check with TalkBack.**
+8. **Regression.** Home → Debug → FETCH POPULAR MOVIES lists 5 titles plus the TMDB attribution line (`qa-08f`). Profile: avatar, name, @tsujintsujin, "0 movies watched", empty dashed box (no rows). Settings: "Blocked users" row present; TMDB attribution verbatim "This application uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB." Edit profile opens (Save disabled), hardware Back returns to Settings, nothing saved. Not tapped: Sign out, Delete my account.
+10. **Scroll.** Three swipes reached the end; the 20th poster ("Digger") is the last; nothing below it; no paging request; last row has 2 tiles. Scrolled content passes under the fixed header (clipped at its bottom edge). No jank seen.
+11. **Logcat.** `am_anr` 0 (events buffer, since the second clear). `*:E` has no ReactNativeJS/Sentry/app errors. App-tag errors: 20 x `ExpoImage: Failed to load resource ... java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)`, all from the deliberate offline image test (item 6). The rest is Android system noise from toggling wifi/data (Wifi*, Netd, ConnectivityService, audio HAL, GCM WakeLock, TaskPersister, CellSignalStrengthLte). Metro log: only the startup line "Missing config for organization, project. Environment variables will be used as a fallback during the build." (Sentry Expo plugin) and "An update for expo is available: 57.0.24 → ~57.0.26 / 5 other packages may need updating." No LogBox banner or red screen at any point.
+
+## Bugs
+None found.
+
+## Notes for Ruby / Manager
+- Toast offset vs board (item 2): about 73 dp device vs about 24 dp board; above the tab bar either way.
+- HTTP cache effect on B6 wording (item 4).
+- Not run (not in this brief): dark mode toggle, rotation, kill-while-loading.
+- Metro stopped (my PID only), port 8081 free, `adb reverse --remove-all` done. Emulator left running, signed in, app force-stopped.
+
+## Build 12a — CLOSED (Manager, 2026-10-01)
+- Commits: 2dc6fe9 server · 508170f app · d18ca82 server Bug 1 · 5b1d0f6 app Bug 1.
+- Server: tmdb **v3 deployed** (v2 → v3 for the non-object guard); live checks pass (see above).
+- Gates (Manager rerun at 5b1d0f6): tsc app + functions clean, lint clean, jest 303/303 ×2, 0 warnings.
+- QA: Queenie PASS, 0 bugs (measurements match DESIGN, offline error ~4 s after the skeleton,
+  fallback tiles on image failure, regression ok, 0 ANRs).
+- Review: Ruby server PASS; app FIX NEEDED → PASS after Bug 1 (M9 settled by the Manager).
+- Manager spot re-run: Home filled with labelled posters, Roulette responds (`manager-spot-home.png`).
+- Carried to 12b: (1) Toast bottom sits ~73dp above the tab bar vs ~24dp on the board — check
+  `Toast` offset; (2) B6 wording: the HTTP cache (Cache-Control max-age=300) serves page 1 offline
+  for 5 min — an offline cold start shows the error only after the cache window.
+- UNTESTABLE → Justin: TalkBack (heading role, Roulette hint, "Loading movies" announcement);
+  sign-out while loading (Jest covers the abort).
+- Emulator note: one restart hung adb "offline" ~25 min for Queenie; killing qemu + adb fixed it.
