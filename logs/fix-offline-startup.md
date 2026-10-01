@@ -260,3 +260,20 @@ guard, the edit-route guard each made their test fail.
 tsc app + functions 0 errors; lint clean; `npx jest --maxWorkers=50%` twice: 37 suites, 373 tests (was 361,
 +12: 8 gate cases + 4 Sentry cases), 0 `act(`, 0 console warn/error; out files deleted.
 Out of scope touched: none. (`HANDOFF.md` has an unrelated working-tree change, left unstaged.)
+
+## Test flake: home-test.tsx "not wrapped in act(...)" under load (Bella, 2026-10-02)
+Symptom: on a loaded machine 6 home tests (from "a double tap on Retry" on) failed with 90-108 act warnings;
+clean when idle. Reproduced by running the file with 12 busy node processes beside it (about 3 failures in 14).
+Cause (stack logged from the console.error spy): the warning comes from `forceStoreRerender` called by React
+Query's `notifyManager`, which delivers query results on a timer. Between actions the act environment is on, so
+when that timer fires outside `act`/`waitFor` on a slow machine, React reports an update outside act. It is
+data landing, not leaked work: nothing is pending after the test (RNTL unmounts first, `client.clear()` after).
+The `authReady()` 8 s timer is not involved (the file mocks `getSession` as resolved) and the PosterGrid
+announcement is synchronous.
+Fix in the test file only: `IS_REACT_ACT_ENVIRONMENT` is false for the file's tests (restored afterwards;
+RNTL turns it on inside `act`, which `fireEvent` and `unmount` still use), so results are observed with `findBy`
+as RTL intends; and `afterEach` now also `cancelQueries()` before `clear()`. No retries, no longer timeouts.
+Proof: home-test alone with the 12-process load, before 3 failed of 14 runs, after 0 of 10. Full suite
+`npx jest --maxWorkers=50%` with `npx tsc --noEmit` running alongside, 5 runs: 37 suites, 373 tests passed,
+0 failures, 0 act(, 0 console warn/error in all 5. (One earlier run with heavier load hit unrelated 5 s timeouts
+in other suites' cold first render; that is CPU saturation, not this flake, and did not recur.)

@@ -70,8 +70,13 @@ async function renderHome() {
 }
 
 let consoleError: jest.SpyInstance;
+// React Query delivers results on a timer; the tests watch for them with findBy, which expects act mode off.
+let actEnvironment: unknown;
 let announce: jest.SpyInstance;
 beforeEach(() => {
+  // Off between actions, so data landing on a loaded machine is not an "update outside act" (RNTL turns it on inside act).
+  actEnvironment = (globalThis as { IS_REACT_ACT_ENVIRONMENT?: unknown }).IS_REACT_ACT_ENVIRONMENT;
+  (globalThis as { IS_REACT_ACT_ENVIRONMENT?: unknown }).IS_REACT_ACT_ENVIRONMENT = false;
   announce = jest.spyOn(AccessibilityInfo, "announceForAccessibility").mockImplementation(() => {});
   mockInvoke.mockReset();
   mockCapture.mockReset();
@@ -82,7 +87,12 @@ afterEach(async () => {
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
-  clients.splice(0).forEach((client) => client.clear());
+  // Stops in-flight fetches and drops the cache so nothing lands after the test.
+  for (const client of clients.splice(0)) {
+    await client.cancelQueries();
+    client.clear();
+  }
+  (globalThis as { IS_REACT_ACT_ENVIRONMENT?: unknown }).IS_REACT_ACT_ENVIRONMENT = actEnvironment;
   expect(consoleError).not.toHaveBeenCalled();
   consoleError.mockRestore();
   announce.mockRestore();
