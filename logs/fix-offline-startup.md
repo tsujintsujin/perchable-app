@@ -160,3 +160,78 @@ slows them; the 2 s timer is inside the noise.
 
 ## Cleanup
 Clock back to automatic (`auto_time 1`, device date 12:00 = host UTC), wifi + data on, my Metro (pid 22176, checked command line) stopped, 8081 free, `adb reverse --remove-all`, nothing written to /sdcard. Bella's earlier evidence files left untouched.
+
+---
+
+# Bug 1 — data requests wait on auth-js start-up / refresh (Bella, 2026-10-01)
+
+## Cause
+supabase-js's `fetchWithAuth` does `await getAccessToken()` (= `auth.getSession()`) before every request.
+Offline with an expired token that await shares auth-js's refresh retry (`_callRefreshToken`, back-off up
+to 30 s), and again after the 60 s failure cooldown. `REQUEST_TIMEOUT_MS` and the abort signal only start
+after that await, so the 8 s timeout never covered it: Home sat on its skeleton ~30 s, Profile 1.5-2.5 min
+(Queenie).
+
+## Fix: one helper, called first in each Supabase-backed API function
+`authReady()` in `src/lib/requestTimeout.ts` resolves when `supabase.auth.getSession()` answers (resolved or
+rejected; the request then reports its own error) and rejects with `RequestTimeoutError` after
+`REQUEST_TIMEOUT_MS`. The clock starts before the auth wait, and because the timeout fires before the
+request is built, **nothing is sent**, so there is no late write, no duplicate insert, and no state to
+guard (the losing `getSession` promise only resolves into nothing).
+
+Why gate the auth wait instead of racing the whole call (the Manager's wording): racing the whole call would
+also report a failure for a write that was already in flight and may still land, which makes a retry
+duplicate it. Bounding only the part nothing has been sent in keeps writes safe. Once `getSession` has
+answered, the request's own `getSession` call returns at once, so the existing 8 s function timeout and
+network errors cover the rest.
+
+- Movies: `getPopularMovies` maps the timeout to `MovieApiError("timeout")` (retryable once by the query
+  client after 1 s, not reported to Sentry). Home therefore errors after 8 + 1 + 8 = 17 s at most.
+- Profile and the rest map to `RequestTimeoutError`: `getOwnProfile` (Profile, 8 s, no retry),
+  `getBlockedUsers`, `checkUsertagAvailable`, `updateProfile`, `blockUser`/`unblockUser`, `reportContent`,
+  `uploadAvatar`.
+- `deleteAccount` maps it to the existing `DeleteAccountOfflineError` (nothing was deleted).
+- Left alone on purpose: `deleteAvatarObject` (best-effort, Sentry-only; a timeout would be noise).
+  Auth calls (`signInWithIdToken`, `signOut`) are not data requests and have their own flows.
+
+## Low items
+2. `readStoredSession` now also requires `expires_at` (number) and `user.id` (string), the same checks as
+   auth-js `_isValidSession`; tested with 4 rejected shapes.
+3. Test asserts `createClient` receives `auth.storageKey` and that it equals the key a real supabase-js
+   client derives (`sb-<ref>-auth-token`), so a derivation edit fails.
+4. `clearSession` now also ends loading (it sets session null and `isLoading` false), which covers a clear
+   while the optimistic timer or INITIAL_SESSION is still pending. The test that encoded the stuck-loading
+   state now expects `isLoading:false`, plus a new test for clear-before-timer.
+
+## Tests (all new ones fail on revert)
+`__tests__/requestTimeout-test.ts`, fake timers, `getSession` stub that never settles:
+authReady resolves / resolves on rejection / rejects after 8 s; a movies call rejects `MovieApiError`
+kind timeout and `functions.invoke` is never called; the Home query (real `createQueryClient`) errors after
+one retry at ~17 s with 0 Sentry captures; a profile call rejects `RequestTimeoutError` and `from` is never
+called. With `getPopularMovies` and `getOwnProfile` reverted, the 3 call-level tests fail. 8 existing
+test mocks gained `auth.getSession` (the helper runs first in those API functions).
+
+## Gates
+tsc app + functions 0 errors; lint clean; `npx jest` twice: 37 suites, 361 tests (was 349, +12), 0 `act(`,
+0 console warn/error; out files deleted.
+
+## On device (td_emu; Justin's account, no sign-out; my Metro stopped, port free)
+Emulator was restarted once this round before the new `scripts/emulator.sh ensure` rule arrived (it came up
+as `adb offline` and needed a kill + relaunch, then a long post-boot settle); not restarted again. The host
+was CPU-saturated by other jobs, so the guest ran very slowly in wall-clock terms. Every number below is
+**guest time** (`adb shell date` around each screenshot), which is the clock the app's 8 s timers use, so
+they are valid; wall-clock was ~40x longer. Expired token = emulator clock +3h46 (`adb root`, `auto_time 0`),
+wifi + data off. Driver sampled one screenshot every ~1-3 guest seconds, so each figure is +/- that.
+
+| Measure (offline, expired token) | Done-means | Measured |
+|---|---|---|
+| Home visible after `am start` (incl. dev-client + bundle) | n/a | 51.2 s (JS started at +40.7 s) |
+| Home error + Retry, from Home visible (first load) | <= ~17 s | 15.2 s |
+| Profile error + Retry, from tapping Profile | ~8-10 s | 9.8 s |
+| Home error + Retry, from a Retry tap at +105 s after launch (past the 60 s failure cooldown) | <= ~17 s | 18.5 s (skeleton seen first, then error; ~1.5 s over the 17 s ceiling is inside the sampler's resolution) |
+
+Before this fix the same screens took ~30 s (Home) and 1.5-2.5 min (Profile) (Queenie). Evidence in
+`logs/evidence/fix-offline-startup/`: `bug1-profile-error-fast.png` (status bar shows 4:01 PM, offline),
+`bug1-home-error-fast.png`, `bug1-home-retry-error.png`. Clock restored (`auto_time 1`, host UTC), wifi/data on.
+Not re-run this round: jest was not run during the device step (new rule); the gate runs above preceded it
+and used the default worker count (the `--maxWorkers=50%` rule arrived after).
