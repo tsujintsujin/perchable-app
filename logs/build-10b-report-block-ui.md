@@ -223,3 +223,104 @@ Out of scope touched: `src/app/(tabs)/profile/index.tsx` (Build 4 file) only to 
 Gates: tsc clean, lint clean, jest 26 suites / 197 tests pass, 0 `act(` and 0 console warnings in the output.
 Note: the first full run had two first-test 5 s timeouts (ModerationDevHarness, ReportSheet) while the PC was busy; both passed alone and on the full rerun.
 Bundle check: `expo export --platform android` has 0 hits for "Moderation dev harness"; the `--dev` export has 1. Both temp folders deleted.
+
+---
+# QA — Queenie (Phase 3, 2026-10-01, HEAD b308e03, two accounts)
+
+td_emu signed in as the TEST account; targets = main profile "Justin Masiga" @tsujintsujin. Nothing saved on either
+account, no sign-out, no Google picker. Load before start 0.50. Animations off (left off). Evidence:
+`logs/evidence/build-10b/qa-*.png` (host clock below = device UTC + 8 h; device shows 02:xx).
+Rows this run created on the live project: 5 `reports` (profile x2 "Spam or scam"; comment "Something else" + details
+"QA test details Build10b"; dm_message "Spam or scam"; collection_item "Harassment or bullying") and 2 `blocked_users`
+(both removed through the UI; the Blocked users list is empty at the end, `qa-17-final-blocked-empty.png`).
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Settings rows: Edit profile photo / usertag, Comments, **Blocked users**, Sign out; no Terms row; Danger zone + Delete present | PASS | qa-01-settings.png |
+| 2 | Blocked users, empty: header, intro, no-entry icon, "No blocked users", "People you block will show up here." all verbatim | PASS | qa-02-blocked-empty.png |
+| 3 | Harness lists "Justin Masiga @tsujintsujin", pre-selected (test account itself not listed) | PASS | qa-03-harness.png |
+| 4 | ReportSheet form: titles comment/profile/message/caption verbatim; subhead; 7 labels verbatim; Send disabled until a reason; "Something else" reveals "TELL US MORE (REQUIRED)" + "What's the problem?"; Send stays disabled for empty and for 3 spaces ("3/500"); "hi" enables Send; counter live; typing past 500 and pasting (2 x 300) both stop at 500/500; Cancel, scrim tap, Android back each close it | PASS | qa-04a..04f |
+| 5 | Report profile + Spam -> "Report sent" + body verbatim; Done closes; harness shows "Result: reported" | PASS | qa-05a, qa-05b |
+| 6 | Same profile again -> identical "Report sent", no error | PASS | qa-06-repeat-sent.png |
+| 7 | Comment + "Something else" + details -> sent | PASS | qa-07-details-sent.png |
+| 8 | dm_message: 4 taps on Send in one adb call (~0.5 s) -> one sent state, sheet still open | PASS (row count = Manager's SQL) | qa-08-double-tap.png |
+| 9 | Offline (wifi+data off) caption report -> error card "Couldn't send your report. Check your connection and try again."; reason kept; button "Try again"; network on -> Try again -> sent | PASS | qa-09a-offline-error.png, qa-09b-retry-sent.png |
+| 10 | BlockUserSheet: confirm copy verbatim ("Block Justin Masiga?", both bodies, Cancel/Block); Cancel closes and nothing stored (list empty afterwards); Block -> blocked state "Justin Masiga is blocked" + body verbatim, Done closes, "Result: blocked". **The "Blocking..." state was too brief to screenshot** (request under 1 s); Back pressed in the same adb call did not dismiss, but that is weak proof | PASS, PARTIAL on the blocking-state view | qa-10a, qa-10b-blocking-back, qa-10c-blocked |
+| 11 | Blocked users filled: avatar (photo), "Justin Masiga", "@tsujintsujin", Unblock (126 px = 48dp high). Inline confirm "Unblock Justin?" / "This removes them from your blocked list." / Cancel + Unblock, gold border; Cancel keeps row; Unblock -> row gone -> empty state | PASS | qa-11a..11d |
+| 12 | Re-blocked; network off -> Unblock -> confirm -> error card "Couldn't unblock Justin. Check your connection and try again." above the list, row stays; network on -> retry (card cleared on the next action) -> row goes, empty state | PASS | qa-12a-unblock-failed.png, qa-12b-retry-gone.png |
+| 13 | Docked keyboard (see note) on ReportSheet and Delete sheet: input, Cancel and Send/Delete all visible and reachable; sheet lifts above the keyboard. **Extra gap above the keyboard, see Bug 2** | PASS functionally, FAIL on gap (Bug 2) | qa-13-report-docked-keyboard.png, qa-13b-delete-docked-keyboard.png, qa-13b-delete-typed-DEL.png |
+| 14 | Accessibility from dumps | PARTIAL (live region UNTESTABLE by dump) | qa-09-ui-error.xml, qa-13-ui-report-docked.xml |
+| 15 | Design match | see below | |
+| 16 | Regression: Profile has no Edit/Settings rows (only the gear button and the usertag chip); Edit profile opens (photo, USERTAG, Cancel, Save disabled), Back leaves without saving; Delete my account sheet opens, `DEL` keeps "Delete my account" disabled, Cancel closes | PASS | qa-16a-profile, qa-16c-edit-profile, qa-16b-delete-cancelled |
+| 17 | Logcat + ANR | `am_anr` = **0** at the end; no "System UI isn't responding" dialog (0 times). Red lines below | |
+
+## Times of items 5-9 (host clock; send tap -> result on screen)
+- 5: 10:24:24 -> 10:24:27 (profile, Spam or scam)
+- 6: 10:24:53 -> 10:24:56 (profile, Spam or scam, repeat)
+- 7: 10:26:16 -> 10:26:19 (comment, Something else + details)
+- 8: 4 taps 10:26:42.47 -> 10:26:42.94, sent state on screen by 10:26:46 (dm_message, Spam or scam)
+- 9: offline send 10:27:08 -> error 10:27:14 (no row expected); Try again 10:27:35 -> sent 10:27:39 (collection_item, Harassment or bullying)
+- Blocks: first 10:29:08-10:29:12 (blocked about 10:29:09), unblocked about 10:30; second about 10:31, unblocked about 10:32 after the failed attempt at about 10:31.
+
+## Item 13 note: how the keyboard was docked
+`show_ime_with_hard_keyboard` was `0`; set to `1`, **restored to `0`**. Setting it to 1 alone did NOT dock the keyboard: Gboard still showed its
+floating widget (and a floating full keyboard after "Show on-screen keyboard"; Resize > Reset did nothing). What worked: `pm clear
+com.google.android.inputmethod.latin` (Gboard's own data only, not the app, not any account), then `ime set` Gboard. Consequences: Gboard's
+saved layout is back to its default docked layout, and its first-run "Try out your stylus" dialog appeared once (cancelled). Tapping the
+widget's "Show on-screen keyboard" brings floating mode back, so I cleared again before the Delete test. Docking is a Gboard setting, not an app setting.
+
+## Item 14 detail (UI dumps)
+- Selected radio ("Something else"): `class=android.widget.RadioButton`, `checked=true`, `selected=true`, `clickable=true`,
+  `content-desc="Something else"`. Unselected radios: `checked=false`, `selected=false`. (The inner text node is also `selected=true`.)
+- Buttons: Cancel / Send report / Try again / Done / Block / Unblock have `content-desc` (= label); the row button is
+  "Unblock Justin Masiga". Disabled Send exposes `enabled=false`. The scrim is a full-screen button with `content-desc="Close"`.
+- Details input: `class=EditText`, `content-desc="Tell us more"`. The hint "Required" is not visible in uiautomator dumps.
+- Target sizes (2.625 px/dp): reason rows 126 px = 48dp; Cancel/Send/Done/Block/Try again 126 px = 48dp; row Unblock 126 px = 48dp; details input 252 px.
+  **Below 48dp:** Blocked users back chip 94x95 px = 36x36dp (DESIGN says "back chip 36", so as designed; the Edit profile back arrow, 58x79 px, is Build 7).
+- Error card (offline report): a focusable `android.view.View` with `content-desc` = the text. **UNTESTABLE from a dump:** uiautomator does not export
+  role=alert or `accessibilityLiveRegion`, so "exposed as an alert / live region" cannot be proven here. Justin to check with TalkBack.
+
+## Item 15 design match (vs `logs/evidence/build-10b/design/*.png`)
+Matches: sheet surface/radius/handle; reason rows (48 high, gold tint + ring + dot when selected); details label/box/counter; disabled Send; sent
+state (56dp gold check badge, title, body, full-width Done); error card + Try again; Block button in the danger colour; blocked state; Blocked users header,
+back chip, intro, rows, inline confirm (gold border, Cancel + gold Unblock), unblock-failed card above the list, empty state.
+Differences:
+1. **Bug 2**: with a docked keyboard there is a ~48dp gap between the button row and the keyboard (design padding is 24dp; the bottom safe-area inset is still added although the keyboard covers it). `qa-13-report-docked-keyboard.png`, `qa-13b-delete-docked-keyboard.png`. The Delete sheet (earlier Build) has the same gap, so it is the shared sheet pattern.
+2. With the keyboard up the Report sheet grows to the full screen height: the drag handle sits in the status-bar row and the first two reasons scroll out of view under the title. Acceptable, noted only.
+3. Blocked users intro text ends at x=749 of 900 (display px) and the dev gear starts at x=752: about 3 px apart (`qa-02-blocked-empty.png`, `qa-11a`). Bella flagged this; dev-client gear only.
+4. The warning sign in error cards renders as a filled red triangle (emoji font); the board shows an outline glyph. Cosmetic.
+5. Dev harness: board not compared (dev-only). It has no "Terms accepted" readout and no "Simulate first comment" (Bella's documented trim for Build 11).
+
+## Seen on screen / in logcat (exact text; cause for Ruby to judge)
+- First load (my Metro had only just started): dev client error screen "There was a problem loading the project." ... "java.io.IOException: unexpected end of stream on http://localho..." (`qa-01a-launch.png`). Reload after Metro finished bundling worked; I believe it was my timing, not the app.
+- A blue bar "Refreshing..." over the top of the debug screen in the first harness screenshot (`qa-03-harness.png`), gone a second later.
+- Logcat `*:E` from the app process, whole run: `E unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Loading from 127.0.0.1:8081...` and `Reloading...` (01:51, before my run); `E unknown:ReactNative: Tried to remove non-existent frame callback` (02:19:43, 02:19:44, at launch); `E unknown:ReactHost: Unhandled SoftException` / `ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready` (02:20:32, at launch); `E FrameTracker: force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@0@com.tsujintsujin.perchable>` / `J<IME_INSETS_HIDE_ANIMATION::1@0@com.tsujintsujin.perchable>` (13 times, each time the keyboard opened or closed). No AndroidRuntime or ReactNativeJS errors.
+
+## Bugs
+- **Build 10b · Bug 2 — Extra bottom gap (~48dp) above a docked keyboard on the Report sheet (and the Delete sheet).**
+  Steps: Home > Debug: Supabase > "Report comment (random id)" > "Something else" > tap "Tell us more", with the docked Gboard.
+  Expected: 24dp between the button row and the keyboard (DESIGN: padding 16/20/24 plus the bottom inset only where nothing covers it).
+  Actual: gap about 125 px = about 48dp. Minor: the input and both buttons are fully visible and reachable.
+  (Bug 1 was Ruby's review round.)
+
+## UNTESTABLE - Justin to check
+- TalkBack: error card read as an alert; "Report sent" / "{name} is blocked" announced; focus moves to the sheet title; radio announces "selected".
+- The "Blocking..." state (Cancel disabled, back and scrim inert) on a slow network: I could not hold it long enough on this emulator.
+- Row counts for `reports` / `blocked_users` against the list above (Manager's SQL).
+
+## State left behind
+Test account still signed in; Blocked users empty; `show_ime_with_hard_keyboard` = 0 (original); Gboard data cleared (now docked default, see note);
+Metro (PID 17460, started by me) killed, 8081 free; `adb reverse --remove-all` done; nothing written to /sdcard.
+
+## Manager — QA check + ban proof in progress (2026-10-01)
+- DB after Queenie's run: **4** reports (not 5 — the repeat profile report was absorbed by the
+  unique constraint and shown as "sent", as designed); the 4-tap double-tap made exactly 1
+  `dm_message` row; the offline attempt stored nothing until "Try again"; 0 blocks left.
+- 0 `am_anr`, 0 "System UI isn't responding" during the run (emulator now on the NVIDIA GPU).
+- Confirmed Bug 2 from `qa-13-report-docked-keyboard.png`: with a docked keyboard the sheet keeps an
+  extra ~48dp band under the buttons (bottom safe-area inset added on top of the keyboard), and the
+  full-height sheet runs up under the status bar (handle in the status-bar row). Same pattern in
+  Build 9's DeleteAccountSheet (`qa-13b-delete-docked-keyboard.png`).
+- 10a B3 ban proof started: the test account (b2400254) was banned with the exact admin-doc block
+  (banned_until 2126-10-01; sessions/refresh tokens 0; main account untouched). **Waiting on Justin**
+  to try signing in with it on td_emu. The ban is still active on the TEST account until then.
