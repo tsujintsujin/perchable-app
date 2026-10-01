@@ -49,6 +49,26 @@ degraded (long uptime, stray `dex2oat64`), not the app: `adb reboot`, wait for
 `sys.boot_completed=1` and for load to settle, then retest. Dismiss any
 "System UI isn't responding" dialog with Wait.
 
+## Emulator setup + health (tuned 2026-10-01 — read before any emulator work)
+td_emu is tuned for this laptop: Windows Graphics preference sends the emulator to the
+NVIDIA GTX 1660 Ti (Justin set it); screen overridden to 720x1600 @ 280 dpi (`wm size` /
+`wm density` — same 411dp width as before, so layouts are unchanged; screenshots are now
+1.75 px/dp, not 2.625); 3-button navigation (the gesture handler was the ANR source);
+window/transition animations off; 16 unneeded Google apps disabled
+(`logs/emulator-disabled-apps.txt`; undo with `pm enable <pkg>`). Leave other projects' apps
+(engagia, shopmetrixosa, Expo Go) alone.
+- **The emulator's GPU path degrades with uptime** (measured: launcher 90th-pct frame 48 ms
+  fresh vs 600 ms after a long session, GPU wait ~5 s). **Restart it at the start of every
+  session and before every QA run**: `adb emu kill`, then start detached from PowerShell
+  (`Start-Process ...\emulator\emulator.exe -ArgumentList "-avd","td_emu","-gpu","host"`) —
+  a Bash `nohup &` launch dies when the tool call returns. Quick boot takes ~15 s.
+- Never cold-boot (`-no-snapshot-load`) unless the snapshot is broken — it triggers minutes
+  of background optimisation.
+- If `adb` commands hang: `Stop-Process -Name adb -Force`, `adb start-server`.
+- Load the dev build via `adb reverse tcp:8081 tcp:8081` + the `localhost:8081` URL.
+- If the emulator refuses to start with "requires hardware acceleration": AMD SVM got
+  disabled in BIOS (happened 2026-10-01) — only Justin can re-enable it.
+
 ## Supabase CLI — what may touch the live project
 `supabase/config.toml` is the CLI's **local-dev** config (localhost site_url,
 open signup, etc.). Never push it to the live project: only use
