@@ -37,7 +37,8 @@ jank90() {
   timeout 10 "$A" shell input keyevent 3 >/dev/null 2>&1; sleep 2
   timeout 10 "$A" shell "dumpsys gfxinfo com.google.android.apps.nexuslauncher reset >/dev/null"
   for k in 1 2 3 4; do timeout 10 "$A" shell input swipe 360 1300 360 300 250; sleep 1; timeout 10 "$A" shell input keyevent 3; sleep 1; done
-  timeout 20 "$A" shell "dumpsys gfxinfo com.google.android.apps.nexuslauncher" | grep -m1 '90th percentile' | grep -oE '[0-9]+'
+  # The line reads "90th percentile: NNNms"; take the number after the colon, not the "90".
+  timeout 20 "$A" shell "dumpsys gfxinfo com.google.android.apps.nexuslauncher" | grep -m1 '^90th percentile' | sed -E 's/.*: *([0-9]+)ms.*/\1/'
 }
 
 health() {
