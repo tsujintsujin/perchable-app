@@ -385,3 +385,19 @@ refused refresh exercises the same server-side ban check. Test account unbanned 
 **Gates.** tsc clean, lint clean, jest 27 suites / 202 tests, 0 act() warnings, 0 console warnings. Files outside scope: none.
 
 **Device check for the Manager:** open ReportSheet, pick "Something else", dock Gboard. (1) The handle and top corners are below the status bar (sheet top at >= ~42 px at 1.75 px/dp). (2) Buttons still sit ~24dp above the keyboard. (3) Keyboard down: sheet looks as before. (4) Same for the Delete sheet (title/body scroll, Cancel/Delete pinned).
+
+## Build 10b — CLOSED (Manager, 2026-10-01)
+- Commits: dfc1ccf build · e49687e Bug 1 · e1c61fd Bug 2 · b7d1d45 Bug 2 round 2.
+- Gates (Manager rerun at b7d1d45): tsc clean, lint clean, jest 202/202, 0 act()/console warnings.
+- QA: Queenie full two-account run PASS except Bug 2; Manager DB check (4 reports — repeat absorbed,
+  1 row from a 4-tap, 0 blocks left); 0 ANRs.
+- Review: Ruby FIX NEEDED → PASS after Bug 1, Bug 2, Bug 2 r2 (r2 nits: indentation in
+  SheetShell.tsx:45-49 and formatter churn — cosmetic, carried to the next Bella brief).
+- Manager device check (td_emu 720x1600 @ 280, docked Gboard): sheet top ~92 px below the status
+  bar, buttons 24dp above the keyboard, keyboard-down unchanged
+  (`manager-bug2r2-report-docked.png`, `manager-bug2r2-report-nokb.png`).
+- 10a B3 ban proof: refresh refused for a banned account (proven); fresh sign-in step skipped at
+  Justin's call. Test account unbanned.
+- Cleanup owed: the 4 QA reports (reporter = test account) stay as admin-queue test data until
+  Justin has tried query (a) in the SQL editor; then the Manager deletes them by SQL.
+- UNTESTABLE → Justin: TalkBack announcements (error alerts, "Report sent", "is blocked").
