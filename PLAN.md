@@ -82,8 +82,8 @@ movie-domain modules.
 
 Every module from 2 onward that adds a user-owned table carries a
 Done-means bullet: "deleting the account removes this module's rows
-(`ON DELETE CASCADE`)" — see each Build below. Modules 1–3 are detailed in
-full; 4–12 are one-line-rough until the team
+(`ON DELETE CASCADE`)" — see each Build below. Modules 1–4 are detailed in
+full (Module 4 on 2026-10-01); 5–12 are one-line-rough until the team
 reaches them, but are still Build-numbered here so milestones and manual
 steps stay unambiguous.
 
@@ -646,21 +646,450 @@ and by a pointer line in each affected Build's block.
 5. Each such Build adds its own "remove this content" query to
    `docs/ADMIN-MODERATION.md`, tested in a rolled-back transaction.
 
-### Modules 4–12 — rough (one line each, detailed when the team reaches them)
+### Module 4 — Movie browse/details (Builds 12–13)
+
+Detailed 2026-10-01 (Priya, at the Manager's request). Justin moved the movies
+ahead of Build 11 (terms): after Build 10b the team goes straight to Builds
+12–16. Justin is away, so nothing here waits on him: every decision he might
+want to change is a **NEEDS JUSTIN** item with the default that applies now
+(list below). Defaults marked "Manager default" are process choices, not
+features.
+
+**Owner tags used below (as Module 3):** [Jest] Bella's Jest tests · [QA]
+Queenie on the emulator · [Mgr] the Manager reads or runs it · [Ruby] Ruby
+greps or reads the code.
+
+**What exists today (checked in the repo 2026-10-01).** The `tmdb` Edge
+Function is deployed and answers only `?endpoint=popular&page=N` (Build 3;
+`verify_jwt` on, key server-side, page validated 1–500, response
+`{ results, page, total_pages, attribution }`). `src/modules/movies/` has
+`getPopularMovies(page)` and the trimmed `Movie` type, no hooks or
+components. `expo-image` is already installed and used by `ui/Avatar`, so it
+is already inside the dev build. `src/ui/` has `Shimmer`, `EmptyState`,
+`ErrorCard`, `Avatar`, `Button`, `Toast`, `GlassCard`, `TabBar` but **no
+`PosterCard`** (DESIGN §2 specifies it; Build 12 creates it).
+`src/lib/queryClient.ts` does not exist (DESIGN §4 lists it); TanStack Query
+and FlashList are not installed. The app scheme `perchable` is already set.
+Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
+
+#### Module-wide decisions (M1–M10)
+
+- **M1 Home shows one list: TMDB Popular, as a 3-column poster grid with
+  infinite scroll.** Source: Vision Part 2 ("generic home with movie poster
+  showcase"), Build 12's own text ("poster grid"), and Build 3's `popular`
+  endpoint, which is the only list the proxy serves. No Trending or Now
+  Playing sections in v1. The inspo Home also shows "Have You Watched This?"
+  and "Friend Activity"; both need a collection and a follow graph that do
+  not exist until Modules 7–8, so they are **not** on Home in Build 12
+  (Build 5's landing rule already says not to build Home sections early).
+  Perch Roulette rides on Home as a UI-only shell (DESIGN §5; PLAN Changes
+  2026-09-24). **Flagged as N1.** Paging: 20 per page (TMDB's fixed size),
+  `onEndReached` loads the next page, last page is `min(total_pages, 500)`
+  (the proxy already rejects page > 500).
+- **M2 The proxy grows by one endpoint, and that Edge Function work is part
+  of the Builds that need it.** Build 12a hardens `popular`; Build 13 adds
+  `details` (below). Rules from LESSONS.md (server code): whitelist by
+  `endpoint` (anything else stays 400), validate every input before it
+  reaches TMDB, error bodies never echo the key, the request URL, or TMDB
+  internals, network errors redacted in logs (Build 3 Bug 1 pattern). No
+  `search` endpoint yet (Build 17). New server code gets **its own commit and
+  its own log entry** (LESSONS). Because Deno and Docker are not available on
+  this PC (Build 3 log), the parameter validation and response shaping go in
+  a small file with no `Deno` globals so Jest can run it; the Manager deploys
+  with `npx supabase functions deploy tmdb --use-api --project-ref
+  <ref>` (the only CLI action allowed on the live project besides secrets,
+  app CLAUDE.md) and smoke-tests it live with curl as in Build 3, before QA.
+  Ruby reviews the function file before deploy, as in Build 3. Adult
+  titles: results with `adult: true` are dropped by the proxy (a Play Store
+  app must not show them); a details request for an adult title answers 404.
+- **M3 Dependencies.** `@tanstack/react-query` and `@shopify/flash-list`,
+  both through `npx expo install` (never plain `npm install`). Expo SDK 57
+  pins FlashList at **2.0.2**, which is JavaScript-only, and TanStack Query
+  is JavaScript-only, so **no native dev-build rebuild is expected**.
+  `expo-image` is already native-built (Avatar uses it). Bella confirms
+  after installing: `npx expo install --check` is clean and no new native
+  module appears; if one does, the Manager rebuilds the dev client (short
+  `GRADLE_USER_HOME`, app CLAUDE.md) before QA and says so in the log.
+  FlashList needs its Jest setup file in the Jest config (per FlashList's
+  Jest docs; Bella verifies). **Not added:** `@react-native-community/netinfo`
+  and `expo-network` — both native, both would force a rebuild, and M5 solves
+  the offline case without them.
+- **M4 QueryClient: created once in `src/lib/queryClient.ts`, provided once
+  in the root `src/app/_layout.tsx`** (outside `AuthProvider`, so every
+  screen and test shares it). Defaults: `staleTime` 5 min for the Popular
+  list and 30 min for details (movie data changes slowly; TMDB's own terms
+  cap cached data at six months, RESEARCH.md §1, and nothing here is kept
+  past app close); `gcTime` 30 min; `retry` and timeout per M5; no
+  `refetchOnWindowFocus` wiring (an infinite query refetches every loaded
+  page, and a browse list gains nothing from it; pull-to-refresh is the
+  refresh). **No on-disk persistence of API data in v1** (see N4). Query keys
+  for TMDB data are public and **not owner-tagged** (`["movies","popular"]`,
+  `["movies","details", id]`): they hold no user data, so sign-out does not
+  need to clear them. Any later query that mixes user state (watched flags,
+  collection) must be owner-tagged as `useOwnProfile` is. Hooks live in
+  `src/modules/movies/hooks/`; the `api/` folder stays the only Supabase
+  touchpoint (DESIGN §4 module contract).
+- **M5 Request timeout, retry and offline rule (answers Queenie's ~60 s
+  offline Profile skeleton).** Every proxy call passes `timeout:
+  REQUEST_TIMEOUT_MS` (**8000**, one constant in `src/lib/`) and the query's
+  `AbortSignal` (both are options of `supabase.functions.invoke`, confirmed in
+  the installed `@supabase/functions-js` types). Retry: **once**, after 1 s,
+  for a timeout, a network failure or a 5xx; **never** for a 4xx (400
+  invalid input, 404 not found, 429 rate-limited). So the worst case to an
+  error state is about 17 s, and a plain offline failure (instant, as Build 3's
+  QA saw) shows the error within about 2 s. **An offline cold start shows the
+  four-state screen's loading state, then the error state with Retry.** It
+  never hangs. Data already loaded in this session stays on screen while
+  offline. The same constant is the rule for every later TMDB call. The
+  existing Profile skeleton problem is a separate pre-existing bug; the
+  Manager may apply the same constant there (not part of these Builds).
+- **M6 Images.** `expo-image` everywhere (RESEARCH.md §5), `cachePolicy`
+  `memory-disk`, `recyclingKey` inside FlashList, short fade-in. The URL base
+  `https://image.tmdb.org/t/p/` and the sizes are **constants in
+  `src/modules/movies/`, not fetched from TMDB's `/configuration`** (one less
+  endpoint and round trip; the base is long-stable): grid poster `w342`,
+  details poster `w500`, cast photo `w185`. Image URLs hold no key. Poster
+  aspect ratio **2:3** everywhere (TMDB's posters are 2:3). TMDB gives no
+  blurhash, so the loading placeholder is the `Shimmer` treatment on the
+  `bg.elevatedFlat` flat fill; a missing `poster_path` or a failed image shows
+  the **fallback poster icon plus the title**, so the tile is still
+  identifiable (DESIGN §2 `PosterCard` error state). Inside FlashList the
+  card is the flat fill, never `BlurView` (DESIGN §1.5/§7).
+- **M7 Navigation.** Poster tap pushes `movie/[id]` (DESIGN §3), a root-level
+  Stack route placed **inside the session-guarded group** of the root
+  `_layout.tsx` (Build 13). Header back chip (36 chip as Edit profile,
+  label "Back") and the Android hardware back both return to Home, which
+  stays mounted, so the loaded pages and scroll position survive. A cold
+  start from a deep link has no history: back then goes to Home
+  (`router.canGoBack()` false means `router.replace('/')`). **Deep link is
+  free** (the `perchable` scheme exists; Expo Router maps the route):
+  `perchable://movie/<id>`. Signed out, the guard sends it to sign-in and the
+  target is dropped after sign-in (accepted; preserving it is a later
+  feature). In Build 12 posters are **not tappable** (no pressed state, no
+  button role): a poster that did nothing would be the silent no-op DESIGN §7
+  forbids, so Build 13 turns `onPress` on.
+- **M8 TMDB attribution.** The exact sentence and logo stay on Settings,
+  About (DESIGN §6/§7), and Queenie re-checks it verbatim in both Builds as
+  a standing §7 item. RESEARCH.md §1 states the requirement as the logo plus
+  the notice, less prominent than the app's own branding, and names no
+  page-level requirement; so **nothing extra is required on Home or the
+  details screen** (Manager default; Rose can re-check the terms page if
+  Justin wants it certain). The proxy still returns `attribution` in every
+  response (Build 3).
+- **M9 Sentry (LESSONS: unexpected errors only, always the `environment`
+  tag).** One place: the QueryClient's `QueryCache` `onError`. Reported:
+  proxy 500 (misconfiguration), a malformed response shape, anything
+  unexpected. **Not** reported: offline, timeout, any 4xx, 404 (a movie that
+  does not exist is data, not a bug), 429. Once per failed query, never per
+  render or per retry. Never a user-typed value (none exist here).
+- **M10 Where code lives (DESIGN §4).** `src/modules/movies/`: `api/`
+  (`getPopularMovies`, `getMovieDetails`), `hooks/` (`usePopularMovies`
+  infinite query, `useMovieDetails`), `components/` (poster grid, details
+  sections), `tmdbImage.ts`, `types.ts`, `index.ts`. `src/ui/` gets
+  `PosterCard` (12a) and `TierBadge` (13). Routes stay thin: `(tabs)/index.tsx`
+  and `movie/[id].tsx` compose `ui/` plus the module's exported hook and
+  components, with no Supabase call and no fetching logic in the route file.
+
+#### NEEDS JUSTIN (none blocks; each default applies until he answers)
+
+- **N1 Home content.** Default: one Popular grid; no Trending / Now Playing
+  sections; "Have You Watched This?" and "Friend Activity" (inspo) wait for
+  the collection and follow Builds (19, 23). Adding a section is a feature
+  addition and comes back to him.
+- **N2 Build 12 split.** Default: two Builds, **12a** (data layer + first
+  page of posters on Home) and **12b** (infinite scroll + pull-to-refresh).
+  Number 12 unchanged; own log and Phases each. Manager default 2026-10-01 —
+  Justin may overturn; process only, no feature change.
+- **N3 Details content.** Default: title, year, runtime, genres, tagline,
+  synopsis, TMDB rating, top 15 cast (photo, name, character), the S/A/B/C
+  tier-badge shell and the `#spoiler-free-lounge` panel shell (both UI-only,
+  DESIGN §5). **Not** included (each would be a feature add): trailer,
+  director and crew, where-to-watch, similar movies, a "watched" button (that
+  is Builds 16 and 18), cast-member pages.
+- **N4 Offline cold start.** Default: no stored cache; the app shows loading,
+  then the error state with Retry (M5). Showing last session's list offline
+  would need persisted query data (a small JavaScript add, no native
+  change); Priya's view is it is not worth it for v1. He can ask for it.
+- **N5 Home layout detail.** Default: 3 columns (matches the My Collection
+  grid in DESIGN Build 6 and fits 104 dp posters on a 360 dp phone); Dianne
+  may propose 2 columns with her mockup, and the Manager decides unless it
+  changes the look Justin approved.
+
+Dianne's Phase 0 settles (not Justin): grid gap and padding, the Roulette
+card's blur-or-flat choice (the real `BlurView` is allowed on this one static
+card only if it renders correctly in a FlashList header on the emulator,
+otherwise the flat fallback, LESSONS Platform), section title copy, the
+loading skeleton count, footer and refresh copy, and a **DESIGN §3
+inconsistency to resolve**: §3 says the tab bar stays visible under `movie/`,
+but a root-level Stack route (a sibling of `(tabs)`) covers it. Manager
+default: details is a full-screen push with a back chip and no tab bar, like
+Edit profile.
 
 ```
-Build 12 — Home poster grid               Module: Movie browse/details
-Done means: FlashList + expo-image poster grid, data fetched via TanStack
-  Query against the Build-3 TMDB proxy (not raw useEffect).
-Test on: emulator
+Build 12a — Home poster grid, first page        Module: Movie browse/details
+   (first half of Build 12; Manager default 2026-10-01 — Justin may overturn,
+   N2. Number 12 unchanged; own log, own Phases 1-5. Phase 0 is done once
+   for 12a and 12b together.)
+Done means (checkable):
+
+  A. Data layer (mostly invisible; proven by tests)
+  A1. [Jest] `src/lib/queryClient.ts` exports one QueryClient with the M4
+      defaults; the root `_layout.tsx` provides it once; no screen creates
+      its own client.
+  A2. [Jest] Timeout: the proxy call sets `timeout: REQUEST_TIMEOUT_MS`
+      (8000) and passes the query's signal; a never-answering call (fake
+      timers) ends in the error state at the timeout, not later.
+  A3. [Jest] Retry: one retry for timeout, network failure and 5xx; zero for
+      400/404/429 (a test per class).
+  A4. [Jest] Sentry from the `QueryCache` only, per M9: a 500 and a bad
+      response shape are captured once with the `environment` tag; offline,
+      timeout and 4xx are not.
+  A5. [Jest] + [Mgr] Edge Function `popular` hardened: results with
+      `adult: true` removed; the three existing rejections still 400 (other
+      endpoint, bad page, page > 500) and a missing key still 500 without
+      naming it. [Mgr] after deploy, curl: `popular` 200 with 20 results and
+      the exact attribution; `endpoint=foo` 400; `page=abc` 400; no auth
+      header 401; the response body contains no `api_key`.
+  A6. [Jest] `tmdbImage(path, size)` returns base + size + path and null for
+      a null/empty path; the sizes are the M6 constants.
+  A7. [Mgr] `@tanstack/react-query` and `@shopify/flash-list` (2.0.2) are
+      installed with `npx expo install`; `npx expo install --check` is clean;
+      FlashList's Jest setup is in the config; the Build log says whether a
+      native rebuild was needed (expected: no).
+
+  B. Home screen (`(tabs)/index.tsx` composes; no fetching in the route)
+  B1. [QA] A signed-in user opens Home and sees, top to bottom: the existing
+      avatar chip (still tappable to Profile), the Perch Roulette card, a
+      section title, then a 3-column grid of 2:3 posters with their images
+      loaded, from live TMDB Popular page 1 (20 posters).
+  B2. [QA] Roulette is a UI shell: tapping it shows the `Toast` (variant
+      coming-soon) "Smart picks are coming soon." and nothing else happens;
+      no fake success (DESIGN §5/§7).
+  B3. [Jest] + [QA] All four states (DESIGN §2/§7). Loading: 12 poster
+      shimmers in the grid's shape, one polite live-region label "Loading
+      movies"; empty (zero usable results): `EmptyState` with Retry; error:
+      `EmptyState` (icon 🦉, "Couldn't load movies", Retry, the Build 6
+      pattern) and Retry reloads; filled. Copy comes verbatim from Dianne's
+      DESIGN.md table.
+  B4. [Jest] `PosterCard` (new, `src/ui/PosterCard/`): loading, loaded and
+      error (fallback icon + title) states; flat fill, no `BlurView`; in this
+      Build it has no `onPress`, no pressed state and no button role. Only
+      the props this Build uses are built (`posterUrl`, `title`, optional
+      year); `watched`, `tier`, `caption` arrive with the Builds that use them.
+  B5. [QA] A movie with no poster shows the fallback icon plus its title; with
+      the network cut after the list loaded, posters not yet cached show the
+      fallback, not a blank tile.
+  B6. [QA] Offline cold start (wifi and data off, force-stop, relaunch): the
+      loading state, then the error state with Retry within about 20 s
+      (M5); network back on, Retry loads the grid. Evidence includes the time
+      to the error state.
+  B7. [QA] Accessibility: each poster's label is "{title}, {year}" (title only
+      when the year is unknown), role image; the shimmers are not announced one
+      by one; Retry is at least 48 dp.
+  B8. [Ruby] Standards greps on the diff: no literal colors, sizes or spacing
+      (tokens only), no `BlurView` under a FlashList item, no Supabase call or
+      business logic in the route files, no `useEffect`-based fetching, header
+      top spacing from safe-area insets, the dev-client gear corner (top-right
+      64x64) empty, 1-2 line purpose comment on each block. The TMDB key is
+      absent from the `expo export --platform android` output (same grep as
+      Build 3).
+  B9. [Mgr] Phase 0 (Dianne) also updates DESIGN §3 (Home line: grid, roulette
+      shell; the tab-bar-under-`movie/` question above) and §4 (`PosterCard`
+      added to `ui/`).
+
+Test on: emulator (`td_emu`, restarted before QA per LESSONS; signed-in
+  session already on the device, or Justin signs in if it was lost). Edge
+  Function proven by Jest plus the Manager's live curl.
+Needs from Justin: nothing. (N1, N2, N3, N5 are defaults he may overturn.)
+Failure modes to cover (Manager expands into the log):
+  - Network: offline cold start; offline mid-session (loaded list stays);
+    timeout (hung request); server 5xx; 429; response with `results` empty;
+    response missing a field or the wrong shape (error state, one Sentry
+    event).
+  - Data: `poster_path` null; very long titles (two lines, ellipsis); title
+    with emoji or right-to-left text; `release_date` empty or malformed
+    (year omitted, no "NaN"); `vote_average` not used in this Build.
+  - Interaction: double-tap Retry (one request); leave Home mid-load and
+    return (no state update after unmount, no duplicate request); rotate or
+    font scale large (grid still 3 columns, no overflow, no horizontal
+    scroll).
+  - Security: no key in the bundle, logcat or any error text; the proxy
+    answers only the whitelisted endpoint; the 400 body contains no echo of
+    the input.
+  - Cleanup: none (no stored rows; image cache is expo-image's).
+  - Sentry: unexpected failures only (M9), once each, with `environment`.
+Phases: 0 Dianne mockup (Home: header, Roulette shell, section title, grid;
+        states loading / empty / error / filled; image fallback; the 12b
+        footer, refresh and next-page-error states in the same board; copy
+        table; updates DESIGN §3/§4) · 1 Bella build (Edge Function change in
+        its own commit + log entry) · 2 Bella gates (tsc, lint, jest,
+        `expo export` key grep) · [Ruby pre-deploy check of the function file,
+        then Manager deploys `tmdb` and curls it] · 3 Queenie QA · 4 Ruby
+        review · 5 Manager ships
 ```
 
 ```
-Build 13 — Movie details screen           Module: Movie browse/details
-Done means: tapping a poster opens a details screen (cast/rating/synopsis)
-  fetched via TanStack Query against the TMDB proxy.
-Test on: emulator
+Build 12b — Infinite scroll and pull-to-refresh   Module: Movie browse/details
+   (second half of Build 12; Manager default 2026-10-01 — Justin may
+   overturn, N2. Own log, own Phases 1-5; Phase 0 is covered by 12a's board.)
+Done means (checkable):
+  C1. [Jest] + [QA] Scrolling near the bottom loads the next page (page 2,
+      20 more posters append below the first 20; a small spinner row is shown
+      while it loads). `getNextPageParam` stops at `min(total_pages, 500)`;
+      no request is made after the last page.
+  C2. [Jest] The same movie id appearing on two pages (TMDB's order shifts
+      between requests) renders once: the flattened list is de-duplicated by
+      id, so FlashList never sees a duplicate key. (Found the hard way in
+      another project: the same item printed twice on a list.)
+  C3. [Jest] One request in flight at a time: `onEndReached` firing
+      repeatedly while a page loads, or while there is no next page, makes no
+      extra request.
+  C4. [Jest] + [QA] Next-page failure (offline or error on page 2+): the
+      loaded posters stay; the list footer shows an inline "couldn't load
+      more" row with Retry (at least 48 dp); Retry loads the page. It never
+      replaces the whole screen with the error state, and never shows an empty
+      footer that looks like the end of the list.
+  C5. [Jest] + [QA] Pull-to-refresh (FlashList's refresh control, tinted from
+      tokens) fetches **page 1 only** and drops later pages (a Jest test
+      counts one request, even with five pages loaded), then the list is back
+      at the top. If the refresh fails while posters are showing, they stay
+      and an error `Toast` says so ("Couldn't refresh. Check your
+      connection."); the screen does not flip to the error state.
+  C6. [QA] Leaving Home (Profile tab) and returning within five minutes shows
+      the same list and position with no new request; after five minutes the
+      list is stale and only a pull refreshes it.
+  C7. [QA] Scrolling about 100 posters (5 pages) on the emulator shows no
+      blank tiles after a pause and no crash. The log records `gfxinfo` janky
+      frames. **No pass threshold on the emulator** (it is slow, LESSONS
+      2026-10-01); a feel check on a real phone happens only with an APK
+      Justin asks for.
+  C8. [Ruby] Standards as 12a B8 for the new code; the footer and refresh
+      states use tokens and existing `ui/` pieces (`Toast`, `ErrorCard` or
+      the Build 6 pattern, `Shimmer`).
+Test on: emulator.
+Needs from Justin: nothing.
+Failure modes to cover (Manager expands into the log):
+  - Paging: fast fling to the bottom; end of list; page 2 fails then page 3;
+    a pull-to-refresh while a next-page request is in flight (the in-flight
+    page must not be appended after the reset); a refresh at page 1 only;
+    duplicate ids across pages.
+  - Network: offline mid-scroll; timeout on a page; 429; app backgrounded
+    during a load and resumed.
+  - Interaction: double pull; pull then immediately scroll; leave the screen
+    mid-refresh (no state update after unmount).
+  - Sentry: as M9, once per failed page, not once per retry.
+  - Cleanup: none.
+Phases: 0 skip (12a's Phase 0 board already draws the footer, refresh and
+        next-page-error states) · 1 Bella build · 2 Bella gates (tsc, lint,
+        jest) · 3 Queenie QA · 4 Ruby review · 5 Manager ships
 ```
+
+```
+Build 13 — Movie details screen            Module: Movie browse/details
+Done means (checkable):
+
+  A. Server and data layer
+  A1. [Jest] + [Mgr] Edge Function gains `endpoint=details&id=<n>`:
+      `id` must be an integer from 1 to 2147483647 or the answer is 400
+      (before TMDB is called); the function asks TMDB for the movie with
+      credits in one call and returns **only** a trimmed
+      `{ movie: { id, title, tagline, overview, poster_path, backdrop_path,
+      release_date, runtime, vote_average, vote_count, genres:[{id,name}],
+      cast:[{id,name,character,profile_path}] (first 15 by TMDB order) },
+      attribution }`, never TMDB's raw body; TMDB 404 answers 404 with a fixed
+      message; an adult title answers 404; other TMDB failures keep Build 3's
+      status + message pass-through without the URL/key; unknown endpoint
+      still 400. Same file, same no-`Deno`-globals rule for the testable
+      part (M2). New server code, own commit + log entry. [Mgr] after
+      deploy, curl: a real id 200 with the exact attribution and at most 15
+      cast; `id=abc`, `id=0`, `id=99999999999` 400; a nonexistent id 404; no
+      auth 401; no `api_key` in any body.
+  A2. [Jest] `getMovieDetails(id, signal)` and `useMovieDetails(id)`: M4/M5
+      defaults (stale 30 min, one retry, 8 s timeout); a 404 becomes a typed
+      not-found result (no retry, not sent to Sentry), everything else an
+      error; the movie type is added to `types.ts`.
+
+  B. Navigation (M7)
+  B1. [QA] Tapping a poster on Home opens the details screen for that movie;
+      the header back chip and the Android hardware back both return to Home
+      with the same loaded pages and scroll position, and no new request
+      while fresh.
+  B2. [Jest] + [QA] Double-tap on a poster opens **one** details screen (one
+      back press returns to Home), not two stacked copies.
+  B3. [Mgr] Deep link: with the app signed in, `adb shell am start -a
+      android.intent.action.VIEW -d "perchable://movie/<id>"` opens that
+      movie's details; back goes to Home; the same link while signed out
+      lands on sign-in. Cold start from the link works.
+  B4. [Jest] A route id that is not a positive integer (`abc`, `0`, `-1`,
+      `1.5`) shows the not-found state and makes **no** proxy call.
+  B5. [Ruby] `movie/[id]` is inside the session-guarded group of the root
+      layout; the route file only composes the module's hook and components.
+  B6. [QA] The `PosterCard` on Home is now a button (role button, hint "Opens
+      movie details", pressed state per DESIGN §2); the 12a/12b behaviour is
+      otherwise unchanged (regression of Builds 12a-12b).
+
+  C. Screen content
+  C1. [QA] For at least two real movies (one from Home, one chosen by deep
+      link for sparse data) the screen shows: poster, title, year, runtime,
+      genres, tagline when present, TMDB rating (one decimal, "of 10"),
+      synopsis, and a horizontal cast row (photo, name, character) from the
+      live proxy. Cast rows use the existing `ui/Avatar` (initials fallback
+      when `profile_path` is null). Cast members are not tappable (N3).
+  C2. [Jest] Missing data never prints a blank or "NaN": no overview shows
+      "No synopsis available."; no cast hides the Cast section; zero votes
+      shows "Not rated yet" instead of 0.0; no poster shows the fallback;
+      no release date omits the year; runtime 0 or null omits the runtime;
+      empty genres omit the line. Exact strings come from Dianne's copy table.
+  C3. [QA] States: loading (shimmers in the final layout), error (Retry,
+      Build 6 pattern; loaded data is not lost on a refetch error), not found
+      (404 or invalid id: message and a way back), loaded. "Empty" does not
+      apply to a single movie; the screen says so in the log.
+  C4. [QA] UI shells (DESIGN §5), visible and giving feedback on tap, never a
+      silent no-op or fake success: the `TierBadge` opens the static legend
+      popover; the `#spoiler-free-lounge` panel shows its static sample
+      content with the composer in the disabled, non-focusable style. [Ruby]
+      confirms no rating or comment is stored or fetched from anywhere, and the
+      panel is not wired to a table (Module 9 wires it later).
+  C5. [QA] Accessibility: back chip "Back"; the title is a header; each cast
+      item reads "{name} as {character}" (or just the name); rating reads as
+      a sentence ("Rated 7.8 out of 10 on TMDB"); every control at least 48
+      dp; the gear corner (top-right 64x64) stays empty.
+  C6. [Ruby] Standards as 12a B8 for the new code (tokens only, no BlurView
+      in lists, no Supabase in routes, comments on blocks), and TMDB
+      attribution on Settings is still verbatim with the TMDB logo less
+      prominent than Perchable's (DESIGN §7 standing check; nothing is
+      required on this page, M8).
+  C7. [Mgr] Phase 0 (Dianne) also updates DESIGN §3 (the `movie/[id]` line,
+      tab-bar visibility settled) and §4 (`TierBadge` added to `ui/`).
+
+Test on: emulator (deep link through `adb`, Build 12 regression on the way).
+Needs from Justin: nothing.
+Failure modes to cover (Manager expands into the log):
+  - Network: offline when opening (error state, Retry); offline after a
+    previous visit within 30 min (cached details show); timeout; 5xx; 429;
+    the movie opens while the list refreshes behind it.
+  - Data: id that does not exist (404, no Sentry); adult title (404); missing
+    overview, cast, poster, release date, runtime, tagline, genres; 15+ cast
+    (capped); very long title, tagline and character names (wrap, no
+    overflow); a cast member with no photo.
+  - Interaction: double-tap on a poster; back mid-load (no state update after
+    unmount, request aborted); rapid open-back-open of different movies (each
+    screen shows its own movie, never a previous one's data); hardware back
+    on a deep-link cold start.
+  - Security: no key in the bundle, logcat or errors; `id` validated on the
+    server and again on the client; the 400/404 bodies echo nothing.
+  - Sentry: M9 only; a 404 is not an event.
+  - Cleanup: none (no rows; cached details live 30 min in memory).
+Phases: 0 Dianne mockup (details: loading / error / not-found / loaded,
+        sparse-data variant, cast row, tier-badge legend, spoiler-lounge
+        shell, long-text case; updates DESIGN §3/§4) · 1 Bella build (Edge
+        Function change in its own commit + log entry) · 2 Bella gates (tsc,
+        lint, jest, `expo export` key grep) · [Ruby pre-deploy check of the
+        function file, then Manager deploys `tmdb` and curls it] ·
+        3 Queenie QA · 4 Ruby review · 5 Manager ships
+```
+
+### Modules 5–12 — rough (one line each, detailed when the team reaches them)
 
 ```
 Build 14 — Swipe deck                     Module: Quick-add swipe
@@ -935,3 +1364,4 @@ this is marked NEEDS JUSTIN.
 - 2026-09-25 (Manager, from Build 2 review): Build 5 Done-means also includes Supabase's AppState auto-refresh listener (`supabase.auth.startAutoRefresh()` on foreground / `stopAutoRefresh()` on background) so sessions refresh correctly on Android.
 - 2026-09-30 (Priya, at the Manager's request): detailed Builds 10-11 (Module 3) in section 5; rough one-liners replaced. No Build number, order or feature removed. **NEEDS JUSTIN (interpretation, not silently applied):** two Settings rows the Done-means implies but never named - "Blocked users" (Build 10: list + unblock) and "Terms & community rules" (Build 11: read/accept). Added, as infrastructure not features: `docs/ADMIN-MODERATION.md`, the SQL helper functions, the dev-only harness, and five Module 3 carry-forward rules for Builds 20/24/25/27/28.
 - 2026-09-30 (Priya, revision 2 after Ruby FIX NEEDED, 4 must-fix; Manager defaults apply, Justin may overturn): Build 10 split into 10a (database + admin doc) and 10b (UI), number unchanged; Settings rows "Blocked users" and "Terms & community rules" kept; terms gate now also covers captions (Build 20); second-user QA = Justin's 2nd Google account (no Email provider, no agent-created accounts); `is_blocked_between` grants/claims corrected (M1); explicit revoke/grant for all tables and functions (M2); harness loaded via `require` under `__DEV__` and checked with `expo export` (M3); collection-entry report point owned by Build 25, caption terms gate by Build 20 (M4); owner tags per Done-means line; carry-forward pointers added to Builds 20/24/25/27/28. Build 23 follow-on-block question left open for Justin at Build 23.
+- 2026-10-01 (Priya, at the Manager's request; Justin reordered: movies, Builds 12-16, come right after Build 10b, Build 11 moves to just before Build 20): detailed Module 4 — Builds 12 and 13 — in section 5, replacing the two rough one-liners. Build 12 is split into **12a** (data layer + first page of posters on Home + Roulette shell) and **12b** (infinite scroll + pull-to-refresh), number unchanged (Manager default, N2). New module-wide decisions M1-M10 (TMDB Popular grid; proxy hardening in 12a and a `details` endpoint in 13, with Edge Function work inside those Builds; `@tanstack/react-query` + `@shopify/flash-list` via `npx expo install`, no native rebuild expected; one QueryClient at the root; 8 s timeout, one retry, offline cold start ends in an error state; image sizes and 2:3 posters; navigation and a free `perchable://movie/<id>` deep link; attribution stays on Settings; Sentry from the QueryCache only). The UI-only shells already approved (Perch Roulette on Home, tier badge and `#spoiler-free-lounge` panel on details, DESIGN §5) ride inside 12a and 13 as before. **NEEDS JUSTIN (none blocks; defaults apply):** N1 Home shows one Popular grid, no Trending/Now Playing, no "Have You Watched This?"/"Friend Activity" until Builds 19/23; N2 the 12a/12b split; N3 the details content set (and what it leaves out); N4 no stored cache, offline cold start shows an error state; N5 3-column grid. No feature was added or removed beyond what Vision Part 2 and DESIGN §5 already list. DESIGN question for Dianne (not a plan problem): §3 says the tab bar stays visible under `movie/`, but a root-level Stack route covers it.
