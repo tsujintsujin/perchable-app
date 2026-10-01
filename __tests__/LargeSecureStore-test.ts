@@ -34,10 +34,12 @@ jest.mock("@supabase/supabase-js", () => ({
   },
 }));
 
+let readStoredSession: () => Promise<unknown>;
+
 beforeAll(() => {
   process.env.EXPO_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
   process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "anon";
-  require("@/lib/supabase");
+  ({ readStoredSession } = require("@/lib/supabase"));
 });
 
 beforeEach(() => {
@@ -126,5 +128,22 @@ describe("LargeSecureStore", () => {
 
     expect(mockAsync.has("sess")).toBe(false);
     expect(mockSecure.has("sess")).toBe(false);
+  });
+});
+
+describe("readStoredSession", () => {
+  it("returns the stored session", async () => {
+    const session = { access_token: "a", refresh_token: "r", user: { id: "u" } };
+    await mockStorage.setItem("sb-example-auth-token", JSON.stringify(session));
+
+    expect(await readStoredSession()).toEqual(session);
+  });
+
+  it("returns null when nothing is stored, the JSON is bad, or required fields are missing", async () => {
+    expect(await readStoredSession()).toBeNull();
+    await mockStorage.setItem("sb-example-auth-token", "{not json");
+    expect(await readStoredSession()).toBeNull();
+    await mockStorage.setItem("sb-example-auth-token", '{"access_token":"a"}');
+    expect(await readStoredSession()).toBeNull();
   });
 });

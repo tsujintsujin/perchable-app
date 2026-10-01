@@ -6,7 +6,9 @@ let mockEmit: (event: string, session: Session | null) => void = () => {};
 const mockUnsubscribe = jest.fn();
 const mockStopAutoRefresh = jest.fn();
 const mockStartAutoRefresh = jest.fn();
+const mockReadStored = jest.fn<Promise<Session | null>, []>();
 jest.mock("@/lib/supabase", () => ({
+  readStoredSession: () => mockReadStored(),
   supabase: {
     auth: {
       stopAutoRefresh: () => mockStopAutoRefresh(),
@@ -19,7 +21,7 @@ jest.mock("@/lib/supabase", () => ({
   },
 }));
 
-import { AuthProvider, useAuthSession } from "@/modules/auth/AuthProvider";
+import { AuthProvider, OPTIMISTIC_START_MS, useAuthSession } from "@/modules/auth/AuthProvider";
 
 const sessionB = { access_token: "B" } as Session;
 
@@ -46,6 +48,8 @@ describe("AuthProvider", () => {
     mockUnsubscribe.mockReset();
     mockStopAutoRefresh.mockReset();
     mockStartAutoRefresh.mockReset();
+    mockReadStored.mockReset();
+    mockReadStored.mockResolvedValue(null);
   });
 
   it("is loading until the listener fires", async () => {
@@ -159,5 +163,109 @@ describe("AuthProvider", () => {
   it("does not restart auto-refresh when the app is not active", async () => {
     await clearThenSignIn("background");
     expect(mockStartAutoRefresh).not.toHaveBeenCalled();
+  });
+
+  describe("offline start-up (auth-js has not fired INITIAL_SESSION)", () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+
+    /** Renders the provider and lets OPTIMISTIC_START_MS pass with no auth event. */
+    async function startStuck() {
+      await render(
+        <AuthProvider>
+          <Probe />
+        </AuthProvider>,
+      );
+      expect(state()).toBe('{"token":null,"isLoading":true}');
+      await act(async () => {
+        jest.advanceTimersByTime(OPTIMISTIC_START_MS);
+      });
+    }
+
+    it("shows the stored session after the timeout while INITIAL_SESSION is still pending", async () => {
+      mockReadStored.mockResolvedValue(sessionB);
+      await startStuck();
+      expect(state()).toBe('{"token":"B","isLoading":false}');
+    });
+
+    it("shows the signed-out state after the timeout when nothing is stored", async () => {
+      await startStuck();
+      expect(state()).toBe('{"token":null,"isLoading":false}');
+    });
+
+    it("ends signed out when the refresh is refused after the optimistic render", async () => {
+      mockReadStored.mockResolvedValue(sessionB);
+      await startStuck();
+      expect(state()).toBe('{"token":"B","isLoading":false}');
+      mockReadStored.mockResolvedValue(null);
+      await act(async () => mockEmit("SIGNED_OUT", null));
+      expect(state()).toBe('{"token":null,"isLoading":false}');
+    });
+
+    it("ends signed out when a null INITIAL_SESSION follows a refused refresh (storage emptied)", async () => {
+      mockReadStored.mockResolvedValue(sessionB);
+      await startStuck();
+      expect(state()).toBe('{"token":"B","isLoading":false}');
+      mockReadStored.mockResolvedValue(null);
+      await act(async () => mockEmit("INITIAL_SESSION", null));
+      expect(state()).toBe('{"token":null,"isLoading":false}');
+    });
+
+    it("stays signed in when a null INITIAL_SESSION follows a network-failed refresh (session kept)", async () => {
+      mockReadStored.mockResolvedValue(sessionB);
+      await startStuck();
+      await act(async () => mockEmit("INITIAL_SESSION", null));
+      expect(state()).toBe('{"token":"B","isLoading":false}');
+    });
+
+    it("keeps the stored session on a null INITIAL_SESSION even with no earlier timeout", async () => {
+      mockReadStored.mockResolvedValue(sessionB);
+      await render(
+        <AuthProvider>
+          <Probe />
+        </AuthProvider>,
+      );
+      await act(async () => mockEmit("INITIAL_SESSION", null));
+      expect(state()).toBe('{"token":"B","isLoading":false}');
+    });
+
+    it("does not touch storage once an auth event has already arrived", async () => {
+      await render(
+        <AuthProvider>
+          <Probe />
+        </AuthProvider>,
+      );
+      await act(async () => mockEmit("INITIAL_SESSION", sessionB));
+      await act(async () => {
+        jest.advanceTimersByTime(OPTIMISTIC_START_MS * 2);
+      });
+      expect(mockReadStored).not.toHaveBeenCalled();
+      expect(state()).toBe('{"token":"B","isLoading":false}');
+    });
+
+    it("drops a slow storage read when a newer auth event arrived meanwhile", async () => {
+      let resolveRead: (s: Session | null) => void = () => {};
+      mockReadStored.mockReturnValue(new Promise((resolve) => (resolveRead = resolve)));
+      await startStuck();
+      await act(async () => mockEmit("SIGNED_IN", sessionB));
+      await act(async () => resolveRead(null));
+      expect(state()).toBe('{"token":"B","isLoading":false}');
+    });
+
+    it("does not apply the stored session after clearSession", async () => {
+      mockReadStored.mockResolvedValue(sessionB);
+      await render(
+        <AuthProvider>
+          <Probe />
+        </AuthProvider>,
+      );
+      await act(async () => {
+        fireEvent.press(screen.getByLabelText("clear"));
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(OPTIMISTIC_START_MS);
+      });
+      expect(state()).toBe('{"token":null,"isLoading":true}');
+    });
   });
 });

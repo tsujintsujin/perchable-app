@@ -22,3 +22,102 @@ Status: OPEN — scheduled right after Build 12b closes, before Build 13.
 4. No regression of Build 8's latch / Build 2's AuthProvider ordering tests.
 5. Tests for each; Queenie device check offline with an expired token (wait > 1 h, or force
    expiry), and online.
+
+---
+
+# Fix — implementation (Bella, 2026-10-01)
+
+## Verified in the auth-js source (node_modules/@supabase/auth-js)
+- `_refreshAccessToken` retries a retryable fetch error (offline = status 0) with back-off until
+  `AUTO_REFRESH_TICK_DURATION_MS` (30 s). Only then does `_recoverAndRefresh` return and
+  `initializePromise` resolve, so INITIAL_SESSION waits for it.
+- `_callRefreshToken` removes the session (and emits SIGNED_OUT) only for a non-retryable error
+  with an expired access token. A retryable error leaves the session in storage untouched. It
+  caches the failure for `REFRESH_FAILURE_COOLDOWN_MS` (60 s), so the second refresh inside
+  `__loadSession` fails at once.
+- `_emitInitialSession` then sees an expired stored session + failed refresh and emits
+  `INITIAL_SESSION` with null even though the session is still in storage. So the baseline was
+  worse than a blank screen: after 30 s an offline user with a valid refresh token landed on the
+  sign-in screen. Constraint 2 ("network failure keeps the user signed in") was not met before this fix.
+- `supabase.auth.getSession()` also waits on `initializePromise`, so no auth-js call can be used to
+  get the session early. Reading storage directly is the only public route.
+
+## Approach chosen: optimistic render from the stored session, then reconcile from storage
+1. `readStoredSession()` (src/lib/supabase.ts) reads the persisted session through the same storage
+   adapter the client uses (the adapter never rejects) and shape-checks it. The storage key is now
+   passed explicitly (same value supabase-js derives, so nobody is signed out by this change; the
+   device stayed signed in).
+2. AuthProvider starts a 2 s timer (`OPTIMISTIC_START_MS`). If no auth event has arrived, it shows
+   the stored session (or signed-out when nothing is stored) and ends `isLoading`. Any auth event
+   clears the timer.
+3. When auth-js finally emits `INITIAL_SESSION` with null, the provider re-reads storage instead of
+   trusting the null: a session still in storage means the refresh failed on the network, so the
+   user stays signed in; empty storage means it was refused (or never existed), so signed out.
+4. A per-event counter drops a storage read that finished after a newer event, and the existing
+   `clearSession` latch also blocks a late read.
+
+### Why this one (alternatives rejected)
+- "Connecting..." state that resolves to sign-in vs app: satisfies "not blank" but the user still
+  waits ~30 s for the real screen, and it adds a new screen.
+- `autoRefreshToken: false` at start-up and refreshing ourselves with a short timeout: works, but
+  re-implements auth-js's refresh/cooldown/lock logic (against "work through the public API").
+- Patching or forking auth-js constants: forbidden.
+- Optimistic stored session (chosen): smallest change, one provider. Constraint 2 is met by the
+  storage re-read, a signal auth-js itself provides (it empties storage on refusal before emitting).
+- Ghost-UI risk on a refused refresh: online, a refusal returns well inside the 2 s timer, so the
+  optimistic screen is never shown; offline nothing can be refused. A refusal arriving after an
+  optimistic render ends in SIGNED_OUT or an empty-storage INITIAL_SESSION, both set signed-out and
+  the route guard returns to sign-in.
+- The optimistic session is never used for requests: supabase-js reads its own auth state, not ours,
+  so a stored-but-expired token is never sent (Done-means 2). Known limit: a data request made in
+  the first 30 s waits on auth-js's `initializePromise`, so Home/Profile show their skeleton for up
+  to ~30 s before their normal error + Retry (see Follow-up).
+
+## Done means -> handling -> test
+| # | Handling | Test |
+|---|---|---|
+| 1 app within ~3 s offline | 2 s timer renders stored session / signed-out | "shows the stored session after the timeout while INITIAL_SESSION is still pending"; "shows the signed-out state after the timeout when nothing is stored" |
+| 2 data screens normal offline | optimistic session not used for requests; screens untouched | device: Home "Couldn't load movies" + Retry and Profile "Couldn't load your profile" + Retry after the 30 s window |
+| 3 refused refresh -> sign-in | SIGNED_OUT or empty-storage INITIAL_SESSION sets null | "ends signed out when the refresh is refused after the optimistic render"; "...null INITIAL_SESSION follows a refused refresh (storage emptied)" |
+| 2b network failure keeps user in | null INITIAL_SESSION re-reads storage | "stays signed in when a null INITIAL_SESSION follows a network-failed refresh"; "keeps the stored session on a null INITIAL_SESSION even with no earlier timeout" |
+| 4 latch / ordering | `clearedRef` checked before applying the read; the 9 existing tests untouched | "does not apply the stored session after clearSession"; existing latch tests pass |
+| races | event counter | "does not touch storage once an auth event has already arrived"; "drops a slow storage read when a newer auth event arrived meanwhile" |
+| storage read | `readStoredSession` | LargeSecureStore-test: returns session; null for absent / bad JSON / missing fields |
+
+Revert check: with AuthProvider reverted, 5 of the 9 new AuthProvider tests fail. The other 4 are
+guard tests; each was proven by mutation (removing the event-counter check, the latch check, or the
+timer clear makes exactly its guard test fail).
+
+## Gates
+- `npx tsc --noEmit` app 0 errors, `-p supabase/functions/tsconfig.json` 0 errors; `npx expo lint` clean.
+- `npx jest` twice: 36 suites, 349 tests passed both runs (was 338; +11); 0 `act(` and 0 console
+  warn/error in either output; out files deleted.
+
+## On device (td_emu, rebooted first; own Metro, stopped, port 8081 free; Justin's account, no sign-out)
+Expired token forced by setting the emulator clock +3.5 h (`adb root`, `auto_time 0`, wifi+data off).
+Confirmed real: auth-js logged `AuthRetryableFetchError ... UnknownHostException` ~31 s after JS start.
+Times are from `am start`. The emulator is slow, so dev-client launch + bundle load add ~17-26 s before
+"Running main" in every run; the useful number is the delta after JS start.
+
+| Run | "Running main" | App content first seen | Delta after JS start |
+|---|---|---|---|
+| Before fix, offline + expired | +20.4 s | +52.5 s (blank until then, before-blank.png) | ~32 s |
+| After fix, offline + expired | +17.5 s | +24.9 s (fix-offline-start.png) | ~7.4 s |
+| After fix, online + fresh token (harness baseline) | +26.7 s | +36.5 s | ~9.8 s |
+
+The offline start now lands in the same range as an online start in this harness (the 2 s timer is
+inside the noise). After the 30 s window the user was still signed in (after-30s-home-error.png), Home
+showed "Couldn't load movies" + Retry, and Profile showed "Couldn't load your profile" + Retry
+(offline-profile.png). Not tested on device: a refused refresh (needs a revoked token); covered by unit
+tests only. Clock restored (auto_time on, host time), wifi/data re-enabled, nothing written to /sdcard.
+Evidence: logs/evidence/fix-offline-startup/.
+
+## Follow-up (not done, outside this fix)
+Data requests made in the first 30 s offline still wait on auth-js start-up before failing, so Home
+shows its skeleton ~30 s before the error + Retry. Fixing that needs an auth-js change or moving the
+movie calls off the client's auth wait; raise with the Manager if it matters.
+
+## Concepts learned
+Optimistic UI + reconcile; a library's ready signal can be gated on retries you don't control; read the
+persisted store directly when the library's own accessor is gated on that same signal; guarding async
+reads with a monotonically increasing event counter; faking device time to expire a token.

@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import * as aesjs from "aes-js";
 import { createClient } from "@supabase/supabase-js";
+import type { Session } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 import { Sentry } from "./sentry";
 
@@ -78,15 +79,33 @@ class LargeSecureStore {
   }
 }
 
+const authStorage = new LargeSecureStore();
+// supabase-js's own default key, spelled out so the stored session can be read without the client.
+const storageKey = `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
+
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: new LargeSecureStore(),
+    storage: authStorage,
+    storageKey,
     persistSession: true,
     autoRefreshToken: true,
     // No browser URL to parse a session out of on native.
     detectSessionInUrl: false,
   },
 });
+
+// Reads the persisted session straight from storage without waiting for auth-js start-up;
+// null when none is stored or it is malformed. Never rejects (the adapter never does).
+export async function readStoredSession(): Promise<Session | null> {
+  const raw = await authStorage.getItem(storageKey);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed?.access_token && parsed?.refresh_token && parsed?.user ? (parsed as Session) : null;
+  } catch {
+    return null;
+  }
+}
 
 // `autoRefreshToken` only refreshes while something is polling for it;
 // Supabase's guidance is to drive that polling from app foreground state on
