@@ -45,7 +45,9 @@ health() {
   if ! pgrep -f qemu-system >/dev/null 2>&1 && ! powershell.exe -NoProfile -Command "if (Get-Process qemu-system* -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }" >/dev/null 2>&1; then
     echo "health: emulator not running"; return 1; fi
   fix_adb || { echo "health: adb unreachable"; return 1; }
-  UP=$(timeout 10 "$A" shell cat /proc/uptime | cut -d. -f1); UPM=$(( ${UP:-0} / 60 ))
+  # Age of the emulator process on Windows. The guest's /proc/uptime survives quick-boot
+  # snapshots, so it never resets on restart and would force a restart every time.
+  UPM=$(powershell.exe -NoProfile -Command "[int]((Get-Date) - (Get-Process qemu-system* | Select-Object -First 1).StartTime).TotalMinutes" | tr -d '\r')
   L=$(load1); J=$(jank90)
   echo "health: uptime ${UPM} min, load $L, launcher 90th ${J:-?} ms"
   [ -n "$J" ] && [ "$J" -le "$JANK90_MAX_MS" ] && [ "$UPM" -le "$UPTIME_MAX_MIN" ] && [ "${L%.*}" -lt 6 ]

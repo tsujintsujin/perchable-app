@@ -87,4 +87,4 @@ The CLI needs `SUPABASE_ACCESS_TOKEN` (from `Credentials/perchable/.env`).
 both contain a line starting "Approved by Justin:" — which only Justin types.
 
 ## Current Build
-Fix: offline cold start (logs/fix-offline-startup.md), then Build 13 — movie details (Module 4, branch `module/movie-browse`). 12a, 12b done. Order changed 2026-10-01: movies (12–16) before Build 11; 10a + 10b done. Modules: 1, 2 done; 3 partly (11 moved before 20). **Start with HANDOFF.md.**
+Build 13 — movie details (Module 4, branch `module/movie-browse`). 12a, 12b and the offline-start fix done. Order changed 2026-10-01: movies (12–16) before Build 11; 10a + 10b done. Modules: 1, 2 done; 3 partly (11 moved before 20). **Start with HANDOFF.md.**

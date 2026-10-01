@@ -1,4 +1,4 @@
-# HANDOFF — Perchable Manager session (updated 2026-10-01, evening)
+# HANDOFF — Perchable Manager session (updated 2026-10-02, early morning)
 
 Read this, then TIMELINE.md (last ~25 lines), then `logs/LESSONS.md`.
 Branch: **`module/movie-browse`** (pushed; PR to main at the Module 4 milestone).
@@ -10,15 +10,17 @@ Branch: **`module/movie-browse`** (pushed; PR to main at the Module 4 milestone)
   him, park anything that needs him and work on something else.
 - **Build 12a DONE** (Home poster grid; tmdb Edge Function **v3 deployed**).
 - **Build 12b DONE** (infinite scroll + pull-to-refresh).
-- **Fix: offline cold start** (`logs/fix-offline-startup.md`) — 0ed5adb + Bug 1 f8a51fc
-  (request auth-wait bounded by 8 s via `src/lib/requestTimeout.ts`). Ruby PASS, Queenie PASS.
-  **Bug 2 in progress (Bella):** don't report `RequestTimeoutError` to Sentry in edit.tsx /
-  useAvatarUpload; parameterised test for the 8 untested `authReady()` gates.
-  Then: Manager gates + online spot re-run on td_emu → close the fix.
+- **Fix: offline cold start DONE (2026-10-02)** (`logs/fix-offline-startup.md`, last commit
+  16b0184 + Manager close). Requests bounded by 8 s via `src/lib/requestTimeout.ts`; home-test
+  flake fixed at the cause (React Query notifications through act).
+- **Watch item:** one native SIGSEGV (Fabric `MountingCoordinator::pullTransaction`) on the
+  first app launch right after an emulator restart; relaunch fine, not reproduced. If it
+  recurs, capture the full tombstone (`adb logcat -d`, F DEBUG lines).
 - **Next: Build 13 — movie details** (PLAN.md Module 4 "Build 13", DESIGN.md "Build 13",
-  boards rendered in `logs/evidence/build-12a/design/build-13-*.png`). Server work: new
-  `details` endpoint in `supabase/functions/_shared/tmdb.ts` (own commit; Ruby reviews; the
-  Manager deploys + curls; never Bella). Manager writes the failure-mode list first.
+  boards rendered in `logs/evidence/build-12a/design/build-13-*.png`). Failure-mode list is
+  already in `logs/build-13-movie-details.md` (a0f508d). First step: record the base SHA there,
+  then brief Bella. Server work: new `details` endpoint in `supabase/functions/_shared/tmdb.ts`
+  (own commit; Ruby reviews; the Manager deploys + curls; never Bella).
 - Then Builds 14–16 (swipe deck → swipe-right adds to collection = first "add movie").
 
 ## Emulator — read CLAUDE.md "Emulator setup + health" first

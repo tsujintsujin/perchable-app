@@ -284,3 +284,20 @@ Proof: home-test alone with the 12-process load, before 3 failed of 14 runs, aft
 `npx jest --maxWorkers=50%` with `npx tsc --noEmit` running alongside, 5 runs: 37 suites, 373 tests passed,
 0 failures, 0 act(, 0 console warn/error in all 5. (One earlier run with heavier load hit unrelated 5 s timeouts
 in other suites' cold first render; that is CPU saturation, not this flake, and did not recur.)
+
+## Manager close (2026-10-02)
+- Rejected d8d9045 (act environment switched off for the file: it would hide a real update outside act);
+  accepted 16b0184 (notifications routed through act, guard kept on).
+- Gates rerun by the Manager: tsc app + functions 0 errors; lint clean; `npx jest --maxWorkers=50%` twice:
+  373/373, 0 `act(`, 0 console warn/error.
+- Online spot re-run, td_emu (`scripts/emulator.sh ensure` first; Justin's account, no sign-out):
+  Home shows Popular posters (`logs/evidence/fix-offline-startup/mgr-online-01-home.png`); Profile shows
+  avatar, name, @tsujintsujin, "0 movies watched" (`mgr-online-02-profile.png`). PASS.
+- **Observed once, not reproduced:** the first launch after the emulator restart died with a native
+  SIGSEGV in `libreactnative.so` `MountingCoordinator::pullTransaction` (Fabric commit, JS thread, 1.4 s after
+  "Running main"). The immediate relaunch ran fine. It is a framework frame, not app code; nothing in this fix
+  touches native code. Watch item: if it recurs, capture the full tombstone and check RN 0.86.3 issues.
+- emulator.sh fix found during this run: the guest's `/proc/uptime` is restored from the quick-boot snapshot, so
+  "uptime" never reset and `ensure` restarted every time. Uptime now comes from the Windows qemu process start
+  time.
+- **Fix CLOSED.**

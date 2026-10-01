@@ -112,3 +112,9 @@ Handle each one up front; say in the Build log how (or "n/a").
   unhealthy, then wait to settle). Cap jest (`--maxWorkers=50%`) and never overlap a QA run with
   a full jest suite or Gradle build. (2026-10-01, Justin: "deal with that issue that's been
   recurring")
+- A flaky test is fixed at its cause, never by switching off the check that fails. "Not wrapped in
+  act" from React Query = its notifyManager timer firing outside act on a loaded machine: route
+  notifications through act (`notifyManager.setNotifyFunction`), keep `IS_REACT_ACT_ENVIRONMENT`
+  on. Prove a flake fix under load (busy processes alongside), not on an idle machine. (2026-10-02)
+- On a quick-boot emulator the guest `/proc/uptime` comes back from the snapshot — measure
+  emulator age from the host process, not from inside Android. (2026-10-02)
