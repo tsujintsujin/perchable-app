@@ -5,7 +5,9 @@ import { useFonts } from "expo-font";
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from "@expo-google-fonts/inter";
 import { Poppins_700Bold, Poppins_800ExtraBold } from "@expo-google-fonts/poppins";
 import { GoogleSans_500Medium } from "@expo-google-fonts/google-sans";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { initSentry } from "@/lib/sentry";
+import { queryClient } from "@/lib/queryClient";
 import { AuthProvider, useAuthSession } from "@/modules/auth";
 
 // Runs once at module load, before the first screen renders.
@@ -13,13 +15,15 @@ initSentry();
 
 SplashScreen.preventAutoHideAsync();
 
-// Wraps the app in the single shared auth listener before anything below
-// (including the route guard, which needs it) can read the session.
+// Wraps the app in the one query client and the single shared auth listener
+// before anything below (including the route guard, which needs it) renders.
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <RootNavigator />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

@@ -42,6 +42,8 @@ export const colors = {
   overlay: {
     spinnerTrack: "rgba(255,255,255,0.3)",
     scrim: "rgba(18,16,22,0.6)",
+    /** Wash over a loading poster tile. */
+    shimmerWash: "rgba(214,196,233,0.10)",
   },
 } as const;
 
@@ -82,6 +84,7 @@ export const spacing = {
   8: 8,
   10: 10,
   12: 12,
+  14: 14,
   16: 16,
   20: 20,
   24: 24,
@@ -134,6 +137,15 @@ export const size = {
   detailsInput: 96,
   /** Sheets never grow taller than this share of the screen; the body scrolls instead. */
   sheetMaxHeightRatio: 0.9,
+  /** Poster width over height; every poster is 2:3. */
+  posterAspect: 2 / 3,
+  /** Home poster grid: column count and the gap between tiles (sides use `spacing[20]`). */
+  gridColumns: 3,
+  gridGap: 10,
+  /** Home header: the avatar slot's right edge, from the screen edge (clear of the dev-client gear zone). */
+  homeHeaderInset: 72,
+  /** Touch wrapper around the 32 Home avatar. */
+  avatarSlot: 48,
 } as const;
 
 /** Extra touch area that grows an icon button to the minimum touch target. */
@@ -182,6 +194,18 @@ export const letterSpacing = {
 /** Line-height multipliers, applied to a type token's fontSize. */
 export const leading = {
   relaxed: 1.5,
+} as const;
+
+/** Explicit line heights for the type roles that need one. */
+export const lineHeight = {
+  caption: 16,
+  subhead: 24,
+  title: 30,
+} as const;
+
+/** Animation durations (ms). */
+export const motion = {
+  imageFade: 200,
 } as const;
 
 export const elevation = {

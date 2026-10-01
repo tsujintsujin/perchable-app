@@ -16,6 +16,8 @@ type Props = {
   loadingLabel?: string;
   /** Screen-reader name when it should say more than the visible label. Defaults to `label`. */
   accessibilityLabel?: string;
+  /** Extra spoken context for a control whose result is not obvious from its label. */
+  accessibilityHint?: string;
   style?: object;
 };
 
@@ -28,6 +30,7 @@ export function Button({
   loading = false,
   loadingLabel = label,
   accessibilityLabel = label,
+  accessibilityHint,
   style,
 }: Props) {
   const [spin] = useState(() => new Animated.Value(0));
@@ -48,6 +51,7 @@ export function Button({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: isDisabled }}
       onPress={onPress}
       disabled={isDisabled}
