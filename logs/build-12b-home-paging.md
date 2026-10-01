@@ -127,6 +127,104 @@ New tests: `popularPaging-test` (21), `homePaging-test` (6), `toastOffset-test` 
 
 ---
 
+# QA — Queenie (Phase 3, 2026-10-01)
+
+HEAD c8f80e1 (later commits touch logs only). td_emu restarted first (adb was hung; killed adb + qemu, relaunched, waited for loadavg < 3),
+720x1600 @ 280 dpi = 1.75 px/dp, signed in as Justin's main account (no sign-out, delete or Google sign-in). Own Metro (stopped, port 8081 free,
+`adb reverse --remove-all` done). Evidence: `logs/evidence/build-12b/qa-*`. Nothing written to /sdcard.
+Counts come from uiautomator dumps after each 900 px swipe (FlashList keeps only visible rows, so "labels" = distinct poster
+content-descriptions seen over a walk; `qa-*-labels.txt`).
+
+## Result table
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Infinite scroll | PASS | `qa-01-loading-more.png` ("Loading more…", gold 20 dp ring, verbatim); `qa-01-dup-check.txt` (99 distinct labels over 10 steps, 0 repeats; an earlier 12-step walk reached 117, 0 repeats) |
+| 2 | Smoothness | PASS (numbers below) | gfxinfo, no screenshot |
+| 3 | Next-page failure | PASS (+ Bug 2, minor) | `qa-03a`, `qa-03b-*`, `qa-03c-*` |
+| 4 | Pull-to-refresh | **FAIL (Bug 1)** | `qa-04-pull-spinner.png`, `qa-bug1-*` |
+| 5 | Refresh failure | PASS | `qa-05d-*` |
+| 6 | Toast position | PASS | `qa-06-toast-home.png`, `qa-06-toast-settings.png` |
+| 7 | End of list | UNTESTABLE on device (page 500); Jest covers | none |
+| 8 | Regression | PASS, with observations below | `qa-08-*` |
+| 9 | Logcat / ANR | `am_anr` = 0; red lines listed below | none |
+
+## Item 2 — jank (fresh restart, dev build on td_emu; `gfxinfo reset`, then 20 swipes in 11.7 s while pages loaded)
+Total frames 677. **Janky frames 12 (1.77 %)**. 50th pct 25 ms, 90th 31 ms, 95th 32 ms, 99th 40 ms. Missed Vsync 1, slow UI thread 4,
+slow bitmap uploads 0. GPU 50th/90th/95th 18/21/23 ms (GPU 99th 4950 ms is one outlier frame). "Janky (legacy)" 84.79 % uses the old
+16.6 ms budget; the emulator's frames sit at 22-30 ms, so that figure describes the emulator, not the list.
+
+## Item 3 — next-page failure (offline = wifi + data off, after about 100 posters were loaded)
+- Footer: `⚠ Couldn't load more movies.` (red, centred) + `Retry` button, label "Retry loading more movies"; Retry bounds 84 px = **48 dp**.
+  Loaded posters stay (offline their images show the 🎬 + title fallback; they had not been loaded before the cut). `qa-03a-next-page-error.png`
+- Retry while offline: spinner row ("Loading more…"), then the same error again; no crash. `qa-03b-retry-spinner.png`, `qa-03b-after-retry.png`.
+  **No automatic retries:** after the tap, `gfxinfo reset` + 20 idle seconds = **0 frames rendered**; 9 dumps over 29 s show the same footer.
+- Network on + Retry: the page appends (Incredibles 2, 28 Days Later, The Lion King, ...). `qa-03c-retry-appended.png`
+- Posters whose image failed while offline stay on the 🎬 fallback after the network returns. Observation, not filed.
+
+## Item 4 — pull-to-refresh
+Spinner: gold ring on a dark disc over the Roulette card (`qa-04-pull-spinner.png`); page 1 comes back at the top (`qa-04-pull-spinner-b.png`).
+But the list is broken afterwards: Bug 1.
+
+## Item 5 — refresh failure (page 1 last loaded more than 5 min earlier, so the 5-min HTTP cache could not answer)
+Before: 90 distinct labels over 9 steps (`qa-05d-before-labels.txt`). Offline, one pull from the top: spinner (`qa-05d-spinner-offline.png`), then the Toast
+**"Couldn't refresh. Check your connection."** verbatim (`qa-05d-refresh-failed-toast.png`); list intact at the top; never an empty or error screen.
+After: 87 distinct labels over the same 9 steps (`qa-05d-after-labels.txt`; the difference is the start offset) and the list continues into the later pages.
+Note for Priya/Manager (B6 wording): an offline pull **within 5 min** of page 1's last load *succeeds from the HTTP cache*: no Toast, and the list is trimmed to page 1
+(my first three attempts hit this). That is the cache rule working; the trimmed list is then Bug 1.
+
+## Item 6 — Toast position (UI-dump bounds)
+Home, Roulette tap: toast [0,1301][720,1378]; tab bar top 1420, so **42 px = 24 dp** above the tab bar. `qa-06-toast-home.png`
+Settings, "Comments on my collection" (toast "Comment settings are coming soon."): [0,1302][720,1378], **42 px = 24 dp**. `qa-06-toast-settings.png`
+Both match the board (24 dp).
+
+## Item 8 — regression
+Roulette: button `Surprise me`, 84 px = 48 dp, full-strength gold; toast "Smart picks are coming soon."; poster labels "{title}, {year}" in every dump.
+Profile; Settings (TMDB attribution text and "Blocked users" row present); Blocked users (empty state "No blocked users"); Edit profile (opened, Cancel returns to Settings, nothing saved);
+Debug "FETCH POPULAR MOVIES" (5 titles + attribution); Debug harness "Report profile" (sheet opens, 7 reasons, Send report dimmed, no Toast; Cancel closes it, nothing submitted).
+`qa-08-profile / settings / blocked-users / edit-profile / after-cancel / debug / debug-fetch-popular / report-sheet.png`.
+Not re-verified on device: the 12a empty and error states (Observation 1) and the loading skeleton (not caught in 40 s of frames); Jest covers them.
+
+## Item 9 — logcat
+`am_anr`: 0 (events buffer cleared at the start, not again). Red lines from the app, exact text:
+- `E unknown:ReactHost: Unhandled SoftException` then `com.facebook.react.bridge.ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready` (once, at the first cold launch, 07:44:25).
+- `E ExpoImage: Failed to load resource` then `java.net.UnknownHostException(Unable to resolve host "image.tmdb.org": No address associated with hostname)`: 8 pairs while I was offline (my offline tests).
+- On screen: a blue banner **"Refreshing..."** across the top during one pull (`qa-04-pull-spinner.png`); Metro printed two `Android Bundled ...ms node_modules\expo-router\entry.js (1 module)` rebuilds although no file under `src/` had changed (mtimes checked).
+No red or yellow warning box on screen.
+
+## Bugs
+
+### Build 12b · Bug 1 — After a pull-to-refresh the list stops paging: page 1 only, no footer, never loads page 2 (blocks C5)
+Steps: open Home, scroll to page 3 or further, scroll back to the top, pull down once (network on; page 1 reloads). Scroll to the bottom.
+Expected: the ~17 posters of page 1 are followed by page 2 near the bottom (footer "Loading more…"), as before the pull.
+Actual: the list ends after the last page-1 poster (17 distinct labels, `qa-bug1-after-online-pull-labels.txt`); **no footer of any kind** (no spinner, error or end line), no request,
+nothing changes however often you scroll; leaving Home and coming back does not help. Only killing the app does. Reproduced 4 times. `qa-bug1-stall-bottom.png`, `qa-bug1-stall-after-refresh.png`, `qa-bug1-stall-no-footer.png`.
+My reading (Ruby/Bella to confirm in code): the footer is "none" exactly when `refreshing` is false, nothing is fetching, not stalled and `hasNextPage` is true, so the data layer thinks "idle, more to load" while
+`loadMore` never fires (FlashList's end-reached not re-firing after the data shrank, or a guard such as `refreshingRef` staying set). Jest cannot see this.
+The same state follows when an offline pull is answered by the HTTP cache (Item 5 note).
+
+### Build 12b · Bug 2 — After a failed Retry the Retry button sits under the tab bar (minor)
+Steps: offline at the end of the list, the error footer shows with Retry fully visible (`qa-03a-next-page-error.png`); tap Retry (still offline).
+Expected: the footer returns to the same place. Actual: it returns about 59 px lower and the Retry button is clipped by the tab bar (about 28 dp visible, `qa-03b-after-retry.png`); the user must scroll to reach it again.
+Likely cause (not verified): the spinner row is shorter than the error block, the scroll offset is clamped while it shows and not restored when the taller error block returns.
+
+## Observations (no verdict; for Ruby / Manager)
+1. Cold launch with the network OFF shows a **blank white screen with only the dev "Tools" button for 30+ s** (`qa-08-cold-launch-offline-blank.png`); it came up by itself when the network returned (`qa-08-cold-launch-offline-after-online.png`).
+   Even on a throttled network the first frames were white. So the first-page error state cannot be reached from a cold start on this build; probably start-up/session from an earlier Build, not 12b.
+2. FlashList showed a **fully blank list body** for a moment during a very fast fling (header and tab bar drawn, no Roulette card, no posters): `qa-04-pull-spinner-slownet.png`. Seen once; it filled in by itself.
+3. A poster in the real popular feed is a lingerie photo ("On the Beach, 1985"), shown unblurred on Home. The server's adult filter did not catch it. A content-policy question for Justin (Play Store rules), not a 12b code issue.
+4. "The Accountant²" reads "The Accountant�" in the uiautomator dump only; the screen renders it correctly.
+
+## Design check (board `build-12b-home-paging.png`)
+Loading footer: 56 dp row, 20 dp gold ring on a dim track, "Loading more…" caption in secondary colour, centred: matches panel 1.
+Error footer: ⚠ line in danger red, 8 dp gap, glass-secondary Retry 48 dp high: matches panel 3 (apart from Bug 2).
+Toast: 24 dp above the tab bar, dark elevated fill, hairline border, copy as panel 5: matches. Pull spinner: gold on the dark disc: matches panel 4.
+End-of-list footer: UNTESTABLE on device.
+
+## Verdict
+**FAIL (2 Bugs).** Bug 1 blocks C5 ("returns to the top, list stays usable"); Bug 2 is minor. Items 1, 2, 3, 5, 6 and the regression pass.
+
+---
+
 # Build 12b · Bug 1 — Bella (2026-10-01)
 
 Fixes Queenie's Bug 1 and Bug 2 and Ruby's findings (C5b, C5c, spinners, Toast comment, S3) plus Queenie's observation 5.
@@ -188,3 +286,47 @@ Emulator restarted first; own Metro stopped (port 8081 free); Justin's account n
 
 ## Out of scope touched
 `ui/Button/Button.tsx` and `app/(tabs)/profile/edit.tsx` (spinner migration, Ruby low), `ui/PosterCard` (observation 5), `ui/tokens.ts` (spinner and footer tokens), `ui/Toast/Toast.tsx` (comment).
+
+
+---
+
+# QA 2 — Queenie, re-test of Bug 1 / Bug 2 at 219a462 (2026-10-01)
+
+td_emu restarted first (adb was hung again: killed adb + qemu, relaunched, waited for loadavg < 3); events buffer cleared once at the start.
+Own Metro (stopped, port 8081 free, `adb reverse --remove-all`, wifi/data on, network speed/delay restored). Justin's main account, no sign-out, nothing saved, nothing on /sdcard.
+Evidence: `logs/evidence/build-12b/qa2-*`.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Bug 1: pull, then scroll, three cycles | **PASS.** Each cycle: 80+ posters loaded, scroll to top, pull (network on), walk 9 steps: 90 distinct labels, 0 repeats (was stuck at 17 with no footer before the fix). | `qa2-01-cycles.txt`, `qa2-01-paging-after-pull.png` |
+| 1b | Pull, leave Home (Profile tab), return, scroll | **PASS.** 90 distinct labels, 0 repeats; paging continues. | `qa2-01-cycles.txt` (leave-return), `qa2-01-after-leave-return.png` |
+| 2 | Bug 2: offline error footer, Retry offline (fails), Retry position | **PASS.** Retry bounds [281,1311][439,1395] before and after the failed Retry (identical, 84 px = 48 dp), bottom 25 px above the tab bar top (1420). Error footer text and Retry verbatim. | `qa2-02-error-footer.png`, `qa2-02-after-failed-retry.png` |
+| 2b | Network on, Retry | **PASS.** Next page appends (new row at y=1256). | `qa2-02-retry-appended.png` |
+| 3 | Footer heights, nothing clipped | **PASS.** Error block and loading block both [26,1255][694,1409] = 154 px = **88 dp**; both end 11 px above the tab bar (1420), nothing clipped. Loading block caught while retrying on a slowed network; no jump between loading and error (Retry stays put). End line (56 dp): **UNTESTABLE on device** (page 500), Jest covers. | `qa2-03-retry-loading-block.png`, dumps as above |
+| 4 | Failed posters retry on pull | **PASS.** Cleared the app's image caches (`run-as … rm cache/image_manager_disk_cache/*`, cache only), went offline, scrolled away and back: page-1 tiles showed the 🎬 fallback (The Odyssey, The End of Oak Street, The Love Hypothesis, The Fix, After Impact, The Mongoose). Network on, one pull: every one of those tiles shows its poster. | `qa2-04-failed-tiles-offline.png`, `qa2-04-after-pull-online.png` |
+| 5a | Edit profile: type in usertag, Cancel, no save | **PASS.** Typed "zz" (field read `tsujintsujinzz`), Cancel returned to Settings, then Profile still shows `@tsujintsujin`. Save spinner: **UNTESTABLE without saving** (it only shows on Save; not done). | `qa2-05-edit-usertag-typed.png`, `qa2-05-profile-after-cancel.png` |
+| 5b | Roulette toast | **PASS.** "Smart picks are coming soon." | `qa2-05-roulette-toast.png` |
+| 5c | Settings | **PASS.** Rows, TMDB attribution, Blocked users, Delete, version all present. | `qa2-05-settings.png` |
+| 6 | `am_anr` | **0** | none |
+
+Logcat red lines from the app, exact text: the same one-off at the first cold launch,
+`E unknown:ReactHost: Unhandled SoftException` / `ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready` (09:03:54);
+`ExpoImage … UnknownHostException image.tmdb.org` lines from my offline steps. No red or yellow box on screen.
+Setup note: my first launch hit "There was a problem loading the project … java.io.IOException: unexpected end of stream on http://localhost:8…" because Metro was still starting; Reload after Metro was up fixed it (my timing, not the app).
+
+## Verdict
+**PASS.** Bug 1 and Bug 2 are fixed on device; the 88 dp footers do not clip; the failed-poster retry works. Untestable: end-line 56 dp (page 500) and the Edit profile Save spinner (needs a real save).
+
+## Build 12b — CLOSED (Manager, 2026-10-01)
+- Commits: c8f80e1 build · 219a462 Bug 1 (re-arm end-reached after refresh; steady 88dp footer;
+  C5b/C5c revert-tested; spinner migration; PosterCard retryToken) · DESIGN b9e7b1e (Dianne).
+- Gates (Manager rerun at 219a462): tsc app + functions, lint, jest 338/338 ×2, 0 warnings.
+- QA: Queenie QA FAIL (2 bugs) → QA 2 PASS (3 pull→scroll cycles, leave/return, Retry position,
+  failed posters reload after a pull, regression, 0 ANRs).
+- Review: Ruby FIX NEEDED → PASS (3 low notes: footer lineHeight override, one eslint-disable with
+  a reason, DESIGN 88dp — landed in b9e7b1e).
+- Manager spot re-run: 111 distinct posters before the pull, 144 after scrolling post-refresh,
+  0 duplicates on screen, 0 ANRs (`manager-spot-after-refresh.png`).
+- UNTESTABLE → Justin: end-of-list line (page 500); Save spinner in Edit profile (needs a real save).
+- NEEDS JUSTIN (content policy): suggestive but non-adult-flagged posters appear in TMDB Popular
+  (seen twice). Default: no extra filtering until he decides.

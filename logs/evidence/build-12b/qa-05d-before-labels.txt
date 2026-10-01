@@ -1,0 +1,10 @@
+01 15 total 15
+02 15 total 24
+03 15 total 33
+04 12 total 42
+05 12 total 51
+06 12 total 60
+07 12 total 69
+08 12 total 78
+09 15 total 90
+unique 90 dups [] footer set()
