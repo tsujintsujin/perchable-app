@@ -10,6 +10,7 @@ import { Spinner } from "@/ui/Spinner";
 import { colors, iconSize, radius, size, spacing, type } from "@/ui/tokens";
 import { updateProfile, useAvatarUpload, useOwnProfile, useUsertagAvailability } from "@/modules/profile";
 import { Sentry } from "@/lib/sentry";
+import { RequestTimeoutError } from "@/lib/requestTimeout";
 
 /** Edit profile screen — a picked photo saves on pick, independent of Save. */
 export default function EditProfile() {
@@ -68,7 +69,8 @@ export default function EditProfile() {
         // The live check missed a race — DB is the source of truth.
         setSaveError("That usertag is already taken.");
       } else {
-        Sentry.captureException(err);
+        // A timeout waiting for auth is expected offline, so only other failures are reported.
+        if (!(err instanceof RequestTimeoutError)) Sentry.captureException(err);
         setSaveError("Couldn't save. Check your connection and try again.");
       }
       setSaving(false);

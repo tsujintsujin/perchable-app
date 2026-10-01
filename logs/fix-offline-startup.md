@@ -235,3 +235,28 @@ Before this fix the same screens took ~30 s (Home) and 1.5-2.5 min (Profile) (Qu
 `bug1-home-error-fast.png`, `bug1-home-retry-error.png`. Clock restored (`auto_time 1`, host UTC), wifi/data on.
 Not re-run this round: jest was not run during the device step (new rule); the gate runs above preceded it
 and used the default worker count (the `--maxWorkers=50%` rule arrived after).
+
+# Bug 2 — Sentry noise on timeout + gate tests (Bella, 2026-10-01)
+
+## 1. Sentry noise
+Cause: `edit.tsx` (usertag save) and `useAvatarUpload` reported every failure, so the expected
+`RequestTimeoutError` (offline / slow auth, nothing sent) from `updateProfile`/`uploadAvatar` went to Sentry.
+Fix: both catch blocks skip `RequestTimeoutError` and still report anything else, the same rule
+`useDeleteAccount` applies to its offline error. The user-facing error state is unchanged.
+The usertag save flow lives in the route file; moving it into a module hook would be a refactor beyond this
+Bug, so the guard went in where the catch already is (flagged for a later cleanup).
+Tests: `edit-profile-test` and `useAvatarUpload-test` each get a 2-case table (timeout: 0 reports,
+other error: 1 report); both mock `@/lib/supabase` so the real error class can be imported.
+
+## 2. Gate tests
+`requestTimeout-test.ts`: one parameterised test, "stuck getSession rejects with the timeout error and no
+request is sent", for `deleteAccount` (asserts `DeleteAccountOfflineError`), `blockUser`, `unblockUser`,
+`getBlockedUsers`, `reportContent`, `checkUsertagAvailable`, `updateProfile`, `uploadAvatar`. Each asserts the
+rejection class and that `functions.invoke`, `from` and `storage.from` were never called.
+Spot-checks (gate or guard removed, then restored): `uploadAvatar` gate, `blockUser` gate, the avatar-hook
+guard, the edit-route guard each made their test fail.
+
+## Gates
+tsc app + functions 0 errors; lint clean; `npx jest --maxWorkers=50%` twice: 37 suites, 373 tests (was 361,
++12: 8 gate cases + 4 Sentry cases), 0 `act(`, 0 console warn/error; out files deleted.
+Out of scope touched: none. (`HANDOFF.md` has an unrelated working-tree change, left unstaged.)

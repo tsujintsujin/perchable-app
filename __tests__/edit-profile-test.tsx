@@ -23,6 +23,7 @@ jest.mock("@/modules/profile", () => ({
 }));
 
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: jest.fn() } }));
+jest.mock("@/lib/supabase", () => ({ supabase: {} }));
 
 // Build 7 · Bug 1: the real `router.back()` reads expo-router's global
 // navigation store, which only gets initialized by a real Stack/root
@@ -39,6 +40,8 @@ jest.mock("expo-router", () => ({
 }));
 
 import EditProfile from "@/app/(tabs)/profile/edit";
+import { Sentry } from "@/lib/sentry";
+import { RequestTimeoutError } from "@/lib/requestTimeout";
 
 const PROFILE = {
   id: "u1",
@@ -58,6 +61,7 @@ describe("Edit profile screen", () => {
     mockUseUsertagAvailability.mockReturnValue({ status: "unchanged" });
     mockUpdateProfile.mockReset().mockResolvedValue(undefined);
     mockRouterBack.mockReset();
+    (Sentry.captureException as jest.Mock).mockClear();
     mockParams = {};
     mockPickAndUpload.mockReset();
     mockCancel.mockReset();
@@ -124,6 +128,24 @@ describe("Edit profile screen", () => {
     });
 
     expect(mockUpdateProfile).toHaveBeenCalledWith("u1", { usertag: "cineowl" });
+  });
+
+  // Expected offline timeout shows the save error but is not reported; any other failure is.
+  it.each([
+    ["a RequestTimeoutError", new RequestTimeoutError(), 0],
+    ["another error", new Error("boom"), 1],
+  ])("on %s from updateProfile, reports to Sentry %i time(s)", async (_label, error, reports) => {
+    mockUseUsertagAvailability.mockReturnValue({ status: "available" });
+    mockUpdateProfile.mockRejectedValue(error);
+    await render(<EditProfile />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "Save" }));
+      await flushMicrotasks();
+    });
+
+    expect(screen.getByText("Couldn't save. Check your connection and try again.")).toBeTruthy();
+    expect(Sentry.captureException).toHaveBeenCalledTimes(reports);
   });
 
   // Photo pick/upload/cleanup logic itself is covered by

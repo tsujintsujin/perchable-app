@@ -21,8 +21,11 @@ jest.mock("@/modules/profile/api/deleteAvatarObject", () => ({
   deleteAvatarObject: (...args: unknown[]) => mockDeleteAvatarObject(...args),
 }));
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: jest.fn() } }));
+jest.mock("@/lib/supabase", () => ({ supabase: {} }));
 
 import { useAvatarUpload } from "@/modules/profile/hooks/useAvatarUpload";
+import { Sentry } from "@/lib/sentry";
+import { RequestTimeoutError } from "@/lib/requestTimeout";
 
 /** Renders the hook's state as plain text and exposes its actions as
  * buttons — no hook-testing library is set up in this project, so a tiny
@@ -53,6 +56,24 @@ describe("useAvatarUpload", () => {
     mockUploadAvatar.mockReset();
     mockUpdateProfile.mockReset().mockResolvedValue(undefined);
     mockDeleteAvatarObject.mockReset().mockResolvedValue(undefined);
+    (Sentry.captureException as jest.Mock).mockClear();
+  });
+
+  // Expected offline timeout shows the error state but is not reported; any other failure is.
+  it.each([
+    ["a RequestTimeoutError", new RequestTimeoutError(), 0],
+    ["another error", new Error("boom"), 1],
+  ])("on %s from the upload, reports to Sentry %i time(s)", async (_label, error, reports) => {
+    mockPickAvatar.mockResolvedValue({ uri: "file:///fake.jpg" });
+    mockUploadAvatar.mockRejectedValue(error);
+    await render(<Harness initialAvatarUrl={null} />);
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole("button", { name: "pick" }));
+    });
+
+    await waitFor(() => expect(screen.getByTestId("state").props.children).toContain('"error"'));
+    expect(Sentry.captureException).toHaveBeenCalledTimes(reports);
   });
 
   it("shows an error state when the upload fails", async () => {

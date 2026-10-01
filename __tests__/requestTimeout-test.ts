@@ -1,11 +1,13 @@
 const mockGetSession = jest.fn();
 const mockInvoke = jest.fn();
 const mockFrom = jest.fn();
+const mockStorageFrom = jest.fn();
 jest.mock("@/lib/supabase", () => ({
   supabase: {
     auth: { getSession: () => mockGetSession() },
     functions: { invoke: (...args: unknown[]) => mockInvoke(...args) },
     from: (...args: unknown[]) => mockFrom(...args),
+    storage: { from: (...args: unknown[]) => mockStorageFrom(...args) },
   },
 }));
 const mockCapture = jest.fn();
@@ -16,6 +18,13 @@ import { createQueryClient } from "@/lib/queryClient";
 import { getPopularMovies } from "@/modules/movies/api/getPopularMovies";
 import { MovieApiError } from "@/modules/movies/api/MovieApiError";
 import { getOwnProfile } from "@/modules/profile/api/getOwnProfile";
+import { DeleteAccountOfflineError, deleteAccount } from "@/modules/auth/api/deleteAccount";
+import { blockUser, unblockUser } from "@/modules/moderation/api/blockUser";
+import { getBlockedUsers } from "@/modules/moderation/api/getBlockedUsers";
+import { reportContent } from "@/modules/moderation/api/reportContent";
+import { checkUsertagAvailable } from "@/modules/profile/api/checkUsertagAvailable";
+import { updateProfile } from "@/modules/profile/api/updateProfile";
+import { uploadAvatar } from "@/modules/profile/api/uploadAvatar";
 
 /** A getSession that never settles, like auth-js stuck in its offline refresh retry. */
 const stuck = () => new Promise(() => {});
@@ -26,6 +35,7 @@ describe("auth wait is bounded by the request timeout", () => {
     mockGetSession.mockReset().mockImplementation(stuck);
     mockInvoke.mockReset();
     mockFrom.mockReset();
+    mockStorageFrom.mockReset();
     mockCapture.mockReset();
   });
   afterEach(() => jest.useRealTimers());
@@ -74,5 +84,30 @@ describe("auth wait is bounded by the request timeout", () => {
     await jest.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS);
     expect(await result).toBeInstanceOf(RequestTimeoutError);
     expect(mockFrom).not.toHaveBeenCalled();
+  });
+
+  // Every gated API function, called with auth stuck: the timeout error, and no request sent.
+  it.each<[string, () => Promise<unknown>, new () => Error]>([
+    ["deleteAccount", () => deleteAccount(), DeleteAccountOfflineError],
+    ["blockUser", () => blockUser("u1", "u2"), RequestTimeoutError],
+    ["unblockUser", () => unblockUser("u1", "u2"), RequestTimeoutError],
+    ["getBlockedUsers", () => getBlockedUsers("u1"), RequestTimeoutError],
+    [
+      "reportContent",
+      () => reportContent({ type: "profile", id: "u2", ownerId: "u2" }, "spam", null),
+      RequestTimeoutError,
+    ],
+    ["checkUsertagAvailable", () => checkUsertagAvailable("cineowl", "u1"), RequestTimeoutError],
+    ["updateProfile", () => updateProfile("u1", { usertag: "cineowl" }), RequestTimeoutError],
+    ["uploadAvatar", () => uploadAvatar("u1", "file:///a.jpg"), RequestTimeoutError],
+  ])("%s: stuck getSession rejects with the timeout error and no request is sent", async (_name, call, ErrorClass) => {
+    // uploadAvatar reads the local file before the gate; that read is not a server request.
+    globalThis.fetch = jest.fn().mockResolvedValue({ arrayBuffer: async () => new ArrayBuffer(0) });
+    const result = call().catch((e) => e);
+    await jest.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS);
+    expect(await result).toBeInstanceOf(ErrorClass);
+    expect(mockInvoke).not.toHaveBeenCalled();
+    expect(mockFrom).not.toHaveBeenCalled();
+    expect(mockStorageFrom).not.toHaveBeenCalled();
   });
 });
