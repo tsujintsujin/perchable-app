@@ -693,9 +693,31 @@ Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
   reaches TMDB, error bodies never echo the key, the request URL, or TMDB
   internals, network errors redacted in logs (Build 3 Bug 1 pattern). No
   `search` endpoint yet (Build 17). New server code gets **its own commit and
-  its own log entry** (LESSONS). Because Deno and Docker are not available on
-  this PC (Build 3 log), the parameter validation and response shaping go in
-  a small file with no `Deno` globals so Jest can run it; the Manager deploys
+  its own log entry** (LESSONS). Deno and Docker are not available on this PC
+  (Build 3 log) and `tsconfig.json` excludes `supabase/functions`, so the
+  Deno file is neither type-checked nor run by any gate. **Decision: all
+  logic goes in a pure file, `supabase/functions/_shared/tmdb.ts`, with no
+  `Deno` globals** (Supabase's own shared-code folder, so the deploy bundles
+  it), **checked by a dedicated tsc target, `supabase/functions/tsconfig.json`**
+  (`include` only `_shared/`; new Phase 2 gate `npx tsc --noEmit -p
+  supabase/functions/tsconfig.json`) and by Jest tests that import it by
+  relative path. The pure file holds: parameter validation (`/^\d+$/` first,
+  then the range, for `id` and `page` — `Number()` alone accepts `1e2`, `0x10`
+  and padded spaces), the config check (missing key: 500, fixed message),
+  upstream-status mapping, response shaping, adult filtering and log
+  redaction. `index.ts` keeps only `Deno.serve`, `Deno.env.get`, `fetch`,
+  `console.error` and the CORS headers (about ten lines): **review-only** for
+  Ruby, exercised by the Manager's curl. **A broken TMDB key must not be
+  silent.** Today the proxy forwards TMDB's status, so a revoked key becomes
+  TMDB 401, then app 401: never retried, never reported. Mapping (a Jest case
+  each): TMDB 401/403 -> **502** `code: upstream_auth`; missing key -> 500
+  `code: misconfigured`; network failure -> 502 `code: upstream_network`; TMDB
+  404 -> 404; 429 -> 429; other TMDB 5xx or 4xx -> 502. Every error body is
+  `{ error, code }` with fixed text and never TMDB's `status_message` (this
+  replaces Build 3's pass-through). `popular` responses also carry
+  `Cache-Control: public, max-age=300` (rate-limit mitigation; the app's own
+  HTTP client does not cache it, so it only helps if something upstream
+  does). The Manager deploys
   with `npx supabase functions deploy tmdb --use-api --project-ref
   <ref>` (the only CLI action allowed on the live project besides secrets,
   app CLAUDE.md) and smoke-tests it live with curl as in Build 3, before QA.
@@ -714,17 +736,22 @@ Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
   Jest docs; Bella verifies). **Not added:** `@react-native-community/netinfo`
   and `expo-network` — both native, both would force a rebuild, and M5 solves
   the offline case without them.
+  The "JavaScript-only" claim is unverified until the packages are installed
+  (neither is in `package.json` yet): after installing, Bella checks that
+  neither package ships `android/` or `ios/` native source, and the
+  `expo install --check` guard stays in A7.
 - **M4 QueryClient: created once in `src/lib/queryClient.ts`, provided once
   in the root `src/app/_layout.tsx`** (outside `AuthProvider`, so every
-  screen and test shares it). Defaults: `staleTime` 5 min for the Popular
-  list and 30 min for details (movie data changes slowly; TMDB's own terms
+  screen and test shares it). Defaults: the Popular list has `staleTime` 5 min
+  **and `refetchOnMount: false`** (it is a session-long list; only a pull
+  refreshes it, 12b C6), details `staleTime` 30 min (movie data changes slowly; TMDB's own terms
   cap cached data at six months, RESEARCH.md §1, and nothing here is kept
   past app close); `gcTime` 30 min; `retry` and timeout per M5; no
   `refetchOnWindowFocus` wiring (an infinite query refetches every loaded
   page, and a browse list gains nothing from it; pull-to-refresh is the
   refresh). **No on-disk persistence of API data in v1** (see N4). Query keys
   for TMDB data are public and **not owner-tagged** (`["movies","popular"]`,
-  `["movies","details", id]`): they hold no user data, so sign-out does not
+  `["movies","details", id]` with `id` a **number**, parsed once from the route param): they hold no user data, so sign-out does not
   need to clear them. Any later query that mixes user state (watched flags,
   collection) must be owner-tagged as `useOwnProfile` is. Hooks live in
   `src/modules/movies/hooks/`; the `api/` folder stays the only Supabase
@@ -743,6 +770,24 @@ Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
   offline. The same constant is the rule for every later TMDB call. The
   existing Profile skeleton problem is a separate pre-existing bug; the
   Manager may apply the same constant there (not part of these Builds).
+  **What is proven where:** the first attempt aborts at 8 s and the error
+  state appears at about 17 s (two attempts plus the 1 s delay). Jest proves
+  the option is passed and the error mapping; the abort itself is
+  functions-js's (A2 gives the Manager's one-off proof).
+  **The retry rule needs the status, so the api layer throws a typed error.**
+  Today `getPopularMovies` throws `new Error(message)` and loses it. New
+  `MovieApiError` with `kind` = `timeout` | `network` | `http` | `shape`,
+  `status` (http only) and `code` (the proxy's `code`, read from the response
+  body, when there is one): `FunctionsHttpError` (status from
+  `error.context.status`) -> `http`; `FunctionsFetchError` (no status) ->
+  `network`, or `timeout` when it is an abort we did not request;
+  `FunctionsRelayError` -> `http` 502; a body that fails the validator ->
+  `shape`. Retry and Sentry decisions read only `kind`, `status` and `code`.
+  **Response validators** (`parsePopular`, `parseDetails`): `results` is an
+  array and every movie has a numeric `id` and a string `title` (details: a
+  `movie` object with the same, `cast` an array); anything else throws
+  `shape`. `getPopularMovies(page = 1, signal?)` stays call-compatible, so the
+  Build-3 debug button is unchanged.
 - **M6 Images.** `expo-image` everywhere (RESEARCH.md §5), `cachePolicy`
   `memory-disk`, `recyclingKey` inside FlashList, short fade-in. The URL base
   `https://image.tmdb.org/t/p/` and the sizes are **constants in
@@ -761,7 +806,11 @@ Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
   label "Back") and the Android hardware back both return to Home, which
   stays mounted, so the loaded pages and scroll position survive. A cold
   start from a deep link has no history: back then goes to Home
-  (`router.canGoBack()` false means `router.replace('/')`). **Deep link is
+  Without an anchor, Android hardware back on a cold deep link **exits the
+  app**, so the root `_layout.tsx` exports `unstable_settings = { anchor:
+  "(tabs)" }` (Bella confirms the exact name against the installed Expo
+  Router docs; the back chip's fallback is `router.canGoBack()` false ->
+  `router.replace('/')`). **Deep link is
   free** (the `perchable` scheme exists; Expo Router maps the route):
   `perchable://movie/<id>`. Signed out, the guard sends it to sign-in and the
   target is dropped after sign-in (accepted; preserving it is a later
@@ -775,11 +824,16 @@ Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
   page-level requirement; so **nothing extra is required on Home or the
   details screen** (Manager default; Rose can re-check the terms page if
   Justin wants it certain). The proxy still returns `attribution` in every
-  response (Build 3).
+  response (Build 3). **Open check (Rose, before ship):** RESEARCH.md §1
+  quotes "This app uses TMDB..." while DESIGN §6, Settings and the proxy use
+  "This application uses TMDB..."; Rose confirms TMDB's official wording and
+  the Manager corrects whichever is wrong. Nothing changes now.
 - **M9 Sentry (LESSONS: unexpected errors only, always the `environment`
   tag).** One place: the QueryClient's `QueryCache` `onError`. Reported:
-  proxy 500 (misconfiguration), a malformed response shape, anything
-  unexpected. **Not** reported: offline, timeout, any 4xx, 404 (a movie that
+  proxy 500 (`misconfigured`), **502 `upstream_auth` (a revoked or wrong
+  TMDB key; otherwise silent)**, a `shape` error, anything unexpected.
+  **Not** reported: offline, timeout, 502 `upstream_network` (a TMDB hiccup),
+  any 4xx, 404 (a movie that
   does not exist is data, not a bug), 429. Once per failed query, never per
   render or per retry. Never a user-typed value (none exist here).
 - **M10 Where code lives (DESIGN §4).** `src/modules/movies/`: `api/`
@@ -815,6 +869,13 @@ Home (`(tabs)/index.tsx`) is a placeholder shell with the avatar chip.
   may propose 2 columns with her mockup, and the Manager decides unless it
   changes the look Justin approved.
 
+- **N6 Deep link.** Default: `perchable://movie/<id>` works (free from the
+  existing scheme and the details route). Small addition beyond Vision Part
+  2; he can ask to drop it.
+- **N7 Adult titles hidden.** Default: the proxy drops `adult:true` results
+  and a details request for one answers 404 (Play Store content safety). A
+  small addition beyond Vision Part 2; he can ask to drop it.
+
 Dianne's Phase 0 settles (not Justin): grid gap and padding, the Roulette
 card's blur-or-flat choice (the real `BlurView` is allowed on this one static
 card only if it renders correctly in a FlashList header on the emulator,
@@ -834,34 +895,58 @@ Done means (checkable):
 
   A. Data layer (mostly invisible; proven by tests)
   A1. [Jest] `src/lib/queryClient.ts` exports one QueryClient with the M4
-      defaults; the root `_layout.tsx` provides it once; no screen creates
-      its own client.
-  A2. [Jest] Timeout: the proxy call sets `timeout: REQUEST_TIMEOUT_MS`
-      (8000) and passes the query's signal; a never-answering call (fake
-      timers) ends in the error state at the timeout, not later.
-  A3. [Jest] Retry: one retry for timeout, network failure and 5xx; zero for
-      400/404/429 (a test per class).
-  A4. [Jest] Sentry from the `QueryCache` only, per M9: a 500 and a bad
-      response shape are captured once with the `environment` tag; offline,
-      timeout and 4xx are not.
-  A5. [Jest] + [Mgr] Edge Function `popular` hardened: results with
-      `adult: true` removed; the three existing rejections still 400 (other
-      endpoint, bad page, page > 500) and a missing key still 500 without
-      naming it. [Mgr] after deploy, curl: `popular` 200 with 20 results and
-      the exact attribution; `endpoint=foo` 400; `page=abc` 400; no auth
-      header 401; the response body contains no `api_key`.
+      defaults (including `refetchOnMount: false` on the Popular list).
+      [Ruby] greps that the root `_layout.tsx` provides it once and no screen
+      creates its own client.
+  A2. [Jest] Timeout option: every proxy call sets `timeout:
+      REQUEST_TIMEOUT_MS` (8000) and passes the query's signal (a stub
+      `invoke` records the options). The abort itself is functions-js's, so
+      [Mgr] proves it once with a throwaway Node script (not committed) that
+      calls the real `supabase.functions.invoke` with a short timeout against
+      a local server that accepts the connection and never answers, and prints
+      the mapped error `kind: timeout`. The 8 s / ~17 s timing is read from
+      QA's offline run (B6), not asserted in Jest; fake timers over a stub
+      that never resolves would only test the stub.
+  A3. [Jest] Typed error and retry: the api layer throws `MovieApiError`
+      (M5) built from **real** `FunctionsHttpError`, `FunctionsFetchError` and
+      `FunctionsRelayError` instances (the tests construct the classes from
+      `@supabase/functions-js`, so the mapping that ships is the one tested).
+      The retry policy runs through it: one retry for `timeout`, `network` and
+      http 5xx; none for http 400/404/429 and none for `shape`.
+  A4. [Jest] Validators: `parsePopular` rejects a non-object body, `results`
+      not an array, and a movie without a numeric `id` or a string `title`
+      (each throws `shape`); it accepts a normal page and a page with zero
+      results. [Jest] Sentry from the `QueryCache` only (M9): 500, 502
+      `upstream_auth` and `shape` are captured once with the `environment`
+      tag; offline, timeout, 4xx and 502 `upstream_network` are not.
+  A5. [Jest] + [Mgr] Edge Function `popular` hardened, logic in
+      `_shared/tmdb.ts` (M2): `adult:true` results removed (a page can come
+      back with fewer than 20, even none); `endpoint` outside the whitelist
+      400; `page` must match `/^\d+$/` then 1-500 (`abc`, `-1`, `0`, `501`,
+      `1.5`, `1e2`, `0x10`, ` 5`, empty -> 400; absent -> 1); a missing key
+      500 `misconfigured` without naming it (this branch is in the pure file,
+      so it is tested); the status mapping of M2 (TMDB 401 and 403 -> 502
+      `upstream_auth`, 404, 429, 5xx, network); log redaction removes the key.
+      The wrong-key mapping is Jest-only (the live secret is not touched).
+      [Mgr] after deploy, curl: `popular` 200 with at most 20 results, the
+      exact attribution and `Cache-Control: public, max-age=300`;
+      `endpoint=foo`, `page=abc`, `page=1e2`, `page=%205` all 400; no auth
+      header 401; no `api_key` in any body or header.
   A6. [Jest] `tmdbImage(path, size)` returns base + size + path and null for
       a null/empty path; the sizes are the M6 constants.
   A7. [Mgr] `@tanstack/react-query` and `@shopify/flash-list` (2.0.2) are
       installed with `npx expo install`; `npx expo install --check` is clean;
-      FlashList's Jest setup is in the config; the Build log says whether a
-      native rebuild was needed (expected: no).
+      the no-native-code check of M3 is done; FlashList's Jest setup is in
+      the config; the new gate `npx tsc --noEmit -p
+      supabase/functions/tsconfig.json` exists and passes; the Build log says
+      whether a native rebuild was needed (expected: no).
 
   B. Home screen (`(tabs)/index.tsx` composes; no fetching in the route)
   B1. [QA] A signed-in user opens Home and sees, top to bottom: the existing
       avatar chip (still tappable to Profile), the Perch Roulette card, a
       section title, then a 3-column grid of 2:3 posters with their images
-      loaded, from live TMDB Popular page 1 (20 posters).
+      loaded, from live TMDB Popular page 1 (up to 20 posters; fewer when the adult
+      filter removed some).
   B2. [QA] Roulette is a UI shell: tapping it shows the `Toast` (variant
       coming-soon) "Smart picks are coming soon." and nothing else happens;
       no fake success (DESIGN §5/§7).
@@ -905,13 +990,16 @@ Failure modes to cover (Manager expands into the log):
   - Network: offline cold start; offline mid-session (loaded list stays);
     timeout (hung request); server 5xx; 429; response with `results` empty;
     response missing a field or the wrong shape (error state, one Sentry
-    event).
-  - Data: `poster_path` null; very long titles (two lines, ellipsis); title
+    event); **sign-out while loading** (the session ends mid-request: a 401 or
+    the unmount under the session guard shows no error, sends no Sentry event
+    and sets no state after unmount; a Jest test).
+  - Data: `poster_path` null; a poster URL that 404s with a non-null
+    `poster_path` (fallback icon + title); very long titles (two lines, ellipsis); title
     with emoji or right-to-left text; `release_date` empty or malformed
     (year omitted, no "NaN"); `vote_average` not used in this Build.
   - Interaction: double-tap Retry (one request); leave Home mid-load and
-    return (no state update after unmount, no duplicate request); rotate or
-    font scale large (grid still 3 columns, no overflow, no horizontal
+    return (no state update after unmount, no duplicate request); large
+    font scale (the app is portrait-only per app.json; grid still 3 columns, no overflow, no horizontal
     scroll).
   - Security: no key in the bundle, logcat or any error text; the proxy
     answers only the whitelisted endpoint; the 400 body contains no echo of
@@ -949,15 +1037,32 @@ Done means (checkable):
       more" row with Retry (at least 48 dp); Retry loads the page. It never
       replaces the whole screen with the error state, and never shows an empty
       footer that looks like the end of the list.
+  C4b. [Jest] An adult-filtered page that comes back empty or short never
+      stalls the list: when a fetched page has no usable results and more
+      pages exist, the hook fetches the next page itself (at most 3 in a row,
+      then the footer shows C4's Retry row), so there is always a footer
+      state; after the last page there is no spinner.
   C5. [Jest] + [QA] Pull-to-refresh (FlashList's refresh control, tinted from
-      tokens) fetches **page 1 only** and drops later pages (a Jest test
-      counts one request, even with five pages loaded), then the list is back
-      at the top. If the refresh fails while posters are showing, they stay
-      and an error `Toast` says so ("Couldn't refresh. Check your
-      connection."); the screen does not flip to the error state.
-  C6. [QA] Leaving Home (Profile tab) and returning within five minutes shows
-      the same list and position with no new request; after five minutes the
-      list is stale and only a pull refreshes it.
+      tokens) fetches **page 1 only** and drops later pages. Mechanism
+      (TanStack Query v5 has no `refetchPage`): on pull, `await
+      queryClient.cancelQueries({ queryKey })`, then `queryClient.setQueryData(
+      key, d => d && { pages: d.pages.slice(0, 1), pageParams:
+      d.pageParams.slice(0, 1) })`, then `refetch()`. `maxPages` is not used
+      (it bounds memory, not the refetch count). A Jest test counts exactly
+      one request with five pages loaded; the list returns to the top. If the
+      refresh fails while posters are showing, they stay and an error `Toast`
+      says so ("Couldn't refresh. Check your connection."); the screen does
+      not flip to the error state.
+  C5b. [Jest] A pull **while a next-page request is in flight**: the
+      `cancelQueries` aborts it and its late result is ignored. Test with a
+      deferred stub for page 2: pull, then resolve page 2; the list is the
+      fresh page 1 only, the footer spinner is gone, no duplicate id.
+  C5c. [Jest] The reverse order: `onEndReached` firing while a refresh is
+      running makes no next-page request until the refresh completes (guarded
+      by the refetching flag), so a stale `pageParam` is never appended.
+  C6. [QA] Leaving Home (Profile tab) and returning, at any time, shows the
+      same list and position with no new request (`refetchOnMount: false`,
+      M4); only a pull or an app restart refreshes it.
   C7. [QA] Scrolling about 100 posters (5 pages) on the emulator shows no
       blank tiles after a pause and no crash. The log records `gfxinfo` janky
       frames. **No pass threshold on the emulator** (it is slow, LESSONS
@@ -990,24 +1095,25 @@ Done means (checkable):
 
   A. Server and data layer
   A1. [Jest] + [Mgr] Edge Function gains `endpoint=details&id=<n>`:
-      `id` must be an integer from 1 to 2147483647 or the answer is 400
-      (before TMDB is called); the function asks TMDB for the movie with
+      `id` must match `/^\d+$/` and then be 1 to 2147483647, or the answer is
+      400 (before TMDB is called; logic in `_shared/tmdb.ts`, M2); the function asks TMDB for the movie with
       credits in one call and returns **only** a trimmed
       `{ movie: { id, title, tagline, overview, poster_path, backdrop_path,
       release_date, runtime, vote_average, vote_count, genres:[{id,name}],
       cast:[{id,name,character,profile_path}] (first 15 by TMDB order) },
       attribution }`, never TMDB's raw body; TMDB 404 answers 404 with a fixed
-      message; an adult title answers 404; other TMDB failures keep Build 3's
-      status + message pass-through without the URL/key; unknown endpoint
-      still 400. Same file, same no-`Deno`-globals rule for the testable
-      part (M2). New server code, own commit + log entry. [Mgr] after
+      message; an adult title answers 404; other TMDB failures use the M2 mapping
+      (401/403 -> 502 `upstream_auth`, a Jest case for details too; no
+      `status_message` pass-through); unknown endpoint still 400. New server code, own commit + log entry. [Mgr] after
       deploy, curl: a real id 200 with the exact attribution and at most 15
-      cast; `id=abc`, `id=0`, `id=99999999999` 400; a nonexistent id 404; no
+      cast; `id=abc`, `id=0`, `id=99999999999`, `id=1e3`, `id=%205` all 400; a nonexistent id 404; no
       auth 401; no `api_key` in any body.
-  A2. [Jest] `getMovieDetails(id, signal)` and `useMovieDetails(id)`: M4/M5
-      defaults (stale 30 min, one retry, 8 s timeout); a 404 becomes a typed
-      not-found result (no retry, not sent to Sentry), everything else an
-      error; the movie type is added to `types.ts`.
+  A2. [Jest] `getMovieDetails(id, signal)` and `useMovieDetails(id)` (`id` a
+      number): M4/M5 defaults (stale 30 min, one retry, 8 s timeout); errors
+      are `MovieApiError` (M5) and `parseDetails` rejects a bad body as
+      `shape` (a test); an http 404 becomes the not-found state (no retry, not
+      sent to Sentry), everything else an error; the movie type is added to
+      `types.ts`.
 
   B. Navigation (M7)
   B1. [QA] Tapping a poster on Home opens the details screen for that movie;
@@ -1021,12 +1127,19 @@ Done means (checkable):
       movie's details; back goes to Home; the same link while signed out
       lands on sign-in. Cold start from the link works.
   B4. [Jest] A route id that is not a positive integer (`abc`, `0`, `-1`,
-      `1.5`) shows the not-found state and makes **no** proxy call.
+      `1.5`, `1e3`, ` 5`) shows the not-found state and makes **no** proxy call.
   B5. [Ruby] `movie/[id]` is inside the session-guarded group of the root
       layout; the route file only composes the module's hook and components.
   B6. [QA] The `PosterCard` on Home is now a button (role button, hint "Opens
       movie details", pressed state per DESIGN §2); the 12a/12b behaviour is
       otherwise unchanged (regression of Builds 12a-12b).
+  B7. [Jest] Leaving the screen mid-load **aborts the request** (the signal
+      is aborted), sets no state after unmount and sends no Sentry event.
+      Opening movie B right after backing out of movie A never shows A's data
+      (queries are keyed by the numeric id).
+  B8. [Mgr] Cold deep link and hardware back: with the `anchor` of M7, back
+      from a deep-linked details screen lands on Home and does not exit the
+      app.
 
   C. Screen content
   C1. [QA] For at least two real movies (one from Home, one chosen by deep
@@ -1067,7 +1180,9 @@ Needs from Justin: nothing.
 Failure modes to cover (Manager expands into the log):
   - Network: offline when opening (error state, Retry); offline after a
     previous visit within 30 min (cached details show); timeout; 5xx; 429;
-    the movie opens while the list refreshes behind it.
+    the movie opens while the list refreshes behind it; **sign-out while
+    loading** (401 mid-flight or unmount under the session guard: no error
+    screen, no Sentry event, no state after unmount; a Jest test).
   - Data: id that does not exist (404, no Sentry); adult title (404); missing
     overview, cast, poster, release date, runtime, tagline, genres; 15+ cast
     (capped); very long title, tagline and character names (wrap, no
@@ -1364,4 +1479,5 @@ this is marked NEEDS JUSTIN.
 - 2026-09-25 (Manager, from Build 2 review): Build 5 Done-means also includes Supabase's AppState auto-refresh listener (`supabase.auth.startAutoRefresh()` on foreground / `stopAutoRefresh()` on background) so sessions refresh correctly on Android.
 - 2026-09-30 (Priya, at the Manager's request): detailed Builds 10-11 (Module 3) in section 5; rough one-liners replaced. No Build number, order or feature removed. **NEEDS JUSTIN (interpretation, not silently applied):** two Settings rows the Done-means implies but never named - "Blocked users" (Build 10: list + unblock) and "Terms & community rules" (Build 11: read/accept). Added, as infrastructure not features: `docs/ADMIN-MODERATION.md`, the SQL helper functions, the dev-only harness, and five Module 3 carry-forward rules for Builds 20/24/25/27/28.
 - 2026-09-30 (Priya, revision 2 after Ruby FIX NEEDED, 4 must-fix; Manager defaults apply, Justin may overturn): Build 10 split into 10a (database + admin doc) and 10b (UI), number unchanged; Settings rows "Blocked users" and "Terms & community rules" kept; terms gate now also covers captions (Build 20); second-user QA = Justin's 2nd Google account (no Email provider, no agent-created accounts); `is_blocked_between` grants/claims corrected (M1); explicit revoke/grant for all tables and functions (M2); harness loaded via `require` under `__DEV__` and checked with `expo export` (M3); collection-entry report point owned by Build 25, caption terms gate by Build 20 (M4); owner tags per Done-means line; carry-forward pointers added to Builds 20/24/25/27/28. Build 23 follow-on-block question left open for Justin at Build 23.
-- 2026-10-01 (Priya, at the Manager's request; Justin reordered: movies, Builds 12-16, come right after Build 10b, Build 11 moves to just before Build 20): detailed Module 4 — Builds 12 and 13 — in section 5, replacing the two rough one-liners. Build 12 is split into **12a** (data layer + first page of posters on Home + Roulette shell) and **12b** (infinite scroll + pull-to-refresh), number unchanged (Manager default, N2). New module-wide decisions M1-M10 (TMDB Popular grid; proxy hardening in 12a and a `details` endpoint in 13, with Edge Function work inside those Builds; `@tanstack/react-query` + `@shopify/flash-list` via `npx expo install`, no native rebuild expected; one QueryClient at the root; 8 s timeout, one retry, offline cold start ends in an error state; image sizes and 2:3 posters; navigation and a free `perchable://movie/<id>` deep link; attribution stays on Settings; Sentry from the QueryCache only). The UI-only shells already approved (Perch Roulette on Home, tier badge and `#spoiler-free-lounge` panel on details, DESIGN §5) ride inside 12a and 13 as before. **NEEDS JUSTIN (none blocks; defaults apply):** N1 Home shows one Popular grid, no Trending/Now Playing, no "Have You Watched This?"/"Friend Activity" until Builds 19/23; N2 the 12a/12b split; N3 the details content set (and what it leaves out); N4 no stored cache, offline cold start shows an error state; N5 3-column grid. No feature was added or removed beyond what Vision Part 2 and DESIGN §5 already list. DESIGN question for Dianne (not a plan problem): §3 says the tab bar stays visible under `movie/`, but a root-level Stack route covers it.
+- 2026-10-01 (Priya, at the Manager's request; Justin reordered: movies, Builds 12-16, come right after Build 10b, Build 11 moves to just before Build 20): detailed Module 4 — Builds 12 and 13 — in section 5, replacing the two rough one-liners. Build 12 is split into **12a** (data layer + first page of posters on Home + Roulette shell) and **12b** (infinite scroll + pull-to-refresh), number unchanged (Manager default, N2). New module-wide decisions M1-M10 (TMDB Popular grid; proxy hardening in 12a and a `details` endpoint in 13, with Edge Function work inside those Builds; `@tanstack/react-query` + `@shopify/flash-list` via `npx expo install`, no native rebuild expected; one QueryClient at the root; 8 s timeout, one retry, offline cold start ends in an error state; image sizes and 2:3 posters; navigation and a free `perchable://movie/<id>` deep link; attribution stays on Settings; Sentry from the QueryCache only). The UI-only shells already approved (Perch Roulette on Home, tier badge and `#spoiler-free-lounge` panel on details, DESIGN §5) ride inside 12a and 13 as before. **NEEDS JUSTIN (none blocks; defaults apply):** N1 Home shows one Popular grid, no Trending/Now Playing, no "Have You Watched This?"/"Friend Activity" until Builds 19/23; N2 the 12a/12b split; N3 the details content set (and what it leaves out); N4 no stored cache, offline cold start shows an error state; N5 3-column grid. Two small additions beyond Vision Part 2 are flagged as N6 (deep link) and N7 (adult titles hidden), defaults applying; no other feature added or removed. DESIGN question for Dianne (not a plan problem): §3 says the tab bar stays visible under `movie/`, but a root-level Stack route covers it.
+- 2026-10-01 (Priya, Round 1 revision after Ruby FIX NEEDED on Module 4; no Build number or feature changed): (1) the api layer throws a typed `MovieApiError` (`kind`, `status`, `code`) so the retry tests run through the real mapping; (2) the proxy maps TMDB 401/403 to 502 `upstream_auth`, and M9 reports it (also for the details endpoint); (3) proxy logic moves to `supabase/functions/_shared/tmdb.ts`, covered by a dedicated tsc target (`supabase/functions/tsconfig.json`) and Jest, and the missing-key branch moved into it, so only the `Deno.serve`/fetch wiring is review-only; (4) pull-to-refresh mechanism named (`cancelQueries`, trim to page 1, `refetch`), `refetchOnMount: false` on Home, new lines C5b/C5c for pull during a next-page load and scroll during a refresh; (5) A2 reworded to what Jest can prove, with a Manager one-off abort proof; (6) `unstable_settings anchor "(tabs)"` for cold deep links; (7) `/^\d+$/` validation for `id` and `page`; (8) response validators with tests; (9) adult-filtered empty page cannot stall the list (C4b), 12a B1 reads "up to 20"; (10) failure lists: sign-out while loading, poster 404 with a set path, rotate dropped, back-mid-load abort and other-movie-data lines made owned Done-means (13 B7, B8); nits: native-code guard kept, attribution wording flagged for Rose, `Cache-Control` on `popular`, numeric details key, `getPopularMovies(page = 1, signal?)` stays call-compatible.
