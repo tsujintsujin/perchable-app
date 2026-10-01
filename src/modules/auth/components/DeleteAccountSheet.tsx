@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Button } from "@/ui/Button";
 import { ErrorCard } from "@/ui/ErrorCard";
 import { GlassCard } from "@/ui/GlassCard";
@@ -15,6 +14,7 @@ import {
   spacing,
   type,
 } from "@/ui/tokens";
+import { useSheetLayout } from "@/ui/useSheetLayout";
 import { useDeleteAccount } from "../hooks/useDeleteAccount";
 
 /** The exact text the user must type to enable the delete button (case-sensitive). */
@@ -47,7 +47,7 @@ type Props = {
 
 /** Bottom sheet that confirms and runs account deletion. Mount it to open it, unmount to close. */
 export function DeleteAccountSheet({ onClose }: Props) {
-  const insets = useSafeAreaInsets();
+  const layout = useSheetLayout();
   const { deleteAccount, isDeleting, failed, isInFlight } = useDeleteAccount();
   const [typed, setTyped] = useState("");
 
@@ -70,39 +70,43 @@ export function DeleteAccountSheet({ onClose }: Props) {
         <View style={styles.glow}>
           <GlassCard
             tier="sheet"
-            style={[styles.sheet, { paddingBottom: insets.bottom + spacing[24] }]}
+            testID="delete-account-sheet-sheet"
+            style={[styles.sheet, layout]}
           >
             <View style={styles.handle} />
-            <Text accessibilityRole="header" style={styles.title}>
-              {COPY.title}
-            </Text>
+            {/* Title and body scroll when the sheet is capped; the buttons stay pinned. */}
+            <ScrollView style={styles.body} keyboardShouldPersistTaps="handled">
+              <Text accessibilityRole="header" style={styles.title}>
+                {COPY.title}
+              </Text>
 
-            {isDeleting ? (
-              <Text style={styles.status}>{COPY.status}</Text>
-            ) : (
-              <>
-                <Text style={styles.listIntro}>{COPY.listIntro}</Text>
-                {COPY.listItems.map((item) => (
-                  <Text key={item} style={styles.listItem}>{`• ${item}`}</Text>
-                ))}
-                <Text style={styles.note}>{COPY.irreversible}</Text>
-                <Text importantForAccessibility="no" style={styles.prompt}>
-                  {COPY.prompt}
-                </Text>
-                <TextInput
-                  value={typed}
-                  onChangeText={setTyped}
-                  placeholder={DELETE_CONFIRM_WORD}
-                  placeholderTextColor={colors.text.disabled}
-                  accessibilityLabel={COPY.prompt}
-                  autoCapitalize="characters"
-                  autoCorrect={false}
-                  spellCheck={false}
-                  style={styles.input}
-                />
-                {failed && <ErrorCard message={COPY.error} style={styles.error} textStyle={type.small} />}
-              </>
-            )}
+              {isDeleting ? (
+                <Text style={styles.status}>{COPY.status}</Text>
+              ) : (
+                <>
+                  <Text style={styles.listIntro}>{COPY.listIntro}</Text>
+                  {COPY.listItems.map((item) => (
+                    <Text key={item} style={styles.listItem}>{`• ${item}`}</Text>
+                  ))}
+                  <Text style={styles.note}>{COPY.irreversible}</Text>
+                  <Text importantForAccessibility="no" style={styles.prompt}>
+                    {COPY.prompt}
+                  </Text>
+                  <TextInput
+                    value={typed}
+                    onChangeText={setTyped}
+                    placeholder={DELETE_CONFIRM_WORD}
+                    placeholderTextColor={colors.text.disabled}
+                    accessibilityLabel={COPY.prompt}
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                    spellCheck={false}
+                    style={styles.input}
+                  />
+                  {failed && <ErrorCard message={COPY.error} style={styles.error} textStyle={type.small} />}
+                </>
+              )}
+            </ScrollView>
 
             <View style={styles.buttons}>
               <Button
@@ -135,8 +139,9 @@ const styles = StyleSheet.create({
   scrim: StyleSheet.absoluteFill,
 
   // Sheet surface: opaque on Android (no real blur), danger border and glow.
-  glow: { ...dangerGlow },
+  glow: { ...dangerGlow, flexShrink: 1 },
   sheet: {
+    flexShrink: 1,
     backgroundColor: colors.bg.elevatedFlat,
     borderColor: colors.border.danger,
     borderTopLeftRadius: radius.xl,
@@ -144,6 +149,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing[24],
     paddingHorizontal: spacing[20],
   },
+  body: { flexGrow: 0, flexShrink: 1 },
   handle: {
     alignSelf: "center",
     width: size.dragHandle.width,

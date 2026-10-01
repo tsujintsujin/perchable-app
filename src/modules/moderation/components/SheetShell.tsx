@@ -7,12 +7,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusOnMount } from "../hooks/useFocusOnMount";
 import { colors, elevation, glass, radius, size, spacing, type } from "@/ui/tokens";
+import { useSheetLayout } from "@/ui/useSheetLayout";
 
 type Props = {
   testID: string;
@@ -32,8 +31,7 @@ type Props = {
 /** Bottom-sheet overlay shared by the report and block sheets: flat surface (no blur on Android),
  * scrim, drag handle, title, scrolling body and a pinned footer. Mount it to open it. */
 export function SheetShell({ testID, onDismiss, dismissable, title, titleLines, children, footer }: Props) {
-  const insets = useSafeAreaInsets();
-  const { height } = useWindowDimensions();
+  const layout = useSheetLayout();
   const titleRef = useRef<Text>(null);
 
   useFocusOnMount(titleRef);
@@ -53,11 +51,9 @@ export function SheetShell({ testID, onDismiss, dismissable, title, titleLines, 
           accessible={dismissable}
         />
         <View
+          testID={`${testID}-sheet`}
           accessibilityViewIsModal
-          style={[
-            styles.sheet,
-            { maxHeight: height * size.sheetMaxHeightRatio, paddingBottom: insets.bottom + spacing[24] },
-          ]}
+          style={[styles.sheet, layout]}
         >
           <View style={styles.handle} />
           {title !== undefined && (

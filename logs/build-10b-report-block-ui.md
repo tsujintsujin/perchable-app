@@ -324,3 +324,21 @@ Metro (PID 17460, started by me) killed, 8081 free; `adb reverse --remove-all` d
 - 10a B3 ban proof started: the test account (b2400254) was banned with the exact admin-doc block
   (banned_until 2126-10-01; sessions/refresh tokens 0; main account untouched). **Waiting on Justin**
   to try signing in with it on td_emu. The ban is still active on the TEST account until then.
+
+## Bug 2 - Sheet spacing with a docked keyboard (Bella)
+**Cause.** Both sheets added the bottom safe-area inset (gesture bar) to the 24dp padding even when the keyboard was up and covering that area (about 24dp extra, so ~48dp total). The sheet's max height was only 90% of the window, so with `KeyboardAvoidingView` pushing it up it could reach under the status bar.
+
+**Fix, once.** New `src/ui/useSheetLayout.ts` returns `{ paddingBottom, maxHeight }` and both `SheetShell` and `DeleteAccountSheet` spread it into the sheet style (they had duplicated the inset logic).
+- `paddingBottom` = `spacing[24]` + the bottom inset only when the keyboard is hidden.
+- `maxHeight` = the smaller of `sheetMaxHeightRatio * height` and `height - top inset - keyboard height`. Hidden keyboard: unchanged in practice (90% is the smaller number on normal phones).
+- The body scrolls inside the cap. `SheetShell` already had a `ScrollView`; `DeleteAccountSheet` now wraps title + body in one and keeps the buttons pinned (`flexShrink` on its glow wrapper and card so the cap can bite).
+
+**Why `Keyboard` events.** In a `Modal` with `statusBarTranslucent` on Android 15 edge-to-edge, the window does not resize for the keyboard, so `useWindowDimensions` cannot tell us it is up, and `KeyboardAvoidingView` only moves the sheet, it does not tell it to drop the inset. `keyboardDidShow` gives the height and `keyboardDidHide` clears it; a few lines, no dependency. The `KeyboardAvoidingView` stays for the lift.
+
+**Outside the Build's scope touched.** `src/ui/GlassCard/GlassCard.tsx`: new optional `testID` prop (non-pressable branch), so the Delete sheet's card can be asserted. `testID="<id>-sheet"` added on the sheet views.
+
+**Tests** (`__tests__/sheetKeyboardLayout-test.tsx`, 5): inset applies when hidden; dropped when shown and restored on hide; max height equals window height minus top inset minus keyboard height; the same asserted on the computed style of both `SheetShell` and `DeleteAccountSheet`. Reverting the padding rule or the max-height rule fails 3 of the 5 each.
+
+**Gates.** tsc clean, lint clean, jest 27 suites / 202 tests pass, 0 act() warnings, 0 console warnings.
+
+**Needs a device check (unverified).** (1) With a docked Gboard the gap between buttons and keyboard is 24dp (~63 px at 2.625) on Report "Something else" and on Delete. (2) The sheet's handle is below the status bar. (3) The assumption that `endCoordinates.height` equals the space `KeyboardAvoidingView` pads on this device: if the sheet's top ends up lower or higher than expected, that is where to look. (4) Keyboard hidden: sheet looks as before. (5) Delete sheet: the typed `DELETE` flow still works and Cancel/Delete are pinned.
