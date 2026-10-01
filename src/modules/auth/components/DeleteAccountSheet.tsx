@@ -59,7 +59,11 @@ export function DeleteAccountSheet({ onClose }: Props) {
 
   return (
     <Modal testID="delete-account-sheet" transparent animationType="slide" statusBarTranslucent onRequestClose={dismiss}>
-      <KeyboardAvoidingView behavior="padding" style={styles.overlay}>
+      <KeyboardAvoidingView
+        testID="delete-account-sheet-overlay"
+        behavior="padding"
+        style={[styles.overlay, layout.overlay]}
+      >
         <Pressable
           style={styles.scrim}
           onPress={dismiss}
@@ -71,7 +75,7 @@ export function DeleteAccountSheet({ onClose }: Props) {
           <GlassCard
             tier="sheet"
             testID="delete-account-sheet-sheet"
-            style={[styles.sheet, layout]}
+            style={[styles.sheet, layout.sheet]}
           >
             <View style={styles.handle} />
             {/* Title and body scroll when the sheet is capped; the buttons stay pinned. */}

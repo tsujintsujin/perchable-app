@@ -368,3 +368,20 @@ refused refresh exercises the same server-side ban check. Test account unbanned 
 - DeleteAccountSheet: same shared hook; a clean docked-keyboard reading wasn't possible (Gboard
   reverted to floating + stylus prompt). Nothing typed into the DELETE box.
 - Gboard tip: `pm clear com.google.android.inputmethod.latin` docks it once; it can revert.
+
+## Bug 2 round 2 — sheet top under the status bar with a docked keyboard (Bella)
+**Symptom (Manager, device):** with Gboard docked, the lifted ReportSheet's top edge is at ~8 px and its handle sits in the status-bar row, although `maxHeight = min(0.9H, H - insets.top - keyboardHeight)`.
+
+**Reasoning, from the RN 0.86 source (no device run):**
+- *Insets in the Modal:* `useSafeAreaInsets()` reads a React context, and context passes through the Modal's portal, so it returns the root provider's values (status bar top ~24dp). The tab headers use the same value. Not the cause.
+- *Window height:* `DeviceInfoModule` returns the full window bounds when edge-to-edge is on (and subtracts the bars only when it is off). Full height either way is consistent with the cap. Not the cause.
+- *The mismatch (root cause):* `ReactRootView` builds `keyboardDidShow` with `height = ime.bottom - systemBars.bottom`, i.e. the keyboard **without** the navigation bar, and `screenY = visibleFrame.bottom` (nav bar excluded) minus that height. `KeyboardAvoidingView` pads by `frame.bottom - screenY`, which is the keyboard **plus** the nav bar. So the real room above the keyboard is `H - (kb + nav)`, but the cap assumed `H - top - kb`. The cap overshoots the room by `nav - top` (3-button nav ~84 px vs status bar ~42 px on td_emu), the room is what actually limits the sheet, and its top is pushed to ~0 (the ~8 px seen).
+- *Double count:* no. KAV's padding and the cap are two independent estimates of the same space and they disagree by the nav bar.
+
+**Fix:** stop estimating the room. `useSheetLayout` now returns `{ overlay, sheet }`. `overlay.paddingTop = insets.top` goes on the KeyboardAvoidingView, so the flex space left for the sheet (screen minus KAV's own bottom padding minus the status-bar inset) is exact by construction; `sheet.maxHeight` is only the 0.9 share of the screen. No keyboard height is in the cap any more. Keyboard hidden: the overlay only adds the 24dp status-bar inset, which the 0.9 cap already exceeds on phones, so the sheet looks the same. The scrim is `absoluteFill`, so it still covers the whole screen. Both `SheetShell` and `DeleteAccountSheet` spread the same two styles.
+
+**Tests** (`__tests__/sheetKeyboardLayout-test.tsx`, still 5): the cause test asserts the overlay's top padding equals the top inset and the sheet cap does not move when the keyboard shows (reverting to a keyboard-based cap fails it); both sheets are asserted on their rendered overlay and sheet styles. Layout itself is not simulated in jest.
+
+**Gates.** tsc clean, lint clean, jest 27 suites / 202 tests, 0 act() warnings, 0 console warnings. Files outside scope: none.
+
+**Device check for the Manager:** open ReportSheet, pick "Something else", dock Gboard. (1) The handle and top corners are below the status bar (sheet top at >= ~42 px at 1.75 px/dp). (2) Buttons still sit ~24dp above the keyboard. (3) Keyboard down: sheet looks as before. (4) Same for the Delete sheet (title/body scroll, Cancel/Delete pinned).

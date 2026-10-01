@@ -42,7 +42,11 @@ export function SheetShell({ testID, onDismiss, dismissable, title, titleLines, 
 
   return (
     <Modal testID={testID} transparent animationType="slide" statusBarTranslucent onRequestClose={dismiss}>
-      <KeyboardAvoidingView behavior="padding" style={styles.overlay}>
+      <KeyboardAvoidingView
+      testID={`${testID}-overlay`}
+      behavior="padding"
+      style={[styles.overlay, layout.overlay]}
+    >
         <Pressable
           style={styles.scrim}
           onPress={dismiss}
@@ -53,7 +57,7 @@ export function SheetShell({ testID, onDismiss, dismissable, title, titleLines, 
         <View
           testID={`${testID}-sheet`}
           accessibilityViewIsModal
-          style={[styles.sheet, layout]}
+          style={[styles.sheet, layout.sheet]}
         >
           <View style={styles.handle} />
           {title !== undefined && (
