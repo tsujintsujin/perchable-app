@@ -342,3 +342,13 @@ Metro (PID 17460, started by me) killed, 8081 free; `adb reverse --remove-all` d
 **Gates.** tsc clean, lint clean, jest 27 suites / 202 tests pass, 0 act() warnings, 0 console warnings.
 
 **Needs a device check (unverified).** (1) With a docked Gboard the gap between buttons and keyboard is 24dp (~63 px at 2.625) on Report "Something else" and on Delete. (2) The sheet's handle is below the status bar. (3) The assumption that `endCoordinates.height` equals the space `KeyboardAvoidingView` pads on this device: if the sheet's top ends up lower or higher than expected, that is where to look. (4) Keyboard hidden: sheet looks as before. (5) Delete sheet: the typed `DELETE` flow still works and Cancel/Delete are pinned.
+
+## Manager — waiting on Justin (2026-10-01)
+- Bug 2 (sheet spacing with docked keyboard): Bella e1c61fd — shared `src/ui/useSheetLayout.ts` used
+  by SheetShell + DeleteAccountSheet; Manager gates tsc/lint/jest 202/202, 0 warnings. **Device check
+  pending** (needs a signed-in account on td_emu).
+- 10a B3 ban proof, half done: after the banned test account's access token expired, the app's
+  refresh was refused and the app signed itself out (DB: 0 sessions for b2400254). Still to do:
+  Justin tries a fresh Google sign-in with the test account (expected: refused), then the Manager
+  unbans it. **The test account is still banned.**
+- adb server hung once (known PC issue) — killed adb.exe and restarted; fine after.
