@@ -72,9 +72,9 @@ type RawMovie = {
   adult?: unknown;
 };
 
-/** Drops adult titles and keeps only the fields the app reads. */
-export function shapeMovies(results: RawMovie[]) {
-  return results
+/** Drops non-object items and adult titles, and keeps only the fields the app reads. */
+export function shapeMovies(results: unknown[]) {
+  return (results.filter((movie) => typeof movie === "object" && movie !== null) as RawMovie[])
     .filter((movie) => movie.adult !== true)
     .map(({ id, title, poster_path, vote_average, release_date }) => ({
       id,
@@ -121,7 +121,7 @@ export async function handlePopular(deps: ProxyDeps): Promise<ProxyResult> {
     status: 200,
     cacheControl: POPULAR_CACHE_CONTROL,
     body: {
-      results: shapeMovies(body.results as RawMovie[]),
+      results: shapeMovies(body.results),
       page: body.page,
       total_pages: body.total_pages,
       attribution: TMDB_ATTRIBUTION,

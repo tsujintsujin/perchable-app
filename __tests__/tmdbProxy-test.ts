@@ -94,6 +94,14 @@ describe("handlePopular", () => {
     expect((none.result.body as { results: unknown[] }).results).toEqual([]);
   });
 
+  it("ignores non-object items in results instead of throwing", async () => {
+    const { result } = await run({
+      res: upstream(200, { results: [null, 5, "x", { id: 1, title: "A", adult: false }], page: 1, total_pages: 1 }),
+    });
+    expect(result.status).toBe(200);
+    expect((result.body as { results: { id: number }[] }).results.map((m) => m.id)).toEqual([1]);
+  });
+
   it.each([
     [401, 502, "upstream_auth"],
     [403, 502, "upstream_auth"],
