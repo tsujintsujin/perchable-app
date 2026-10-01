@@ -1,5 +1,8 @@
 import { FunctionsFetchError, FunctionsHttpError, FunctionsRelayError } from "@supabase/supabase-js";
 
+/** Marks a Supabase relay failure (infrastructure, not our function) so it is not mistaken for a function crash. */
+export const RELAY_CODE = "relay";
+
 export type MovieApiErrorKind = "timeout" | "network" | "http" | "shape";
 
 /** A failed movie request, carrying only what retry and Sentry decisions read. */
@@ -35,7 +38,7 @@ export async function toMovieApiError(error: unknown, signal?: AbortSignal): Pro
   if (error instanceof FunctionsHttpError) {
     return new MovieApiError("http", { status: error.context?.status, code: await readCode(error.context) });
   }
-  if (error instanceof FunctionsRelayError) return new MovieApiError("http", { status: 502 });
+  if (error instanceof FunctionsRelayError) return new MovieApiError("http", { status: 502, code: RELAY_CODE });
   if (error instanceof FunctionsFetchError) {
     // An abort we did not ask for is the request timeout.
     const aborted = error.context?.name === "AbortError" && !signal?.aborted;
@@ -51,10 +54,11 @@ export function isRetryableMovieError(error: unknown): boolean {
   return error.kind === "http" && (error.status ?? 0) >= 500;
 }
 
-/** Only faults we must act on go to Sentry: a 5xx carrying a proxy code (other than a plain upstream network hiccup), a bad shape, anything unexpected. */
+/** Only faults we must act on go to Sentry: a misconfigured proxy, a bad TMDB key, a bad shape, or a codeless 5xx (a function crash). */
 export function shouldReportMovieError(error: unknown): boolean {
   if (!(error instanceof MovieApiError)) return true;
   if (error.kind === "shape") return true;
   if (error.kind !== "http") return false;
-  return (error.status ?? 0) >= 500 && !!error.code && error.code !== "upstream_network";
+  if (error.code === "misconfigured" || error.code === "upstream_auth") return true;
+  return (error.status ?? 0) >= 500 && !error.code;
 }

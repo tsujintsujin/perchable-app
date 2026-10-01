@@ -183,3 +183,24 @@ Neither package contains `android/`, `ios/`, a `.podspec`, `expo-module.config.j
 - **M9 final (Manager decision):** report `misconfigured`, `upstream_auth`, `shape`, and a codeless
   5xx that is not a relay error; never `upstream_error` (TMDB outage), `upstream_network`, relay 502,
   4xx/429, timeout, offline.
+
+---
+
+# Build 12a · Bug 1 (Ruby's review; server passed and is deployed as tmdb v2)
+
+Server item 5 is its own commit (`d18ca82`); the app items are one commit (SHA in the Manager's report). Nothing deployed.
+
+| # | Cause | Fix | Test |
+|---|---|---|---|
+| 1 Sentry over-reported TMDB outages | the rule reported any 5xx with a code other than `upstream_network`, so `upstream_error` (a TMDB 500/503) sent an event per user per open | `shouldReportMovieError` now reports only `misconfigured`, `upstream_auth`, `shape`, a codeless 5xx and non-`MovieApiError` errors (`MovieApiError.ts`) | `movieApi-test.ts` (report / do-not-report tables) and `queryClient-test.ts`: codeless 500 captured once; `upstream_error` as 500, 502, 503, `upstream_network`, relay, 4xx, 429, timeout and offline not captured |
+| 2 Relay vs crash indistinguishable | a relay 502 had no `code`, same as a function crash | `FunctionsRelayError` now maps to http 502 with `code: "relay"` (`RELAY_CODE`), so it is retried but not reported, while any other codeless 5xx is reported | `movieApi-test.ts` mapping; `queryClient-test.ts` relay not captured, codeless 500 captured |
+| 3 Fade over the backdrop | `ShimmerFill` unmounts on `onLoad`, so the 200 ms fade ran over an unbackgrounded tile | tile with an image gets `bg.elevatedFlat` as its own background (`imageTile` in `PosterCard.tsx`); the skeleton does not (its pulse is that colour over transparent, a fill would hide the pulse) | `PosterCard-test.tsx` asserts the fill before and after `onLoad`. **No emulator screenshot**: a 200 ms fade is not catchable by adb screencap; effect is that the image now fades in over the same flat colour the shimmer showed |
+| 4 TalkBack live region | a 1 px live-region View present at first render is not announced on Android | removed it; `PosterGrid` calls `AccessibilityInfo.announceForAccessibility("Loading movies")` in an effect each time `state` becomes `loading` (also on Retry) | `home-test.tsx`: announced once on first load and again on the offline cold start path |
+| 5 `results: [null]` could throw | `movie.adult` read on a non-object | `shapeMovies` keeps objects only, then filters adult | `tmdbProxy-test.ts` (26 now) |
+| 6 | accepted: `queryClient.ts` imports `MovieApiError.ts` directly | none | none |
+
+Files touched outside the Build's own scope: none.
+
+**Test flake found and fixed.** After removing the live-region View, the full Jest run failed about half the time with `act()` warnings in `home-test.tsx` (react-query and FlashList timer-driven updates landing after a test body). Fix: `afterEach` flushes one timer inside `act` before the console check. Five consecutive full runs afterwards were clean (0 `act(`); the first two runs of the new test count had one pass and one fail before the fix.
+
+Gates: tsc app and `supabase/functions/tsconfig.json` clean; lint clean; `npx jest`: 32 suites, **303 tests** passed (302 plus the new PosterCard fill test), 0 `act(`, 0 console warnings; out.txt deleted.

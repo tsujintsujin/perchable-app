@@ -44,7 +44,7 @@ export function PosterCard({ id, posterUrl, title, year }: Props) {
       accessible
       accessibilityRole="image"
       accessibilityLabel={year ? `${title}, ${year}` : title}
-      style={styles.tile}
+      style={[styles.tile, showImage && styles.imageTile]}
     >
       {showImage ? (
         <>
@@ -83,6 +83,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border.hairline,
     overflow: "hidden",
   },
+  // Flat fill behind the image so its fade-in runs over the loading colour, not the backdrop.
+  imageTile: { backgroundColor: colors.bg.elevatedFlat },
   fill: { ...StyleSheet.absoluteFill },
   // Loading placeholder layers.
   shimmer: { backgroundColor: colors.bg.elevatedFlat },

@@ -65,6 +65,7 @@ describe("Sentry from the QueryCache", () => {
     ["500 misconfigured", () => ({ data: null, error: httpError(500, "misconfigured") })],
     ["502 upstream_auth", () => ({ data: null, error: httpError(502, "upstream_auth") })],
     ["shape", () => ({ data: { nope: true }, error: null })],
+    ["codeless 500 (function crash)", () => ({ data: null, error: httpError(500) })],
   ])("captures %s once, even though a 5xx is retried", async (_name, make) => {
     await runFailing(make());
     expect(mockCapture).toHaveBeenCalledTimes(1);
@@ -78,7 +79,10 @@ describe("Sentry from the QueryCache", () => {
     ["404", () => ({ data: null, error: httpError(404) })],
     ["429", () => ({ data: null, error: httpError(429) })],
     ["502 upstream_network", () => ({ data: null, error: httpError(502, "upstream_network") })],
-    ["relay 502 without a code", () => ({ data: null, error: new FunctionsRelayError({}) })],
+    ["502 upstream_error", () => ({ data: null, error: httpError(502, "upstream_error") })],
+    ["500 upstream_error", () => ({ data: null, error: httpError(500, "upstream_error") })],
+    ["503 upstream_error", () => ({ data: null, error: httpError(503, "upstream_error") })],
+    ["relay 502", () => ({ data: null, error: new FunctionsRelayError({}) })],
   ])("does not capture %s", async (_name, make) => {
     await runFailing(make());
     expect(mockCapture).not.toHaveBeenCalled();

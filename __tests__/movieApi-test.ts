@@ -4,7 +4,7 @@ const mockInvoke = jest.fn();
 jest.mock("@/lib/supabase", () => ({ supabase: { functions: { invoke: (...args: unknown[]) => mockInvoke(...args) } } }));
 
 import { getPopularMovies } from "@/modules/movies/api/getPopularMovies";
-import { MovieApiError, isRetryableMovieError, shouldReportMovieError } from "@/modules/movies/api/MovieApiError";
+import { MovieApiError, RELAY_CODE, isRetryableMovieError, shouldReportMovieError } from "@/modules/movies/api/MovieApiError";
 import { parsePopular } from "@/modules/movies/api/parsePopular";
 
 const page = { results: [{ id: 1, title: "A", poster_path: null, vote_average: 1, release_date: "" }], page: 1, total_pages: 3 };
@@ -64,8 +64,8 @@ describe("error mapping from real functions-js errors", () => {
     expect(await failWith(httpError(404))).toMatchObject({ kind: "http", status: 404, code: undefined });
   });
 
-  it("maps a relay error to http 502 with no code", async () => {
-    expect(await failWith(new FunctionsRelayError({}))).toMatchObject({ kind: "http", status: 502, code: undefined });
+  it("maps a relay error to http 502 with the relay marker", async () => {
+    expect(await failWith(new FunctionsRelayError({}))).toMatchObject({ kind: "http", status: 502, code: "relay" });
   });
 
   it("maps a fetch failure to network, and an abort we did not ask for to timeout", async () => {
@@ -101,16 +101,22 @@ describe("retry and report rules", () => {
     expect(isRetryableMovieError(new Error("x"))).toBe(false);
   });
 
-  it("reports only unexpected faults", () => {
+  it("reports only misconfigured, upstream_auth, shape, a codeless 5xx and unexpected errors", () => {
     expect(shouldReportMovieError(http(500, "misconfigured"))).toBe(true);
     expect(shouldReportMovieError(http(502, "upstream_auth"))).toBe(true);
-    expect(shouldReportMovieError(http(502, "upstream_error"))).toBe(true);
     expect(shouldReportMovieError(new MovieApiError("shape"))).toBe(true);
+    expect(shouldReportMovieError(http(500))).toBe(true);
+    expect(shouldReportMovieError(http(503))).toBe(true);
     expect(shouldReportMovieError(new Error("unexpected"))).toBe(true);
+  });
+
+  it("does not report TMDB outages, relay errors, 4xx, timeout or offline", () => {
+    expect(shouldReportMovieError(http(502, "upstream_error"))).toBe(false);
+    expect(shouldReportMovieError(http(500, "upstream_error"))).toBe(false);
+    expect(shouldReportMovieError(http(502, "upstream_network"))).toBe(false);
+    expect(shouldReportMovieError(http(502, RELAY_CODE))).toBe(false);
     expect(shouldReportMovieError(new MovieApiError("network"))).toBe(false);
     expect(shouldReportMovieError(new MovieApiError("timeout"))).toBe(false);
-    expect(shouldReportMovieError(http(502, "upstream_network"))).toBe(false);
-    expect(shouldReportMovieError(http(502))).toBe(false);
     for (const status of [400, 401, 404, 429]) expect(shouldReportMovieError(http(status))).toBe(false);
   });
 });

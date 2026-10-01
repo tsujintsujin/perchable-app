@@ -1,4 +1,6 @@
+import { StyleSheet } from "react-native";
 import { act, render, screen } from "@testing-library/react-native";
+import { colors } from "@/ui/tokens";
 import { PosterCard, PosterCardSkeleton } from "@/ui/PosterCard";
 
 const URL_A = "https://image.tmdb.org/t/p/w342/a.jpg";
@@ -16,6 +18,14 @@ describe("PosterCard", () => {
     expect(props.contentFit).toBe("cover");
     expect(screen.getByRole("image", { name: "Dune, 2021" })).toBeTruthy();
     expect(screen.queryByText("🎬")).toBeNull();
+  });
+
+  it("keeps a flat loading fill on the tile so the image fade-in never shows the backdrop", async () => {
+    await render(<PosterCard id={1} posterUrl={URL_A} title="Dune" />);
+    const tile = screen.getByRole("image", { name: "Dune" });
+    expect(StyleSheet.flatten(tile.props.style).backgroundColor).toBe(colors.bg.elevatedFlat);
+    await act(async () => image().props.onLoad({ nativeEvent: { source: {} } }));
+    expect(StyleSheet.flatten(screen.getByRole("image", { name: "Dune" }).props.style).backgroundColor).toBe(colors.bg.elevatedFlat);
   });
 
   it("labels with the title alone when the year is unknown", async () => {

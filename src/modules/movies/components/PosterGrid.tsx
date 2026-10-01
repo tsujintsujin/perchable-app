@@ -1,5 +1,5 @@
-import type { ReactElement } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect, type ReactElement } from "react";
+import { AccessibilityInfo, StyleSheet, Text, View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { EmptyState } from "@/ui/EmptyState";
 import { PosterCard, PosterCardSkeleton } from "@/ui/PosterCard";
@@ -41,6 +41,11 @@ function Cell({ item }: { item: Movie | null }) {
 
 /** Popular posters in a 3-column grid under `header`; also draws the loading, empty and error states. */
 export function PosterGrid({ state, movies, onRetry, header }: Props) {
+  // A live region present at first render is not announced on Android, so speak "Loading movies" when loading starts.
+  useEffect(() => {
+    if (state === "loading") AccessibilityInfo.announceForAccessibility("Loading movies");
+  }, [state]);
+
   const showTitle = state === "loading" || state === "filled";
   const data: (Movie | null)[] = state === "loading" ? SKELETONS : movies;
 
@@ -77,9 +82,6 @@ export function PosterGrid({ state, movies, onRetry, header }: Props) {
               Popular right now
             </Text>
           )}
-          {state === "loading" && (
-            <View accessible accessibilityLiveRegion="polite" accessibilityLabel="Loading movies" style={styles.liveRegion} />
-          )}
         </View>
       }
       ListEmptyComponent={empty ? <View style={styles.empty}>{empty}</View> : null}
@@ -105,8 +107,6 @@ const styles = StyleSheet.create({
     marginTop: spacing[24],
     marginBottom: spacing[12],
   },
-  // Zero-visual node that announces "Loading movies" once.
-  liveRegion: { width: StyleSheet.hairlineWidth, height: StyleSheet.hairlineWidth },
   cell: { paddingHorizontal: HALF_GAP, paddingBottom: size.gridGap },
   // 32 between the Roulette card and the EmptyState.
   empty: { paddingTop: spacing[32] },

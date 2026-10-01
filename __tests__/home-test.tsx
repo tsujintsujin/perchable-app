@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { AccessibilityInfo, StyleSheet } from "react-native";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { FunctionsFetchError, FunctionsHttpError } from "@supabase/supabase-js";
@@ -69,15 +69,22 @@ async function renderHome() {
 }
 
 let consoleError: jest.SpyInstance;
+let announce: jest.SpyInstance;
 beforeEach(() => {
+  announce = jest.spyOn(AccessibilityInfo, "announceForAccessibility").mockImplementation(() => {});
   mockInvoke.mockReset();
   mockCapture.mockReset();
   consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
 });
-afterEach(() => {
+afterEach(async () => {
+  // Lets the query cache and FlashList finish their timer-driven updates inside act before the console check.
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
   clients.splice(0).forEach((client) => client.clear());
   expect(consoleError).not.toHaveBeenCalled();
   consoleError.mockRestore();
+  announce.mockRestore();
 });
 
 describe("Home: filled", () => {
@@ -113,11 +120,12 @@ describe("Home: filled", () => {
 });
 
 describe("Home: loading", () => {
-  it("shows the shell, the title and one polite 'Loading movies' region, no poster labels", async () => {
+  it("shows the shell and the title, announces 'Loading movies' once, and has no poster labels", async () => {
     mockInvoke.mockReturnValue(new Promise(() => {}));
     await renderHome();
 
-    expect(screen.getByLabelText("Loading movies").props.accessibilityLiveRegion).toBe("polite");
+    expect(announce).toHaveBeenCalledTimes(1);
+    expect(announce).toHaveBeenCalledWith("Loading movies");
     expect(screen.getByRole("header", { name: "Popular right now" })).toBeTruthy();
     expect(screen.getByText("Perch Roulette")).toBeTruthy();
     expect(screen.queryByRole("image")).toBeNull();
@@ -172,7 +180,7 @@ describe("Home: error", () => {
     mockInvoke.mockResolvedValue({ data: PAGE, error: null });
     await renderHome();
 
-    expect(screen.getByLabelText("Loading movies")).toBeTruthy();
+    expect(announce).toHaveBeenCalledWith("Loading movies");
     expect(await screen.findByText("Couldn't load movies")).toBeTruthy();
     expect(mockInvoke).toHaveBeenCalledTimes(2);
     // Offline is not reported.
