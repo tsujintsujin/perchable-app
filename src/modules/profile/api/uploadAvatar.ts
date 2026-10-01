@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { authReady } from "@/lib/requestTimeout";
 
 /** Uploads to a uniquely-named path per upload — never reused, since a
  * cancelled upload can't be aborted mid-flight. Returns the public URL. */
@@ -6,6 +7,7 @@ export async function uploadAvatar(userId: string, localUri: string): Promise<st
   const path = `${userId}/avatar-${Date.now()}.jpg`;
   const arraybuffer = await fetch(localUri).then((res) => res.arrayBuffer());
 
+  await authReady();
   const { error } = await supabase.storage.from("avatars").upload(path, arraybuffer, {
     contentType: "image/jpeg",
   });

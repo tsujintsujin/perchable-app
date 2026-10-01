@@ -1,7 +1,7 @@
 import { FunctionsFetchError, FunctionsHttpError, FunctionsRelayError } from "@supabase/supabase-js";
 
 const mockInvoke = jest.fn();
-jest.mock("@/lib/supabase", () => ({ supabase: { functions: { invoke: (...args: unknown[]) => mockInvoke(...args) } } }));
+jest.mock("@/lib/supabase", () => ({ supabase: { auth: { getSession: () => Promise.resolve({}) }, functions: { invoke: (...args: unknown[]) => mockInvoke(...args) } } }));
 
 import { getPopularMovies } from "@/modules/movies/api/getPopularMovies";
 import { MovieApiError, RELAY_CODE, isRetryableMovieError, shouldReportMovieError } from "@/modules/movies/api/MovieApiError";

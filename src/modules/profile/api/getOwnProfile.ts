@@ -1,10 +1,12 @@
 import { supabase } from "@/lib/supabase";
+import { authReady } from "@/lib/requestTimeout";
 import type { Profile } from "../types";
 
 /** Reads the signed-in user's own `profiles` row. The row always exists by
  * the time this is called — the `on_auth_user_created` DB trigger creates
  * it at sign-up, before the app ever gets a session. */
 export async function getOwnProfile(userId: string): Promise<Profile> {
+  await authReady();
   const { data, error } = await supabase
     .from("profiles")
     .select("id, display_name, avatar_url, usertag, created_at, updated_at")

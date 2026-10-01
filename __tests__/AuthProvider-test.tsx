@@ -265,7 +265,20 @@ describe("AuthProvider", () => {
       await act(async () => {
         jest.advanceTimersByTime(OPTIMISTIC_START_MS);
       });
-      expect(state()).toBe('{"token":null,"isLoading":true}');
+      expect(state()).toBe('{"token":null,"isLoading":false}');
+    });
+
+    it("ends loading when clearSession runs while the start-up timer is still pending", async () => {
+      await render(
+        <AuthProvider>
+          <Probe />
+        </AuthProvider>,
+      );
+      await act(async () => {
+        fireEvent.press(screen.getByLabelText("clear"));
+      });
+      expect(state()).toBe('{"token":null,"isLoading":false}');
+      expect(mockReadStored).not.toHaveBeenCalled();
     });
   });
 });

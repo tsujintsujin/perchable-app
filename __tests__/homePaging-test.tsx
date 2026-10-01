@@ -12,7 +12,7 @@ jest.mock("@/modules/profile", () => ({
 }));
 
 const mockInvoke = jest.fn();
-jest.mock("@/lib/supabase", () => ({ supabase: { functions: { invoke: (...args: unknown[]) => mockInvoke(...args) } } }));
+jest.mock("@/lib/supabase", () => ({ supabase: { auth: { getSession: () => Promise.resolve({}) }, functions: { invoke: (...args: unknown[]) => mockInvoke(...args) } } }));
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: jest.fn() } }));
 
 import Home from "@/app/(tabs)/index";

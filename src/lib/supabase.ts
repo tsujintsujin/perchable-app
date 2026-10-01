@@ -101,7 +101,13 @@ export async function readStoredSession(): Promise<Session | null> {
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw);
-    return parsed?.access_token && parsed?.refresh_token && parsed?.user ? (parsed as Session) : null;
+    // Same shape check as auth-js's own session validation.
+    const valid =
+      typeof parsed?.access_token === "string" &&
+      typeof parsed?.refresh_token === "string" &&
+      typeof parsed?.expires_at === "number" &&
+      typeof parsed?.user?.id === "string";
+    return valid ? (parsed as Session) : null;
   } catch {
     return null;
   }

@@ -69,11 +69,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Sets the session to null now, stops token refresh, and ignores auth events until a real sign-in.
+  // Sets the session to null now (ending any start-up loading), stops token refresh, and ignores auth events until a real sign-in.
   const clearSession = useCallback(() => {
     clearedRef.current = true;
     supabase.auth.stopAutoRefresh();
     setSession(null);
+    setIsLoading(false);
   }, []);
 
   return (

@@ -1,8 +1,10 @@
 import { supabase } from "@/lib/supabase";
+import { authReady } from "@/lib/requestTimeout";
 
 /** Live usertag check, excluding the caller's own row. `usertag` must already
  * be lowercased — the DB's CHECK constraint requires it. */
 export async function checkUsertagAvailable(usertag: string, ownUserId: string): Promise<boolean> {
+  await authReady();
   const { data, error } = await supabase
     .from("profiles")
     .select("id")

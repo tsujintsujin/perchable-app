@@ -1,6 +1,6 @@
 const mockInvoke = jest.fn();
 jest.mock("@/lib/supabase", () => ({
-  supabase: { functions: { invoke: (...args: unknown[]) => mockInvoke(...args) } },
+  supabase: { auth: { getSession: () => Promise.resolve({}) }, functions: { invoke: (...args: unknown[]) => mockInvoke(...args) } },
 }));
 
 import { FunctionsFetchError, FunctionsHttpError, FunctionsRelayError } from "@supabase/supabase-js";
