@@ -169,3 +169,17 @@ Neither package contains `android/`, `ios/`, a `.podspec`, `expo-module.config.j
 - Home keeps a `__DEV__`-only "Debug" link (see decisions).
 - Not exercised on device by me: offline cold-start timing (B6), poster 404, the debug-button regression, TalkBack. All Queenie's.
 - The emulator ran on a restarted td_emu; it is still running, signed in.
+
+## Manager — server deploy + live checks (2026-10-01)
+- Ruby: server PASS ("safe to deploy as-is"); app FIX NEEDED (1 medium: Sentry over-reports TMDB
+  5xx; 5 low). → Bug 1 to Bella.
+- **Deployed `tmdb` v2** (`supabase functions deploy tmdb`; `_shared/tmdb.ts` bundled; verify_jwt on).
+- Live curl (anon JWT fetched in memory, never stored): popular p1 → 200, 20 results × 5 fields, no
+  `adult`, `Cache-Control: public, max-age=300`; no auth right after → **401** (no CDN leak of the
+  cached 200); page `0`/`501`/`1e2`/`%205`/`abc`/`1.5`/empty → 400 `invalid_page`, no cache header;
+  `endpoint=foo` / missing → 400 `invalid_endpoint`; page 500 → 200; page omitted → page 1;
+  OPTIONS → 200 with 3 allow headers; error bodies contain no api_key / themoviedb /
+  status_message / key prefix (0 hits). Function logs not checked (logs API unavailable).
+- **M9 final (Manager decision):** report `misconfigured`, `upstream_auth`, `shape`, and a codeless
+  5xx that is not a relay error; never `upstream_error` (TMDB outage), `upstream_network`, relay 502,
+  4xx/429, timeout, offline.
