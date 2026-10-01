@@ -270,9 +270,16 @@ when that timer fires outside `act`/`waitFor` on a slow machine, React reports a
 data landing, not leaked work: nothing is pending after the test (RNTL unmounts first, `client.clear()` after).
 The `authReady()` 8 s timer is not involved (the file mocks `getSession` as resolved) and the PosterGrid
 announcement is synchronous.
-Fix in the test file only: `IS_REACT_ACT_ENVIRONMENT` is false for the file's tests (restored afterwards;
-RNTL turns it on inside `act`, which `fireEvent` and `unmount` still use), so results are observed with `findBy`
-as RTL intends; and `afterEach` now also `cancelQueries()` before `clear()`. No retries, no longer timeouts.
+Fix in the test file only (the act check stays on): home-test routes React Query's notifications through
+React's synchronous `act` with `notifyManager.setNotifyFunction` (restored in `afterAll`), so every query result
+lands inside act on any machine. `waitFor` switches the act environment off while it polls, so the notify
+function turns it on just for that call and puts it back. `afterEach` also `cancelQueries()` before `clear()`.
+No retries, no longer timeouts. (A first attempt that switched the act environment off for the file was
+rejected: it would hide a real update outside act in Home.)
+Other React Query tests: `homePaging-test.tsx` and `popularPaging-test.tsx` have the same exposure in principle, but
+already wrap their actions in an act that waits one timer tick. Run 10 times under the same 12-process load
+they gave 0 failures and 0 act warnings, so nothing was changed there. `queryClient-test.ts` and
+`requestTimeout-test.ts` render nothing.
 Proof: home-test alone with the 12-process load, before 3 failed of 14 runs, after 0 of 10. Full suite
 `npx jest --maxWorkers=50%` with `npx tsc --noEmit` running alongside, 5 runs: 37 suites, 373 tests passed,
 0 failures, 0 act(, 0 console warn/error in all 5. (One earlier run with heavier load hit unrelated 5 s timeouts
