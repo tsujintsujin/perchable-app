@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { usePulse } from "@/ui/Shimmer";
 import { colors, iconSize, lineHeight, motion, radius, size, spacing, type } from "@/ui/tokens";
@@ -12,6 +12,12 @@ type Props = {
   year?: number | null;
   /** Changing this lets a poster whose image failed try its image again (the list bumps it on a pull-to-refresh). */
   retryToken?: number;
+  /** Makes the tile a button (pressed scale 0.98); absent, it is a plain image. */
+  onPress?: () => void;
+  /** Overrides the default "{title}, {year}" label. */
+  accessibilityLabel?: string;
+  /** Stronger hairline border, for the large poster on movie details. */
+  emphasis?: boolean;
 };
 
 // Pulsing placeholder fill with the lavender wash; fills its parent.
@@ -35,43 +41,54 @@ export function PosterCardSkeleton() {
 }
 
 /** 2:3 poster tile: shimmer until the image loads, then the image; no poster or a failed image shows the title. */
-export function PosterCard({ id, posterUrl, title, year, retryToken = 0 }: Props) {
+export function PosterCard({ id, posterUrl, title, year, retryToken = 0, onPress, accessibilityLabel, emphasis = false }: Props) {
   // Keyed by URL and token, not a boolean: a recycled cell must not inherit the previous movie's failure, and a new token retries.
   const [failed, setFailed] = useState<{ url: string; token: number } | null>(null);
   const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
   const showImage = posterUrl !== null && !(failed?.url === posterUrl && failed.token === retryToken);
 
-  return (
-    <View
-      accessible
-      accessibilityRole="image"
-      accessibilityLabel={year ? `${title}, ${year}` : title}
-      style={[styles.tile, showImage && styles.imageTile]}
-    >
-      {showImage ? (
-        <>
-          {loadedUrl !== posterUrl && <ShimmerFill />}
-          <Image
-            testID="poster-image"
-            source={{ uri: posterUrl }}
-            style={styles.fill}
-            contentFit="cover"
-            cachePolicy="memory-disk"
-            recyclingKey={String(id)}
-            transition={motion.imageFade}
-            onLoad={() => setLoadedUrl(posterUrl)}
-            onError={() => setFailed({ url: posterUrl, token: retryToken })}
-          />
-        </>
-      ) : (
-        <View style={styles.fallback}>
-          <Text style={styles.fallbackIcon}>🎬</Text>
-          <Text style={styles.fallbackTitle} numberOfLines={3}>
-            {title}
-          </Text>
-        </View>
-      )}
+  const label = accessibilityLabel ?? (year ? `${title}, ${year}` : title);
+  const content = showImage ? (
+    <>
+      {loadedUrl !== posterUrl && <ShimmerFill />}
+      <Image
+        testID="poster-image"
+        source={{ uri: posterUrl }}
+        style={styles.fill}
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        recyclingKey={String(id)}
+        transition={motion.imageFade}
+        onLoad={() => setLoadedUrl(posterUrl)}
+        onError={() => setFailed({ url: posterUrl, token: retryToken })}
+      />
+    </>
+  ) : (
+    <View style={styles.fallback}>
+      <Text style={styles.fallbackIcon}>🎬</Text>
+      <Text style={styles.fallbackTitle} numberOfLines={3}>
+        {title}
+      </Text>
     </View>
+  );
+
+  if (!onPress) {
+    return (
+      <View accessible accessibilityRole="image" accessibilityLabel={label} style={[styles.tile, showImage && styles.imageTile, emphasis && styles.emphasis]}>
+        {content}
+      </View>
+    );
+  }
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint="Opens movie details"
+      style={({ pressed }) => [styles.tile, showImage && styles.imageTile, emphasis && styles.emphasis, pressed && styles.pressed]}
+    >
+      {content}
+    </Pressable>
   );
 }
 
@@ -87,6 +104,8 @@ const styles = StyleSheet.create({
   },
   // Flat fill behind the image so its fade-in runs over the loading colour, not the backdrop.
   imageTile: { backgroundColor: colors.bg.elevatedFlat },
+  emphasis: { borderColor: colors.border.hairlineStrong },
+  pressed: { transform: [{ scale: 0.98 }] },
   fill: { ...StyleSheet.absoluteFill },
   // Loading placeholder layers.
   shimmer: { backgroundColor: colors.bg.elevatedFlat },

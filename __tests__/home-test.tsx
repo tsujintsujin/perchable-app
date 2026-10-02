@@ -115,9 +115,9 @@ describe("Home: filled", () => {
     mockInvoke.mockResolvedValue({ data: PAGE, error: null });
     await renderHome();
 
-    expect(await screen.findByRole("image", { name: "Dune, 2021" })).toBeTruthy();
-    expect(screen.getByRole("image", { name: "Nosferatu, 1922" })).toBeTruthy();
-    expect(screen.getByRole("image", { name: "Untitled Year Unknown" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Dune, 2021" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Nosferatu, 1922" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Untitled Year Unknown" })).toBeTruthy();
     expect(screen.getByText("🦉 perchable")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Open My Profile" })).toBeTruthy();
     expect(screen.getByText("Perch Roulette")).toBeTruthy();
@@ -129,16 +129,17 @@ describe("Home: filled", () => {
   it("shows the fallback icon and title for a movie with no poster", async () => {
     mockInvoke.mockResolvedValue({ data: PAGE, error: null });
     await renderHome();
-    await screen.findByRole("image", { name: "Dune, 2021" });
+    await screen.findByRole("button", { name: "Dune, 2021" });
     expect(screen.getByText("🎬")).toBeTruthy();
     expect(screen.getByText("Nosferatu")).toBeTruthy();
   });
 
-  it("is not tappable: no poster is a button", async () => {
+  it("makes every poster a button that says it opens movie details", async () => {
     mockInvoke.mockResolvedValue({ data: PAGE, error: null });
     await renderHome();
-    await screen.findByRole("image", { name: "Dune, 2021" });
-    expect(screen.queryByRole("button", { name: /Dune/ })).toBeNull();
+    const tile = await screen.findByRole("button", { name: "Dune, 2021" });
+    expect(tile.props.accessibilityHint).toBe("Opens movie details");
+    expect(screen.getByRole("button", { name: "Nosferatu, 1922" }).props.accessibilityHint).toBe("Opens movie details");
   });
 });
 
@@ -151,7 +152,7 @@ describe("Home: loading", () => {
     expect(announce).toHaveBeenCalledWith("Loading movies");
     expect(screen.getByRole("header", { name: "Popular right now" })).toBeTruthy();
     expect(screen.getByText("Perch Roulette")).toBeTruthy();
-    expect(screen.queryByRole("image")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Dune|Nosferatu|Untitled/ })).toBeNull();
   });
 });
 
@@ -181,7 +182,7 @@ describe("Home: error", () => {
     expect(mockInvoke).toHaveBeenCalledTimes(1);
 
     await fireEvent.press(screen.getByRole("button", { name: "Retry" }));
-    expect(await screen.findByRole("image", { name: "Dune, 2021" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Dune, 2021" })).toBeTruthy();
     expect(mockInvoke).toHaveBeenCalledTimes(2);
     expect(mockInvoke.mock.calls[1][0]).toBe("tmdb?endpoint=popular&page=1");
   });
@@ -210,7 +211,7 @@ describe("Home: error", () => {
     expect(mockCapture).not.toHaveBeenCalled();
 
     await fireEvent.press(screen.getByRole("button", { name: "Retry" }));
-    expect(await screen.findByRole("image", { name: "Dune, 2021" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Dune, 2021" })).toBeTruthy();
   });
 
   it("a wrong-shaped response ends in the error state and is reported once", async () => {
@@ -233,7 +234,7 @@ describe("Home: Roulette", () => {
   it("is a full-strength button whose tap shows the coming-soon toast and changes nothing else", async () => {
     mockInvoke.mockResolvedValue({ data: PAGE, error: null });
     await renderHome();
-    await screen.findByRole("image", { name: "Dune, 2021" });
+    await screen.findByRole("button", { name: "Dune, 2021" });
 
     const button = screen.getByRole("button", { name: "Surprise me" });
     expect(button.props.accessibilityHint).toBe("Smart picks are coming soon");
@@ -242,7 +243,7 @@ describe("Home: Roulette", () => {
 
     await fireEvent.press(button);
     expect(screen.getByText("Smart picks are coming soon.")).toBeTruthy();
-    expect(screen.getByRole("image", { name: "Dune, 2021" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Dune, 2021" })).toBeTruthy();
     expect(mockInvoke).toHaveBeenCalledTimes(1);
   });
 });

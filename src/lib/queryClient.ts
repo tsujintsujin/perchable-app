@@ -27,6 +27,8 @@ export function createQueryClient() {
   });
   // The Popular list is session-long: fresh for 5 minutes and only a pull refreshes it.
   client.setQueryDefaults(["movies", "popular"], { staleTime: 5 * MINUTE_MS, refetchOnMount: false });
+  // A movie's details change slowly: fresh for 30 minutes.
+  client.setQueryDefaults(["movies", "details"], { staleTime: 30 * MINUTE_MS });
   return client;
 }
 

@@ -13,7 +13,7 @@ describe("tmdbImage", () => {
   });
 
   it("uses the M6 sizes", () => {
-    expect(IMAGE_SIZE).toEqual({ poster: "w342", detailsPoster: "w500", cast: "w185" });
+    expect(IMAGE_SIZE).toEqual({ poster: "w342", detailsPoster: "w500", backdrop: "w780", cast: "w185" });
   });
 });
 

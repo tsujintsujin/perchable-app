@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { act, render, screen } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, userEvent } from "@testing-library/react-native";
 import { colors } from "@/ui/tokens";
 import { PosterCard, PosterCardSkeleton } from "@/ui/PosterCard";
 
@@ -79,6 +79,39 @@ describe("PosterCard", () => {
   it("has no press behaviour and no button role in 12a", async () => {
     await render(<PosterCard id={1} posterUrl={URL_A} title="Dune" />);
     expect(screen.queryByRole("button")).toBeNull();
+  });
+});
+
+describe("PosterCard with onPress", () => {
+  it("is a button with the open-details hint, calls onPress, and keeps the image and its props", async () => {
+    const onPress = jest.fn();
+    await render(<PosterCard id={7} posterUrl={URL_A} title="Dune" year={2021} onPress={onPress} />);
+    const tile = screen.getByRole("button", { name: "Dune, 2021" });
+    expect(tile.props.accessibilityHint).toBe("Opens movie details");
+    expect(screen.queryByRole("image")).toBeNull();
+    expect(image().props.recyclingKey).toBe("7");
+    await fireEvent.press(tile);
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it("scales to 0.98 while pressed and not otherwise", async () => {
+    await render(<PosterCard id={1} posterUrl={URL_A} title="Dune" onPress={() => {}} />);
+    const tile = () => screen.getByRole("button", { name: "Dune" });
+    expect(StyleSheet.flatten(tile().props.style).transform).toBeUndefined();
+    // Holds the press for 400 ms; the tile is read part-way through.
+    const hold = userEvent.setup().longPress(tile(), { duration: 400 });
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 150));
+    });
+    expect(StyleSheet.flatten(tile().props.style).transform).toEqual([{ scale: 0.98 }]);
+    await hold;
+    expect(StyleSheet.flatten(tile().props.style).transform).toBeUndefined();
+  });
+
+  it("still shows the fallback title when there is no poster, and an overriding label wins", async () => {
+    await render(<PosterCard id={1} posterUrl={null} title="Nosferatu" onPress={() => {}} accessibilityLabel="Poster for Nosferatu" />);
+    expect(screen.getByRole("button", { name: "Poster for Nosferatu" })).toBeTruthy();
+    expect(screen.getByText("Nosferatu")).toBeTruthy();
   });
 });
 

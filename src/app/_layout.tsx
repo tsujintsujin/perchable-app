@@ -15,6 +15,9 @@ initSentry();
 
 SplashScreen.preventAutoHideAsync();
 
+// A cold start on a deep link (perchable://movie/<id>) gets Home underneath it, so back lands on Home instead of exiting.
+export const unstable_settings = { anchor: "(tabs)" };
+
 // Wraps the app in the one query client and the single shared auth listener
 // before anything below (including the route guard, which needs it) renders.
 export default function RootLayout() {
@@ -55,6 +58,7 @@ function RootNavigator() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!!session}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="movie/[id]" />
       </Stack.Protected>
       <Stack.Protected guard={!session}>
         <Stack.Screen name="(auth)" />

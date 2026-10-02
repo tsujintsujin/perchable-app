@@ -44,6 +44,8 @@ export const colors = {
     scrim: "rgba(18,16,22,0.6)",
     /** Wash over a loading poster tile. */
     shimmerWash: "rgba(214,196,233,0.10)",
+    /** Transparent start of the details backdrop's fade into `bg.base`. */
+    fadeStart: "rgba(18,16,22,0)",
   },
 } as const;
 
@@ -155,6 +157,42 @@ export const size = {
   spinnerStrokeLg: 3,
   /** Height shared by the loading-more and failed-load list footers, so the list never re-clamps when one replaces the other. */
   footerBlock: 88,
+  /** Movie details: backdrop height, poster width and its overlap with the backdrop, title column offset, compact-bar trigger. */
+  detailsBackdrop: 220,
+  detailsPosterWidth: 120,
+  detailsPosterOverlap: 64,
+  detailsTitleOffset: 76,
+  detailsBarShowAt: 150,
+  /** Left edge of the compact top bar's title (clears the back chip). */
+  detailsBarTitleLeft: 76,
+  /** Rating and tier chips, and the S/A/B/C legend badges. */
+  chipHeight: 36,
+  /** Cast photo diameter (an `Avatar lg`) and the gap between cast items. */
+  castItem: 88,
+  castGap: 12,
+  /** Tier legend popover: width and left offset from the content edge. */
+  popoverWidth: 260,
+  popoverOffset: 90,
+  /** Spoiler-lounge composer height. */
+  composerHeight: 48,
+} as const;
+
+/** Backdrop fade: where (0..1 of its height) the gradient starts. */
+export const backdropFade = { start: 0.4 } as const;
+
+/** Loading-skeleton block sizes on movie details. */
+export const detailsSkeleton = {
+  titleBar: 24,
+  textBar: 16,
+  chipLong: 110,
+  chipShort: 90,
+  synopsisHeading: { width: 120, height: 24 },
+  castHeading: { width: 80, height: 24 },
+  castNameBar: { width: 64, height: 12 },
+  castRoleBar: { width: 44, height: 10 },
+  /** Widths (share of the column) of the two title bars. */
+  titleLong: "100%",
+  titleShort: "70%",
 } as const;
 
 /** Extra touch area that grows an icon button to the minimum touch target. */
@@ -208,6 +246,7 @@ export const leading = {
 /** Explicit line heights for the type roles that need one. */
 export const lineHeight = {
   caption: 16,
+  body: 22,
   subhead: 24,
   title: 30,
 } as const;
@@ -215,6 +254,8 @@ export const lineHeight = {
 /** Animation durations (ms). */
 export const motion = {
   imageFade: 200,
+  /** Compact top bar fade on movie details. */
+  barFade: 150,
 } as const;
 
 export const elevation = {
@@ -239,4 +280,6 @@ export const type = {
   hero: { fontSize: 38, fontFamily: "Poppins_800ExtraBold" },
   /** Dev-only harness text. */
   mono: { fontSize: 12, fontFamily: "monospace" },
+  /** S/A/B/C tier letter. */
+  tierLetter: { fontSize: 15, fontFamily: "Poppins_800ExtraBold" },
 } as const;

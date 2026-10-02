@@ -80,12 +80,12 @@ describe("Home footer states (DESIGN Build 12b)", () => {
       pageOf(url) === 1 ? { data: page(1, 3), error: null } : new Promise(() => {}),
     );
     await renderHome();
-    await screen.findByRole("image", { name: "Movie 11, 2021" });
+    await screen.findByRole("button", { name: "Movie 11, 2021" });
 
     await reachEnd();
     expect(screen.getByText("Loading more…")).toBeTruthy();
     expect(announce).toHaveBeenCalledWith("Loading more movies");
-    expect(screen.getByRole("image", { name: "Movie 11, 2021" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Movie 11, 2021" })).toBeTruthy();
   });
 
   it("shows 'You've reached the end.' after the last page and makes no further request", async () => {
@@ -101,12 +101,12 @@ describe("Home footer states (DESIGN Build 12b)", () => {
       pageOf(url) === 1 ? { data: page(1, 3), error: null } : { data: null, error: httpError(400) },
     );
     await renderHome();
-    await screen.findByRole("image", { name: "Movie 11, 2021" });
+    await screen.findByRole("button", { name: "Movie 11, 2021" });
     await reachEnd();
 
     expect(await screen.findByText("⚠ Couldn't load more movies.")).toBeTruthy();
     expect(screen.queryByText("Couldn't load movies")).toBeNull();
-    expect(screen.getByRole("image", { name: "Movie 11, 2021" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Movie 11, 2021" })).toBeTruthy();
     const retry = screen.getByRole("button", { name: "Retry loading more movies" });
     expect(StyleSheet.flatten(retry.props.style).height).toBeGreaterThanOrEqual(48);
 
@@ -116,7 +116,7 @@ describe("Home footer states (DESIGN Build 12b)", () => {
     // Only page 2 (and whatever the short list then asks for after it) is requested; page 1 is never refetched.
     expect(mockInvoke.mock.calls[0][0]).toContain("page=2");
     expect(mockInvoke.mock.calls.some(([url]) => pageOf(url) === 1)).toBe(false);
-    expect(await screen.findByRole("image", { name: "Movie 21, 2021" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Movie 21, 2021" })).toBeTruthy();
   });
 });
 
@@ -141,7 +141,7 @@ describe("Home pull-to-refresh (DESIGN Build 12b)", () => {
     await act(() => refreshControl().onRefresh());
 
     expect(await screen.findByText("Couldn't refresh. Check your connection.")).toBeTruthy();
-    expect(screen.getByRole("image", { name: "Movie 11, 2021" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Movie 11, 2021" })).toBeTruthy();
     expect(screen.queryByText("Couldn't load movies")).toBeNull();
   });
 });
@@ -156,7 +156,7 @@ describe("Home remount (C6)", () => {
     await view.unmount();
 
     await renderHome(client);
-    expect(await screen.findByRole("image", { name: "Movie 11, 2021" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Movie 11, 2021" })).toBeTruthy();
     expect(mockInvoke).toHaveBeenCalledTimes(before);
   });
 });

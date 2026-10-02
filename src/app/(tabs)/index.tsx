@@ -6,7 +6,7 @@ import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { Avatar } from "@/ui/Avatar";
 import { Toast, useToast } from "@/ui/Toast";
 import { colors, size, spacing, type } from "@/ui/tokens";
-import { PosterGrid, RouletteCard, usePopularMovies } from "@/modules/movies";
+import { PosterGrid, RouletteCard, useOpenMovie, usePopularMovies } from "@/modules/movies";
 import { useOwnProfile } from "@/modules/profile";
 
 // Shown when pull-to-refresh fails and the earlier posters stay.
@@ -22,6 +22,7 @@ export default function Home() {
   // Stable so the hook's refresh callback is not rebuilt every render.
   const onRefreshError = useCallback(() => show(REFRESH_FAILED_MESSAGE, "error"), [show]);
   const popular = usePopularMovies({ onRefreshError });
+  const openMovie = useOpenMovie();
 
   return (
     <View style={styles.root}>
@@ -53,6 +54,7 @@ export default function Home() {
         refreshing={popular.refreshing}
         retryToken={popular.refreshCount}
         onRefresh={popular.refresh}
+        onOpenMovie={openMovie}
         header={<RouletteCard onPress={() => toast.show("Smart picks are coming soon.", "coming-soon")} />}
       />
       <Toast message={toast.message} variant={toast.variant} />
