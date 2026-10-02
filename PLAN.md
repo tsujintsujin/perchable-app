@@ -82,8 +82,8 @@ movie-domain modules.
 
 Every module from 2 onward that adds a user-owned table carries a
 Done-means bullet: "deleting the account removes this module's rows
-(`ON DELETE CASCADE`)" — see each Build below. Modules 1–4 are detailed in
-full (Module 4 on 2026-10-01); 5–12 are one-line-rough until the team
+(`ON DELETE CASCADE`)" — see each Build below. Modules 1–5 are detailed in
+full (Module 4 on 2026-10-01, Module 5 on 2026-10-02); 6–12 are one-line-rough until the team
 reaches them, but are still Build-numbered here so milestones and manual
 steps stay unambiguous.
 
@@ -1227,25 +1227,685 @@ Phases: 0 Dianne mockup (details: loading / error / not-found / loaded,
         3 Queenie QA · 4 Ruby review · 5 Manager ships
 ```
 
-### Modules 5–12 — rough (one line each, detailed when the team reaches them)
+### Module 5 — Quick-add swipe (Builds 14, 15, 16a, 16b)
+
+Detailed 2026-10-02 (Priya, at the Manager's request, after the Module 4
+milestone, PR #8). Justin is away and said not to wait: every product choice he
+might want to change is a **NEEDS JUSTIN** item with the default that applies
+now (list below). Defaults marked "Manager default" are process or architecture
+choices, not features.
+
+**Owner tags (as Modules 3 and 4):** [Jest] Bella's Jest tests · [SQL] Bella's
+rolled-back SQL test file, re-run by the Manager · [QA] Queenie on the emulator ·
+[Mgr] the Manager reads or runs it · [Ruby] Ruby greps or reads the code.
+
+**What Vision says (Part 2).** A "Quick add" area where the user swipes left or
+right to add to their collection; the sequence is selectable, from most recent
+to older or random; clicking the poster opens the movie's details page. The
+collection is where a user later puts a caption on each watched movie (Module 7).
+Read as: **swipe right adds to the collection, swipe left does not**; the
+approved rough plan named three orders (recent, older, random).
+
+**What exists today (checked in the repo 2026-10-02).**
+- *Libraries.* `react-native-gesture-handler` ~2.32.0, `react-native-reanimated`
+  4.5.1 and `react-native-worklets` 0.10.1 are in `package.json` since the
+  Phase 0 template (git: commit 2cf9624, never changed), which is **before** the
+  Build 1 dev build. The generated native package list of the installed dev
+  client (`android/app/build/generated/autolinking/.../PackageList.java`) already
+  contains `RNGestureHandlerPackage`, `ReanimatedPackage` and `WorkletsPackage`.
+  **So no native rebuild is expected** (M5). But nothing in `src/`, `__tests__/`
+  or `jest.setup.js` uses any of the three yet, there is **no
+  `GestureHandlerRootView`** anywhere, and there is no `babel.config.js` (the
+  Expo preset is expected to apply the worklets plugin; unproven until a worklet
+  runs, Build 14 A1). `expo-haptics` is **not** installed. `@react-native-async-storage/async-storage`
+  is installed and natively linked.
+- *Proxy.* The `tmdb` Edge Function answers `popular` and `details` only
+  (`supabase/functions/_shared/tmdb.ts`: pure logic, adult filter, error codes;
+  `index.ts` is the thin Deno wrapper). No `discover` endpoint.
+- *Movies module.* `getPopularMovies`, `getPopularPage` (the in-queryFn loop over
+  adult-emptied pages), `getMovieDetails`, `usePopularMovies`, `useOpenMovie`
+  (double-tap-safe push to `movie/[id]`), `tmdbImage` (sizes w342/w500/w780/w185),
+  `MovieApiError` + typed retry/Sentry rules, `Movie` type
+  (`id, title, poster_path, vote_average, release_date`; no overview).
+- *Design.* DESIGN §3 already routes a root-level `quick-add.tsx` "pushed from
+  Home, outside the tab bar (full-screen focus)"; §2 lists `SwipeDeckCard`
+  (`movie`, `onSwipeLeft`, `onSwipeRight`; idle / dragging / exiting-left /
+  exiting-right) and §1.5 says the top card is a flat fill (no `BlurView`, it
+  re-renders every drag frame); §1 has a `danger` colour "skip-swipe icon" and
+  `glow.purple` "active swipe card". §4 reserves `src/modules/quick-add/` (deck
+  logic and state) and `src/modules/collection/` (collection api). **There is no
+  Build 14 section in DESIGN yet and Home has no Quick Add entry** (Dianne's
+  Phase 0 below).
+- *Database.* Four migrations exist (profiles, avatars storage, moderation,
+  profiles privileges). **No collection table.** `reports.target_type` already
+  allows `collection_item`, and `reports.target_id` is a **uuid**, so a collection
+  entry needs a uuid `id` of its own. There is no `has_accepted_terms()` yet
+  (Build 11 runs just before Build 20). Migrations are applied by the Manager
+  through the Management API after review; there is no migration history table.
+- *Profile.* "0 movies watched" is a hard-coded string
+  (`src/app/(tabs)/profile/index.tsx`).
+- *Emulator.* td_emu has window/transition animations **off** (CLAUDE.md). That is
+  very likely what Android reports as "reduce motion" (M4).
+
+#### Module-wide decisions (M1–M11)
+
+- **M1 Where the deck lives.** A root-level route `src/app/quick-add.tsx`, inside
+  the **session-guarded group** of the root `_layout.tsx` (like `movie/[id]`),
+  full-screen with **no tab bar** (DESIGN §3 already says so). Entry: a **Quick
+  Add** row on Home between the Perch Roulette card and the section title, drawn
+  by Dianne (a button-like card, not a new tab: the tab bar is fixed at five items
+  by DESIGN §2). Perch Roulette stays a UI-only shell, unrelated to the deck.
+  The route is a thin composition of the module's exports; no Supabase call and
+  no fetching logic in the file. Header: back chip "Back" on the left (as
+  details), title "Quick Add"; the **top-right 64x64 gear corner stays empty**
+  (DESIGN §7), so the sequence picker (Build 15) goes below the header. The route
+  opens through a double-tap-safe helper like `useOpenMovie`. Deep link
+  `perchable://quick-add` is free from the scheme. **Flagged N1, N11.**
+- **M2 Deck data source, paging, de-dup (answers "which list feeds it").**
+  The deck reads **TMDB lists through the proxy, never anything else**, one
+  infinite query per ordering, 20 movies a page, all through `getXPage` loops
+  like Build 12b C4b.
+  - Build 14: **Popular** (the existing `popular` endpoint) is the only source,
+    because the ordering choice does not exist yet.
+  - Build 15 adds **one** proxy endpoint, `endpoint=discover&sort=<s>&page=<n>`
+    (TMDB `/discover/movie`), with a **whitelist** of `s`:
+    `newest` (`sort_by=primary_release_date.desc`, `primary_release_date.lte=<today
+    UTC>`, so unreleased titles never show), `oldest`
+    (`primary_release_date.asc`), `popular` (`popularity.desc`, the pool for
+    Random). All three add `include_adult=false` and `vote_count.gte=200`
+    (otherwise a date sort starts with zero-vote obscurities, N10); the minimum
+    is one named constant and the Manager looks at the first three live pages of
+    each order before deploy and tunes it.
+  - **Recent / older / random, concretely.** *Newest first* = release date
+    descending from today, *Oldest first* = release date ascending, both paged
+    1, 2, 3 up to TMDB's 500-page cap. *Random* has no TMDB endpoint, so it is
+    made on the device: the pool is the `popular` order pages **1 to 100** (the
+    top 2,000 titles with 200+ votes); the page **visiting order is shuffled once
+    per deck session** (Fisher-Yates over 1..100) and each fetched page's 20
+    results are shuffled again, so no page repeats and no two sessions match.
+    A page past TMDB's last page that comes back empty is skipped by the loop.
+  - **Paging and prefetch.** The raw pages are public TMDB data, so the query
+    keys are not owner-tagged: `["movies","deck","newest"|"oldest"]` and
+    `["movies","deck","random", seed]` (the seed is a number made when Random is
+    chosen); defaults added to `queryClient.ts`: `staleTime` 30 min,
+    `refetchOnMount: false`, no pull-to-refresh. The deck is a **pure function of
+    (loaded pages, excluded ids)**, not an array with an index: `cards =
+    flatten(pages, de-duplicated by id).filter(not excluded)`; the top card is
+    `cards[0]`. So **undo and a rolled-back add put the card back on top by just
+    leaving the excluded set**, in its original place. The next page is requested
+    from the **swipe handler** (an event, never an effect: the standards check
+    bans effect-based fetching) when 5 or fewer usable cards remain, one request
+    in flight at a time. The `queryFn` loop reads up to 3 consecutive TMDB pages
+    and returns the first with at least one id not excluded (reading the
+    exclusions through a ref); three all-excluded pages with more to come end in a
+    "keep going" Retry row rather than a false end. The first load shows the
+    loading state until the first page **and** the saved skips (M3) are both
+    ready, so a skipped movie never flashes.
+  - **Excluded ids** = saved skips (M3) ∪ the user's collection (Build 16b) ∪ ids
+    swiped this session (Build 14's right swipes, which are not stored yet).
+  - Next two posters are prefetched with `expo-image`'s `prefetch` (w780, the new
+    deck size constant) so a swipe never shows a blank card.
+  - New TMDB endpoints are **server work: Bella writes the pure file change in
+    its own commit and log entry, Ruby reviews it, the Manager deploys it and
+    curls it; never Bella** (M6).
+- **M3 What swipe-left means, and where that state lives (answers "skip forever
+  or this session").** **Default: skip is remembered on this device, not on the
+  server.** A skipped movie is not shown again by any ordering until the user
+  taps **"Start over"** on the caught-up screen (clears the list). State lives in
+  `src/modules/quick-add/` as a small store over AsyncStorage: one key per signed-in
+  user (`quickAdd:skips:<userId>`), a JSON array of movie ids **capped at 5,000**
+  (oldest dropped), plus the last chosen ordering (Build 15) in a second key. It
+  holds nothing secret. **It never throws:** a read that fails or holds corrupt
+  JSON is treated as empty, a write that fails is swallowed and the deck carries
+  on in memory (LESSONS: storage adapters must never reject; a full device disk
+  is not a bug to report). Cleanup: the keys are per user, so another account never
+  reads them; and a small hook mounted in the root navigator (the module exports
+  it) removes the departing user's keys when the session goes from a user to none
+  (sign-out and account deletion both end there). A server table was rejected for
+  v1: more schema, RLS, cascade and a sync story for a state that only improves
+  the browsing order. **Flagged N3.**
+- **M4 Gesture contract (answers the numbers, buttons, haptics, reduce motion).**
+  Built with `Gesture.Pan()` (gesture-handler) driving reanimated shared values,
+  with the decision in a **pure function** `decideSwipe(translationX, velocityX,
+  width)` (Jest). Starting values (Bella states the units gesture-handler reports in
+  the log; Queenie judges feel, Manager may tune the constants, they are one file):
+  - Pan activates after **10 dp** horizontal movement and **fails** on 20 dp
+    vertical movement first, one pointer only, so a second finger or a vertical
+    move never moves the card.
+  - **Commit** when the card passed **35% of the screen width**, **or** the
+    release speed is at least **800 dp/s in the direction of the translation**
+    and the card moved at least **40 dp** (a short flick works; a tap with a
+    twitch, or a finger reversing, does not). Otherwise a spring returns it.
+  - While dragging: the card follows the finger, tilts up to 12 degrees by
+    distance, and a "SKIP" (left, `danger`) or "ADD" (right, gold) stamp fades in
+    with the distance; the card behind scales up from 0.95. Only **three** cards
+    are mounted (top, next, one behind). On commit the card flies off in about
+    200 ms and the next card moves up; the new top card is **interactive at once**,
+    the leaving card animates in its own layer, and the same exit runs when a button
+    is used.
+  - **Tap on the card** (movement under the pan slop) opens details through the
+    double-tap-safe push (Vision: clicking the poster opens details).
+  - **Buttons, the accessible way** (TalkBack cannot swipe a custom pan): round
+    Skip and Add buttons (56 dp) and an Undo button under the card, labelled
+    "Skip {title}", "Add {title} to collection", "Undo"; the card also exposes the
+    two actions as `accessibilityActions`. After any swipe the result is announced
+    ("Skipped {title}", "Added {title}") and screen-reader focus moves to the new
+    top card. Buttons are disabled while a card is mid-exit, so a double-tap is one
+    swipe.
+  - **Reduce motion.** The card still follows the finger (direct manipulation);
+    with reduce motion on, no tilt, no fly-off, no scale on the card behind: the
+    card fades out in 150 ms and the next appears. td_emu runs with animations off,
+    which Android very likely reports as reduce motion, so **QA tests both modes
+    deliberately** (animation scales temporarily set to 1 for the full-motion pass,
+    restored after, since they are part of the emulator tuning).
+  - **Haptics: none.** `expo-haptics` is not installed and would be a new native
+    module (rebuild). **Flagged N6.**
+  - Real-phone-only risk, said plainly in the log: with the phone's **gesture
+    navigation**, a drag that starts at the very screen edge can trigger system Back
+    (td_emu uses 3-button navigation). The card keeps a 24 dp side margin so normal
+    drags start inside; only Justin can confirm on a phone (APK only when he asks).
+- **M5 Libraries and native (answers "wired? rebuild?").** No new dependency.
+  Gesture-handler, reanimated and worklets are linked in the installed dev client
+  (see above), package versions unchanged since before Build 1, so **no rebuild
+  is expected**. To prove it, Build 14 A1 runs a worklet round trip on the device
+  (a shared value animated, the callback reaching JS); Reanimated also fails loudly
+  on a JS/native version mismatch at startup. If the Expo preset does not apply the
+  worklets plugin, the fix is JS-only: a `babel.config.js` with `babel-preset-expo`
+  and the worklets plugin last, plus a Metro cache clear. **If a rebuild does turn
+  out to be needed the Manager does it (short `GRADLE_USER_HOME`, app CLAUDE.md)
+  and not while Queenie is on the emulator.** `GestureHandlerRootView` (flex 1) is
+  added once in the root `_layout.tsx`, outermost, a JS-only change. The app runs
+  with **React Compiler on** (`app.json`): shared values are read and written with
+  `.get()` / `.set()` as Reanimated's React Compiler notes require (Bella checks the
+  installed docs), and the callback to JS uses whichever of `runOnJS` /
+  `scheduleOnRN` the installed worklets version provides.
+- **M6 The proxy grows by one endpoint, `discover`, in Build 15 (rules as Module 4
+  M2).** Logic in `_shared/tmdb.ts` (pure, no Deno globals, checked by
+  `npx tsc --noEmit -p supabase/functions/tsconfig.json` and Jest importing it
+  without the `.ts` suffix); today's date is an input (`today`) so Jest is
+  deterministic, and `index.ts` supplies `new Date().toISOString().slice(0,10)`.
+  `sort` is validated against the whitelist **before** TMDB is called (anything
+  else, or absent: 400 `invalid_sort`), then `page` as today; adult results dropped;
+  fixed-text `{ error, code }` bodies, the M2 status mapping (TMDB 401/403 to 502
+  `upstream_auth`, etc.), no key, URL or `status_message` in any body or log;
+  `Cache-Control: public, max-age=300`. Response shape identical to `popular`
+  (so one validator, `parseMovieList`, serves both). The Manager deploys with
+  `npx supabase functions deploy tmdb --use-api --project-ref <ref>` and nothing
+  else touches the live project (app CLAUDE.md).
+- **M7 The collection table (Build 16a).** `public.collection_items`:
+  `id uuid primary key default gen_random_uuid()` (the uuid a report's `target_id`
+  will point at when Build 25 reports a caption), `user_id uuid not null default
+  auth.uid() references auth.users(id) on delete cascade`, `movie_id integer not
+  null check (movie_id between 1 and 2147483647)` (same range as the proxy),
+  `caption text null check (caption is null or char_length(caption) <= 500)`
+  (**the column exists now so Build 20 needs no schema change to the table shape;
+  nothing can write it yet**), `added_at timestamptz not null default now()`,
+  **`unique (user_id, movie_id)`** (no duplicate adds, enforced by the database),
+  index `(user_id, added_at desc)` (Build 19's list). **No title, poster or date is
+  stored** (N8): a client-supplied title would be text other users later see with
+  no terms gate; the movie data always comes from TMDB through the proxy.
+  Build 19 owns how titles are loaded for a list (a batch proxy endpoint or
+  per-id details). Grants and RLS: `revoke all on public.collection_items from
+  anon, authenticated` first (LESSONS: this project's default privileges hand
+  both roles TRUNCATE/REFERENCES/TRIGGER), then `grant select, delete` and `grant
+  insert (movie_id)` to `authenticated` **only**: `user_id`, `id`, `added_at`
+  fill from defaults, **`caption` is not insertable and there is no UPDATE grant
+  at all**, so no content path exists that could bypass the terms gate. Policies:
+  SELECT `user_id = auth.uid()`; INSERT `with check (user_id = auth.uid())`;
+  DELETE `using (user_id = auth.uid())`. **Reads are own-only in this Module.**
+  *Carry-forward (written into the migration comment and checked by Ruby):* when
+  Builds 19/24/25 let other users read a collection, the SELECT policy must also
+  call `public.is_blocked_between(...)` and respect the comments/visibility
+  decision; when Build 20 adds caption writing, it adds a column-level `UPDATE
+  (caption)` grant and a policy that calls `public.has_accepted_terms()` (Module 3
+  rules 1–5; the SQL test copies `supabase/tests/terms_gate_rls.sql`). Adding a
+  movie is not user-generated content, so **Build 16 needs no terms gate**.
+  Account deletion: `on delete cascade` from `auth.users`; the `delete-account`
+  Edge Function is unchanged (it already deletes the auth user), as Build 10a did.
+  Moderation: nothing in this table is UGC until Build 20, so `docs/ADMIN-MODERATION.md`
+  is unchanged (Build 20 adds the caption-removal query, rule 5).
+- **M8 Add semantics (Build 16b).** Swipe right (or the Add button) **inserts one
+  row with `movie_id` only** through `src/modules/collection/`, **optimistically**:
+  the card leaves at once and its id enters the collection-ids cache; on failure the
+  id leaves it again (the card returns on top, M2) with an error `Toast` ("Couldn't
+  add {title}. Check your connection."). The call passes through `authReady()` and
+  uses an abort at `REQUEST_TIMEOUT_MS` (8 s); there is **no retry** (the user can
+  swipe again; a blind retry could duplicate a tap). A duplicate (Postgres 23505,
+  e.g. the same movie added on another device) is a **silent success**, like the
+  report sheet's 23505 rule. **Undo** (one step, session only) returns the last
+  swiped card: for a skip it removes the id from the saved skips; for an add it
+  **deletes the row** (`delete ... where movie_id = $1`, RLS scopes it to the
+  caller) and, if that fails, the add stays and an error `Toast` says "Couldn't undo.
+  Check your connection." (Undo stays available). **Per-movie operations are
+  serialised:** an Undo pressed while that movie's add is still in flight waits for
+  it to settle, then deletes; if the add failed there is nothing to delete and the
+  card simply returns. **Offline swipe-right is not queued** (a persistent
+  offline write queue is new infrastructure); it fails as above (N7). The deck's
+  exclusion list and the Profile count come from one query, `getCollectionMovieIds`,
+  **paged in 1,000-row ranges until a short page** (the Supabase API returns at
+  most 1,000 rows per request by default; a single call would silently truncate and
+  show collected movies again). Query key owner-tagged `["collection","ids",
+  userId]` (user state, as `useOwnProfile`).
+- **M9 Sentry (Module 4's M9 rule, applied to the new calls).** TMDB `discover`
+  failures go through the same QueryCache `onError` rule (reported: 500
+  `misconfigured`, 502 `upstream_auth`, `shape`, anything unexpected; not reported:
+  offline, timeout, 502 `upstream_network`, a relay 502 with no code, 4xx, 429).
+  Collection calls are mutations, so the hook reports (once per failed call,
+  `environment` tag, never a user-typed value; none exist here): an RLS or grant
+  denial (42501), an unexpected 4xx/5xx from the API, an unexpected body shape.
+  **Not reported:** offline, timeout, `RequestTimeoutError`, 23505, the session
+  ending mid-request (sign-out while saving: no error, no state after unmount).
+  Storage failures in the skip store are not reported (M3).
+- **M10 Where code lives (DESIGN §4).** `src/modules/quick-add/` (Perchable-specific):
+  `hooks/` (`useQuickAddDeck(sequence)`), `components/` (`SwipeDeck`, picker, states),
+  `skipMemory.ts` (M3 store + the sign-out clean-up hook), `decideSwipe.ts`,
+  `index.ts`. `src/ui/SwipeDeckCard/` (the card, DESIGN §2). `src/modules/movies/`
+  gains `getDiscoverMovies`, `parseMovieList`, `IMAGE_SIZE.deck` (`w780`).
+  `src/modules/collection/` (new): `api/` (`addToCollection`, `removeFromCollection`,
+  `getCollectionMovieIds`), `hooks/` (`useCollectionIds`, `useAddToCollection`,
+  `useRemoveFromCollection`), `types.ts`, `index.ts`, `README.md`. `quick-add` uses
+  `movies` and `collection` **only through their `index.ts`**; `collection` knows
+  nothing about swiping. `src/lib/database.types.ts` is regenerated by the Manager
+  after 16a is applied. New api functions are added to the `authReady()` gate list in
+  `__tests__/requestTimeout-test.ts` (the parameterised test).
+- **M11 Dianne's one Phase 0 for the whole Module** (done once before Build 14;
+  Builds 15, 16a, 16b skip Phase 0): the Home **Quick Add entry**, the deck screen
+  (header, card, stack depth, buttons, Undo), the **mid-drag states** (stamps,
+  tilt, the card behind), exit, loading, error, caught-up with "Start over", the
+  sequence picker (Build 15), the **Toast copy** (right-swipe coming-soon in 14,
+  add-failed, undo-failed), a **Toast offset that does not cover the buttons**
+  (Build 13's lesson: a first offset hid other text), the **Profile "N movies
+  watched" states** (Build 16b), the reduce-motion variant, and the copy table. She
+  updates DESIGN §3 (Home entry line, quick-add route detail) and §4 (`SwipeDeckCard`
+  props) and the Dev-client gear-zone check. The Manager renders and looks (CLAUDE.md
+  Rendering) before Bella starts.
+
+#### NEEDS JUSTIN (none blocks; each default applies until he answers)
+
+- **N1 Where Quick Add lives.** Default: a **Quick Add row on Home** opening a
+  full-screen deck (no tab bar); not a new tab (the tab bar stays at five items).
+  Vision says only "a Quick add area".
+- **N2 The three orders.** Default: **Newest first**, **Oldest first**, **Random**
+  (the approved rough plan's "recent / older / random"). Vision's wording ("from most
+  recent to older or random") could mean only two; "Oldest first" is the one that
+  can be dropped. First-time default order: Newest first. The last choice is
+  remembered on this device (M3).
+- **N3 What swipe-left does.** Default: the movie is **skipped and not shown again**
+  by any order until "Start over" on the caught-up screen; remembered **on this
+  device only** (not synced; a reinstall starts fresh). Alternative: skip only for
+  this session (the same movies come back every visit).
+- **N4 Swipe-right before the collection exists (Build 14 only).** Default: the card
+  leaves and a "coming soon" Toast says nothing was saved, then Build 16b makes it
+  real. Honest placeholder, same pattern as Perch Roulette; Build 14 is not shown as
+  a finished feature, the Module's milestone is Build 16b.
+- **N5 What a card shows and the controls.** Default: poster, title, year, TMDB
+  rating; no synopsis or genres on the card (the proxy's list shape has no
+  overview); tapping opens details. Controls: Skip, Add, and a **one-step Undo**
+  button (covers a mis-swipe, both directions). Undo is not in Vision.
+- **N6 Haptics.** Default: **none.** `expo-haptics` is a new native module; adding
+  it means a dev-build rebuild and a new dependency.
+- **N7 Offline swipe-right.** Default: it **does not queue**; the card returns with
+  an error Toast. A persistent offline write queue is a feature of its own.
+- **N8 What a collection row stores.** Manager default (architecture): movie id,
+  who, when, and the caption column only; **no title/poster snapshot** (it would be
+  untrusted text other users later see). Cost: Build 19 must load titles from TMDB
+  for the list (a batch endpoint); rankings count ids.
+- **N9 Profile count becomes real.** Default: in 16b the Profile's hard-coded "0
+  movies watched" becomes the real count (otherwise a profile saying 0 after adds
+  looks broken). It is the on-screen proof that an add stuck, before Build 19's list
+  exists. Number comes from the collection ids query (M8).
+- **N10 Deck quality filter.** Default: adult titles excluded (as Module 4 N7) and
+  **200+ TMDB votes** so a date-sorted deck does not open on unknown titles; no
+  further content filtering (the open item from Module 4 about suggestive but
+  not adult-flagged posters stays as it was).
+- **N11 Deep link.** Default: `perchable://quick-add` works (free from the scheme).
+  Small addition beyond Vision; he can ask to drop it.
+- **N12 Build 16 split.** Manager default (process): **16a** database only (no UI,
+  like 10a) and **16b** the app wiring. Number 16 unchanged; the milestone is 16b.
 
 ```
-Build 14 — Swipe deck                     Module: Quick-add swipe
-Done means: gesture-handler + reanimated swipe left/right on a movie card.
-Test on: emulator
+Build 14 — Swipe deck                         Module: Quick-add swipe
+   (Popular is the only source here; no server work, no database, no native
+   rebuild expected. Right swipe is a labelled placeholder until 16b, N4.)
+Done means (checkable):
+
+  A. Wiring and data (mostly invisible; proven by tests and one device check)
+  A1. [Mgr] Libraries are alive in the installed dev client: `npx expo install
+      --check` is clean; on td_emu a throwaway worklet check (not committed) shows a
+      shared value animating and a callback reaching JS, with no Reanimated
+      version-mismatch error at start-up. Result recorded in the Build log, with
+      "rebuild needed: yes/no" (expected no, M5). If the worklets plugin is missing,
+      the JS-only `babel.config.js` fix of M5 applies.
+  A2. [Ruby] `GestureHandlerRootView` (flex 1) wraps the app once, outermost, in
+      the root `_layout.tsx`; `quick-add` is inside the session-guarded group; no
+      other root view is added.
+  A3. [Jest] `decideSwipe`: below 35% of the width and slow -> none; just above
+      35% -> left/right by sign; short fast flick (>= 40 dp and >= 800 dp/s in the
+      direction of the move) -> commits; a fast twitch under 40 dp -> none; velocity
+      opposite to the translation -> none; exactly on each boundary; zero width does
+      not divide by zero.
+  A4. [Jest] Deck hook (Popular source, separate query key
+      `["movies","deck","popular"]` so Home's pull-to-refresh never touches it): the
+      deck is the de-duplicated flatten minus excluded ids; the top card is the first
+      usable one; excluding an id and then un-excluding it brings the card back in its
+      original place (this is how Undo works); the next page is requested from the
+      swipe handler when 5 or fewer usable cards remain, one request in flight at a
+      time (rapid swipes make one request); the in-queryFn loop reads up to 3 pages
+      when a page is entirely excluded; "caught up" appears only when there is no next
+      page; a failed next page keeps the cards and shows the keep-going Retry only
+      when none are left.
+  A5. [Jest] Skip memory (M3): writes per-user keys; the cap drops the oldest at 5,000;
+      a read failure and corrupt JSON both give an empty list and never throw; a write
+      failure is swallowed (deck still works); the sign-out hook removes the departing
+      user's keys when the session goes from a user to none, and not at first
+      render; another user's key is never read.
+
+  B. Screen and gesture
+  B1. [QA] Home shows the Quick Add entry (Dianne's board); tapping it opens the deck
+      full-screen with the back chip and no tab bar; double-tap opens one deck (one
+      Back returns to Home, Home's list and position unchanged); the gear corner is
+      empty.
+  B2. [QA] The deck shows the top card (poster, title, year, rating) with the next card
+      peeking behind it, Skip and Add buttons and Undo, all at least 48 dp.
+  B3. [QA] **Mid-gesture, not just end state** (Rule Zero): Queenie holds a drag with
+      `adb shell input motionevent DOWN/MOVE` (Android 12+; td_emu is Android 15) and
+      screenshots at about 15% (no stamp yet, card follows), about 40% (tilted card, the
+      "SKIP" or "ADD" stamp visible, the card behind larger), then releases: below the
+      threshold the card springs back to the centre (screenshot after), above it flies
+      off and the next card is on top. A fast `input swipe` with at least 150 ms duration
+      commits by velocity. (A 1 ms injected swipe is an adb artifact, Build 13 Bug 2; it
+      is noted, not a finding.)
+  B4. [QA] Left swipe: the card is gone and **the same movie does not come back** in
+      this session; after force-stopping and reopening the app it is still not in the
+      deck (device memory, M3). Right swipe: the card is gone, the coming-soon Toast
+      "Adding to your collection is coming soon." (N4) shows, nothing is stored.
+  B5. [QA] The Skip and Add buttons give the same result and the same exit as the
+      swipes; tapping a button twice quickly is one swipe (disabled during the exit).
+  B6. [QA] Undo: after a swipe, Undo returns that card on top (and for a skip removes
+      it from the saved skips: force-stop and reopen shows it again); Undo is disabled
+      when there is nothing to undo, and after one Undo it is disabled until the next
+      swipe.
+  B7. [Jest] + [QA] Tap vs drag: a tap on the card opens details (one push, double-tap
+      safe); a drag past the slop is never a tap; Back from details returns to the same
+      card.
+  B8. [Jest] + [QA] Four states (DESIGN §2/§7), copy verbatim from Dianne's table:
+      loading (card-shaped shimmer, buttons disabled, one polite live-region label),
+      error (`EmptyState` with Retry; Retry is one request on a double-tap), caught up
+      (`EmptyState` with "Start over", which clears the saved skips and reloads), filled.
+  B9. [Jest] + [Mgr] Accessibility: the buttons' labels are "Skip {title}", "Add {title}
+      to collection", "Undo"; the card exposes the same two custom actions; after a swipe
+      the announcement fires and focus moves to the new top card; every control at least
+      48 dp. [QA] tries TalkBack on td_emu; if the screen reader cannot be enabled there,
+      the line is **UNTESTABLE on device** and Justin checks by hand (listed in his
+      hand-check list, as Build 13's heading check).
+  B10. [Jest] + [QA] Reduce motion on: no tilt, no fly-off, no scale, a 150 ms fade, still
+       one swipe per action; off: full motion. QA tests both (animation scales set to 1 for
+       the full-motion pass, restored after).
+  B11. [QA] The next two posters are prefetched (a fast five-swipe run shows no blank card);
+       a poster with no path or that fails to load shows the fallback icon plus the title on
+       the card, and the card is still swipeable.
+  B12. [Ruby] Standards greps on the diff: tokens only (no literal colours, sizes, spacing),
+       no `BlurView` in the card (flat fill, DESIGN §1.5), at most three cards mounted, no
+       Supabase call or fetching logic in the route, no effect-based fetching, shared values
+       through `.get()` / `.set()`, header top spacing from insets, gear corner empty,
+       1–2 line purpose comment per block, no `console.log`.
+  B13. [Mgr] After Dianne's Phase 0: DESIGN §3 and §4 updated (M11); Jest also covers the
+       stamp, tilt and stack states by driving the gesture with gesture-handler's Jest
+       utilities where they can, and says plainly in the log which states only the emulator
+       proves.
+
+Test on: emulator (`td_emu`; `scripts/emulator.sh ensure` first, closed after, per CLAUDE.md;
+  no jest or Gradle run overlaps Queenie).
+Needs from Justin: nothing. (N1, N3-N6 are defaults he may overturn.) By hand, when he asks
+  for a build on a phone: the real-finger feel and the edge-swipe/gesture-navigation check (M4).
+Failure modes to cover (Manager expands into the log):
+  - Gesture: a drag started on the card then the finger leaves the screen; a second finger
+    mid-drag; a vertical move; an app switch or a system gesture mid-drag (the card returns,
+    no stuck stamp); a swipe during the previous card's exit; ten swipes in under three
+    seconds; rotation is locked (portrait-only, `app.json`); font scale at maximum (card text
+    wraps, buttons stay on screen).
+  - Network: offline cold start (loading, then error with Retry, within about 20 s per
+    Module 4's M5); offline mid-deck (cards already loaded keep swiping, posters not cached
+    show the fallback); timeout; 5xx; 429; empty first page; wrong body shape (error state,
+    one Sentry event); sign-out while loading (no error, no Sentry, no state after unmount).
+  - Data: movie without `poster_path` or `release_date` (no "NaN", year omitted); very long
+    title (two lines, ellipsis); emoji or right-to-left title; the same movie on two pages
+    (shown once); every card on a page already skipped (loop reads on); the 5,000 cap.
+  - Interaction: double-tap Home entry; Back mid-exit; leave the deck and return (cards
+    already swiped stay gone); Undo with an empty history; Retry double-tap.
+  - Security: the key never appears (bundle, logcat, errors); nothing is stored on the
+    server; the per-user storage key holds only movie ids.
+  - Cleanup: the saved skips are per user, removed on sign-out and account deletion (A5);
+    the image cache is expo-image's.
+  - Sentry: M9 only, once per failed query, `environment` tag.
+Phases: 0 Dianne mockup (the whole Module's boards, M11) · 1 Bella build · 2 Bella gates
+        (tsc, lint, jest, `npx tsc --noEmit -p supabase/functions/tsconfig.json` unchanged) ·
+        3 Queenie QA · 4 Ruby review · 5 Manager ships
 ```
 
 ```
-Build 15 — Selectable swipe sequence      Module: Quick-add swipe
-Done means: user picks recent / older / random ordering for the deck.
-Test on: emulator
+Build 15 — Selectable swipe sequence          Module: Quick-add swipe
+Done means (checkable):
+
+  A. Server and data layer (own commit and log entry; Bella writes it, Ruby reviews it
+     before deploy, **the Manager deploys it**)
+  A1. [Jest] + [Mgr] The proxy gains `endpoint=discover&sort=<newest|oldest|popular>&page=<n>`
+      exactly as M6/M2: `sort` outside the whitelist or absent -> 400 `invalid_sort` before
+      TMDB is called; `page` digits-only 1-500 as today; the three TMDB calls carry
+      `include_adult=false`, `vote_count.gte=200` and the sort/date parameters of M2
+      (`newest` has `primary_release_date.lte=<today>`, with `today` an input so Jest is
+      deterministic); adult results dropped; the same response shape and attribution as
+      `popular`; `Cache-Control: public, max-age=300`; the M2 status mapping with a case each
+      (401/403 -> 502 `upstream_auth`, 404, 429, 5xx, network, missing key -> 500
+      `misconfigured`); log redaction removes the key; unknown `endpoint` still 400; `popular`
+      and `details` unchanged (their tests still pass).
+  A2. [Mgr] After Ruby's pre-deploy review the Manager deploys `tmdb` and curls it live:
+      each sort returns at most 20 results with the exact attribution and the cache header;
+      `newest` page 1 has release dates at or before today and non-increasing across pages 1
+      and 2; `oldest` is non-decreasing; `popular` is plausible; `sort=foo`, no sort,
+      `page=abc`, `page=1e2`, `page=501` all 400; no auth header 401; no `api_key` anywhere.
+      The Manager also reads the first three pages of each order and, if junk dominates,
+      tunes the vote minimum (one constant) and redeploys before QA.
+  A3. [Jest] `getDiscoverMovies(sort, page, signal)` and `parseMovieList` (the shared
+      validator; `parsePopular` keeps its name and behaviour): `timeout: REQUEST_TIMEOUT_MS`,
+      the query's signal, typed `MovieApiError`, `shape` on a bad body; added to the
+      `authReady()` gate list in `requestTimeout-test.ts`.
+
+  B. Deck sequences (the same deck hook with a sequence parameter, no second deck)
+  B1. [Jest] Page order: `newest` and `oldest` read pages 1, 2, 3...; `random` reads the
+      shuffled order of pages 1-100 (shuffle injectable for the test) with each page's
+      results shuffled; no page repeats; a page past TMDB's last page that is empty is skipped
+      by the loop; the Random seed is in the query key.
+  B2. [Jest] Switching order: the old order's cards leave the deck, saved skips and the
+      collection still apply in every order, an in-flight request of the old order is aborted
+      and its late result ignored (a deferred stub: switch, then resolve the old page; the deck
+      shows only the new order, no duplicate id).
+  B3. [QA] A picker under the header (Dianne's board, **not** in the top-right corner): three
+      options "Newest first", "Oldest first", "Random", single-select, selected state visible
+      and announced as a radio (name, selected, position), at least 48 dp; first use selects
+      Newest first; the last choice is remembered on this device per user (M3; a corrupt value
+      falls back to the default).
+  B4. [QA] Newest: over at least 20 cards the visible years are never increasing (evidence:
+      the year list); Oldest: never decreasing; Random: two separate openings of Random give
+      different first ten titles, and over at least 40 swipes no title repeats. Evidence is the
+      lists, not an end-state count.
+  B5. [QA] Crossing a page boundary (the 21st to 30th card) shows no blank gap and no repeat;
+      switching orders mid-deck shows the loading state of the card shape, then the new order;
+      Random on an exhausted pool shows caught up.
+  B6. [Ruby] The server diff: whitelist before use, no echo, `today` injected, no Deno global in
+      the pure file, the functions tsc target passes; the app diff: standards as Build 14 B12; the
+      sequence is a parameter of the one hook, not a copy of it.
+
+Test on: emulator.
+Needs from Justin: nothing. (N2 and N10 are defaults he may overturn.)
+Failure modes to cover (Manager expands into the log):
+  - Network: offline when switching order (error state with Retry, the current cards are not
+    lost); timeout; 5xx; 429; empty page; wrong shape (one Sentry event).
+  - Data: a page that comes back empty after the adult filter; `release_date` missing on a
+    card in Newest (no "NaN"); the same id in two orders (excluded once swiped in either);
+    TMDB's 500-page cap reached.
+  - Interaction: switch order twice quickly (one result, no stale cards); switch mid-swipe;
+    leave and return (same order remembered); Random re-entered gives a new shuffle.
+  - Security: `sort` validated server-side and the client sends only the three values; no key in
+    the bundle (the `expo export` key grep as Build 12a B8); 400/404 bodies echo nothing.
+  - Cleanup: none beyond M3.
+  - Sentry: M9 only.
+Phases: 0 skip (the Module's Phase 0 board already draws the picker) · 1 Bella build (Edge Function
+        change in its own commit + log entry) · 2 Bella gates (tsc, lint, jest, the functions tsc
+        target, `expo export` key grep) · [Ruby pre-deploy check of the function file, then Manager
+        deploys `tmdb` and curls it] · 3 Queenie QA · 4 Ruby review · 5 Manager ships
 ```
 
 ```
-Build 16 — Swipe-right adds to collection Module: Quick-add swipe
-Done means: swiping right adds the movie to the signed-in user's collection.
-Test on: emulator
+Build 16a — Collection table (database only)  Module: Quick-add swipe
+   (first half of Build 16; Manager default, N12. Number 16 unchanged; own log, own
+   Phases; no UI, no Phase 0, no emulator flow. Pattern: Build 10a.)
+Done means (checkable; migration reviewed and applied by the Manager through the
+  Management API, RLS proven in rolled-back transactions in
+  `supabase/tests/collection_rls.sql`, run with `supabase/tests/run-sql.mjs`):
+
+  A. Database (M7)
+  A1. [SQL] `public.collection_items` exists with the columns and checks of M7: uuid `id`,
+      `user_id` (default `auth.uid()`, FK `auth.users` ON DELETE CASCADE), `movie_id` integer
+      CHECK 1..2147483647, nullable `caption` CHECK <= 500 characters, `added_at` default now().
+  A2. [SQL] **No duplicate adds, enforced by the database:** `unique (user_id, movie_id)`; a
+      second insert of the same movie by the same user fails with 23505; **two different users
+      may add the same movie**; the same user may re-add after deleting.
+  A3. [SQL] Grants asserted with `has_table_privilege` / column privileges, not assumed:
+      `anon` has none; `authenticated` has SELECT and DELETE, INSERT **only on `movie_id`**,
+      **no UPDATE, no TRUNCATE, no REFERENCES, no TRIGGER**; `caption`, `user_id`, `id` and
+      `added_at` are not insertable (a client insert that names them is denied).
+  A4. [SQL] RLS: a user sees and deletes only their own rows; an insert with another user's
+      `user_id` is rejected; a user cannot read, count or delete another user's rows; `anon`
+      is denied; a client `update` of any column is denied (no UPDATE grant), so no content path
+      reaches `caption` before Build 20.
+  A5. [SQL] Out-of-range or non-integer ids fail the CHECK (0, -1, 2147483648); a 501-character
+      caption would fail the CHECK (proved with a privileged insert in the rolled-back test).
+  A6. [SQL] Deleting an auth user (a real `delete from auth.users` in the test) removes every
+      `collection_items` row of theirs and none of anyone else's. No change to the
+      `delete-account` Edge Function.
+  A7. [Mgr] reads the migration: one new table, its index `(user_id, added_at desc)`, the grants,
+      policies and the carry-forward comment of M7 (own-only reads; Build 19/24/25 must add
+      `is_blocked_between`; Build 20 adds the `UPDATE (caption)` grant plus
+      `has_accepted_terms()`); it touches nothing else and does not push `config.toml` (app
+      CLAUDE.md). [Ruby] confirms the comment is there.
+  A8. [Mgr] After applying: the table, RLS flag and privileges are read back from the live
+      project; `src/lib/database.types.ts` is regenerated and typechecks; Justin's profile row
+      and every earlier table are unchanged. File name follows the existing pattern
+      (`20261002000000_collection_items.sql`).
+
+Test on: SQL tests against the live project, rolled back; nothing on the emulator.
+Needs from Justin: nothing.
+Failure modes to cover (Manager expands into the log):
+  - Security: spoofed `user_id`; client SELECT/UPDATE/DELETE of another user's rows; anon;
+    insert naming `caption` or `added_at`; default TRUNCATE/REFERENCES/TRIGGER privileges (revoked
+    first, 10a Bug 2); a grant to `authenticated` wider than M7.
+  - Data: duplicate add; out-of-range id; the cascade on user deletion for this table only.
+  - Cleanup: every test runs inside a transaction that is rolled back; nothing is left in the live
+    table.
+  - Carry-forward: no SELECT-by-others policy exists yet (asserted: a second user sees zero rows).
+Phases: 1 Bella build (migration + tests; Phase 0 skipped, no UI) · 2 Bella gates (tsc, lint, jest,
+        SQL tests) · 3 Queenie QA (SQL results reviewed; nothing on device) · 4 Ruby review ·
+        5 Manager ships (applies the migration, regenerates types)
 ```
+
+```
+Build 16b — Swipe-right adds to the collection  Module: Quick-add swipe
+   (second half of Build 16; after 16a is applied. Replaces Build 14's placeholder toast.
+   Own log, own Phases 1-5; Phase 0 is covered by the Module's board.)
+Done means (checkable):
+
+  A. Collection client (`src/modules/collection/`, M8/M10)
+  A1. [Jest] `addToCollection(movieId, signal?)` inserts one row with `movie_id` only, **without**
+      `.select()`; `authReady()` first; abort at 8 s; Postgres 23505 resolves as a silent
+      "already there" success; other failures throw a typed `CollectionApiError` (`kind`:
+      `timeout`, `network`, `http` with `code`, `shape`); no retry. `removeFromCollection(movieId)`
+      deletes by `movie_id` (RLS scopes it to the caller); same error rules.
+  A2. [Jest] `getCollectionMovieIds()` reads in 1,000-row ranges until a short page: a stub with
+      2,500 rows returns all 2,500 ids and makes three requests; a failed page rejects (never a
+      half list that looks complete); an empty collection returns an empty list.
+  A3. [Jest] `useCollectionIds` is owner-tagged (`["collection","ids",userId]`): signing out and in as
+      another user never shows the first user's ids; the add hook updates the cache **optimistically**,
+      restores the previous list on failure, and a late result after sign-out sets no state.
+  A4. [Jest] Sentry per M9: 42501, an unexpected 5xx/4xx and a `shape` error are reported once with the
+      `environment` tag; offline, timeout, 23505 and a sign-out in flight are not.
+
+  B. Deck wiring (the one deck hook gains the collection as an exclusion source)
+  B1. [QA] Swipe right and the Add button: the card leaves at once, and the **movie is in the
+      collection**: the Manager reads the row back by SQL for the signed-in account (movie id matches
+      the card's) and the Profile count (C1) went up by one.
+  B2. [QA] A movie that was added never appears again in Newest, Oldest or Random, on this and on a
+      later session (force-stop and reopen), because the exclusion set contains it.
+  B3. [Jest] Swipe right twice on the same movie (a double commit) makes **one** request; two
+      different movies in quick succession make two; the second never waits on the first.
+  B4. [Jest] + [QA] Offline or a failed add: the card **returns to the top of the deck** (it leaves the
+      excluded set, M2) with the error Toast "Couldn't add {title}. Check your connection."; no row
+      exists; swiping it again after the network is back adds it. Several quick swipes where only
+      the first fails: only that card returns, in its place in the order. (Offline is shown by
+      turning the emulator's wifi and data off; no app code detects it, the request fails.)
+  B5. [Jest] + [QA] Undo after an add **deletes the row** and returns the card; Undo while that add is
+      still in flight waits for it, then deletes; if the add failed there is nothing to delete and the
+      card simply returns; if the delete fails the add stays, the error Toast "Couldn't undo. Check your
+      connection." shows and Undo remains available. After a skip, Undo behaves as in Build 14.
+  B6. [QA] The same movie already in the collection (added earlier or on another device, Postgres
+      23505) is not shown by the deck, and if it is added anyway (stale deck) it is a silent success with
+      no error Toast.
+  B7. [QA] Sign-out while an add is in flight: no error screen, no Toast, no Sentry event, and nothing
+      remains for the next user (Jest: no state after unmount; owner-tagged keys).
+
+  C. Visible proof and the rest
+  C1. [Jest] + [QA] The Profile "N movies watched" shows the **real count** (the length of the ids
+      list, N9) with its own loading and error handling per Dianne's amendment: while loading the
+      count text is a shimmer bar, on error it shows a dash and no number, never a false 0; the
+      existing profile states are otherwise unchanged (regression of Builds 6-9).
+  C2. [Ruby] Standards as Build 14 B12; `collection` has no import from `quick-add` or `movies`; the
+      Build 14 right-swipe placeholder and its Toast copy are removed (grep); no `.select()` on the
+      insert; no table other than `collection_items` is touched; the Build 31 end-to-end checklist
+      gets a line "collection_items rows, plus device-local `quickAdd:*` keys".
+  C3. [Mgr] After QA the Manager deletes by SQL the collection rows QA created (ids recorded in the
+      log) so Justin's real collection starts empty; the Module's milestone is checked: add on a
+      device, row in the database, count on Profile.
+
+Test on: emulator (offline checks by turning wifi/data off; the 2,500-row case is Jest-only).
+Needs from Justin: nothing. (N7, N8, N9 are defaults he may overturn.) By hand when he has a phone
+  build: edge-swipe/gesture navigation (M4).
+Failure modes to cover (Manager expands into the log):
+  - Network: offline; timeout (8 s, no retry); 5xx; 429; response of an unexpected shape; the app
+    backgrounded mid-request; sign-out while saving.
+  - Data: id outside 1..2147483647 never sent; movie already in the collection (23505); 1,000+ items
+    (paged read); the same movie added from the deck and from a later Build (excluded everywhere).
+  - Interaction: double-tap Add; swipe then Undo at once (serialised); Undo twice (second is
+    disabled); leave the deck mid-add (the add completes, no state after unmount).
+  - Security: a client cannot write `user_id` or `caption` (16a tests); the insert names `movie_id`
+    only; no title text is stored or sent; RLS denial reported, not swallowed.
+  - Cleanup: rows cascade on account deletion (16a A6); QA's rows removed (C3); the deck's device keys
+    removed on sign-out (Build 14 A5).
+  - Sentry: M9 only; once per failed call, `environment` tag.
+  - Moderation: none yet (own-only data, no UGC); the carry-forward of M7 is the guard for Builds 19,
+    20, 24 and 25.
+Phases: 0 skip (the Module's Phase 0 board covers the add feedback and Profile count states) ·
+        1 Bella build · 2 Bella gates (tsc, lint, jest) · 3 Queenie QA · 4 Ruby review ·
+        5 Manager ships (closes the Module: PR, merge, pull `main`)
+```
+
+**Server and database work in this Module, in order:** (1) Build 15: the `discover`
+endpoint in `_shared/tmdb.ts` (own commit) -> Ruby pre-deploy review -> Manager deploys
+`tmdb` and curls it -> QA. (2) Build 16a: the `collection_items` migration + SQL tests ->
+Ruby review -> Manager applies it through the Management API -> types regenerated ->
+16b starts. Build 14 and 16b have none. **No native rebuild is expected** (M5).
+
+**Module 5 risks.** (a) Real-phone gesture feel and edge-swipe/Back conflicts cannot be
+judged on td_emu; they are Justin's hand checks when he asks for an APK. (b) The
+emulator's animations are off, so reduce motion is probably "on" by default there; both
+modes need a deliberate test. (c) Reanimated with React Compiler on: shared-value reads in
+render are a known trap (M5). (d) TMDB `discover` quality (obscure or odd titles in a date
+sort): the vote minimum is one constant and the Manager looks live before deploy. (e) A
+junk-id flood by a hostile client in `collection_items` would only distort Build 29's
+"most added" until it filters; there is no per-user cap in v1 (accepted, own-only data).
+(f) Build 14 on its own ships a placeholder right swipe; nothing merges to `main`
+before the Module milestone (16b), so users never see it.
+
+### Modules 6–12 — rough (one line each, detailed when the team reaches them)
 
 ```
 Build 17 — Search by title                Module: Search/add
@@ -1505,3 +2165,4 @@ this is marked NEEDS JUSTIN.
 - 2026-10-01 (Priya, at the Manager's request; Justin reordered: movies, Builds 12-16, come right after Build 10b, Build 11 moves to just before Build 20): detailed Module 4 — Builds 12 and 13 — in section 5, replacing the two rough one-liners. Build 12 is split into **12a** (data layer + first page of posters on Home + Roulette shell) and **12b** (infinite scroll + pull-to-refresh), number unchanged (Manager default, N2). New module-wide decisions M1-M10 (TMDB Popular grid; proxy hardening in 12a and a `details` endpoint in 13, with Edge Function work inside those Builds; `@tanstack/react-query` + `@shopify/flash-list` via `npx expo install`, no native rebuild expected; one QueryClient at the root; 8 s timeout, one retry, offline cold start ends in an error state; image sizes and 2:3 posters; navigation and a free `perchable://movie/<id>` deep link; attribution stays on Settings; Sentry from the QueryCache only). The UI-only shells already approved (Perch Roulette on Home, tier badge and `#spoiler-free-lounge` panel on details, DESIGN §5) ride inside 12a and 13 as before. **NEEDS JUSTIN (none blocks; defaults apply):** N1 Home shows one Popular grid, no Trending/Now Playing, no "Have You Watched This?"/"Friend Activity" until Builds 19/23; N2 the 12a/12b split; N3 the details content set (and what it leaves out); N4 no stored cache, offline cold start shows an error state; N5 3-column grid. Two small additions beyond Vision Part 2 are flagged as N6 (deep link) and N7 (adult titles hidden), defaults applying; no other feature added or removed. DESIGN question for Dianne (not a plan problem): §3 says the tab bar stays visible under `movie/`, but a root-level Stack route covers it.
 - 2026-10-01 (Priya, Round 1 revision after Ruby FIX NEEDED on Module 4; no Build number or feature changed): (1) the api layer throws a typed `MovieApiError` (`kind`, `status`, `code`) so the retry tests run through the real mapping; (2) the proxy maps TMDB 401/403 to 502 `upstream_auth`, and M9 reports it (also for the details endpoint); (3) proxy logic moves to `supabase/functions/_shared/tmdb.ts`, covered by a dedicated tsc target (`supabase/functions/tsconfig.json`) and Jest, and the missing-key branch moved into it, so only the `Deno.serve`/fetch wiring is review-only; (4) pull-to-refresh mechanism named (`cancelQueries`, trim to page 1, `refetch`), `refetchOnMount: false` on Home, new lines C5b/C5c for pull during a next-page load and scroll during a refresh; (5) A2 reworded to what Jest can prove, with a Manager one-off abort proof; (6) `unstable_settings anchor "(tabs)"` for cold deep links; (7) `/^\d+$/` validation for `id` and `page`; (8) response validators with tests; (9) adult-filtered empty page cannot stall the list (C4b), 12a B1 reads "up to 20"; (10) failure lists: sign-out while loading, poster 404 with a set path, rotate dropped, back-mid-load abort and other-movie-data lines made owned Done-means (13 B7, B8); nits: native-code guard kept, attribution wording flagged for Rose, `Cache-Control` on `popular`, numeric details key, `getPopularMovies(page = 1, signal?)` stays call-compatible.
 - 2026-10-01 (Priya, Round 2 touch-ups after Ruby's recheck of f7b0498; no Build or feature changed): 12b C5 snapshots and restores the list when a pull-refresh fails, with a Jest case; C4b's empty-page loop moves inside the `queryFn` (up to 3 TMDB pages, `getNextPageParam` from the real last page number); M5/M9 say a relay-error 502 without `code` is retried once and not reported, and that `upstream_auth` is also retried once; M2 specifies the functions tsc target (no `types: jest` if extended, `lib: ["ESNext"]`, tests import `_shared/tmdb` without `.ts`).
+- 2026-10-02 (Priya, at the Manager's request; Justin away, nothing waits on him): detailed Module 5 — Quick-add swipe — in section 5, replacing the three rough one-liners for Builds 14-16. Build numbers and order unchanged; **Build 16 is split into 16a (database only: `collection_items`) and 16b (app wiring)**, Manager default N12, milestone stays Build 16 (now 16b). Build 14 = deck, gestures, buttons, Undo, skip memory (Popular source, no server or database work); Build 15 = selectable order, with one new proxy endpoint `discover` (Manager deploys); right swipe in Build 14 is an honest coming-soon placeholder until 16b. Checked in the repo: gesture-handler, reanimated and worklets are already linked in the installed dev client (installed before Build 1), so **no native rebuild is expected**; what is missing is `GestureHandlerRootView` (added in Build 14) and a worklet-runs proof (A1). **NEEDS JUSTIN (none blocks; defaults apply):** N1 Quick Add is a Home row opening a full-screen deck, not a new tab; N2 three orders (Newest/Oldest/Random; "Oldest" is the droppable one); N3 swipe-left = skipped for good on this device until "Start over"; N4 interim right-swipe placeholder; N5 card content + one-step Undo (Undo is beyond Vision); N6 no haptics (new native module); N7 no offline queue for adds; N8 collection rows store movie id only (architecture default); N9 Profile count becomes real in 16b; N10 200+ votes and no adult titles in the deck; N11 deep link `perchable://quick-add`; N12 the 16a/16b split. Added Dianne's single Phase 0 for the whole Module (M11). No feature removed.
