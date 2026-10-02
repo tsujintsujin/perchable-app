@@ -1,4 +1,4 @@
-export { getPopularMovies } from "./api/getPopularMovies";
+export { getPopularMovies, hasMorePages } from "./api/getPopularMovies";
 export { getMovieDetails } from "./api/getMovieDetails";
 export { useMovieDetails } from "./hooks/useMovieDetails";
 export { useOpenMovie } from "./hooks/useOpenMovie";
@@ -6,4 +6,7 @@ export { MovieDetailsScreen } from "./components/MovieDetailsScreen";
 export { usePopularMovies } from "./hooks/usePopularMovies";
 export { PosterGrid } from "./components/PosterGrid";
 export { RouletteCard } from "./components/RouletteCard";
+export { IMAGE_SIZE, tmdbImage } from "./tmdbImage";
+export { releaseYear } from "./releaseYear";
+export { displayTitle } from "./format";
 export type { Movie, MovieDetails, PopularMoviesResult } from "./types";

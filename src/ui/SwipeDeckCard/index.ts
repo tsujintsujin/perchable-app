@@ -1,0 +1,1 @@
+export { SwipeDeckCard } from "./SwipeDeckCard";
