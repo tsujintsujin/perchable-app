@@ -1348,17 +1348,28 @@ approved rough plan named three orders (recent, older, random).
     they already swiped** (Newest/Oldest start at page 1; after 300 swipes the
     first 15 pages are all excluded). **Decision: a per-order "furthest page
     reached" cursor, stored next to the skips and reset with them (M3)**, *plus* a
-    loop bound raised from Build 12b's 3 to **15 consecutive pages**. Why both,
+    loop bound of **15 consecutive pages**, a **separate constant
+    `DECK_MAX_PAGES_PER_LOAD = 15`; Home's shared `MAX_PAGES_PER_LOAD = 3` stays
+    unchanged** (its tests are not touched; Build 14 checks that). Why both,
     and why the cursor is the pick: the cursor makes the common case (the same
     user, same device) start where they left off, in one request; the raised
     bound means the cursor is never a correctness dependency (reinstall, another
     device, Random, collection rows from elsewhere, a movie removed later), and
-    15 sequential pages is a bounded wait (each call keeps the 8 s timeout). A
+    15 sequential pages is a bounded wait (each call keeps the 8 s timeout).
+    **Deck queries set `retry: 0`**: a TanStack retry would restart the whole loop
+    from the first page. The error state's Retry (and the keep-going row) instead
+    **resumes where the loop stopped**: as the loop passes an all-excluded page it
+    advances the cursor to it (Newest/Oldest) or the Random shuffled-index ref, so
+    the next attempt starts there. A
     bound alone was rejected: 5,000 skips could mean 250 pages of reading.
     The cursor for an order is the highest TMDB page of any card swiped in that
     order (updated from the swipe handler); Newest/Oldest start at
-    `max(1, cursor)` (that page still shows its unswiped cards). Random keeps no
-    cursor. After 3 all-excluded pages in one load the loading state shows a
+    **`max(1, cursor - 1)`** (one page back, because TMDB removals shift cards to an
+    earlier page and that page still shows its unswiped cards). **A card that
+    returns on a page before the cursor (a rolled-back add, Undo) lowers the cursor
+    to that page**, so it can never be lost next session. **If the start page
+    comes back empty and there is no next page, the deck retries once from page 1
+    before it says "caught up".** Random keeps no cursor. After 3 all-excluded pages in one load the loading state shows a
     progress line, "Finding movies you haven't seen..." (Dianne's copy). The
     `queryFn` loop returns the first page with at least one id not excluded
     (reading the exclusions through a ref); 15 all-excluded pages with more to
@@ -1445,7 +1456,10 @@ approved rough plan named three orders (recent, older, random).
     `reduceMotion: ReduceMotion.Never` explicitly so Reanimated's own system rule
     does not second-guess the hook. The card still follows the finger (direct
     manipulation); with reduce motion on, no tilt, no fly-off, no scale on the card
-    behind: the card fades out in 150 ms and the next appears. td_emu runs with
+    behind: the card fades out in 150 ms and the next appears; **a below-threshold release
+    eases back in 150 ms (no spring overshoot)**. **The flag reaches the gesture worklets as a
+    shared value** set from the hook's listener (never a closure over a render value, which
+    would go stale mid-session); Bella's log says how. td_emu runs with
     animations off, which Android probably reports as reduce motion (Bella records
     what the hook returns there), so **QA tests both modes deliberately**: after
     **every** change of the animation scales QA **force-stops and relaunches the
@@ -1648,24 +1662,26 @@ Done means (checkable):
       direction of the move) -> commits; a fast twitch under 40 dp -> none; velocity
       opposite to the translation -> none; exactly on each boundary; zero width does
       not divide by zero.
-  A4. [Jest] Deck hook (Popular source, separate query key
+  A4. [Jest] Deck hook (**Popular only in this Build, so no cursor and no remembered order:
+      both arrive in Build 15**; separate query key
       `["movies","deck","popular"]` so Home's pull-to-refresh never touches it; the deck keys have
       `refetchOnReconnect: false` and `refetchOnWindowFocus: false`, asserted): the
       deck is the de-duplicated flatten minus excluded ids; the top card is the first
       usable one; excluding an id and then un-excluding it brings the card back in its
       original place (this is how Undo works); the next page is requested from the
       swipe handler when 5 or fewer usable cards remain, one request in flight at a
-      time (rapid swipes make one request); the in-queryFn loop reads up to 3 pages
-      when a page is entirely excluded (**bound 15**; **12 consecutive all-excluded pages
-      on first load return a usable card with no Retry**, and the progress line shows after
-      3); the **cursor** (M2) makes Newest/Oldest start at the furthest page swiped and
-      never goes backwards; "caught up" appears only when there is no next page; a failed next page keeps the cards and shows the keep-going Retry only
+      time (rapid swipes make one request); the in-queryFn loop, when a page is entirely excluded, keeps reading
+      (`DECK_MAX_PAGES_PER_LOAD = 15`; **12 consecutive all-excluded pages on first load return a
+      usable card with no Retry**, the progress line shows after 3; the deck queries have
+      `retry: 0`, and a Retry resumes where the loop stopped; **Home's `MAX_PAGES_PER_LOAD = 3`
+      and its tests are unchanged**, a [Ruby] grep and the untouched Home tests show it);
+      "caught up" appears only when there is no next page; a failed next page keeps the cards and shows the keep-going Retry only
       when none are left.
   A5. [Jest] Skip memory (M3): writes per-user keys; the cap drops the oldest at 5,000;
       a read failure and corrupt JSON both give an empty list and never throw; a write
-      failure is swallowed (deck still works); the cursor is stored and capped per order; the sign-out hook
-      removes the departing user's skips, cursor, remembered order **and session-swiped
-      set** when the session goes from a user to none, and not at first render; another
+      failure is swallowed (deck still works); the sign-out hook
+      removes the departing user's skips **and session-swiped set** (Build 15 adds the cursor and
+      remembered order to the same clean-up and its test) when the session goes from a user to none, and not at first render; another
       user's key is never read; the session set survives leaving and re-entering the screen.
 
   B. Screen and gesture
@@ -1711,9 +1727,13 @@ Done means (checkable):
   B10. [Jest] + [QA] Reduce motion read from `AccessibilityInfo.isReduceMotionEnabled` and its
        change listener (a Jest case flips it at run time and the next swipe follows it; not
        Reanimated's start-up constant); every animation sets `reduceMotion` explicitly. On: no
-       tilt, no fly-off, no scale, a 150 ms fade, still one swipe per action; off: full motion.
-       QA tests both, **force-stopping and relaunching after each animation-scale change**, and
-       restores the scales after.
+       tilt, no fly-off, no scale, a 150 ms fade, a 150 ms ease-back on a below-threshold release,
+       still one swipe per action; off: full motion. **Jest: flipping the flag at run time changes
+       the next release (the shared value, not a stale closure).** QA tests both, **force-stopping
+       and relaunching after each animation-scale change**, and restores the scales after; **once,
+       QA also changes the scale without relaunching and records whether the
+       `reduceMotionChanged` event fires and whether the next swipe follows it** (information for the
+       log, not a pass/fail).
   B11. [QA] The next two posters are prefetched (a fast five-swipe run shows no blank card);
        a poster with no path or that fails to load shows the fallback icon plus the title on
        the card, and the card is still swipeable.
@@ -1777,8 +1797,9 @@ Done means (checkable):
       `newest` page 1 has release dates at or before today and non-increasing across pages 1
       and 2; `oldest` is non-decreasing; `popular` is plausible; `sort=foo`, no sort,
       `page=abc`, `page=1e2`, `page=501` all 400; no auth header 401; no `api_key` anywhere.
-      The Manager records each sort's `total_pages` in the log (this fixes Random's
-      `RANDOM_POOL_PAGES = min(100, total_pages of popular)`), reads the first three pages
+      The Manager records each sort's `total_pages` in the log; **Bella's default is
+      `RANDOM_POOL_PAGES = 100`, and the Manager sets it to `min(100, popular total_pages)` in a
+      one-line commit after the live curl, before QA**. The Manager also reads the first three pages
       of each order and, if junk dominates, tunes the vote minimum (one constant) and
       redeploys before QA.
   A3. [Jest] `getDiscoverMovies(sort, page, signal)` and `parseMovieList` (the shared
@@ -1794,6 +1815,14 @@ Done means (checkable):
       a different seed gives a different order; `Math.random` is not called in the query
       function); no page repeats; a page past TMDB's last page that is empty is skipped by the
       loop; the Random seed is in the query key.
+  B1b. [Jest] **Cursor and remembered order (moved here from Build 14; M2/M3):** the per-order
+      cursor is the highest page of any swiped card, stored per user and capped per order; Newest/
+      Oldest start at `max(1, cursor - 1)`; a card returned by Undo (or a rolled-back add in 16b)
+      on a page before the cursor **lowers the cursor to that page** (a rollback test: swipe a
+      page-3 card, advance to page 5, roll the add back, reopen: the deck starts at page 3 and the
+      card is there); an empty start page with no next page retries once from page 1 before
+      "caught up"; the remembered order is stored per user, a corrupt value gives the default,
+      and the sign-out hook removes the cursor and the remembered order too.
   B2. [Jest] Switching order: the old order's cards leave the deck, saved skips and the
       collection still apply in every order, an in-flight request of the old order is aborted
       and its late result ignored (a deferred stub: switch, then resolve the old page; the deck
@@ -2258,3 +2287,4 @@ this is marked NEEDS JUSTIN.
 - 2026-10-01 (Priya, Round 2 touch-ups after Ruby's recheck of f7b0498; no Build or feature changed): 12b C5 snapshots and restores the list when a pull-refresh fails, with a Jest case; C4b's empty-page loop moves inside the `queryFn` (up to 3 TMDB pages, `getNextPageParam` from the real last page number); M5/M9 say a relay-error 502 without `code` is retried once and not reported, and that `upstream_auth` is also retried once; M2 specifies the functions tsc target (no `types: jest` if extended, `lib: ["ESNext"]`, tests import `_shared/tmdb` without `.ts`).
 - 2026-10-02 (Priya, at the Manager's request; Justin away, nothing waits on him): detailed Module 5 — Quick-add swipe — in section 5, replacing the three rough one-liners for Builds 14-16. Build numbers and order unchanged; **Build 16 is split into 16a (database only: `collection_items`) and 16b (app wiring)**, Manager default N12, milestone stays Build 16 (now 16b). Build 14 = deck, gestures, buttons, Undo, skip memory (Popular source, no server or database work); Build 15 = selectable order, with one new proxy endpoint `discover` (Manager deploys); right swipe in Build 14 is an honest coming-soon placeholder until 16b. Checked in the repo: gesture-handler, reanimated and worklets are already linked in the installed dev client (installed before Build 1), so **no native rebuild is expected**; what is missing is `GestureHandlerRootView` (added in Build 14) and a worklet-runs proof (A1). **NEEDS JUSTIN (none blocks; defaults apply):** N1 Quick Add is a Home row opening a full-screen deck, not a new tab; N2 three orders (Newest/Oldest/Random; "Oldest" is the droppable one); N3 swipe-left = skipped for good on this device until "Start over"; N4 interim right-swipe placeholder; N5 card content + one-step Undo (Undo is beyond Vision); N6 no haptics (new native module); N7 no offline queue for adds; N8 collection rows store movie id only (architecture default); N9 Profile count becomes real in 16b; N10 200+ votes and no adult titles in the deck; N11 deep link `perchable://quick-add`; N12 the 16a/16b split. Added Dianne's single Phase 0 for the whole Module (M11). No feature removed.
 - 2026-10-02 (Priya, round 2 after Ruby's 11 findings on Module 5, confirmed by the Manager; no Build or feature changed): (1) returning-user wall: per-order furthest-page cursor stored with the skips plus a loop bound of 15 (Jest: 12 all-excluded pages, no Retry); (2) `getCollectionMovieIds` uses `order by added_at desc, id`; (3) the deck waits for the collection ids and shows the error state on their failure; (4) cards returning mid-drag are held until release, return on top with an announcement and focus; (5) reduce motion from `AccessibilityInfo` + listener, explicit `reduceMotion`, relaunch after scale changes; (6) deck keys set `refetchOnReconnect: false`, Random shuffles seeded by (seed, page); (7) session-swiped set is a module-level store, cleared on sign-out and tested; (8) N3/M3 say plainly: cleared on every sign-out, capped at 5,000; (9) Random pool = min(100, recorded total_pages), Build 15 deletes the Build 14 popular source; (10) "Open details" accessibility action; (11) Dianne updates DESIGN §4 and the two failed-add Toast variants; junk-id count inflation named as accepted risk.
+- 2026-10-02 (Priya, round 3 after Ruby's re-review, 5 small gaps; no Build or feature changed): (1) cursor starts at `max(1, cursor - 1)`, is lowered when a card returns on an earlier page, and an empty start page retries once from page 1 before "caught up" (rollback test in Build 15 B1b); (2) Build 14 has Popular only: cursor and remembered-order tests moved to Build 15, A4's loop sentence fixed; (3) `DECK_MAX_PAGES_PER_LOAD = 15` is separate from Home's `MAX_PAGES_PER_LOAD = 3` (unchanged), deck queries `retry: 0` and Retry resumes where the loop stopped; (4) `RANDOM_POOL_PAGES` defaults to 100, the Manager sets it after the live curl in a one-line commit; (5) reduce-motion spring-back becomes a 150 ms ease, the flag reaches worklets as a shared value (Jest), QA records whether `reduceMotionChanged` fires without a relaunch.
