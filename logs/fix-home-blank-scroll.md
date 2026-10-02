@@ -16,3 +16,13 @@ Next: reproduce on td_emu after Build 14's device work (don't overlap), record w
 stays, measure content height vs rows × row height, then brief Bella. Done means: at any scroll speed the list
 never shows more than a brief partial row of blank, and never scrolls past the last row + footer; a test pins
 the cause.
+
+## Justin's answer (2026-10-02)
+The blank fills in with posters after a few seconds; it stays blank while the user keeps flinging ("definitely
+looks not friendly"). So it is cause (a): FlashList cells not mounted/drawn fast enough during a fling — not
+extra scroll height.
+Fix direction (to measure, not guess): FlashList's blank-area measurement before/after on td_emu (and note the
+emulator is slower than a phone); raise `drawDistance`; make cells cheap to mount (no per-cell shimmer animation
+while flinging, exact fixed cell size so no re-measure); while a poster image is still loading the cell shows its
+poster-frame fill, never nothing. Done means: on td_emu a 10-fling run shows no fully blank screen and only brief
+partial blank rows, measured and compared with the baseline; Home's paging/refresh tests unchanged.
