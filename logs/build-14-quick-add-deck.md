@@ -1,6 +1,6 @@
 # Build 14 — Quick Add swipe deck (Module 5: Quick-add swipe)
 
-Base SHA: a6edc26 (Phase 1 start 2026-10-02, branch `module/quick-add-swipe`)
+Base SHA: c0cc283 (Phase 1 start 2026-10-02, branch `module/quick-add-swipe`)
 Plan: PLAN.md "Build 14" A1–A5, B1–B13 + Module 5 M1–M11 (final 6225236 after two Ruby rounds + Manager check).
 Phase 0: Dianne, whole module (M11) — DESIGN.md "Build 14/15/16b" (a6edc26 + fixes); boards rendered by the
 Manager in `logs/evidence/build-14/design/`. Needs from Justin: nothing (N1, N3–N6 are defaults).
