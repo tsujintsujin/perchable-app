@@ -64,6 +64,11 @@ window/transition animations off; 16 unneeded Google apps disabled
   habit: every restart costs minutes of heavy load (found 2026-10-01 — "restart before every
   QA" made the lag recur). `scripts/emulator.sh health` is read-only but swipes the
   launcher — never run it while someone else is using the emulator.
+- **Close it when device work is done** (Justin, 2026-10-02): after a QA run or spot re-run,
+  if no device work comes next (reviews, building, jest), run `scripts/emulator.sh stop`.
+  An idle emulator still ages toward the 3 h limit and takes CPU/RAM from jest and Gradle;
+  the next `ensure` then does a plain quick-boot start instead of a kill-and-restart.
+  Agents (Queenie, Bella) leave it running; the Manager decides when to close it.
 - **Don't overlap heavy work with emulator testing:** the Manager never schedules a Queenie
   run while another agent runs the full jest suite or a Gradle build. Jest is capped:
   `npx jest --maxWorkers=50%`.

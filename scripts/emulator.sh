@@ -1,9 +1,10 @@
 #!/bin/sh
 # Shared td_emu control for every agent. Restart only when the emulator is unhealthy.
-# Usage: scripts/emulator.sh health | ensure | restart
+# Usage: scripts/emulator.sh health | ensure | restart | stop
 #   health  - print uptime, load and launcher jank; exit 1 if unhealthy (read-only)
 #   ensure  - run health; restart only if unhealthy or not running; then wait until settled
 #   restart - force a quick-boot restart and wait until settled
+#   stop    - close the emulator when no device work is next (it ages and eats CPU while idle)
 export MSYS_NO_PATHCONV=1
 SDK="/c/Users/justi/AppData/Local/Android/Sdk"
 A="$SDK/platform-tools/adb"
@@ -53,9 +54,15 @@ health() {
   [ -n "$J" ] && [ "$J" -le "$JANK90_MAX_MS" ] && [ "$UPM" -le "$UPTIME_MAX_MIN" ] && [ "${L%.*}" -lt 6 ]
 }
 
-restart() {
+# Close the emulator (quick-boot snapshot is saved) and wait until the process is gone.
+stop() {
   timeout 30 "$A" emu kill >/dev/null 2>&1
-  for i in $(seq 1 30); do powershell.exe -NoProfile -Command "if (Get-Process qemu-system* -ErrorAction SilentlyContinue) { exit 1 } else { exit 0 }" >/dev/null 2>&1 && break; sleep 2; done
+  for i in $(seq 1 30); do powershell.exe -NoProfile -Command "if (Get-Process qemu-system* -ErrorAction SilentlyContinue) { exit 1 } else { exit 0 }" >/dev/null 2>&1 && { echo "stop: emulator closed"; return 0; }; sleep 2; done
+  echo "stop: emulator still running after 60 s"; return 1
+}
+
+restart() {
+  stop >/dev/null
   # Detached start: a Bash background job would be killed when the tool call returns.
   powershell.exe -NoProfile -Command "Start-Process -FilePath '$EMU_WIN' -ArgumentList '-avd','td_emu','-gpu','host' -WindowStyle Normal" >/dev/null 2>&1
   sleep 10; fix_adb || { echo "restart: adb never came up"; return 1; }
@@ -66,5 +73,6 @@ case "$1" in
   health) health ;;
   ensure) if health; then echo "ensure: healthy, no restart"; else echo "ensure: restarting"; restart && health; fi ;;
   restart) restart && health ;;
-  *) echo "usage: scripts/emulator.sh health|ensure|restart"; exit 2 ;;
+  stop) stop ;;
+  *) echo "usage: scripts/emulator.sh health|ensure|restart|stop"; exit 2 ;;
 esac

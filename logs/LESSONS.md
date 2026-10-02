@@ -118,3 +118,6 @@ Handle each one up front; say in the Build log how (or "n/a").
   on. Prove a flake fix under load (busy processes alongside), not on an idle machine. (2026-10-02)
 - On a quick-boot emulator the guest `/proc/uptime` comes back from the snapshot — measure
   emulator age from the host process, not from inside Android. (2026-10-02)
+- Close the emulator (`scripts/emulator.sh stop`) as soon as device work is done and none is
+  next. Left idle through reviews and builds, it ages toward the unhealthy limit and slows
+  jest/Gradle, so the next test had to restart it anyway. (2026-10-02, Justin)
