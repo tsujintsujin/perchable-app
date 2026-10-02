@@ -35,7 +35,7 @@ jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: jest.fn() } }));
 import { createQueryClient } from "@/lib/queryClient";
 import { QuickAddScreen } from "@/modules/quick-add";
 import { clearQuickAddData, getSessionAdds, loadSkips, saveSkips } from "@/modules/quick-add/skipMemory";
-import { colors, deck, size } from "@/ui/tokens";
+import { colors, deck, size, spacing } from "@/ui/tokens";
 
 type Reply = { data: unknown; error: unknown };
 const movie = (id: number, extra: Record<string, unknown> = {}) => ({
@@ -306,7 +306,7 @@ describe("the filled screen (B2, layout)", () => {
 
   it("the title band ends right above the dock (102 dp: 16 pad + 78 controls + 8), and the card tilts about its bottom centre", async () => {
     await renderFilled();
-    expect(StyleSheet.flatten(within(card(100)).getByTestId("band", { includeHiddenElements: true }).props.style).bottom).toBe(size.deckControlsZone);
+    expect(StyleSheet.flatten(within(card(100)).getByTestId("band", { includeHiddenElements: true }).props.style).bottom).toBe(size.deckControlsPad + size.deckControlsHeight + spacing[8]);
     expect(StyleSheet.flatten(card(100).props.style).transformOrigin).toBe("50% 100%");
   });
 
@@ -400,7 +400,7 @@ describe("the drag, mid-gesture (B3, M4)", () => {
     expect(stampOpacity(100, "add")).toBeCloseTo(0.5);
   });
 
-  it("the tilt stops at 12 degrees", async () => {
+  it("the tilt stops at the maximum, 6 degrees", async () => {
     await renderFilled();
     await act(async () => {
       pan(100).onStart();
@@ -560,12 +560,12 @@ describe("one swipe per action (failure mode 3)", () => {
     expect(new Set(mountedCards()).size).toBe(mountedCards().length);
   });
 
-  it("never mounts more than two cards and a leaving one, and only two at rest", async () => {
+  it("mounts the top and the next poster, plus the leaving card on top of them while it flies off (three at most)", async () => {
     await renderFilled();
     await act(async () => press("Skip Movie 100"));
-    expect(mountedCards().length).toBeLessThanOrEqual(3);
+    expect(mountedCards().sort()).toEqual([100, 101, 102]);
     await exitDone(100);
-    expect(mountedCards().length).toBe(2);
+    expect(mountedCards().sort()).toEqual([101, 102]);
   });
 
   it("a card leaves with the design's motion: 75% of the way at 100 ms, tilted, past the screen edge at 200 ms", async () => {
@@ -786,6 +786,65 @@ describe("reduce motion (B10, M4)", () => {
     await screen.findByLabelText("Movie 100, 2021");
     expect(styleOf(100).opacity).toBe(1);
     expect(transformOf(100, "scale")).toBeCloseTo(1);
+  });
+});
+
+describe("Bug round 1", () => {
+  it("a burst of presses on one card advances the stack once: one announcement, one skip, the new top full-size and undimmed, no early page request", async () => {
+    // Seven cards of three pages: six remain after one swipe (above the request threshold), five if it were counted twice.
+    replies[1] = ok(pageOf(1, 100, 7, 3));
+    await renderFilled();
+    const top = screen.getByLabelText("Movie 100, 2021");
+    // Two actions in the same tick, before React can re-render (a double tap faster than a frame).
+    await act(async () => {
+      top.props.onAccessibilityAction({ nativeEvent: { actionName: "skip" } });
+      top.props.onAccessibilityAction({ nativeEvent: { actionName: "skip" } });
+      top.props.onAccessibilityAction({ nativeEvent: { actionName: "add" } });
+    });
+    await exitDone(100);
+    await ready();
+    expect(announce.mock.calls.filter(([text]) => text === "Skipped Movie 100")).toHaveLength(1);
+    expect(await loadSkips("u1")).toEqual([100]);
+    expect(getSessionAdds("u1")).toEqual([]);
+    expect(transformOf(101, "scale")).toBeCloseTo(1);
+    expect(dimOpacity(101)).toBe(0);
+    expect(requested).toEqual([1]);
+    // And the deck still works: the next swipe is clean too.
+    await drag(101, -300);
+    await exitDone(101);
+    expect(transformOf(102, "scale")).toBeCloseTo(1);
+    expect(dimOpacity(102)).toBe(0);
+  });
+
+  it("a touch that travelled past the pan slop is never a tap; a small one and a screen-reader click are", async () => {
+    await renderFilled();
+    const top = screen.getByLabelText("Movie 100, 2021");
+    await fireEvent(top, "pressIn", { nativeEvent: { pageX: 100, pageY: 400 } });
+    await fireEvent.press(top, { nativeEvent: { pageX: 100 + 80, pageY: 400 } });
+    expect(mockPush).not.toHaveBeenCalled();
+    await fireEvent(top, "pressIn", { nativeEvent: { pageX: 100, pageY: 400 } });
+    await fireEvent.press(top, { nativeEvent: { pageX: 103, pageY: 402 } });
+    expect(mockPush).toHaveBeenCalledTimes(1);
+    skew += 5000;
+    await fireEvent.press(top);
+    expect(mockPush).toHaveBeenCalledTimes(2);
+  });
+
+  it("reduce motion switched on mid-drag still brings the next poster back: the release resets the stack coordinate too", async () => {
+    await renderFilled();
+    await waitFor(() => expect(reduceMotionListener).toBeDefined());
+    await act(async () => {
+      pan(100).onStart();
+      pan(100).onUpdate({ translationX: 0.3 * SCREEN_WIDTH });
+    });
+    expect(transformOf(101, "scale")).toBeGreaterThan(0.94 + 0.02);
+    await act(async () => reduceMotionListener?.(true));
+    await act(async () => {
+      pan(100).onEnd({ translationX: 0.3 * SCREEN_WIDTH, velocityX: 0 }, true);
+      pan(100).onFinalize();
+    });
+    await waitFor(() => expect(transformOf(101, "scale")).toBeCloseTo(0.94, 2));
+    expect(dimOpacity(101)).toBeCloseTo(1, 1);
   });
 });
 

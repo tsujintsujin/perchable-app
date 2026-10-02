@@ -21,7 +21,7 @@ import { displayTitle, IMAGE_SIZE, releaseYear, tmdbImage, type Movie } from "@/
 import { COMMIT_FRACTION, PAN_FAIL_Y, PAN_SLOP, decideSwipe, type SwipeDirection } from "../decideSwipe";
 import type { ReturnedCard } from "../hooks/useQuickAddDeck";
 
-/** How many cards are mounted at once: the top and the next poster behind it (a leaving card takes the next one's place). */
+/** Cards in the stack: the top and the next poster behind it. A card that is flying off is mounted on top of these, so three at most. */
 const MOUNTED_CARDS = 2;
 // How many cards past the mounted ones get their poster fetched ahead of time.
 const PREFETCH_FROM = MOUNTED_CARDS;
@@ -111,7 +111,6 @@ function DeckCard({
   // Sends the card off (a swipe or a button): flies out in 200 ms, or fades in place with reduce motion; the stack moves up meanwhile.
   const runExit = (direction: SwipeDirection) => {
     "worklet";
-    if (exiting.get()) return;
     exiting.set(true);
     const sign = direction === "right" ? 1 : -1;
     const stack = settle.get() + dragP.get();
@@ -146,6 +145,7 @@ function DeckCard({
       const ease = { duration: motion.deckFade, easing: Easing.out(Easing.quad), reduceMotion: ReduceMotion.Never };
       dx.set(withTiming(0, ease));
       dy.set(withTiming(0, ease));
+      dragP.set(withTiming(0, ease));
       return;
     }
     const spring = { ...motion.deckSpring, reduceMotion: ReduceMotion.Never };
@@ -154,7 +154,18 @@ function DeckCard({
     dragP.set(withSpring(0, spring));
   };
 
-  useImperativeHandle(ref, () => ({ commit: runExit }));
+  // Buttons and screen-reader actions: one exit per card, however fast they arrive. A ref, not the shared value: the JS thread
+  // can read the shared value stale for a frame, and a second exit would advance the stack twice.
+  const startedRef = useRef(false);
+  const commitFromJs = (direction: SwipeDirection) => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    runExit(direction);
+  };
+  useImperativeHandle(ref, () => ({ commit: commitFromJs }));
+
+  // Where the finger came down, to tell a tap from a drag the pan did not claim.
+  const pressStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // The drag: the card follows the finger; a release commits by distance or flick, anything else (or a cancel) springs back.
   const pan = Gesture.Pan()
@@ -209,7 +220,17 @@ function DeckCard({
         <Animated.View collapsable={false} style={styles.fill}>
           <Pressable
             ref={pressRef}
-            onPress={() => onOpen(movie)}
+            onPressIn={(event) => {
+              pressStartRef.current = { x: event.nativeEvent.pageX, y: event.nativeEvent.pageY };
+            }}
+            onPress={(event) => {
+              // A touch that travelled past the pan slop is a drag, never a tap (a screen reader's click carries no position).
+              const start = pressStartRef.current;
+              pressStartRef.current = null;
+              const { pageX, pageY } = event.nativeEvent;
+              if (start && typeof pageX === "number" && Math.hypot(pageX - start.x, pageY - start.y) > PAN_SLOP) return;
+              onOpen(movie);
+            }}
             accessibilityRole="button"
             accessibilityLabel={year ? `${title}, ${year}` : title}
             accessibilityHint="Opens details"
@@ -221,8 +242,8 @@ function DeckCard({
             onAccessibilityAction={(event) => {
               const action = event.nativeEvent.actionName;
               if (action === "openDetails") onOpen(movie);
-              else if (action === "skip") runExit("left");
-              else if (action === "add") runExit("right");
+              else if (action === "skip") commitFromJs("left");
+              else if (action === "add") commitFromJs("right");
             }}
             style={({ pressed }) => [styles.fill, pressed && styles.pressed]}
           >
@@ -265,7 +286,7 @@ type Props = {
 
 type Leaving = { movie: Movie; rank: number; key: string };
 
-/** The stack of swipe cards: at most three mounted, the top one draggable, a leaving card animating in its own layer. */
+/** The stack of swipe cards: the top (draggable) and the next mounted, plus a leaving card animating in its own layer. */
 export function SwipeDeck({ ref, cards, returned, cardSize, bottomInset, reduceMotion, onSwipe, onOpen, onDragChange, onBusyChange }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   // Stack coordinate at rest (`settle`) and the extra a drag adds (`dragP`); a card shows at slot `rank - (settle + dragP)`.
@@ -279,6 +300,8 @@ export function SwipeDeck({ ref, cards, returned, cardSize, bottomInset, reduceM
   const [epochs, setEpochs] = useState<Record<number, number>>({});
   const [seenReturn, setSeenReturn] = useState(returned?.seq ?? 0);
   const topRef = useRef<DeckCardHandle>(null);
+  // Keys of the cards already committed.
+  const committedRef = useRef(new Set<string>());
 
   // A returned card takes the top slot: the rest of the stack steps back one place and screen-reader focus moves to it.
   if (returned && returned.seq !== seenReturn) {
@@ -317,6 +340,9 @@ export function SwipeDeck({ ref, cards, returned, cardSize, bottomInset, reduceM
   // A card was committed: it becomes the one leaving card (any earlier one is gone), the rank base advances and the swipe is recorded.
   const handleCommit = useCallback(
     (movie: Movie, rank: number, key: string, direction: SwipeDirection) => {
+      // A card commits once: a repeat for the same card must not advance the rank base or record the swipe again.
+      if (committedRef.current.has(key)) return;
+      committedRef.current.add(key);
       setLeaving([{ movie, rank, key }]);
       setBase((current) => current + 1);
       setFocusSignal((current) => current + 1);
@@ -330,7 +356,7 @@ export function SwipeDeck({ ref, cards, returned, cardSize, bottomInset, reduceM
 
   // One list for the stack and the leaving card: a card keeps its key (and its running animation) when it changes role.
   const items = [
-    ...cards.slice(0, leaving.length > 0 ? MOUNTED_CARDS - 1 : MOUNTED_CARDS).map((movie, index) => ({
+    ...cards.slice(0, MOUNTED_CARDS).map((movie, index) => ({
       key: keyOf(movie),
       movie,
       role: (index === 0 ? "top" : "behind") as CardRole,

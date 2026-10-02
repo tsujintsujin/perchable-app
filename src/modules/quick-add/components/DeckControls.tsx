@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent } from "react-native";
+import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
 import { colors, iconSize, lineHeight, opacity, size, spacing, type } from "@/ui/tokens";
 
 type Props = {
@@ -29,8 +29,8 @@ function Control({
   glyph: string;
   disabled: boolean;
   onPress: () => void;
-  circle: object;
-  glyphStyle: object;
+  circle: StyleProp<ViewStyle>;
+  glyphStyle: StyleProp<TextStyle>;
   small?: boolean;
 }) {
   return (

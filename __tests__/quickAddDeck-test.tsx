@@ -14,7 +14,7 @@ import { createQueryClient } from "@/lib/queryClient";
 import { MAX_PAGES_PER_LOAD } from "@/modules/movies/api/getPopularMovies";
 import { DECK_KEY, FINDING_AFTER_PAGES, REQUEST_MORE_AT, useQuickAddDeck } from "@/modules/quick-add/hooks/useQuickAddDeck";
 import { DECK_MAX_PAGES_PER_LOAD } from "@/modules/quick-add/readDeckPage";
-import { clearQuickAddData, getSessionAdds, loadSkips, saveSkips, setSessionAdds } from "@/modules/quick-add/skipMemory";
+import { clearQuickAddData, getSessionAdds, loadSkips, saveSkips, setSessionAdds, useClearQuickAddOnSignOut } from "@/modules/quick-add/skipMemory";
 
 type Reply = { data: unknown; error: unknown };
 const movie = (id: number) => ({ id, title: `Movie ${id}`, poster_path: null, vote_average: 7, release_date: "2021-01-01" });
@@ -413,6 +413,31 @@ describe("the page loop", () => {
     expect(requested).toEqual([1, 1]);
     expect(await loadSkips("u1")).toEqual([]);
     expect(view.result.current.canUndo).toBe(false);
+  });
+});
+
+describe("sign-out and the deck's pages", () => {
+  it("clears the loaded pages when the user leaves, so the next user starts at page 1 and never inherits the page offset", async () => {
+    const client = createQueryClient();
+    clients.push(client);
+    const wrapper = ({ children }: { children: ReactNode }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    const a = await renderHook(() => useQuickAddDeck("u1"), { wrapper });
+    await waitFor(() => expect(a.result.current.state).toBe("filled"));
+    // Swipe far enough that page 2 is loaded.
+    await act(async () => {
+      for (const card of a.result.current.cards) a.result.current.swipe(card, "left");
+    });
+    await waitFor(() => expect(requested).toEqual([1, 2]));
+    await waitFor(() => expect(client.getQueryData(DECK_KEY)).toBeDefined());
+    const signOut = await renderHook(({ id }: { id: string | undefined }) => useClearQuickAddOnSignOut(id), { wrapper, initialProps: { id: "u1" as string | undefined } });
+    await a.unmount();
+    await signOut.rerender({ id: undefined });
+    expect(client.getQueryData(DECK_KEY)).toBeUndefined();
+    requested = [];
+    const b = await renderHook(() => useQuickAddDeck("u2"), { wrapper });
+    await waitFor(() => expect(b.result.current.state).toBe("filled"));
+    expect(requested).toEqual([1]);
+    expect(b.result.current.cards.map((card) => card.id)).toEqual(idsFor(1));
   });
 });
 

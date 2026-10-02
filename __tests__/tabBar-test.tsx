@@ -30,6 +30,23 @@ describe("TabBar with Quick Add", () => {
     expect(StyleSheet.flatten(screen.getByText("Perch").props.style).color).toBe(colors.text.secondary);
   });
 
+  it("every tab is at least 48 dp tall, with its top padding inside the touch target", async () => {
+    await render(<TabBar state={{ index: 0, routes }} navigation={{ navigate: jest.fn() }} />);
+    for (const name of ["Perch", "Quick Add", "Profile"]) {
+      const style = StyleSheet.flatten(screen.getByRole("button", { name }).props.style);
+      expect(style.minHeight).toBeGreaterThanOrEqual(48);
+      expect(style.paddingTop).toBe(8);
+    }
+  });
+
+  it("dims every inactive icon to 0.6, the glyph of any tab included, and leaves the active one at full strength", async () => {
+    await render(<TabBar state={{ index: 1, routes }} navigation={{ navigate: jest.fn() }} />);
+    const opacityOf = (glyph: string) => StyleSheet.flatten(screen.getByText(glyph).parent?.props.style)?.opacity;
+    expect(opacityOf("🦉")).toBe(0.6);
+    expect(opacityOf("👤")).toBe(0.6);
+    expect(opacityOf("🃏")).toBeUndefined();
+  });
+
   it("pressing another tab navigates to it; pressing the active tab does nothing", async () => {
     const navigate = jest.fn();
     await render(<TabBar state={{ index: 0, routes }} navigation={{ navigate }} />);

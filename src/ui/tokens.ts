@@ -191,8 +191,7 @@ export const size = {
   detailsScrimHeight: 72,
   detailsToastOffset: 24,
   detailsBottomPad: 80,
-  /** Quick Add deck: the bottom dock (16 pad + 78 controls + 8 on top, at font scale 1; the layout measures it) and the fade under the top scrim. */
-  deckControlsZone: 102,
+  /** Quick Add deck: the fade under the top scrim. */
   deckTopScrimFade: 24,
   /** Gradient above a deck card's info band. */
   deckInfoFade: 40,
@@ -270,6 +269,8 @@ export const opacity = {
   disabled: 0.5,
   /** A pressed button or control. */
   pressed: 0.85,
+  /** An inactive tab icon. */
+  inactive: 0.6,
 } as const;
 
 /** Letter spacing for uppercase section labels. */

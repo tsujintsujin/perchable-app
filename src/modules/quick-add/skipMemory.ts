@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useQueryClient } from "@tanstack/react-query";
+import { DECK_KEY } from "./deckKey";
 
 /** Skipped movie ids kept per user; the oldest are dropped past this. */
 export const MAX_SKIPS = 5000;
@@ -59,8 +61,9 @@ export function clearQuickAddData(userId: string): Promise<void> {
   return enqueue(userId, () => AsyncStorage.removeItem(skipsKey(userId)));
 }
 
-/** Clears the departing user's Quick Add data when the signed-in user changes to someone else or to nobody; not at first render. */
+/** Clears the departing user's Quick Add data (and the deck's loaded pages, so the next user starts at page 1) when the signed-in user changes to someone else or to nobody; not at first render. */
 export function useClearQuickAddOnSignOut(userId: string | undefined): void {
+  const queryClient = useQueryClient();
   // Ref, not state: compared inside the effect, never rendered.
   const previousRef = useRef(userId);
 
@@ -68,6 +71,9 @@ export function useClearQuickAddOnSignOut(userId: string | undefined): void {
   useEffect(() => {
     const previous = previousRef.current;
     previousRef.current = userId;
-    if (previous !== undefined && previous !== userId) void clearQuickAddData(previous);
-  }, [userId]);
+    if (previous !== undefined && previous !== userId) {
+      void clearQuickAddData(previous);
+      queryClient.removeQueries({ queryKey: DECK_KEY });
+    }
+  }, [userId, queryClient]);
 }

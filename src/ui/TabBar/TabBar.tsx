@@ -1,7 +1,7 @@
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
-import { colors, glass, iconSize, spacing, type } from "@/ui/tokens";
+import { colors, glass, iconSize, opacity, size, spacing, type } from "@/ui/tokens";
 
 // DESIGN.md §2: one tab per route that exists (today Perch, Quick Add, Profile); Search, Chat and
 // Leaderboards add their own entry here as they land.
@@ -54,7 +54,10 @@ export function TabBar({ state, navigation }: Props) {
               accessibilityLabel={meta.label}
               style={styles.tab}
             >
-              <Text style={[styles.icon, isFocused && styles.iconActive]}>{meta.icon}</Text>
+              {/* The dimming sits on a wrapper: some emoji glyphs ignore the opacity of their own Text. */}
+              <View style={isFocused ? undefined : styles.iconInactive}>
+                <Text style={styles.icon}>{meta.icon}</Text>
+              </View>
               <Text style={[styles.label, isFocused && styles.labelActive]}>{meta.label}</Text>
             </Pressable>
           );
@@ -87,10 +90,11 @@ const styles = StyleSheet.create({
     backgroundColor: glass.nav.backgroundColor,
   },
   blurFill: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
-  row: { flexDirection: "row", paddingTop: spacing[8] },
-  tab: { flex: 1, alignItems: "center", gap: 2 },
-  icon: { fontSize: iconSize.tab, opacity: 0.6 },
-  iconActive: { opacity: 1 },
+  row: { flexDirection: "row" },
+  // The 8 dp of top padding is inside the tab, so the whole tab is the touch target (at least 48 dp).
+  tab: { flex: 1, alignItems: "center", gap: spacing[2], paddingTop: spacing[8], minHeight: size.minTouch },
+  icon: { fontSize: iconSize.tab },
+  iconInactive: { opacity: opacity.inactive },
   label: { ...type.micro, color: colors.text.secondary },
   labelActive: { color: colors.accent.gold },
 });

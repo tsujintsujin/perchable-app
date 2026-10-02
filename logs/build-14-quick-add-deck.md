@@ -212,3 +212,26 @@ No app FATAL or ANR. The only "Fatal signal 6 (SIGABRT)" lines are `droid.blueto
 ## UNTESTABLE, Justin to check
 TalkBack: card actions (Skip / Add / Open details), announcement + focus after a swipe, "{title} is back"; real-finger feel of fast flicks (Bug 2); gesture-navigation edge swipe; font scale 1.3; the 150 ms fade in reduced motion.
 Restored: animation scales 0/0/0, Metro stopped, port 8081 free (only a stray client SYN_SENT to 8081 from another PID; no listener).
+
+---
+# Bella: Bug round 1 (Queenie FAIL, Ruby FIX NEEDED)
+
+| Item | Cause | Fix | Test (mutation-checked) |
+|---|---|---|---|
+| **Bug 1** stuck "behind" pose after a fast double tap | The pose is exactly `position = rank - (settle + dragP) = 1` (scale 0.94, dim 1, bounds [22,85][698,1420]). That happens only if `base` advanced by 2 for one card. Two presses landed before React re-rendered; the second ran `runExit` again because the JS thread read the `exiting` shared value stale (the UI thread had not applied `set(true)` yet), so `onCommit` fired twice: `setBase(+1)` twice, `onSwipe` twice (announcement twice, `remainingRef` decremented twice, so the next page could be requested early). The skip store looked right because a skip is idempotent. | JS-side guard: `startedRef` in the card (buttons and screen-reader actions go through `commitFromJs`), the worklet guard stays only in the pan callbacks (one gesture cannot double); and `handleCommit` ignores a key it already committed. | quickAddScreen "a burst of presses ...": three actions in one tick give one announcement, one skip, no add, new top scale 1 and dim 0, no early page request, next swipe clean. Removing both guards fails it; either guard alone still passes (they are layered). |
+| **Bug 2** dropped flicks, drag read as tap | **Not reproduced.** On a fresh, healthy emulator (load ~2.8) 8 of 8 back-to-back flicks 0.9 s apart committed; per-gesture logs show every flick got `start` then `end` (translation -189, success true) 75 to 100 ms later, ranks 5..12 advancing by exactly one, no press event. Consistent with emulator frame time (QA measured 97 to 150 ms median) and not a code path. Code-path hardening anyway: a touch that moved past the pan slop (10 dp) between press-in and press is never a tap (a swipe inside a full-bleed Pressable is otherwise a press, since the card never leaves its bounds); a screen-reader click carries no position and still opens details. A flick during the previous exit is committed, not dropped (the new top is interactive at once; test "swiping the next card during the previous card's exit"). Real finger: Justin. | `onPressIn` start point + distance check in `onPress` | "a touch that travelled past the pan slop ..." (fails without the check) |
+| R2 | Mount cap: during an exit the next card was left unmounted | Stack is always top + next; the leaving card is extra (3 at most); comments updated | "mounts the top and the next poster, plus the leaving card" |
+| R3 | Deck pages survived sign-out, so user B inherited A's page offset | `useClearQuickAddOnSignOut` also `removeQueries({queryKey: DECK_KEY})` (key moved to `deckKey.ts` to avoid an import cycle) | quickAddDeck "sign-out and the deck's pages" (A loads 2 pages, sign-out, B requests page 1 only) |
+| R4 | Wiring test only banned `.value` on named variables | Bans `\b\w+\.value\b` across the deck files | quickAddWiring |
+| R5 | Reduce-motion `springBack` did not reset `dragP` (it only stayed 0 if the setting was on from the start; switching it on mid-drag left the next poster scaled) | Ease `dragP` to 0 too | quickAddScreen "reduce motion switched on mid-drag ..." |
+| R6 | Stale title "12 degrees" | Renamed to the 6 degree maximum | n/a |
+| R7 | `size.deckControlsZone` unused; `circle`/`glyphStyle` typed `object` | Token removed (the dock is measured; the test derives 16 + 78 + 8 from tokens); typed `StyleProp<ViewStyle>`/`StyleProp<TextStyle>` | band test updated |
+| **Bug 3** tab 45.7 dp | The 8 dp top padding was on the row, outside the Pressable | Padding moved inside each tab, `minHeight: size.minTouch`; device bounds are now 94 px = 53.7 dp ([0,1422][240,1516]) | tabBar "at least 48 dp" |
+| **Bug 4** Profile icon not dimmed | Some emoji glyphs (the blue bust) ignore the opacity of their own `Text`; the others looked dimmed | The 0.6 (new `opacity.inactive`) is applied on a wrapper `View` around the glyph for every inactive tab; on device the Profile icon is now dimmed | tabBar "dims every inactive icon" |
+
+Queenie's observations, no cause found, no action: "Couldn't load more movies" once online after about 58 skips (the next-page
+path now has no early or duplicate request after the Bug 1 fix; a transient proxy or timeout error is the likely cause, Retry
+worked); `[LeakChecker] Surface with id: 1 has leaked 1297 components` is the dev client's debug leak checker after a Metro
+reload, not app code.
+Device screenshot after a double tap: `logs/evidence/build-14/device/bug1-after-double-tap-fixed.png` (top card full-bleed,
+uiautomator top bounds [0,0][720,1420] after 7 rapid pairs of taps).

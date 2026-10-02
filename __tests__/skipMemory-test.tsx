@@ -1,4 +1,6 @@
 import { renderHook } from "@testing-library/react-native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   MAX_SKIPS,
@@ -12,8 +14,9 @@ import {
 } from "@/modules/quick-add/skipMemory";
 
 type Props = { id: string | undefined };
+const wrapper = ({ children }: { children: ReactNode }) => <QueryClientProvider client={new QueryClient()}>{children}</QueryClientProvider>;
 const renderSignOutHook = (id: string | undefined) =>
-  renderHook(({ id: current }: Props) => useClearQuickAddOnSignOut(current), { initialProps: { id } });
+  renderHook(({ id: current }: Props) => useClearQuickAddOnSignOut(current), { initialProps: { id }, wrapper });
 
 // Spies made by a test, restored by hand: restoreAllMocks would also wipe the AsyncStorage mock's own implementations.
 const spies: jest.SpyInstance[] = [];

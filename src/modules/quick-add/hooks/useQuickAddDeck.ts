@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { hasMorePages, type Movie, type PopularMoviesResult } from "@/modules/movies";
 import type { SwipeDirection } from "../decideSwipe";
+import { DECK_KEY } from "../deckKey";
 import { readDeckPage } from "../readDeckPage";
 import { capSkips, getSessionAdds, loadSkips, saveSkips, setSessionAdds } from "../skipMemory";
 
-/** Query key of the deck's pages; public data, so not owner-tagged. Separate from Home's list. */
-export const DECK_KEY = ["movies", "deck", "popular"] as const;
+export { DECK_KEY };
 
 /** The next page is requested once this many usable cards or fewer remain. */
 export const REQUEST_MORE_AT = 5;

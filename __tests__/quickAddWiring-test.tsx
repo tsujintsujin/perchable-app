@@ -97,8 +97,8 @@ describe("standards greps on the deck code (B12)", () => {
     }
   });
 
-  it("reads and writes shared values with get and set, never .value", () => {
-    for (const [path, text] of files) expect({ path, value: /\b(dx|dy|settle|dragP|fade|exiting|reduceMotion)\.value\b/.test(text) }).toEqual({ path, value: false });
+  it("reads and writes shared values with get and set: no `.value` on anything in the deck code", () => {
+    for (const [path, text] of files) expect({ path, value: /\b\w+\.value\b/.test(text) }).toEqual({ path, value: false });
   });
 
   it("sets reduceMotion explicitly on every animation (inline, or in the named config it passes)", () => {
