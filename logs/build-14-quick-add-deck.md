@@ -140,3 +140,75 @@ transform, so the next poster also scales about its bottom centre (hidden behind
 solid.
 Device screenshots in `logs/evidence/build-14/device/`: `rework-tab-bar-home.png`, `rework-deck-filled-full-bleed.png`,
 `rework-mid-drag-add-stamp.png`, `rework-top-toast.png` (first-version frames kept as history).
+
+---
+# QA: Queenie, Build 14 (Quick Add tab, full-bleed deck), branch module/quick-add-swipe at f3a4104
+Evidence: `logs/evidence/build-14/qa/` (PNG + uiautomator XML + `logcat-E.txt`). Dev build on td_emu, Metro started by me (8081, stopped, confirmed free).
+
+Environment honesty: the emulator was loaded for much of the run (load 4 to 8, deck median frame 150 ms, Home median 97 ms per `dumpsys gfxinfo`).
+`scripts/emulator.sh ensure` restarted it once (quick-boot restored the app process). Screenshots from `exec-out screencap` were often stale by
+several seconds to a minute, so state was confirmed with uiautomator (card bounds, labels, enabled) and the skip store (`run-as ... RKStorage`, ids only).
+Test input: `input motionevent` in ONE `adb shell` call holds a drag (separate adb calls cancel the touch; the logcat line "Got DOWN touch before receiving UP or CANCEL" is mine).
+Metro's dev "Refreshing..." banner appeared several times (see Findings); I did not edit app code.
+
+## Verdict: FAIL (2 Bugs + 2 minor). Core flows pass; the stuck "behind" pose after a fast double-tap (Bug 1) and dropped/tap-misread flicks (Bug 2) need Bella/Ruby.
+
+| # | Item | Result | Evidence (qa/) |
+|---|---|---|---|
+| 1 | Tab bar Perch / Quick Add / Profile; Quick Add active gold; tap on active tab = no-op; leave and return = same card + Undo enabled; no Home row; gear corner has only the dev-client overlay | PASS (icon note Bug 4) | 02-home, 04-deck, 84-qa-after-tab-return, ui-t1/t3.xml |
+| 2 | Full-bleed deck vs deck-states board (poster crop, top scrim, title band, dock, controls on one baseline); long title wraps to 2 lines ("Renegade Immortal: Battle of the Immortal Slayer", "Demon Slayer: Kimetsu no Yaiba Infinity Castle"); no rating = year only, no "NaN" ("Blaze of Love 1994"); uncached poster = fallback icon + title | PASS | 04-deck, 44-back, 56-ten-flicks-fresh, 85-off-montage |
+| 3 | Mid-gesture ADD: 15% no stamp, card follows, slight tilt, next poster in the gap; 30% ADD stamp full, tilt about bottom centre, next poster growing; release below 35% springs back; 40% commits, next card on top, top Toast "Adding to your collection is coming soon." | PASS | 12, 13, 14, 15, 18, 19, 20 |
+| 3 | Mid-gesture SKIP: 30% SKIP stamp (coral), tilt left, next poster; spring-back; 40% commits | PASS | 16, 17, 22, 23, 24 |
+| 4 | Velocity: `input swipe` 400 ms and 800 ms 6/6 commit; 150 ms 1/3 on the loaded emulator, 5/6 later; skip store ids unique on every read (no card shown twice) | PARTIAL, see Bug 2 | 28-30, ui-f1..f6.xml |
+| 5 | Left swipe persists: force-stop + relaunch, none of the 70+ skipped cards returns. Right swipe/Add stores nothing: Renegade (Added) is back on top after force-stop and the skip store did not change (102 to 102) | PASS | ui-50.xml, 50-relaunch-deck-top |
+| 6 | Buttons = swipes. Double-tap Add: one card leaves, store unchanged; double-tap Skip: one card, +1 skip | PASS for count; leaves the stuck pose, Bug 1 | 66, 69, 70, ui-b1/b2 |
+| 7 | Undo: card back on top; a skip's Undo removes its id from the store (103 to 102); disabled at start; disabled after one Undo; Undo after Add works | PASS (stuck pose after a double-tap, Bug 1) | 51-53, 71, 74-76 |
+| 8 | Tap card = details (one push), Back = same card (Alien) | PASS | ui-t0, 80-82 |
+| 9 | Loading (shimmer, buttons off) and progress line "Finding movies you haven't seen..."; offline cold start: loading ~12 s, error "Couldn't load movies / Check your connection and try again. / Retry" by 18 s; offline mid-deck keeps swiping, uncached poster = fallback; Retry after network back loads | PASS | 03, 88-montage, 88-offline-cold-error, 89, 85-off-montage, 46, 47 |
+| 9 | Caught up / Start over, Keep looking | NOT REACHED (skip list too long; Jest covers) | |
+| 10 | Reduced motion (scales 0, relaunched): drag follows flat (no tilt), release below threshold is back at centre within 250 ms, commit shows next card + Toast with no fly-off | PASS (150 ms fade not frame-provable) | 93-98 |
+| 10 | INFO: scales changed to 1 WITHOUT relaunch: the very next drag already tilts and shows the stamp, so the change is followed at once | info | 99 |
+| 11 | uiautomator: "Skip {title}", "Add {title} to collection", "Undo", card "{title}, {year}", tabs; button targets 98x137 px = 56x78 dp | PASS; tabs see Bug 3 | ui-t1.xml, 38-ui.xml |
+| 11 | Card custom actions, announcement + focus after swipe, "{title} is back", TalkBack | UNTESTABLE here (TalkBack not enabled on the shared emulator): Justin | |
+| 12 | Regression: Home grid + paging (3 pages), details from Home (Disclosure Day), Profile tab opens ("My Profile"), signed-in state kept across relaunches. Pull-to-refresh NOT cleanly proven (my 150 ms swipes opened details instead) | PARTIAL | 100, 101, 106, 109 |
+| 13 | logcat: no app FATAL/ANR | see Logcat | logcat-E.txt |
+
+## Bugs
+
+**Build 14 · Bug 1: the new top card stays in the "behind" pose (about 94% size, dimmed, next card's edge showing) after a fast double-tap on Skip/Add**
+Steps: Quick Add with cards; `adb shell "input tap 213 1305; input tap 213 1305"` (two quick taps on Skip).
+Expected: one card leaves; the new top card is full-bleed and bright (bounds [0,0][720,1420]).
+Actual, 3 of 3 runs: count is right (one swipe) but the new top card rests at [22,85][698,1420], dimmed, with a card edge at the right, until the next committed swipe (a drag that springs back does not clear it; 78 shows the card behind dark with a stray "L"). Single taps (20+) and flicks one per adb call never did this. The same pose was seen after an Undo that followed a double-tap (71) and several times in the first flick runs (28-swipe-t3, 35-ctl-montage).
+Evidence: 77-dbltap-r1/r2/r3.png (r3 clearest), ui-x1/x2/x3.xml, 78-stuck-drag-hold.png, 79-stuck-after-release.png, 71-undo-tapped.png, ui-c1.xml.
+Why it matters: Manager failure modes 3 and 4 (no stuck state); Jest cannot press faster than a render.
+
+**Build 14 · Bug 2: back-to-back flicks are dropped, and a flick can be read as a tap that opens details (PARTIAL; may be partly emulator frame rate; real finger = Justin)**
+Steps (fresh JS context, healthier emulator, load 1 to 2): `for i in 1..10: input motionevent DOWN 600 700; MOVE 450; MOVE 250; UP 120` (about 0.9 s apart).
+Expected: 10 skips, never details. Actual: 2 to 4 skips, then details of the top card opened and the remaining flicks landed on the details screen (skip store 70 to 72, 47 to 49, 95 to 96).
+Controls: one flick per adb call about 2.3 s apart: 14 of 14 commit, no details (59-montage). A pair `flick; sleep 0.5; flick`: both commit. `flick; flick` with no gap: one commits, the second ignored (fine, disabled during exit). `input swipe` 150 ms: 1/3 and 5/6; 400 and 800 ms: 6/6.
+Counter-evidence: on Home (untouched code) 25 fast 150 ms swipes also opened a details screen, and the emulator drew a median frame in 97 to 150 ms. Treat as unproven on a device; Ruby to judge the cause. The Plan B3/B7 line "a drag is never a tap" is the one at stake.
+Evidence: 40-after-ten-flicks, 43-ten-flicks-healthy, 59-montage, 61-montage, 63-montage, 64-sep*, 102-home-pull-refresh (Home opened details), ui-g*/ui-d*/ui-e*/ui-f*.xml.
+
+**Build 14 · Bug 3 (minor): tab touch targets are 45.7 dp high, under the 48 dp rule**
+uiautomator bounds for Perch / Quick Add / Profile are [0,1436][240,1516] = 240x80 px = 137x45.7 dp (1.75 px/dp). The bar draws from y=1420, so the first 16 px (9 dp) is not touchable. DESIGN: the whole tab is the target, 8 + 26 + 2 + 14 = 50 dp. Evidence: ui-t1.xml, 38-ui.xml.
+
+**Build 14 · Bug 4 (minor, design): inactive Profile tab icon is full-strength blue; the board shows inactive icons at 0.6 opacity**
+Perch and Quick Add inactive icons are dimmed; the Profile glyph looks the same vivid blue active or not (02-home, 109-profile). Board: build-14-tab-bar.png panel 3. Ruby to judge whether it is the emoji font.
+
+## Findings that are not Bugs (exact text)
+- **Note A.** "Couldn't load more movies / Check your connection and try again. / Retry" appeared once on an ONLINE emulator (ping OK) after about 58 skips in the flick loops; Retry brought cards back at once (46, 47). Cause unknown; Ruby to check the next-page path.
+- Dev banner "Refreshing..." (blue bar) several times (23-left-exit-mid, 52-skip-button-after). Metro log: `Android Bundled 266ms / 115ms / 129ms / 119ms node_modules\expo-router\entry.js (1 module)` = something in the repo changed under Metro (the Manager committed LESSONS meanwhile); I did not edit app code. It remounts JS state, so some early odd frames may be from it; all Bug 1/2 repros above were repeated on a fresh launch.
+- Poster text shows through the 0.88 alpha dock (ghost "THE ODYSSEY", "DEEP WATER", "OPPENHEIMER" behind the buttons). Bella listed it as designed; the board draws it solid.
+- A thin pale sliver at the bottom edge of the dragged card while tilted (12, 14, 15 at y about 1240).
+- Skip/Add looked disabled 1.5 s after a right swipe once (20-right-committed); enabled by 4.5 s (21). Screenshot lag may explain.
+- Loading fill is darker than the board's (03-quickadd vs build-14-deck-states panel 1): shimmer phase probably.
+- App process 35 to 60 % CPU idle on a card (`top`), 19 % on Home.
+- Pre-existing, not Build 14: "Debug" label beside the avatar on Home; details content ("#spoiler-free-lounge") draws under the 3-button navigation bar (26-details-state).
+- Android Back on the Quick Add tab goes to the Perch tab, then exits (as Bella noted).
+
+## Logcat (`*:E`, whole session)
+No app FATAL or ANR. The only "Fatal signal 6 (SIGABRT)" lines are `droid.bluetooth` (system). From the app: `unknown:ReactNative: Got DOWN touch before receiving UP or CANCEL from last gesture` (my split adb touches), `unknown:ReactNative: Tried to remove non-existent frame callback`, `unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Refreshing...`, `ReactNativeJNI: FabricUIManagerBinding::reportMount: Surface with id 1 is not found`, `ReactNativeJNI: [LeakChecker] Surface with id: 1 has leaked 1297 components out of 1344` (after a reload). Metro: `WARN [Reanimated] Reduced motion setting is enabled on this device...` (scales 0 launches). Reported without judging cause.
+
+## UNTESTABLE, Justin to check
+TalkBack: card actions (Skip / Add / Open details), announcement + focus after a swipe, "{title} is back"; real-finger feel of fast flicks (Bug 2); gesture-navigation edge swipe; font scale 1.3; the 150 ms fade in reduced motion.
+Restored: animation scales 0/0/0, Metro stopped, port 8081 free (only a stray client SYN_SENT to 8081 from another PID; no listener).
