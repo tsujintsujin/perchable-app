@@ -203,9 +203,10 @@ export function MovieDetailsScreen({ idParam }: { idParam: string | undefined })
   return (
     <View style={styles.root}>
       <ScrollView
+        testID="details-scroll"
         scrollEventThrottle={16}
         onScroll={(event) => setBarVisible(event.nativeEvent.contentOffset.y > size.detailsBarShowAt)}
-        contentContainerStyle={{ paddingBottom: insets.bottom + spacing[32] }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + size.detailsBottomPad }}
       >
         <DetailsContent movie={movie} onComposerPress={() => show(COMMENTS_COMING_SOON, "coming-soon")} />
       </ScrollView>

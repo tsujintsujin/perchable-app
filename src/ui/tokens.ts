@@ -177,9 +177,10 @@ export const size = {
   popoverOffset: 90,
   /** Spoiler-lounge composer height. */
   composerHeight: 48,
-  /** Movie details: status-bar scrim height (added to the top inset) and the Toast's offset above the bottom inset. */
+  /** Movie details: status-bar scrim height (added to the top inset), the Toast's offset above the bottom inset, and the scroll's bottom padding (the Toast sits inside it, below the lounge card). */
   detailsScrimHeight: 72,
-  detailsToastOffset: 96,
+  detailsToastOffset: 24,
+  detailsBottomPad: 80,
 } as const;
 
 /** Backdrop fade: where (0..1 of its height) the gradient starts. */

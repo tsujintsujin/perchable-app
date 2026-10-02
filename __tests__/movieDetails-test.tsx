@@ -172,7 +172,7 @@ describe("Details: loaded", () => {
     await renderDetails();
     await screen.findByRole("header", { name: "The Matrix" });
     // Carrie-Anne has no photo: her initial shows; Neo's photo is an image, not an initial.
-    expect(screen.getAllByText("C").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("C", { includeHiddenElements: true }).length).toBeGreaterThan(0);
   });
 });
 
@@ -247,13 +247,18 @@ describe("Details: title, cast keys, scrim and Toast offset", () => {
     expect(scrim.props.importantForAccessibility).toBe("no-hide-descendants");
   });
 
-  it("lifts the Toast above the composer by the inset plus 96 for both details Toasts", async () => {
+  it("scrolls with 80 + inset of bottom padding and puts both Toasts inside it, below the lounge card", async () => {
     mockInvoke.mockResolvedValue({ data: FULL, error: null });
     const { client } = await renderDetails();
     await screen.findByRole("header", { name: "The Matrix" });
+    const padding = StyleSheet.flatten(screen.getByTestId("details-scroll").props.contentContainerStyle).paddingBottom;
+    expect(padding).toBe(16 + size.detailsBottomPad);
+
     await fireEvent.press(screen.getByRole("button", { name: "Hoot your thoughts" }));
     const toastBottom = () => StyleSheet.flatten(screen.getByRole("alert").props.style).bottom;
     expect(toastBottom()).toBe(16 + size.detailsToastOffset);
+    // The Toast bottom edge is under the end of the content, so it cannot cover the composer.
+    expect(toastBottom()).toBeLessThan(padding);
 
     // The refetch-error Toast uses the same offset.
     mockInvoke.mockResolvedValue({ data: null, error: httpError(404, "not_found") });
@@ -262,6 +267,7 @@ describe("Details: title, cast keys, scrim and Toast offset", () => {
     });
     expect(await screen.findByText("Couldn't refresh. Check your connection.")).toBeTruthy();
     expect(toastBottom()).toBe(16 + size.detailsToastOffset);
+    expect(toastBottom()).toBeLessThan(padding);
   });
 });
 

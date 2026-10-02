@@ -10,30 +10,36 @@ describe("Avatar", () => {
   it("draws the initials first and the photo over them, fading in over 200 ms", async () => {
     await render(<Avatar uri={PHOTO} name="Justin Masiga" size="lg" />);
     // The initials are in the tree while the photo loads (and stay if it fails).
-    expect(screen.getByText("J")).toBeTruthy();
+    expect(screen.getByText("J", { includeHiddenElements: true })).toBeTruthy();
     const photo = screen.getByTestId("avatar-photo");
     expect(photo.props.source).toEqual([{ uri: PHOTO }]);
     expect(photo.props.transition).toEqual({ duration: motion.imageFade });
     expect(motion.imageFade).toBe(200);
   });
 
+  it("hides the initials from screen readers, so only the name next to the avatar is read", async () => {
+    await render(<Avatar uri={PHOTO} name="Justin Masiga" />);
+    expect(screen.queryByText("J")).toBeNull();
+    expect(screen.getByText("J", { includeHiddenElements: true })).toBeTruthy();
+  });
+
   it("with no photo shows the initials only, and ? when there is no name", async () => {
     await render(<Avatar uri={null} name="  ada" />);
-    expect(screen.getByText("A")).toBeTruthy();
+    expect(screen.getByText("A", { includeHiddenElements: true })).toBeTruthy();
     expect(screen.queryByTestId("avatar-photo")).toBeNull();
     await render(<Avatar />);
-    expect(screen.getByText("?")).toBeTruthy();
+    expect(screen.getByText("?", { includeHiddenElements: true })).toBeTruthy();
   });
 
   it("keeps the initials when the photo fails to load", async () => {
     await render(<Avatar uri={PHOTO} name="Mara" />);
     await act(async () => screen.getByTestId("avatar-photo").props.onError?.({ error: "404" }));
-    expect(screen.getByText("M")).toBeTruthy();
+    expect(screen.getByText("M", { includeHiddenElements: true })).toBeTruthy();
   });
 
   it("works inside the own-profile gradient ring", async () => {
     await render(<Avatar uri={PHOTO} name="Mara" ringGradient size="lg" />);
-    expect(screen.getByText("M")).toBeTruthy();
+    expect(screen.getByText("M", { includeHiddenElements: true })).toBeTruthy();
     expect(screen.getByTestId("avatar-photo")).toBeTruthy();
   });
 });

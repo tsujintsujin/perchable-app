@@ -145,6 +145,17 @@ describe("Home: filled", () => {
     expect(screen.getByText("Nosferatu")).toBeTruthy();
   });
 
+  it("labels a movie with an empty or blank title as Untitled, never an empty or leading-comma label", async () => {
+    mockInvoke.mockResolvedValue({
+      data: { ...PAGE, results: [movie(7, "", null), movie(8, "   ", "/x.jpg", "")] },
+      error: null,
+    });
+    await renderHome();
+    expect(await screen.findByRole("button", { name: "Untitled, 2021" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Untitled" })).toBeTruthy();
+    expect(screen.getByText("Untitled")).toBeTruthy();
+  });
+
   it("makes every poster a button that says it opens movie details", async () => {
     mockInvoke.mockResolvedValue({ data: PAGE, error: null });
     await renderHome();

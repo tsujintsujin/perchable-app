@@ -32,6 +32,9 @@ export function Avatar({ uri, size = "md", ringGradient = false, name }: Props) 
         colors={[colors.brand.purple700, colors.brand.gold500]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
+        // Decorative: the name next to the avatar says who it is, so a reader must not say "J" first.
+        importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden
         style={[styles.fallback, StyleSheet.absoluteFill]}
       >
         <Text style={[styles.initial, { fontSize: d * 0.42 }]}>{initial}</Text>

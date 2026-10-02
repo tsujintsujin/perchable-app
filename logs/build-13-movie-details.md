@@ -265,3 +265,10 @@ logcat `*:E` (299 lines, all-process). From the app (pid 5584):
 Not from the app: `F libc: Fatal signal 6 (SIGABRT) ... pid 6581 (droid.bluetooth)` tid bt_stack_manage (system Bluetooth service crash, uid 1002, at 04:36:19), audio HAL `pcmOpen failure`, Bluetooth/rfkill errors. No `FATAL EXCEPTION` for the app, no ANR. No Metro warnings.
 
 Bugs: none. Open question for Ruby: the two app-side error lines above.
+
+## Bug round 2 (Bella, 2026-10-02)
+| Item | Cause | Fix | Proof |
+|---|---|---|---|
+| 1 Toast | The 96 offset put the Toast over the lounge card; DESIGN amendment moved the Toast low and gave the scroll more bottom room. | `size.detailsToastOffset` 24 and new `size.detailsBottomPad` 80 (scroll padding = inset + 80, was 32). Toast bottom (24 + inset) is inside that padding, below the card. Both Toasts use the one offset. | `movieDetails-test`: padding = inset + 80, composer and refetch Toasts at inset + 24 and less than the padding. Mutations (old padding, offset 96) each fail 1. Screenshot `logs/evidence/build-13/r2-toast-scrolled-to-end.png`. |
+| 2 Avatar a11y | Round 1 made the initials always present, so a screen reader read "J" before the name where Avatar has no accessible wrapper. | Gradient wrapper gets `importantForAccessibility="no-hide-descendants"` and `accessibilityElementsHidden`. | `Avatar-test`: the initial is not found by default and is found with `includeHiddenElements`; mutation (props removed) fails 1. Other tests that look for initials now pass `includeHiddenElements`. |
+| 3 Home title | `PosterGrid` passed the raw title, so an empty title gave an empty or ", 2021" label. | `displayTitle(item.title)`, same as details (this also gives Home the "Untitled" the round 1 note said it lacked). | `home-test`: "Untitled, 2021" and "Untitled" labels and fallback text; mutation (raw title) fails 1. |

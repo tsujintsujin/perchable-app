@@ -5,6 +5,7 @@ import { EmptyState } from "@/ui/EmptyState";
 import { PosterCard, PosterCardSkeleton } from "@/ui/PosterCard";
 import { colors, lineHeight, size, spacing, type } from "@/ui/tokens";
 import { IMAGE_SIZE, tmdbImage } from "../tmdbImage";
+import { displayTitle } from "../format";
 import { releaseYear } from "../releaseYear";
 import type { PopularFooter, PopularState } from "../hooks/usePopularMovies";
 import { PagingFooter } from "./PagingFooter";
@@ -44,7 +45,7 @@ function Cell({ item, retryToken, onOpenMovie }: { item: Movie | null; retryToke
         <PosterCard
           id={item.id}
           posterUrl={tmdbImage(item.poster_path, IMAGE_SIZE.poster)}
-          title={item.title}
+          title={displayTitle(item.title)}
           year={releaseYear(item.release_date)}
           retryToken={retryToken}
           onPress={() => onOpenMovie(item.id)}
