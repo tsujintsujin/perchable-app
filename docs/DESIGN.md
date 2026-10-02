@@ -207,7 +207,7 @@ Everything else (`surface.input`, `border.hairline*`, `border.danger`, `overlay.
 | `colors.overlay.addTint` / `colors.overlay.skipTint` | `rgba(184,134,11,0.30)` / `rgba(255,138,138,0.24)` | whole-card tint while dragging right (add) / left (skip) |
 | `size.deckInfoFade` | 40 | height of the gradient above the card's info band |
 | `size.deckButton` / `size.deckButtonSm` | 56 / 48 (= `size.minTouch`) | Skip and Add circles / Undo circle |
-| `size.deckControlsZone` | 102 (measured) | the bottom dock: `deckControlsPad` 16 + controls height + 8; the info band sits right above it |
+| (no token) dock height | measured at run time (102 at the default font scale) | the bottom dock: `deckControlsPad` 16 + measured controls height + 8; the info band sits right above it. `size.deckControlsZone` was removed in Build 14 Bug round 1 (unused; the screen measures the dock). |
 | `size.deckTopScrimFade` | 24 | fade length under the top scrim (header, or header + picker) |
 | `deck.stackScale` | `[1, 0.94]` | scale of the top and the next card (the next poster behind a full-bleed top card) |
 | `deck.tiltMaxDeg` / `deck.tiltFullFraction` | 6 / 0.5 | tilt about the bottom centre = clamp(dx / (0.5 x screen width), -1, 1) x 6 degrees |
@@ -1505,7 +1505,7 @@ Draw order, back to front: **cards** (the whole content area) Â· **top scrim** Â
    then fading to `overlay.fadeStart` over the last 24. It covers the status bar, the title, the picker and the gear zone.
    (The Build 13 scrim fades from the very top; this one holds because the title and picker text need about 6:1 over a
    white poster.)
-6. **Dock (fixed):** `size.deckControlsZone` high at the bottom of the content area, solid `overlay.cardInfo`
+6. **Dock (fixed):** the measured dock height (`deckControlsPad` 16 + controls height + 8; 102 at default font scale) at the bottom of the content area, solid `overlay.cardInfo`
    (`rgba(18,16,22,0.88)`). Height = `deckControlsPad` 16 + controls height + 8 on top = **102** at font scale 1
    (measured). It holds the controls; it does not move with the card.
 7. **Controls (fixed):** one row, centred, bottom = 16 above the tab bar. At 390 x 844: y 676 to 754. Spec below.
