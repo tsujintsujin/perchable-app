@@ -193,7 +193,7 @@ Everything else (`surface.input`, `border.hairline*`, `border.danger`, `overlay.
 | `colors.overlay.shimmerWash` | `rgba(214,196,233,0.10)` | wash over a loading poster tile |
 | `lineHeight` | `caption/small 16` / `body 22` / `subhead 24` / `title 30` | explicit line heights for the type roles used here |
 | `motion.imageFade` | 200 (ms) | poster fade-in; the compact bar's fade is 150 |
-| `colors.overlay.topScrimStart` / `size.detailsScrimHeight` / `size.detailsToastOffset` | `rgba(18,16,22,0.72)` / 72 / 96 | details top scrim, and Toast offset above the composer (Build 13 QA amendments) |
+| `colors.overlay.topScrimStart` / `size.detailsScrimHeight` / `size.detailsToastOffset` / `size.detailsBottomPad` | `rgba(18,16,22,0.72)` / 72 / 24 / 80 | details top scrim, and Toast offset above the composer (Build 13 QA amendments) |
 
 Existing and reused: `bg.elevatedFlat`, `surface.input`, `surface.goldTint`, `border.*`, `glass.hero`,
 `colors.brand.purple900`, `overlay.spinnerTrack`, `shimmerPulse`, `iconSize.lg`, `avatarSize`, `size.minTouch`,
@@ -1255,7 +1255,7 @@ the screen draws its own chip.
   placeholder `body` `text.disabled`. The composer is **not focusable**; tapping it shows a `Toast`
   "Comments are coming soon." (never a silent tap). The sample messages are the only invented content and the
   "Preview only" line says so. Nothing is stored or fetched (Module 9 wires the panel).
-- **Bottom:** 32 padding plus the bottom inset.
+- **Bottom:** `size.detailsBottomPad` 80 padding plus the bottom inset (QA amendment 2; it leaves room for the Toast).
 - **TierBadge popover:** tapping the chip toggles a static popover under the chip row: 260 wide, left edge 90
   from the content left, radius `md` 16, padding 16, fill `bg.elevatedFlat`, 1px `border.hairlineStrong`,
   `elevation.card`. Title "Tier ratings" (`bodyStrong`), 4, body (`small`, `text.secondary`), 12, four
@@ -1345,7 +1345,7 @@ cast name and character clamp to 2 lines each.
 Decisions from QA evidence (`logs/evidence/build-13/`). No board change is needed; these are exact values for Bella's Bug round.
 
 **New tokens (add to §1.9):** `colors.overlay.topScrimStart` = `rgba(18,16,22,0.72)` (`bg.base` at 72%);
-`size.detailsScrimHeight` = 72 (added to the top inset); `size.detailsToastOffset` = 96.
+`size.detailsScrimHeight` = 72 (added to the top inset); `size.detailsToastOffset` = 24; `size.detailsBottomPad` = 80.
 
 1. **Status bar over a bright backdrop (05p): top scrim, status bar stays light.** One fixed (non-scrolling)
    `LinearGradient`, absolute at the top of the screen, full width, height = top inset + `size.detailsScrimHeight`
@@ -1355,10 +1355,15 @@ Decisions from QA evidence (`logs/evidence/build-13/`). No board change is neede
    (the other states have no backdrop). It fades out in the same 150 ms as the compact bar fades in (opacity 1 at
    offsets under `size.detailsBarShowAt`, 0 after), since the solid bar then guards the status bar. Keep the
    light status-bar style; no dark-icon switch.
-2. **Toast on details (09c): sits above the composer.** Bottom offset = bottom inset + `size.detailsToastOffset`
-   96 (32 bottom padding + 48 composer + 16 gap), so scrolled to the end it clears the composer. One rule for
-   both details Toasts (composer "coming soon" and refetch error). Same principle as the tab screens: Toast sits
-   above the bottom chrome (74 tab bar + 24 there; composer zone + 16 here).
+2. **Toast on details (09c): low, in empty space below the lounge card (revised after device check).** The toast
+   never covers the composer, its "Preview only" line or the card. Two values, both measured from the bottom
+   inset: the details scroll's bottom content padding is bottom inset + `size.detailsBottomPad` 80 (replaces the
+   old 32 in Layout "Bottom"), and the Toast sits at bottom inset + `size.detailsToastOffset` 24 (the same 24 as
+   on tab screens, no tab bar here). Scrolled to the end: the card's last 4 dp padding, then 80 of empty space
+   under it (composer bottom = inset + 84 from the screen edge); the Toast (about 42 high: 12/16/12 padding +
+   1px borders) spans inset + 24 to inset + 66, leaving 18 dp clear of the composer. One rule for both details
+   Toasts (composer "coming soon" and refetch error); mid-scroll it simply floats over content, which is
+   normal Toast behaviour.
 3. **Lounge messages (ui-lounge, 05n/05p): the board is right; the code is wrong.** Stacked, not inline. Row =
    `Avatar sm` (32) at left, 10 gap, then a column: author on its own line (`small` 12/16, 600, `accent.gold`),
    then the message below it (12/18, `text.primary`, wraps). Rows align to the top (`alignItems: flex-start`),
