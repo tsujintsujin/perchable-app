@@ -240,3 +240,28 @@ Server tests: commit 4e1d81c (test-only; `_shared/tmdb.ts` unchanged, so nothing
 Emulator: cold-start verify compile run (`cmd package compile -m verify -f ...`) as Queenie advised; no ANR. Left running. Metro stopped, 8081 free.
 
 Failure-mode map row 2 (replaces the earlier text): "Item 2, authReady + 8 s timeout: `movieDetailsApi-test.ts` 'when auth never answers, rejects with a timeout after 8 s...' (fake timers, no Sentry, nothing sent); `getMovieDetails` passes `timeout: 8000` and the signal (unit); offline error state: `movieDetails-test.tsx`. The 8 s abort of an in-flight request is functions-js's and is not tested in Jest."
+
+## QA — Bug round 1 re-test (Queenie, 2026-10-02, commit 219fd90)
+Setup: `emulator.sh ensure` restarted the emulator (uptime was 15 min but launcher 90th pct 500 ms). Cold start: ran `cmd package compile -m verify -f com.tsujintsujin.perchable` first; first dev-client load showed "There was a problem loading the project ... java.io.IOException: unexpected end of stream on http://localhost:8..." (Metro was still starting; `r1q-01-launch.png`); tapping Reload loaded Home. Evidence prefix `r1q-` in `logs/evidence/build-13/`.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Bug 1 Tier chip one line | PASS on 4 movies incl. long title ("The End of Oak Street", 2-line title) | r1q-04-loaded (Coyote), r1q-05-t6 (End of Oak Street), r1q-12-matrix-top, r1q-08 (Resident Evil) |
+| 2 | Bug 2 fast fling | PASS: 26 swipes, durations 150/180/200/220/240/250/280/300 ms (14 up, 12 down), no poster opened, still on Home. No 1 ms swipes used. | r1q-03, r1q-03b |
+| 3 | Bug 3 cast initials then photos | PASS: Resident Evil (not opened before), screenrecord frames: A P K Z gradient initials, then photos replace them (2 mixed, then all 4). No ghosting. Profile avatar and Home header avatar look right. | r1q-06a-cast-initials, r1q-06b-cast-mixed, r1q-06-open.mp4, r1q-20-profile, r1q-15-home |
+| 4 | Status-bar scrim | PASS: Matrix at top, clock/icons readable over bright backdrop; after scroll, scrim gone, compact bar "The Matrix" shown; Back chip at top returned to previous screen | r1q-12, r1q-13, r1q-14 |
+| 5 | Toasts | PASS with a note, see Note A. Composer Toast sits above the composer (does not cover it). Tier opens a popover (not a Toast), no overlap with composer. | r1q-10, r1q-11 |
+| 6 | Lounge stacked | PASS: avatar, gold author on its own line, message under it. Matches the board's structure. | r1q-09-end |
+| 7 | Skeleton | PASS (visual): synopsis bars thin and even, cast name and role bars short. Bar heights not measured in dp (pixel read only). | r1q-04-t3, r1q-06-open.mp4 |
+| 8 | Double-tap guard | PASS: poster A tap, Back, poster B tap in one adb shell call (< 1 s): Coyote (B) opened. Then Back returned straight to Home (A not stacked). Fast double tap on one poster: one Back returned to Home (one screen only). | r1q-16, r1q-17, r1q-18 |
+| 9 | Regression | PASS: paging loaded more rows (14 flings), Profile tab shows name/handle/avatar, back to Home kept scroll position (identical to before). Pull-to-refresh: swipe-down returned to a loaded Home, but the spinner was not caught in a frame (`r1q-22`, `r1q-23`), so refresh is not proven by a screenshot. | r1q-19, r1q-20, r1q-21, r1q-22, r1q-23 |
+| 10 | logcat | See below | r1q-logcat-E.txt |
+
+Note A (design, for Ruby to judge): the composer Toast "Comments are coming soon." sits at inset + 96 dp, which on this short page lands over the "Preview only. Comments are coming soon." line (it hides "...only. Comments are" partly), just above the composer. The board (variant 8) shows the Toast in empty space near the screen bottom, below the composer. Not over the composer itself, so the brief's wording is met.
+
+logcat `*:E` (299 lines, all-process). From the app (pid 5584):
+- `E SwipeRefreshLayout: Got ACTION_MOVE event but don't have an active pointer id.` x21 (during my fast swipes)
+- `E unknown:ReactNative: Tried to remove non-existent frame callback` x2 (04:34, around launch/reload)
+Not from the app: `F libc: Fatal signal 6 (SIGABRT) ... pid 6581 (droid.bluetooth)` tid bt_stack_manage (system Bluetooth service crash, uid 1002, at 04:36:19), audio HAL `pcmOpen failure`, Bluetooth/rfkill errors. No `FATAL EXCEPTION` for the app, no ANR. No Metro warnings.
+
+Bugs: none. Open question for Ruby: the two app-side error lines above.
