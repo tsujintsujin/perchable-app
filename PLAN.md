@@ -1598,9 +1598,11 @@ approved rough plan named three orders (recent, older, random).
 
 #### NEEDS JUSTIN (none blocks; each default applies until he answers)
 
-- **N1 Where Quick Add lives.** Default: a **Quick Add row on Home** opening a
-  full-screen deck (no tab bar); not a new tab (the tab bar stays at five items).
-  Vision says only "a Quick add area".
+- **N1 Where Quick Add lives. DECIDED by Justin 2026-10-02:** "quick add should be a
+  button below, along with Perch and Profile" — **a Quick Add tab in the bottom tab bar**
+  (Perch · Quick Add · Profile, Manager default: middle), the deck shown inside the tabs
+  with the tab bar visible; **no Quick Add row on Home** and no back chip on the deck.
+  (Was: a Home row opening a full-screen deck.) Builds 14–16b follow this.
 - **N2 The three orders.** Default: **Newest first**, **Oldest first**, **Random**
   (the approved rough plan's "recent / older / random"). Vision's wording ("from most
   recent to older or random") could mean only two; "Oldest first" is the one that
