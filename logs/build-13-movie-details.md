@@ -136,3 +136,24 @@ S = `src/modules/movies/components/MovieDetailsScreen.tsx`, T = `src/ui/tokens.t
 
 ## Gates (final)
 tsc 0 errors, functions tsc 0 errors, expo lint clean, jest 40 suites / 481 tests twice with 0 failures, 0 "act(" and 0 console warn/error lines, Metro bundles the Android entry (HTTP 200). Device run against live data: pending the Manager deploy of the details endpoint.
+
+## Manager — gates, server deploy + live checks (2026-10-02)
+- Gates rerun by the Manager on 80709e7: tsc app + functions 0 errors; lint clean; `npx jest --maxWorkers=50%`
+  twice: 481/481, 0 `act(`, 0 console warn/error. Commit audit: no .env/keys/credentials.
+- Ruby server review of bd4a702: **PASS** (no security defects). 3 lows → Bug round with the app review:
+  (a) adult test should assert the body equals a real TMDB-404 run; (b) app must treat tagline/overview/
+  release_date/runtime etc. as optional (copied untyped from TMDB); (c) add `05`, `+5`, `1.0` to parseMovieId tests.
+- **Deployed `tmdb`** (`supabase functions deploy tmdb`; ACTIVE, verify_jwt true). Anon JWT fetched in memory only.
+- Live curl results:
+  - `details&id=603` → 200, `Cache-Control: public, max-age=300`, cast 15, keys id,title,tagline,overview,
+    poster_path,backdrop_path,release_date,runtime,vote_average,vote_count,genres,cast; exact attribution;
+    no budget/crew/adult.
+  - no Authorization → 401 (gateway).
+  - `id=` abc, 0, -1, 1.5, 1e3, %205, 0x10, 1.0, empty, missing, 2147483648, 99999999999 → all 400 `invalid_id`.
+  - `id=603&id=604` → 603 (first wins). `id=999999999` and `id=2147483647` → 404 `not_found`, no Cache-Control.
+  - Adult ids 363226 and 754798 (TMDB `adult:true`) → 404; body byte-identical to the missing-id body.
+  - `endpoint=search` and `endpoint=details%00` → 400 `invalid_endpoint`. `popular&page=1` → 200 unchanged.
+  - No body contained the key, `api_key`, `status_message` or the TMDB URL.
+- **Not checked:** function log search for the key — the Management API logs endpoint rejected the table
+  names (`function_logs` "does not exist"). Covered by Ruby's code check: the only log line (network failure)
+  redacts the key, and that path did not run.
