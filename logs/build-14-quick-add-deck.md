@@ -37,3 +37,12 @@ PLAN.md's Build 14 "Failure modes to cover" apply in full. Manager additions / e
 12. **Standards + emulator rules:** tokens only, flat fills, ≤ 3 cards mounted, `.get()/.set()` on shared
     values (React Compiler), 1–2 line comments; `scripts/emulator.sh ensure` before device work; never /sdcard;
     no sign-out; jest `--maxWorkers=50%`; React Query act pattern in tests (no act-env switching).
+
+## Design change by Justin (2026-10-02, after a629a2c) — rework round
+- Justin: "quick add should be a button below, along with Perch and Profile" → Quick Add is a bottom tab
+  (Perch · Quick Add · Profile), no Home row, no back chip (PLAN N1 9ed71b4; Priya 00c1348).
+- Justin: "the movie should be full screen layout" → full-bleed poster deck inside the tab (Dianne 317ea0e).
+- Justin noticed right swipe / Add doesn't add: expected until Build 16b (N4); the "Watched" button on details
+  he asked for is planned as Build 16c (Priya 00c1348).
+- Boards re-rendered by the Manager (`logs/evidence/build-14/design/`, home-entry replaced by tab-bar): no clipping
+  or overlap; motion frames are card-only by design.
