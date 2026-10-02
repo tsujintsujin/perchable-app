@@ -11,14 +11,13 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 28, right: 0, bottom: 24, left: 0 }),
 }));
 const mockPush = jest.fn();
-const mockBack = jest.fn();
 jest.mock("expo-router", () => {
   const { useEffect } = jest.requireActual("react");
   return {
     router: {
       push: (...args: unknown[]) => mockPush(...args),
       canGoBack: () => true,
-      back: () => mockBack(),
+      back: jest.fn(),
       replace: jest.fn(),
     },
     // Runs the callback on mount, like the real hook does when the screen is focused.
@@ -55,9 +54,9 @@ const pageOf = (n: number, first: number, count: number, total = 1, extra: Recor
   total_pages: total,
 });
 
-// The screen is drawn at the design's 390 x 844; the deck area is the 566 high one of the design's worked example.
+// The screen is drawn at the design's 390 x 844 with insets 28 / 24 and a 74 dp tab bar: the content area is 390 x 770.
 const SCREEN_WIDTH = 390;
-const AREA_HEIGHT = 566;
+const AREA_HEIGHT = 770;
 
 let requested: number[] = [];
 let replies: Record<number, Reply | (() => Reply | Promise<Reply>)> = {};
@@ -99,7 +98,6 @@ beforeEach(async () => {
   reduceMotionStart = false;
   reduceMotionListener = undefined;
   mockPush.mockReset();
-  mockBack.mockReset();
   mockInvoke.mockReset();
   mockInvoke.mockImplementation(async (url: string) => {
     const n = Number(/page=(\d+)/.exec(url)?.[1]);
@@ -278,28 +276,38 @@ describe("states (B8, copy from DESIGN)", () => {
 });
 
 describe("the filled screen (B2, layout)", () => {
-  it("shows the top card with the next two behind it, three at most mounted, at the design's card size", async () => {
+  it("fills the whole content area with the top card and mounts one more poster behind it, nothing else", async () => {
     await renderFilled();
-    expect(mountedCards().sort()).toEqual([100, 101, 102]);
+    expect(mountedCards().sort()).toEqual([100, 101]);
     const frame = StyleSheet.flatten(card(100).props.style);
-    expect([frame.width, frame.height]).toEqual([342, 513]);
+    expect([frame.width, frame.height]).toEqual([SCREEN_WIDTH, AREA_HEIGHT]);
     expect(screen.getByText("Movie 100")).toBeTruthy();
     expect(screen.getByText("2021")).toBeTruthy();
     expect(screen.getByText(/7\.0/)).toBeTruthy();
   });
 
-  it("has the header (Back chip, Quick Add title, empty top-right) and the three controls", async () => {
+  it("has the floating title (no Back chip: it is a tab), an empty top-right, and the three controls", async () => {
     await renderFilled();
     const title = screen.getByRole("header", { name: "Quick Add" });
     const style = StyleSheet.flatten(title.props.style);
-    expect(style.left).toBe(size.detailsBarTitleLeft);
+    expect(style.left).toBe(20);
     expect(style.right).toBe(size.homeHeaderInset);
-    expect(style.top).toBe(28 + 14);
-    await fireEvent.press(screen.getByRole("button", { name: "Back" }));
-    expect(mockBack).toHaveBeenCalledTimes(1);
+    expect(style.top).toBe(28 + 12);
+    expect(screen.queryByRole("button", { name: "Back" })).toBeNull();
     expect(screen.getByRole("button", { name: "Skip Movie 100" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Add Movie 100 to collection" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Undo" }).props.accessibilityState.disabled).toBe(true);
+  });
+
+  it("keeps the card stack as a real native box, so the cards' zIndex cannot leak over the dock and header", async () => {
+    await renderFilled();
+    expect(card(100).parent?.props.collapsable).toBe(false);
+  });
+
+  it("the title band ends right above the dock (102 dp: 16 pad + 78 controls + 8), and the card tilts about its bottom centre", async () => {
+    await renderFilled();
+    expect(StyleSheet.flatten(within(card(100)).getByTestId("band", { includeHiddenElements: true }).props.style).bottom).toBe(size.deckControlsZone);
+    expect(StyleSheet.flatten(card(100).props.style).transformOrigin).toBe("50% 100%");
   });
 
   it("every control is at least 48 dp and the three share one label baseline and circle centre line", async () => {
@@ -330,12 +338,12 @@ describe("the filled screen (B2, layout)", () => {
     expect(screen.queryByText(/NaN/)).toBeNull();
   });
 
-  it("fetches the posters two past the three mounted cards ahead of time", async () => {
+  it("fetches the posters two past the mounted cards ahead of time", async () => {
     const prefetch = jest.spyOn(Image, "prefetch").mockResolvedValue(true);
     replies[1] = ok({ results: Array.from({ length: 8 }, (_, i) => movie(100 + i, { poster_path: `/p${i}.jpg` })), page: 1, total_pages: 1 });
     await renderScreen();
     await screen.findByLabelText("Movie 100, 2021");
-    await waitFor(() => expect(prefetch).toHaveBeenCalledWith(["https://image.tmdb.org/t/p/w780/p3.jpg", "https://image.tmdb.org/t/p/w780/p4.jpg"], "memory-disk"));
+    await waitFor(() => expect(prefetch).toHaveBeenCalledWith(["https://image.tmdb.org/t/p/w780/p2.jpg", "https://image.tmdb.org/t/p/w780/p3.jpg"], "memory-disk"));
     prefetch.mockRestore();
   });
 });
@@ -359,7 +367,7 @@ describe("the drag, mid-gesture (B3, M4)", () => {
     expect(transformOf(100, "translateY")).toBeCloseTo(3);
   });
 
-  it("at 30% the ADD stamp and tint are full, the SKIP ones off, the card tilts 7.2 degrees", async () => {
+  it("at 30% the ADD stamp and tint are full, the SKIP ones off, the card tilts 3.6 degrees", async () => {
     await renderFilled();
     await act(async () => {
       pan(100).onStart();
@@ -368,7 +376,7 @@ describe("the drag, mid-gesture (B3, M4)", () => {
     expect(stampOpacity(100, "add")).toBeCloseTo(1);
     expect(tintOpacity(100, "add")).toBeCloseTo(1);
     expect(stampOpacity(100, "skip")).toBe(0);
-    expect(deg(100)).toBeCloseTo(7.2);
+    expect(deg(100)).toBeCloseTo(3.6);
   });
 
   it("dragging left shows the SKIP stamp and tint instead", async () => {
@@ -380,7 +388,7 @@ describe("the drag, mid-gesture (B3, M4)", () => {
     expect(stampOpacity(100, "skip")).toBeCloseTo(1);
     expect(tintOpacity(100, "skip")).toBeCloseTo(1);
     expect(stampOpacity(100, "add")).toBe(0);
-    expect(deg(100)).toBeCloseTo(-7.2);
+    expect(deg(100)).toBeCloseTo(-3.6);
   });
 
   it("the stamp is half strength halfway between 15% and 30%", async () => {
@@ -398,29 +406,30 @@ describe("the drag, mid-gesture (B3, M4)", () => {
       pan(100).onStart();
       pan(100).onUpdate({ translationX: W });
     });
-    expect(deg(100)).toBeCloseTo(12);
+    expect(deg(100)).toBeCloseTo(deck.tiltMaxDeg);
   });
 
-  it("the cards behind come forward with the drag: next scales 0.95 to 1 and loses its dim, third stays behind", async () => {
+  it("the next poster underneath grows 0.94 to 1 and loses its dim as the top card goes", async () => {
     await renderFilled();
-    // At rest: next at 0.95 lifted 22 with the dim layer full, third at 0.90 lifted 44.
-    expect(transformOf(101, "scale")).toBeCloseTo(0.95);
-    expect(transformOf(101, "translateY")).toBeCloseTo(22);
+    expect(transformOf(101, "scale")).toBeCloseTo(0.94);
     expect(dimOpacity(101)).toBeCloseTo(1);
-    expect(transformOf(102, "scale")).toBeCloseTo(0.9);
-    expect(transformOf(102, "translateY")).toBeCloseTo(44);
-    // p = 0.35 W / 0.35 W = 1 at the commit distance; at 0.175 W, p = 0.5.
+    // p = 1 at the commit distance; at 0.175 W, p = 0.5.
     await act(async () => {
       pan(100).onStart();
       pan(100).onUpdate({ translationX: 0.175 * W });
     });
-    expect(transformOf(101, "scale")).toBeCloseTo(0.975);
-    expect(transformOf(101, "translateY")).toBeCloseTo(11);
+    expect(transformOf(101, "scale")).toBeCloseTo(0.97);
     expect(dimOpacity(101)).toBeCloseTo(0.5);
-    expect(transformOf(102, "scale")).toBeCloseTo(0.925);
-    expect(transformOf(102, "translateY")).toBeCloseTo(33);
-    expect(dimOpacity(102)).toBeCloseTo(1);
     expect(dimOpacity(100)).toBe(0);
+    // The next card never lifts or tilts.
+    expect(transformOf(101, "translateY")).toBe(0);
+    expect(deg(101)).toBe(0);
+  });
+
+  it("the stamp sits at the design's top offset", async () => {
+    await renderFilled();
+    const stamp = within(card(100)).getByTestId("stamp-add", { includeHiddenElements: true });
+    expect(StyleSheet.flatten(stamp.props.style).top).toBe(deck.stampTop);
   });
 
   it("releasing below the threshold springs back to the centre with no stamp or tilt left", async () => {
@@ -436,7 +445,7 @@ describe("the drag, mid-gesture (B3, M4)", () => {
     await waitFor(() => expect(transformOf(100, "translateX")).toBeCloseTo(0, 0));
     expect(stampOpacity(100, "add")).toBeCloseTo(0, 1);
     expect(transformOf(100, "scale")).toBeCloseTo(1);
-    expect(mountedCards().sort()).toEqual([100, 101, 102]);
+    expect(mountedCards().sort()).toEqual([100, 101]);
     expect(await loadSkips("u1")).toEqual([]);
   });
 
@@ -453,7 +462,7 @@ describe("the drag, mid-gesture (B3, M4)", () => {
     });
     await waitFor(() => expect(transformOf(100, "translateX")).toBeCloseTo(0, 0));
     expect(stampOpacity(100, "add")).toBeCloseTo(0, 1);
-    expect(mountedCards().sort()).toEqual([100, 101, 102]);
+    expect(mountedCards().sort()).toEqual([100, 101]);
     expect(screen.getByRole("button", { name: "Skip Movie 100" }).props.accessibilityState.disabled).toBe(false);
     expect(await loadSkips("u1")).toEqual([]);
   });
@@ -464,7 +473,7 @@ describe("the drag, mid-gesture (B3, M4)", () => {
     expect(mountedCards()).toContain(101);
     expect(getByGestureTestId("deck-pan-101")).toBeTruthy();
     await exitDone(100);
-    expect(mountedCards().sort()).toEqual([101, 102, 103]);
+    expect(mountedCards().sort()).toEqual([101, 102]);
   });
 
   it("a short fast flick commits; a fast twitch does not", async () => {
@@ -534,7 +543,7 @@ describe("one swipe per action (failure mode 3)", () => {
     await drag(100, -300);
     // The new top card is interactive at once, before the first exit has finished.
     await drag(101, -300);
-    await waitFor(() => expect(mountedCards().sort()).toEqual([102, 103, 104]));
+    await waitFor(() => expect(mountedCards().sort()).toEqual([102, 103]));
     expect(await loadSkips("u1")).toEqual([100, 101]);
   });
 
@@ -543,7 +552,7 @@ describe("one swipe per action (failure mode 3)", () => {
     replies[2] = ok(pageOf(2, 200, 14, 3));
     await renderFilled();
     for (let id = 100; id < 110; id++) await drag(id, id % 2 === 0 ? -300 : 300);
-    await waitFor(() => expect(mountedCards().sort((a, b) => a - b)).toEqual([110, 111, 112]));
+    await waitFor(() => expect(mountedCards().sort((a, b) => a - b)).toEqual([110, 111]));
     const saved = await loadSkips("u1");
     expect(saved).toEqual([100, 102, 104, 106, 108]);
     expect(getSessionAdds("u1")).toEqual([101, 103, 105, 107, 109]);
@@ -551,19 +560,19 @@ describe("one swipe per action (failure mode 3)", () => {
     expect(new Set(mountedCards()).size).toBe(mountedCards().length);
   });
 
-  it("never mounts more than three cards, during an exit either", async () => {
+  it("never mounts more than two cards and a leaving one, and only two at rest", async () => {
     await renderFilled();
     await act(async () => press("Skip Movie 100"));
     expect(mountedCards().length).toBeLessThanOrEqual(3);
     await exitDone(100);
-    expect(mountedCards().length).toBe(3);
+    expect(mountedCards().length).toBe(2);
   });
 
   it("a card leaves with the design's motion: 75% of the way at 100 ms, tilted, past the screen edge at 200 ms", async () => {
     await renderFilled();
     jest.useFakeTimers();
     try {
-      const exitX = SCREEN_WIDTH / 2 + 171 + deck.exitMargin;
+      const exitX = SCREEN_WIDTH + deck.exitMargin;
       await drag(100, 0.4 * SCREEN_WIDTH);
       await act(async () => {
         jest.advanceTimersByTime(100);
@@ -577,10 +586,21 @@ describe("one swipe per action (failure mode 3)", () => {
         jest.advanceTimersByTime(90);
       });
       expect(transformOf(100, "translateX")).toBeGreaterThan(exitX - 5);
-      expect(deg(100)).toBeCloseTo(12);
+      expect(deg(100)).toBeCloseTo(deck.tiltMaxDeg);
     } finally {
       jest.useRealTimers();
     }
+  });
+});
+
+describe("Toast position (rework)", () => {
+  it("the coming-soon Toast is at the top, 12 dp under the header, never at the bottom over the controls", async () => {
+    await renderFilled();
+    await drag(100, 300);
+    await exitDone(100);
+    const toast = StyleSheet.flatten(screen.getByRole("alert").props.style);
+    expect(toast.top).toBe(28 + 48 + 12);
+    expect(toast.bottom).toBeUndefined();
   });
 });
 
@@ -591,7 +611,7 @@ describe("Undo (B6)", () => {
     await exitDone(100);
     await act(async () => press("Undo"));
     await screen.findByLabelText("Movie 100, 2021");
-    expect(mountedCards().sort()).toEqual([100, 101, 102]);
+    expect(mountedCards().sort()).toEqual([100, 101]);
     expect(await loadSkips("u1")).toEqual([]);
     expect(announce).toHaveBeenCalledWith("Undid skip for Movie 100");
     expect(screen.getByRole("button", { name: "Undo" }).props.accessibilityState.disabled).toBe(true);
@@ -625,7 +645,7 @@ describe("Undo (B6)", () => {
     await act(async () => pan(101).onStart());
     await act(async () => press("Undo"));
     expect(screen.queryByLabelText("Movie 100, 2021")).toBeNull();
-    expect(mountedCards().sort()).toEqual([101, 102, 103]);
+    expect(mountedCards().sort()).toEqual([101, 102]);
     await act(async () => {
       pan(101).onEnd({ translationX: 10, velocityX: 0 }, true);
       pan(101).onFinalize();
@@ -682,7 +702,7 @@ describe("tap, details and accessibility (B7, B9)", () => {
   it("the cards behind are hidden from screen readers and the stamps carry no accessibility", async () => {
     await renderFilled();
     expect(card(101).props.importantForAccessibility).toBe("no-hide-descendants");
-    expect(card(102).props.accessibilityElementsHidden).toBe(true);
+    expect(card(101).props.accessibilityElementsHidden).toBe(true);
     expect(card(100).props.importantForAccessibility).toBe("auto");
     expect(within(card(100)).getByTestId("stamp-add", { includeHiddenElements: true }).props.importantForAccessibility).toBe("no");
   });
@@ -706,8 +726,7 @@ describe("reduce motion (B10, M4)", () => {
     });
     expect(transformOf(100, "translateX")).toBeCloseTo(0.3 * SCREEN_WIDTH);
     expect(deg(100)).toBe(0);
-    expect(transformOf(101, "scale")).toBeCloseTo(0.95);
-    expect(transformOf(101, "translateY")).toBeCloseTo(22);
+    expect(transformOf(101, "scale")).toBeCloseTo(0.94);
     // The stamp is opacity, not motion: it stays.
     expect(stampOpacity(100, "add")).toBeCloseTo(1);
   });
@@ -733,7 +752,7 @@ describe("reduce motion (B10, M4)", () => {
       pan(100).onStart();
       pan(100).onUpdate({ translationX: 0.3 * SCREEN_WIDTH });
     });
-    expect(deg(100)).toBeCloseTo(7.2);
+    expect(deg(100)).toBeCloseTo(3.6);
     await act(async () => {
       pan(100).onEnd({ translationX: 0.3 * SCREEN_WIDTH, velocityX: 0 }, true);
       pan(100).onFinalize();

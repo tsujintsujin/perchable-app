@@ -7,7 +7,6 @@ import { Avatar } from "@/ui/Avatar";
 import { Toast, useToast } from "@/ui/Toast";
 import { colors, size, spacing, type } from "@/ui/tokens";
 import { PosterGrid, RouletteCard, useOpenMovie, usePopularMovies } from "@/modules/movies";
-import { QuickAddRow, useOpenQuickAdd } from "@/modules/quick-add";
 import { useOwnProfile } from "@/modules/profile";
 
 // Shown when pull-to-refresh fails and the earlier posters stay.
@@ -24,7 +23,6 @@ export default function Home() {
   const onRefreshError = useCallback(() => show(REFRESH_FAILED_MESSAGE, "error"), [show]);
   const popular = usePopularMovies({ onRefreshError });
   const openMovie = useOpenMovie();
-  const openQuickAdd = useOpenQuickAdd();
 
   return (
     <View style={styles.root}>
@@ -57,14 +55,7 @@ export default function Home() {
         retryToken={popular.refreshCount}
         onRefresh={popular.refresh}
         onOpenMovie={openMovie}
-        header={
-          <>
-            <RouletteCard onPress={() => toast.show("Smart picks are coming soon.", "coming-soon")} />
-            <View style={styles.quickAdd}>
-              <QuickAddRow onPress={openQuickAdd} />
-            </View>
-          </>
-        }
+        header={<RouletteCard onPress={() => toast.show("Smart picks are coming soon.", "coming-soon")} />}
       />
       <Toast message={toast.message} variant={toast.variant} />
     </View>
@@ -80,8 +71,6 @@ const styles = StyleSheet.create({
     paddingLeft: spacing[20],
     paddingRight: size.homeHeaderInset,
   },
-  // 16 between the Roulette card and the Quick Add row.
-  quickAdd: { marginTop: spacing[16] },
   wordmark: { ...type.subhead, color: colors.accent.gold, flex: 1 },
   debugLink: { ...type.small, color: colors.text.secondary, marginRight: spacing[8] },
   // Touch wrapper that centres the 32 dp avatar in a 48 dp target.

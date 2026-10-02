@@ -10,7 +10,7 @@ jest.mock("@/modules/quick-add", () => ({
   },
 }));
 
-import QuickAddRoute from "@/app/quick-add";
+import QuickAddRoute from "@/app/(tabs)/quick-add";
 
 // Node's fs and path, taken by name: the project carries no Node type package.
 declare const __dirname: string;
@@ -45,7 +45,7 @@ describe("the Quick Add route", () => {
   });
 
   it("composes only: no Supabase call and no fetching in the route file", () => {
-    const route = read("app/quick-add.tsx");
+    const route = read("app/(tabs)/quick-add.tsx");
     expect(route).not.toMatch(/supabase|useQuery|fetch\(|functions\.invoke/);
   });
 });
@@ -61,10 +61,28 @@ describe("root layout wiring (A2)", () => {
     }
   });
 
-  it("registers quick-add inside the session-guarded group, and clears the departing user's skips on sign-out", () => {
-    const guarded = layout.slice(layout.indexOf("guard={!!session}"), layout.indexOf("guard={!session}"));
-    expect(guarded).toContain('name="quick-add"');
+  it("clears the departing user's skips on sign-out from the root navigator", () => {
     expect(layout).toContain("useClearQuickAddOnSignOut(session?.user.id)");
+  });
+});
+
+describe("Quick Add is a tab (rework)", () => {
+  it("is a screen of the (tabs) navigator, between Perch and Profile, and has no root-level route", () => {
+    const tabs = read("app/(tabs)/_layout.tsx");
+    expect(tabs.indexOf('name="index"')).toBeLessThan(tabs.indexOf('name="quick-add"'));
+    expect(tabs.indexOf('name="quick-add"')).toBeLessThan(tabs.indexOf('name="profile"'));
+    expect(read("app/_layout.tsx")).not.toContain('name="quick-add"');
+    expect(() => read("app/quick-add.tsx")).toThrow();
+  });
+
+  it("leaves no Home row, no Quick Add back chip and no row or open-helper code behind", () => {
+    for (const [path, text] of sources("")) {
+      expect({ path, row: /QuickAddRow|useOpenQuickAdd|deckLayout/.test(text) }).toEqual({ path, row: false });
+    }
+    expect(read("app/(tabs)/index.tsx")).not.toMatch(/quick-?add/i);
+    for (const [path, text] of [...sources("modules/quick-add"), ...sources("ui/SwipeDeckCard")]) {
+      expect({ path, chip: /BackChip|goBackOrHome/.test(text) }).toEqual({ path, chip: false });
+    }
   });
 });
 

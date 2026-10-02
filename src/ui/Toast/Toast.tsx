@@ -15,12 +15,14 @@ type Props = {
   /** Null hides the toast. */
   message: string | null;
   variant?: ToastVariant;
-  /** Distance above the bottom edge (plus the inset outside tabs); defaults to 24. */
+  /** Distance above the bottom edge (plus the inset outside tabs); defaults to 24. With `position="top"`, the distance below the top of the screen. */
   offset?: number;
+  /** Pin it to the bottom (default) or the top of the screen; only the Quick Add deck uses the top. */
+  position?: "bottom" | "top";
 };
 
 /** Transient message pinned `offset` (24 dp by default) above the screen's bottom edge (DESIGN.md §2); never intercepts touches. */
-export function Toast({ message, variant = "info", offset = spacing[24] }: Props) {
+export function Toast({ message, variant = "info", offset = spacing[24], position = "bottom" }: Props) {
   const insets = useSafeAreaInsets();
   // On a tab screen the tab bar already sits on the system inset, so it is not added again.
   // A Toast inside a Modal still sees the tab context but covers the tab bar: it must be given the bottom inset.
@@ -33,7 +35,7 @@ export function Toast({ message, variant = "info", offset = spacing[24] }: Props
       accessible
       accessibilityRole="alert"
       accessibilityLiveRegion="polite"
-      style={[styles.wrap, { bottom: bottomInset + offset }]}
+      style={[styles.wrap, position === "top" ? { top: offset } : { bottom: bottomInset + offset }]}
     >
       <View style={[styles.toast, variant === "error" && styles.toastError]}>
         <Text maxFontSizeMultiplier={TOAST_MAX_FONT_SCALE} style={[styles.text, variant === "error" && styles.textError]}>{message}</Text>

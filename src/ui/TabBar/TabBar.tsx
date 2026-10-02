@@ -3,11 +3,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { colors, glass, iconSize, spacing, type } from "@/ui/tokens";
 
-// DESIGN.md §2: fixed 5 items (Perch/Search/Chat/Leaderboards/Profile), but
-// only routes that exist get a tab — the rest add their own entry here as
-// they land.
+// DESIGN.md §2: one tab per route that exists (today Perch, Quick Add, Profile); Search, Chat and
+// Leaderboards add their own entry here as they land.
 const TAB_META: Record<string, { icon: string; label: string }> = {
   index: { icon: "🦉", label: "Perch" },
+  "quick-add": { icon: "🃏", label: "Quick Add" },
   profile: { icon: "👤", label: "Profile" },
 };
 

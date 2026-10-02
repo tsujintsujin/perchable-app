@@ -125,8 +125,6 @@ export const iconSize = {
   emoji: 32,
   /** The clapperboard on a deck card with no poster. */
   deckFallback: 56,
-  /** The chevron at the end of a tappable row. */
-  chevron: 24,
 } as const;
 
 /** Avatar circle diameters (DESIGN.md §2). */
@@ -193,12 +191,9 @@ export const size = {
   detailsScrimHeight: 72,
   detailsToastOffset: 24,
   detailsBottomPad: 80,
-  /** Quick Add deck: minimum margin each side of the card (clear of the system back-gesture edge). */
-  deckSideMargin: 24,
-  /** Room under the top card for the two cards peeking behind it. */
-  deckStackReserve: 20,
-  /** Height reserved between the deck area and the controls for a Toast. */
-  deckToastLane: 76,
+  /** Quick Add deck: the bottom dock (16 pad + 78 controls + 8 on top, at font scale 1; the layout measures it) and the fade under the top scrim. */
+  deckControlsZone: 102,
+  deckTopScrimFade: 24,
   /** Gradient above a deck card's info band. */
   deckInfoFade: 40,
   /** Skip and Add circles, and the Undo circle. */
@@ -211,9 +206,6 @@ export const size = {
   deckControlsPad: 16,
   /** Border of the SKIP / ADD stamp. */
   stampBorder: 3,
-  /** Home Quick Add row height and its icon tile. */
-  quickAddRow: 72,
-  quickAddIcon: 48,
 } as const;
 
 /** Backdrop fade: where (0..1 of its height) the gradient starts. */
@@ -321,17 +313,18 @@ export const motion = {
 
 /** Quick Add deck geometry and drag behaviour (DESIGN.md Build 14). */
 export const deck = {
-  /** Scale and downward shift (dp) of the top, next and third card. */
-  stackScale: [1, 0.95, 0.9],
-  stackLift: [0, 22, 44],
+  /** Scale of the top card and of the next poster behind it. */
+  stackScale: [1, 0.94],
   /** Tilt follows the drag: full tilt at this fraction of the screen width. */
-  tiltMaxDeg: 12,
+  tiltMaxDeg: 6,
   tiltFullFraction: 0.5,
   /** Stamp and tint opacity: 0 at 15% of the screen width dragged, 1 at 30%. */
   stampStart: 0.15,
   stampFull: 0.3,
   /** Stamp rotation on the card: ADD is negative, SKIP positive. */
   stampTiltDeg: 14,
+  /** Top of the ADD / SKIP stamp: below the picker and a two-line Toast. */
+  stampTop: 224,
   /** The card follows vertical finger movement at this share, at most followYMax dp. */
   followY: 0.3,
   followYMax: 40,
@@ -339,10 +332,9 @@ export const deck = {
   exitMargin: 24,
   /** A returning card scales up from this. */
   returnScale: 0.92,
-  /** Loading placeholder: opacity of the two cards behind, and the title and meta bar widths on the top one. */
-  skeletonBehindOpacity: [0.7, 0.5],
-  skeletonTitleWidth: "70%",
-  skeletonMetaWidth: "40%",
+  /** Loading placeholder: the title and meta bars above the dock. */
+  skeletonTitleBar: { width: 240, height: 24 },
+  skeletonMetaBar: { width: 140, height: 14 },
 } as const;
 
 export const elevation = {

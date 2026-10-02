@@ -12,6 +12,8 @@ type Props = {
   year?: number | null;
   /** Drawn when above 0, to one decimal. */
   rating?: number | null;
+  /** Height of the controls dock the card sits behind: the title band ends right above it. */
+  bottomInset: number;
   /** Horizontal drag of the card in dp; the stamp and tint opacity follow it. */
   dragX: SharedValue<number>;
   /** 0 to 1: how much of the dim layer covers a card behind the top one. */
@@ -39,8 +41,8 @@ function PosterShimmer() {
   );
 }
 
-/** One swipe-deck card: poster filling the card, a title band, and the ADD / SKIP stamp and tint while dragged. Presentational: the deck moves it. */
-export function SwipeDeckCard({ posterUrl, title, year, rating, dragX, dim, exitStamp }: Props) {
+/** One full-bleed swipe-deck card: poster filling its parent, a title band, and the ADD / SKIP stamp and tint while dragged. Presentational: the deck moves it. */
+export function SwipeDeckCard({ posterUrl, title, year, rating, bottomInset, dragX, dim, exitStamp }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   // Keyed by URL so a card reused for another movie never shows the previous one's failure.
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
@@ -86,12 +88,12 @@ export function SwipeDeckCard({ posterUrl, title, year, rating, dragX, dim, exit
           />
         </>
       ) : (
-        <View style={[styles.fill, styles.fallback]}>
+        <View style={[styles.fill, styles.fallback, { bottom: bottomInset }]}>
           <Text style={styles.fallbackIcon}>🎬</Text>
         </View>
       )}
 
-      <View style={styles.band}>
+      <View testID="band" style={[styles.band, { bottom: bottomInset }]}>
         <LinearGradient colors={[colors.overlay.fadeStart, colors.overlay.cardInfo]} style={styles.bandFade} />
         <View style={styles.bandBody}>
           <Text style={styles.title} numberOfLines={2}>
@@ -124,15 +126,8 @@ export function SwipeDeckCard({ posterUrl, title, year, rating, dragX, dim, exit
 }
 
 const styles = StyleSheet.create({
-  // Flat card frame: no blur, since it re-renders every drag frame.
-  card: {
-    flex: 1,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border.hairlineStrong,
-    backgroundColor: colors.bg.elevatedFlat,
-    overflow: "hidden",
-  },
+  // Flat full-bleed card: no blur, since it re-renders every drag frame.
+  card: { flex: 1, backgroundColor: colors.bg.elevatedFlat, overflow: "hidden" },
   fill: { ...StyleSheet.absoluteFill },
   // Loading placeholder layers.
   shimmer: { backgroundColor: colors.bg.elevatedFlat },
@@ -141,9 +136,9 @@ const styles = StyleSheet.create({
   fallback: { alignItems: "center", justifyContent: "center", backgroundColor: colors.brand.purple900 },
   fallbackIcon: { fontSize: iconSize.deckFallback },
   // Info band pinned to the bottom: a fade, then the solid block with the title and meta.
-  band: { position: "absolute", left: 0, right: 0, bottom: 0 },
+  band: { position: "absolute", left: 0, right: 0 },
   bandFade: { height: size.deckInfoFade },
-  bandBody: { paddingHorizontal: spacing[16], paddingBottom: spacing[16], backgroundColor: colors.overlay.cardInfo },
+  bandBody: { paddingHorizontal: spacing[20], paddingBottom: spacing[16], backgroundColor: colors.overlay.cardInfo },
   title: { ...type.title, lineHeight: lineHeight.title, color: colors.text.primary },
   // Year and rating, 12 apart; the row is 22 high.
   meta: { flexDirection: "row", alignItems: "center", gap: spacing[12], marginTop: spacing[4], height: lineHeight.body },
@@ -156,7 +151,7 @@ const styles = StyleSheet.create({
   // Stamps: a tilted outlined word near the top corner the card is dragged toward.
   stamp: {
     position: "absolute",
-    top: spacing[28],
+    top: deck.stampTop,
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[14],
     borderWidth: size.stampBorder,

@@ -21,8 +21,8 @@ import { displayTitle, IMAGE_SIZE, releaseYear, tmdbImage, type Movie } from "@/
 import { COMMIT_FRACTION, PAN_FAIL_Y, PAN_SLOP, decideSwipe, type SwipeDirection } from "../decideSwipe";
 import type { ReturnedCard } from "../hooks/useQuickAddDeck";
 
-/** How many cards are mounted at once: the top, the next and one behind (a leaving card takes the third's place). */
-const MOUNTED_CARDS = 3;
+/** How many cards are mounted at once: the top and the next poster behind it (a leaving card takes the next one's place). */
+const MOUNTED_CARDS = 2;
 // How many cards past the mounted ones get their poster fetched ahead of time.
 const PREFETCH_FROM = MOUNTED_CARDS;
 const PREFETCH_COUNT = 2;
@@ -30,7 +30,7 @@ const PREFETCH_COUNT = 2;
 const LEAVING_Z = MOUNTED_CARDS + 1;
 
 type CardRole = "top" | "behind" | "leaving";
-type Entering = "none" | "fade" | "return";
+type Entering = "none" | "return";
 
 type DeckCardHandle = { commit: (direction: SwipeDirection) => void };
 
@@ -40,6 +40,8 @@ type DeckCardProps = {
   role: CardRole;
   /** Position in the stack's running sequence: the stack coordinate `settle + dragP` equals the top card's rank at rest. */
   rank: number;
+  /** Height of the controls dock the card's title band sits above. */
+  bottomInset: number;
   /** Draw order: higher sits on top. */
   layer: number;
   width: number;
@@ -62,6 +64,7 @@ function DeckCard({
   movie,
   role,
   rank,
+  bottomInset,
   layer,
   width,
   height,
@@ -83,11 +86,11 @@ function DeckCard({
   const fade = useSharedValue(entering === "none" ? 1 : 0);
   const enterScale = useSharedValue(entering === "return" ? deck.returnScale : 1);
   const pressRef = useRef<View>(null);
-  const exitX = screenWidth / 2 + width / 2 + deck.exitMargin;
+  const exitX = width + deck.exitMargin;
   const title = displayTitle(movie.title);
   const year = releaseYear(movie.release_date);
 
-  // A card that is new in the stack fades in (a returning one also scales up); instantly with reduce motion.
+  // A returning card fades and scales in; instantly with reduce motion.
   useEffect(() => {
     if (entering === "none") return;
     if (reduceMotion.get()) {
@@ -95,7 +98,7 @@ function DeckCard({
       enterScale.set(1);
       return;
     }
-    const duration = entering === "return" ? motion.deckExit : motion.deckFade;
+    const duration = motion.deckExit;
     fade.set(withTiming(1, { duration, easing: Easing.out(Easing.quad), reduceMotion: ReduceMotion.Never }));
     enterScale.set(withTiming(1, { duration, easing: Easing.out(Easing.quad), reduceMotion: ReduceMotion.Never }));
   }, [entering, reduceMotion, fade, enterScale]);
@@ -184,13 +187,12 @@ function DeckCard({
   // Stack position, drag and tilt: the stack coordinate puts the card between its slot and the one in front of it.
   const animatedStyle = useAnimatedStyle(() => {
     const position = Math.max(rank - (settle.get() + dragP.get()), 0);
-    const stackScale = interpolate(position, [0, 1, 2], deck.stackScale, Extrapolation.CLAMP);
-    const lift = interpolate(position, [0, 1, 2], deck.stackLift, Extrapolation.CLAMP);
+    const stackScale = interpolate(position, [0, 1], deck.stackScale, Extrapolation.CLAMP);
     const x = dx.get();
     const tilt = reduceMotion.get() ? 0 : Math.min(Math.max(x / (deck.tiltFullFraction * screenWidth), -1), 1) * deck.tiltMaxDeg;
     return {
       opacity: fade.get(),
-      transform: [{ translateX: x }, { translateY: lift + dy.get() }, { rotate: `${tilt}deg` }, { scale: stackScale * enterScale.get() }],
+      transform: [{ translateX: x }, { translateY: dy.get() }, { rotate: `${tilt}deg` }, { scale: stackScale * enterScale.get() }],
     };
   });
 
@@ -229,6 +231,7 @@ function DeckCard({
               title={title}
               year={year}
               rating={movie.vote_average}
+              bottomInset={bottomInset}
               dragX={dx}
               dim={dim}
               exitStamp={exitStamp}
@@ -249,6 +252,8 @@ type Props = {
   /** The newest card that came back after Undo. */
   returned: ReturnedCard | null;
   cardSize: { width: number; height: number };
+  /** Height of the controls dock the title band sits above. */
+  bottomInset: number;
   reduceMotion: SharedValue<boolean>;
   onSwipe: (movie: Movie, direction: SwipeDirection) => void;
   onOpen: (movie: Movie) => void;
@@ -261,7 +266,7 @@ type Props = {
 type Leaving = { movie: Movie; rank: number; key: string };
 
 /** The stack of swipe cards: at most three mounted, the top one draggable, a leaving card animating in its own layer. */
-export function SwipeDeck({ ref, cards, returned, cardSize, reduceMotion, onSwipe, onOpen, onDragChange, onBusyChange }: Props) {
+export function SwipeDeck({ ref, cards, returned, cardSize, bottomInset, reduceMotion, onSwipe, onOpen, onDragChange, onBusyChange }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   // Stack coordinate at rest (`settle`) and the extra a drag adds (`dragP`); a card shows at slot `rank - (settle + dragP)`.
   const settle = useSharedValue(0);
@@ -331,13 +336,14 @@ export function SwipeDeck({ ref, cards, returned, cardSize, reduceMotion, onSwip
       role: (index === 0 ? "top" : "behind") as CardRole,
       rank: base + index,
       layer: MOUNTED_CARDS - index,
-      entering: (index === 0 && returned?.movie.id === movie.id ? "return" : index === MOUNTED_CARDS - 1 ? "fade" : "none") as Entering,
+      entering: (index === 0 && returned?.movie.id === movie.id ? "return" : "none") as Entering,
     })),
     ...leaving.map((card) => ({ key: card.key, movie: card.movie, role: "leaving" as CardRole, rank: card.rank, layer: LEAVING_Z, entering: "none" as Entering })),
   ];
 
   return (
-    <View style={[styles.stack, { width: cardSize.width, height: cardSize.height }]}>
+    // collapsable off: a flattened box would hand the cards' zIndex to the screen and draw them over the dock and header.
+    <View collapsable={false} style={[styles.stack, { width: cardSize.width, height: cardSize.height }]}>
       {items.map((item) => (
         <DeckCard
           key={item.key}
@@ -345,6 +351,7 @@ export function SwipeDeck({ ref, cards, returned, cardSize, reduceMotion, onSwip
           movie={item.movie}
           role={item.role}
           rank={item.rank}
+          bottomInset={bottomInset}
           layer={item.layer}
           entering={item.entering}
           width={cardSize.width}
@@ -365,9 +372,10 @@ export function SwipeDeck({ ref, cards, returned, cardSize, reduceMotion, onSwip
 }
 
 const styles = StyleSheet.create({
-  // The card stack's own box: cards are absolutely placed inside it.
-  stack: { alignSelf: "center" },
-  card: { position: "absolute", top: 0, left: 0 },
+  // The card stack's own box (the whole content area): cards are absolutely placed inside it.
+  stack: {},
+  // Tilts about the bottom centre, so the top of a full-height card swings instead of its middle.
+  card: { position: "absolute", top: 0, left: 0, transformOrigin: "50% 100%" },
   fill: { flex: 1 },
   pressed: { transform: [{ scale: motion.pressScale }] },
 });

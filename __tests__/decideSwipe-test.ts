@@ -6,7 +6,6 @@ import {
   PAN_SLOP,
   decideSwipe,
 } from "@/modules/quick-add/decideSwipe";
-import { deckCardSize } from "@/modules/quick-add/deckLayout";
 import { toastTitle } from "@/modules/quick-add/toastTitle";
 
 const W = 400;
@@ -58,27 +57,6 @@ describe("decideSwipe", () => {
     expect(decideSwipe(100, 0, 0)).toBeNull();
     expect(decideSwipe(100, FLICK_VELOCITY, 0)).toBe("right");
     expect(decideSwipe(100, 0, -5)).toBeNull();
-  });
-});
-
-describe("deckCardSize", () => {
-  it("is exactly 2:3 and gives the design numbers, 342 x 513 at 390 wide with a 566 high area", () => {
-    expect(deckCardSize(390, 566)).toEqual({ width: 342, height: 513 });
-  });
-
-  it("with the Build 15 picker (area 508) is 324 x 486", () => {
-    expect(deckCardSize(390, 508)).toEqual({ width: 324, height: 486 });
-  });
-
-  it("shrinks on a short area instead of scrolling, and never goes negative", () => {
-    const small = deckCardSize(390, 300);
-    expect(small.height / small.width).toBeCloseTo(1.5);
-    expect(small.height).toBeLessThanOrEqual(300 - 20);
-    expect(deckCardSize(390, 0)).toEqual({ width: 0, height: 0 });
-  });
-
-  it("keeps the 24 dp side margin on a narrow screen", () => {
-    expect(deckCardSize(200, 900).width).toBeLessThanOrEqual(200 - 48);
   });
 });
 
