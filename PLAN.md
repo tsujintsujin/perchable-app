@@ -1227,7 +1227,7 @@ Phases: 0 Dianne mockup (details: loading / error / not-found / loaded,
         3 Queenie QA · 4 Ruby review · 5 Manager ships
 ```
 
-### Module 5 — Quick-add swipe (Builds 14, 15, 16a, 16b)
+### Module 5 — Quick-add swipe (Builds 14, 15, 16a, 16b, 16c)
 
 Detailed 2026-10-02 (Priya, at the Manager's request, after the Module 4
 milestone, PR #8). Justin is away and said not to wait: every product choice he
@@ -1267,15 +1267,18 @@ approved rough plan named three orders (recent, older, random).
   (double-tap-safe push to `movie/[id]`), `tmdbImage` (sizes w342/w500/w780/w185),
   `MovieApiError` + typed retry/Sentry rules, `Movie` type
   (`id, title, poster_path, vote_average, release_date`; no overview).
-- *Design.* DESIGN §3 already routes a root-level `quick-add.tsx` "pushed from
-  Home, outside the tab bar (full-screen focus)"; §2 lists `SwipeDeckCard`
+- *Design.* DESIGN §3 (as written before Justin's 2026-10-02 decision, N1) routed a
+  root-level `quick-add.tsx` "pushed from Home, outside the tab bar"; **Justin then made
+  Quick Add a bottom tab, so Dianne is changing §3 and §2's TabBar** (the shipped bar has
+  two items, Perch and Profile; this adds Quick Add between them). §2 lists `SwipeDeckCard`
   (`movie`, `onSwipeLeft`, `onSwipeRight`; idle / dragging / exiting-left /
   exiting-right) and §1.5 says the top card is a flat fill (no `BlurView`, it
   re-renders every drag frame); §1 has a `danger` colour "skip-swipe icon" and
   `glow.purple` "active swipe card". §4 reserves `src/modules/quick-add/` (deck
-  logic and state) and `src/modules/collection/` (collection api). **There is no
-  Build 14 section in DESIGN yet and Home has no Quick Add entry** (Dianne's
-  Phase 0 below).
+  logic and state) and `src/modules/collection/` (collection api). **Build 14 as first
+  committed (a629a2c) implements the earlier Home-row design** (a Home row, a root-level
+  route, a back chip); the Done means below describe the **tab design**, so the Manager
+  sends Bella a design-change round on Build 14 (not a Bug), after Dianne's DESIGN update.
 - *Database.* Four migrations exist (profiles, avatars storage, moderation,
   profiles privileges). **No collection table.** `reports.target_type` already
   allows `collection_item`, and `reports.target_id` is a **uuid**, so a collection
@@ -1289,18 +1292,21 @@ approved rough plan named three orders (recent, older, random).
 
 #### Module-wide decisions (M1–M11)
 
-- **M1 Where the deck lives.** A root-level route `src/app/quick-add.tsx`, inside
-  the **session-guarded group** of the root `_layout.tsx` (like `movie/[id]`),
-  full-screen with **no tab bar** (DESIGN §3 already says so). Entry: a **Quick
-  Add** row on Home between the Perch Roulette card and the section title, drawn
-  by Dianne (a button-like card, not a new tab: the tab bar is fixed at five items
-  by DESIGN §2). Perch Roulette stays a UI-only shell, unrelated to the deck.
-  The route is a thin composition of the module's exports; no Supabase call and
-  no fetching logic in the file. Header: back chip "Back" on the left (as
-  details), title "Quick Add"; the **top-right 64x64 gear corner stays empty**
-  (DESIGN §7), so the sequence picker (Build 15) goes below the header. The route
-  opens through a double-tap-safe helper like `useOpenMovie`. Deep link
-  `perchable://quick-add` is free from the scheme. **Flagged N1, N11.**
+- **M1 Where the deck lives (Justin's decision, N1: a bottom tab).** A tab route
+  `src/app/(tabs)/quick-add.tsx`, registered in `(tabs)/_layout.tsx` and as a new
+  item in `ui/TabBar` (**Perch · Quick Add · Profile**, Quick Add in the middle). It is
+  inside the session-guarded `(tabs)` group, so the guard is inherited and the **tab bar
+  is visible** on the deck. **No Quick Add row on Home and no back chip** (a tab is a
+  top-level screen). Perch Roulette stays a UI-only shell, unrelated to the deck. The
+  route is a thin composition of the module's exports; no Supabase call and no fetching
+  logic in the file. Header: title "Quick Add" (no back chip); the **top-right 64x64 gear
+  corner stays empty** (DESIGN §7), so the sequence picker (Build 15) goes below the
+  header. The deck must fit above the tab bar (card and buttons sized to the room left,
+  Dianne's board) and a Toast sits 24 dp above the tab bar (DESIGN §2 offset rule).
+  Tab screens stay mounted, so the deck keeps its cards when the user switches tabs and
+  comes back; leaving to the details screen is a push over the tabs (tab bar covered, as
+  Module 4) and Back returns to the same card. Deep link `perchable://quick-add` maps to
+  the tab route (free from the scheme). **Flagged N1, N11.**
 - **M2 Deck data source, paging, de-dup (answers "which list feeds it").**
   The deck reads **TMDB lists through the proxy, never anything else**, one
   infinite query per ordering, 20 movies a page, all through `getXPage` loops
@@ -1582,8 +1588,8 @@ approved rough plan named three orders (recent, older, random).
   components/ hooks/ types.ts index.ts`; this plan adds `skipMemory.ts`,
   `decideSwipe.ts`, the cursor and the sign-out hook) in her Phase 0.
 - **M11 Dianne's one Phase 0 for the whole Module** (done once before Build 14;
-  Builds 15, 16a, 16b skip Phase 0): the Home **Quick Add entry**, the deck screen
-  (header, card, stack depth, buttons, Undo), the **mid-drag states** (stamps,
+  Builds 15, 16a, 16b skip Phase 0): the **Quick Add tab** (the third tab bar item, its active and inactive
+  states), the deck screen inside the tabs (header without a back chip, card, stack depth, buttons, Undo), the **mid-drag states** (stamps,
   tilt, the card behind), exit, loading, error, caught-up with "Start over", the
   sequence picker (Build 15), the **Toast copy** (right-swipe coming-soon in 14;
   add-failed in **two variants**: network/timeout "Couldn't add {title}. Check your
@@ -1591,8 +1597,11 @@ approved rough plan named three orders (recent, older, random).
   again later."; undo-failed likewise; "Finding movies you haven't seen...";
   "{title} is back"), a **Toast offset that does not cover the buttons**
   (Build 13's lesson: a first offset hid other text), the **Profile "N movies
-  watched" states** (Build 16b), the reduce-motion variant, and the copy table. She
-  updates DESIGN §3 (Home entry line, quick-add route detail) and §4 (`SwipeDeckCard`
+  watched" states** (Build 16b), the reduce-motion variant, and the copy table. **Build 16c adds the
+  "Watched" button states** (details header row and compact bar, not watched / watched /
+  busy / unknown / error, the interactive Undo `Toast` variant, copy). She
+  updates DESIGN §3 (the tab route, no Home row) and §2 (`TabBar` item; `Toast` action
+  variant) and §4 (`SwipeDeckCard`
   props) and the Dev-client gear-zone check. The Manager renders and looks (CLAUDE.md
   Rendering) before Bella starts.
 
@@ -1638,15 +1647,35 @@ approved rough plan named three orders (recent, older, random).
   **200+ TMDB votes** so a date-sorted deck does not open on unknown titles; no
   further content filtering (the open item from Module 4 about suggestive but
   not adult-flagged posters stays as it was).
-- **N11 Deep link.** Default: `perchable://quick-add` works (free from the scheme).
-  Small addition beyond Vision; he can ask to drop it.
+- **N11 Deep link.** Default: `perchable://quick-add` opens the Quick Add tab (free
+  from the scheme). Small addition beyond Vision; he can ask to drop it.
 - **N12 Build 16 split.** Manager default (process): **16a** database only (no UI,
   like 10a) and **16b** the app wiring. Number 16 unchanged; the milestone is 16b.
+- **N13 "Watched" button on details (NEW FEATURE, Justin 2026-10-02: "in the details
+  page, there should be a button on top right 'watched' to add the movie to the watched
+  list of the user").** The watched list is the collection (`collection_items`). Built as
+  **Build 16c**, after 16b, not folded into it (reasons at Build 16c). Default: the button
+  reads "Watched", shows a gold check when the movie is in the collection, and is only
+  on the loaded details screen.
+- **N14 What a second tap does.** Default: **toggle off**: it removes the movie from the
+  collection and shows a Toast with **Undo** (re-adds it). Once captions exist (Build 20),
+  removing a movie that has a caption would lose the caption, so Build 20 adds a
+  confirmation for that case (carry-forward, written into 16c).
+- **N15 Placement.** The top-right 64x64 is reserved for the dev build's gear (DESIGN
+  rule). Default: the button sits **immediately left of that zone** in the details header
+  row and in the compact bar (the title stops further left); moving it into the corner in
+  release builds, where the gear does not exist, is a pre-launch item. Dianne finalises
+  the position.
+- **N16 Watched removes the movie from the Quick Add deck.** Default: yes, the deck
+  already excludes collected ids (M2), so marking a movie watched on details takes it out
+  of the deck, and un-watching lets it back (only if its page is inside the cursor window,
+  or after "Start over", which also resets the cursor).
 
 ```
 Build 14 — Swipe deck                         Module: Quick-add swipe
    (Popular is the only source here; no server work, no database, no native
-   rebuild expected. Right swipe is a labelled placeholder until 16b, N4.)
+   rebuild expected. Right swipe is a labelled placeholder until 16b, N4. Delivered
+   first as a Home row (a629a2c); converted to the tab design by a change round, N1.)
 Done means (checkable):
 
   A. Wiring and data (mostly invisible; proven by tests and one device check)
@@ -1657,7 +1686,7 @@ Done means (checkable):
       "rebuild needed: yes/no" (expected no, M5). If the worklets plugin is missing,
       the JS-only `babel.config.js` fix of M5 applies.
   A2. [Ruby] `GestureHandlerRootView` (flex 1) wraps the app once, outermost, in
-      the root `_layout.tsx`; `quick-add` is inside the session-guarded group; no
+      the root `_layout.tsx`; `quick-add` is a route of the session-guarded `(tabs)` group; no
       other root view is added.
   A3. [Jest] `decideSwipe`: below 35% of the width and slow -> none; just above
       35% -> left/right by sign; short fast flick (>= 40 dp and >= 800 dp/s in the
@@ -1687,10 +1716,10 @@ Done means (checkable):
       user's key is never read; the session set survives leaving and re-entering the screen.
 
   B. Screen and gesture
-  B1. [QA] Home shows the Quick Add entry (Dianne's board); tapping it opens the deck
-      full-screen with the back chip and no tab bar; double-tap opens one deck (one
-      Back returns to Home, Home's list and position unchanged); the gear corner is
-      empty.
+  B1. [QA] The tab bar shows **Perch · Quick Add · Profile**; tapping Quick Add shows the deck
+      inside the tabs (tab bar visible, no back chip, no Quick Add row on Home); the deck keeps
+      its cards after switching to another tab and back, and Home's list and position are
+      unchanged; the gear corner is empty; the deck, buttons and Toast clear the tab bar.
   B2. [QA] The deck shows the top card (poster, title, year, rating) with the next card
       peeking behind it, Skip and Add buttons and Undo, all at least 48 dp.
   B3. [QA] **Mid-gesture, not just end state** (Rule Zero): Queenie holds a drag with
@@ -1742,7 +1771,9 @@ Done means (checkable):
   B12. [Ruby] Standards greps on the diff: tokens only (no literal colours, sizes, spacing),
        no `BlurView` in the card (flat fill, DESIGN §1.5), at most three cards mounted, no
        Supabase call or fetching logic in the route, no effect-based fetching, shared values
-       through `.get()` / `.set()`, header top spacing from insets, gear corner empty,
+       through `.get()` / `.set()`, header top spacing from insets, gear corner empty, the
+       Quick Add tab registered in `(tabs)/_layout.tsx` and `ui/TabBar`, **no leftover Home
+       row, root-level `quick-add` route or back chip (grep)**,
        1–2 line purpose comment per block, no `console.log`.
   B13. [Mgr] After Dianne's Phase 0: DESIGN §3 and §4 updated (M11); Jest also covers the
        stamp, tilt and stack states by driving the gesture with gesture-handler's Jest
@@ -1766,8 +1797,9 @@ Failure modes to cover (Manager expands into the log):
   - Data: movie without `poster_path` or `release_date` (no "NaN", year omitted); very long
     title (two lines, ellipsis); emoji or right-to-left title; the same movie on two pages
     (shown once); every card on a page already skipped (loop reads on); the 5,000 cap.
-  - Interaction: double-tap Home entry; Back mid-exit; leave the deck and return (cards
-    already swiped stay gone); Undo with an empty history; Retry double-tap.
+  - Interaction: double-tap the Quick Add tab; switch tabs mid-exit and return (the exit
+    completes or resets cleanly, no stuck card); leave the deck for another tab or details and
+    return (cards already swiped stay gone); Undo with an empty history; Retry double-tap.
   - Security: the key never appears (bundle, logcat, errors); nothing is stored on the
     server; the per-user storage key holds only movie ids.
   - Cleanup: the saved skips are per user, removed on sign-out and account deletion (A5);
@@ -2005,14 +2037,110 @@ Failure modes to cover (Manager expands into the log):
     20, 24 and 25.
 Phases: 0 skip (the Module's Phase 0 board covers the add feedback and Profile count states) ·
         1 Bella build · 2 Bella gates (tsc, lint, jest) · 3 Queenie QA · 4 Ruby review ·
-        5 Manager ships (closes the Module: PR, merge, pull `main`)
+        5 Manager ships (commit on the module branch; the Module's PR waits for 16c)
+```
+
+```
+Build 16c — "Watched" button on movie details  Module: Quick-add swipe
+   (NEW FEATURE from Justin, N13. **Why its own Build, not part of 16b:** 16b is already
+   the client module, the deck wiring, the first-load gate and the Profile count; this
+   one is a different screen (Module 4's details code, with its own tests to keep green),
+   needs its own Phase 0 states and an interactive Undo Toast, and depends on 16b's
+   add/remove API, ids cache and rollback rules, which it reuses and does not duplicate.
+   Splitting keeps each Build reviewable and the 16b milestone checkable first.)
+Done means (checkable):
+
+  A. Behaviour (reuses 16b's `collection` module; no new table, no migration, no server work)
+  A1. [Jest] `useWatched(movieId)` (in `collection`) reads `ids.has(movieId)` from the owner-tagged
+      ids query of M8, so the details screen, the deck and the Profile count agree from one cache.
+      States: **unknown** (ids still loading), **error** (ids failed), **notWatched**, **watched**.
+      It never reports notWatched while unknown or after an error.
+  A2. [Jest] Mark: the optimistic add of M8 (id into the cache at once, removed again if the
+      insert fails), `authReady()` first, 8 s abort, **no retry**, a Postgres 23505 (already in the
+      collection, e.g. added from the deck or another device) is a **silent success**, other failures
+      throw `CollectionApiError`. Un-mark: `removeFromCollection`, optimistic with rollback; same
+      serialising rule as M8 per movie id (a remove waits for that movie's add to settle).
+  A3. [Jest] Tap guard: two taps within 400 ms are one toggle (a double-tap is not mark-then-unmark);
+      slower taps are separate, intended toggles; the guard re-arms when the screen regains focus.
+  A4. [Jest] Sentry per M9 (same reporting hook as 16b: 42501, unexpected 4xx/5xx and `shape` reported
+      once with `environment`; offline, timeout, 23505 and a sign-out in flight are not).
+  A5. [Jest] Cross-screen: marking watched removes that movie from the deck's cards (it joins the
+      excluded set, M2) and raises the Profile count by one; un-marking returns the card to the deck
+      (when its page is loaded) and lowers the count; one cache, no second request for the list.
+      A late result after sign-out sets no state.
+
+  B. Details screen (Module 4's screen; `movie/[id].tsx` stays a thin composition)
+  B1. [QA] On a loaded details screen the **Watched** button is in the header row, immediately left of
+      the reserved top-right 64x64 gear zone (N15), and in the compact top bar once it appears (the
+      title stops further left); the gear zone stays empty; it is not shown in the loading, error or
+      not-found states. Dianne's board fixes the exact position.
+  B2. [QA] Not in the collection: outlined "Watched". Tap: it flips at once to the watched look (gold
+      check), the Manager reads the row back by SQL (movie id matches), the Profile count is one higher,
+      and the Quick Add deck no longer offers that movie (N16).
+  B3. [QA] **Already in the collection on open** (marked earlier, from the deck, or on another device):
+      the button shows the watched look as soon as the ids have loaded, with no flash of "not watched"
+      first; while the ids are loading the button is a neutral disabled state; if the ids fail it shows
+      the error state, a tap retries the ids query and a Toast says "Couldn't check your watched list.
+      Check your connection." (never a guess either way).
+  B4. [QA] Second tap on a watched movie: it flips to not watched, the row is deleted (SQL read-back),
+      and a Toast "Removed from watched." with **Undo** shows (about 5 s, interactive, announced
+      politely); Undo re-adds the movie (new row, same rules as A2); letting the Toast time out leaves it
+      removed.
+  B5. [QA] Failures: offline (wifi and data off) on mark or on un-mark: the button returns to its previous
+      state and an error Toast shows, in the network variant ("Couldn't update your watched list. Check
+      your connection.") or, for 42501, 5xx or a bad shape, the non-network variant ("Couldn't update your
+      watched list. Try again later."); no half state, no row change. Back online, tapping again works.
+  B6. [Jest] + [QA] Accessibility: the button's role is a checkbox-style toggle with name "Watched" and
+      state checked or not, at least 48 dp (hit area); the change is announced ("Marked as watched",
+      "Removed from watched"); the Undo Toast action is reachable by screen reader and has a label
+      "Undo"; the title remains the screen header.
+  B7. [QA] Opening the same movie from the deck and from Home shows the same watched state; Back returns to
+      the same deck card or Home position as in Builds 13 and 14.
+  B8. [Jest] The interactive Undo Toast variant (a `Toast` `action` prop; DESIGN §2 updated by Dianne):
+      the Toast takes touches only in this variant, the action fires once, the Toast auto-dismisses, and the
+      existing three variants and their tests are unchanged.
+
+  C. Standards and the rest
+  C1. [Ruby] Standards as Build 14 B12 for the new code; `movie/[id].tsx` has no Supabase call; the movies
+      module imports collection **only through its `index.ts`** and `collection` imports nothing from `movies`
+      or `quick-add` (no cycle); no new table, policy or server code; no `.select()` on the insert.
+  C2. [Ruby] Regression: the Build 13 details tests (states, tier chip, lounge shell, a11y, attribution rule)
+      pass unchanged; the details Toast offsets still clear the content (Build 13 lesson).
+  C3. [Mgr] After QA the Manager removes by SQL the rows QA created (ids in the log). The Module's milestone
+      check (add on a device, row in the database, count on Profile, Watched button) closes the Module: PR,
+      merge, pull `main`.
+  C4. [Mgr] Carry-forward written into the Build log and into Build 20's plan note: removing a collection
+      entry deletes its caption, so once Build 20 exists the un-mark of a captioned movie asks first (N14);
+      Build 21 ("remove from collection") reuses `removeFromCollection`.
+
+Test on: emulator (offline by turning wifi and data off).
+Needs from Justin: nothing. (N13-N16 are defaults he may overturn.)
+Failure modes to cover (Manager expands into the log):
+  - Interaction: double-tap (one toggle, A3); mark then Undo at once; un-mark then re-mark; leave the screen
+    mid-request (the request completes or rolls back, no state after unmount); tap while the ids are
+    loading (ignored, disabled); open the screen, mark, Back, reopen (still watched).
+  - Network: offline mark and un-mark (rollback, error Toast); timeout at 8 s with no retry; 5xx; 429; ids
+    query failing on open (error state, never a guess); sign-out while saving (no error, no Toast, no
+    Sentry, nothing for the next user).
+  - Data: already in the collection on open; 23505 on mark (silent success, button shows watched); a movie id
+    that is not a real movie (a not-found screen has no button); a stale deck offering a movie just marked
+    (excluded at once); a collection of 1,000+ items (the paged ids list of M8 still answers `has`).
+  - Security: the insert names `movie_id` only (16a grants); RLS scopes the delete to the caller; no title text
+    is stored or sent; an RLS denial is reported, not swallowed.
+  - Cleanup: the row cascades on account deletion (16a A6, Build 31 line); QA's rows removed by SQL (C3);
+    nothing on the device beyond the ids cache.
+  - Sentry: M9 only, once per failed call, `environment` tag.
+  - Moderation: none (own-only data, no UGC); a caption removed with its entry is the Build 20 carry-forward (C4).
+Phases: 0 Dianne (small board: the button in the header row and the compact bar, all states, the Undo Toast
+        variant, copy; part of the Module's boards, M11) · 1 Bella build · 2 Bella gates (tsc, lint, jest) ·
+        3 Queenie QA · 4 Ruby review · 5 Manager ships (closes the Module: PR, merge, pull `main`)
 ```
 
 **Server and database work in this Module, in order:** (1) Build 15: the `discover`
 endpoint in `_shared/tmdb.ts` (own commit) -> Ruby pre-deploy review -> Manager deploys
 `tmdb` and curls it -> QA. (2) Build 16a: the `collection_items` migration + SQL tests ->
 Ruby review -> Manager applies it through the Management API -> types regenerated ->
-16b starts. Build 14 and 16b have none. **No native rebuild is expected** (M5).
+16b starts. Builds 14, 16b and 16c have none. **No native rebuild is expected** (M5).
 
 **Module 5 risks.** (a) Real-phone gesture feel and edge-swipe/Back conflicts cannot be
 judged on td_emu; they are Justin's hand checks when he asks for an APK. (b) The
@@ -2205,7 +2333,7 @@ approve this plan.
 | Auth + profile + minimal account deletion working | Build 9 |
 | Moderation base + UGC terms in place | Build 11 |
 | Movie browse/details working | Build 13 |
-| Quick-add swipe working | Build 16 |
+| Quick-add swipe working (swipe deck, collection adds, and the Watched button on details) | Build 16c (swipe-add itself works at 16b) |
 | Search/add working | Build 18 |
 | Collection + captions working, Maestro smoke test green | Build 22 |
 | Follow + profile modal working | Build 24 |
@@ -2290,3 +2418,4 @@ this is marked NEEDS JUSTIN.
 - 2026-10-02 (Priya, at the Manager's request; Justin away, nothing waits on him): detailed Module 5 — Quick-add swipe — in section 5, replacing the three rough one-liners for Builds 14-16. Build numbers and order unchanged; **Build 16 is split into 16a (database only: `collection_items`) and 16b (app wiring)**, Manager default N12, milestone stays Build 16 (now 16b). Build 14 = deck, gestures, buttons, Undo, skip memory (Popular source, no server or database work); Build 15 = selectable order, with one new proxy endpoint `discover` (Manager deploys); right swipe in Build 14 is an honest coming-soon placeholder until 16b. Checked in the repo: gesture-handler, reanimated and worklets are already linked in the installed dev client (installed before Build 1), so **no native rebuild is expected**; what is missing is `GestureHandlerRootView` (added in Build 14) and a worklet-runs proof (A1). **NEEDS JUSTIN (none blocks; defaults apply):** N1 Quick Add is a Home row opening a full-screen deck, not a new tab; N2 three orders (Newest/Oldest/Random; "Oldest" is the droppable one); N3 swipe-left = skipped for good on this device until "Start over"; N4 interim right-swipe placeholder; N5 card content + one-step Undo (Undo is beyond Vision); N6 no haptics (new native module); N7 no offline queue for adds; N8 collection rows store movie id only (architecture default); N9 Profile count becomes real in 16b; N10 200+ votes and no adult titles in the deck; N11 deep link `perchable://quick-add`; N12 the 16a/16b split. Added Dianne's single Phase 0 for the whole Module (M11). No feature removed.
 - 2026-10-02 (Priya, round 2 after Ruby's 11 findings on Module 5, confirmed by the Manager; no Build or feature changed): (1) returning-user wall: per-order furthest-page cursor stored with the skips plus a loop bound of 15 (Jest: 12 all-excluded pages, no Retry); (2) `getCollectionMovieIds` uses `order by added_at desc, id`; (3) the deck waits for the collection ids and shows the error state on their failure; (4) cards returning mid-drag are held until release, return on top with an announcement and focus; (5) reduce motion from `AccessibilityInfo` + listener, explicit `reduceMotion`, relaunch after scale changes; (6) deck keys set `refetchOnReconnect: false`, Random shuffles seeded by (seed, page); (7) session-swiped set is a module-level store, cleared on sign-out and tested; (8) N3/M3 say plainly: cleared on every sign-out, capped at 5,000; (9) Random pool = min(100, recorded total_pages), Build 15 deletes the Build 14 popular source; (10) "Open details" accessibility action; (11) Dianne updates DESIGN §4 and the two failed-add Toast variants; junk-id count inflation named as accepted risk.
 - 2026-10-02 (Priya, round 3 after Ruby's re-review, 5 small gaps; no Build or feature changed): (1) cursor starts at `max(1, cursor - 1)`, is lowered when a card returns on an earlier page, and an empty start page retries once from page 1 before "caught up" (rollback test in Build 15 B1b); (2) Build 14 has Popular only: cursor and remembered-order tests moved to Build 15, A4's loop sentence fixed; (3) `DECK_MAX_PAGES_PER_LOAD = 15` is separate from Home's `MAX_PAGES_PER_LOAD = 3` (unchanged), deck queries `retry: 0` and Retry resumes where the loop stopped; (4) `RANDOM_POOL_PAGES` defaults to 100, the Manager sets it after the live curl in a one-line commit; (5) reduce-motion spring-back becomes a 150 ms ease, the flag reaches worklets as a shared value (Jest), QA records whether `reduceMotionChanged` fires without a relaunch.
+- 2026-10-02 (Priya, at the Manager's request, after Justin's two decisions on Module 5): (1) **Quick Add is a bottom tab** (Perch · Quick Add · Profile), already recorded in N1; swept Module 5 so M1, Build 14's header note, B1, A2, B12 and the failure list, M11, N11 and the "what exists" notes assume a tab route inside the guarded `(tabs)` group, no Home row, no back chip, tab bar visible. Build 14 as committed (a629a2c) is the Home-row design, so it needs a design-change round, not a Bug. (2) **NEW FEATURE from Justin, marked NEEDS JUSTIN: a "Watched" button on the movie details page that adds the movie to his watched list** (= the collection). Added as **Build 16c** (not folded into 16b, reasons in the Build), with Done means A/B/C, failure modes and states (unknown, error, not watched, watched, busy). New items N13 (the feature, default as he worded it), N14 (second tap toggles off with an Undo Toast; a caption loss warning is carried to Build 20), N15 (placement immediately left of the gear zone, Dianne finalises), N16 (marking watched removes it from the deck). Module milestone moves to 16c; no existing feature removed.
