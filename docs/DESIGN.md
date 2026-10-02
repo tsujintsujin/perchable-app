@@ -1562,7 +1562,7 @@ All distances are fractions of the **screen width W** (390 in the boards). `dx` 
 
 ### Controls (`build-14-deck-parts`)
 One row under the deck: **Skip, Undo, Add**. Each is a single pressable column, 56 wide x 78 high at font scale 1
-(touch target 56 x 78, well over 48): circle, 6, label (`caption` 12/16, `text.secondary`).
+(touch target 56 x 78, well over 48). **Every column is exactly 78 high with its label (`caption` 12/16, `text.secondary`) pinned to the bottom**, and the circle centred in the 56 dp above the label (a 6 dp gap under a 56 circle, 14 under the 48 Undo circle), so **all three labels share one baseline** and the three circles share one centre line.
 | Control | Circle | Fill and border | Glyph | Label read by TalkBack |
 |---|---|---|---|---|
 | Skip | 56 | `bg.elevatedFlat`, 1px `border.danger` | "✕" `danger`, 22/24 Inter 600 | Skip {title} |
@@ -1593,8 +1593,9 @@ One row under the deck: **Skip, Undo, Add**. Each is a single pressable column, 
 `size.deckToastLane` 76 above the controls is reserved and empty, so the card group (including its 20 dp stack
 reserve) ends above the toast. A 2-line toast at font scale 1 is 58 high; at 1.3 (the Toast's text cap) 68. The Toast
 sits inside the app's 20 dp side margins (`Toast` change in §2) and lasts 2.5 s, as everywhere.
-- **{title} in any Toast** is at most 28 characters: longer titles are cut to 27 characters plus "…" (the sentence's own
-  period then follows, "…."), so the reason at the end of the sentence is never cut off.
+- **{title} in any Toast is wrapped in curly quotes** (“{title}”) and is at most 28 characters: a longer title is cut to
+  27 characters plus "…" inside the quotes (“The Lord of the Rings: The…”), so a cut title never meets the sentence's full
+  stop and the reason at the end is never cut off.
 - Never covered: the card, its stack reserve and the three controls (checked on `build-14-deck-toasts`).
 
 ### Copy (verbatim, Builds 14, 15, 16b)
@@ -1617,11 +1618,11 @@ sits inside the app's 20 dp side margins (`Toast` change in §2) and lasts 2.5 s
 | Caught up title / body / action | You're all caught up / You've been through this whole list. Start over to see the movies you skipped again. / Start over |
 | Caught up action, `accessibilityLabel` | Start over and show skipped movies again |
 | Toast, Build 14 right swipe or Add (`coming-soon`) | Adding to your collection is coming soon. |
-| Toast, 16b add failed, offline or timeout (`error`) | Couldn't add {title}. Check your connection. |
-| Toast, 16b add failed, anything else (`error`) | Couldn't add {title}. Try again later. |
+| Toast, 16b add failed, offline or timeout (`error`) | Couldn't add “{title}”. Check your connection. |
+| Toast, 16b add failed, anything else (`error`) | Couldn't add “{title}”. Try again later. |
 | Toast, 16b undo failed, offline or timeout (`error`) | Couldn't undo. Check your connection. |
 | Toast, 16b undo failed, anything else (`error`) | Couldn't undo. Try again later. |
-| Toast, a held card returns (`info`) | {title} is back |
+| Toast, a held card returns (`info`) | “{title}” is back |
 | Announcement, left swipe or Skip | Skipped {title} |
 | Announcement, right swipe or Add, 16b | Added {title} |
 | Announcement, Undo | Undid skip for {title} / Undid add for {title} |
@@ -1631,7 +1632,7 @@ sits inside the app's 20 dp side margins (`Toast` change in §2) and lasts 2.5 s
 | Profile count | {n} movies watched / 1 movie watched / — movies watched (failed) |
 | Profile count failed, `accessibilityLabel` | Movies watched, unavailable |
 
-A held return from Undo shows the info Toast "{title} is back"; a rolled-back add shows its error Toast instead (the
+A held return from Undo shows the info Toast “{title}” is back; a rolled-back add shows its error Toast instead (the
 reason is the news) and announces "{title} is back" for screen readers only.
 
 ### Accessibility (Build 14)
@@ -1701,6 +1702,8 @@ Board: `build-16b-profile-count`, and the add feedback is on `build-14-deck-drag
   | Count 1 | "1 movie watched" (singular). |
   | Count 2 or more | "{n} movies watched"; 1,000 and above with a thousands separator ("1,284 movies watched"). |
   | Count failed | "— movies watched" (an em dash, never a number, never a false 0); `accessibilityLabel` "Movies watched, unavailable". |
+  **Count failed recovery (Manager decision):** the count refetches whenever the Profile tab gains focus; the dash stays
+  as is, with no extra tap target.
   The grid container below stays the dashed empty box until Build 19 fills it. The whole-profile loading and error states
   (Build 6) are unchanged.
 
