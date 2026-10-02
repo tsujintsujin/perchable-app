@@ -1,0 +1,28 @@
+env: load .env
+env: export EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID EXPO_PUBLIC_SENTRY_DSN EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY EXPO_PUBLIC_SUPABASE_URL
+Starting project at D:\AIO Freelance\MobileDev\perchable_app
+Logs: D:\AIO Freelance\MobileDev\perchable_app\.expo\dev\logs\start.log
+[33m› [1m[@sentry/react-native/expo][22m Missing config for [1morganization, project[22m. Environment variables will be used as a fallback during the build. https://docs.sentry.io/platforms/react-native/manual-setup/[0m
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Starting Metro Bundler
+
+Waiting on http://localhost:8081
+
+An update for expo is available: 57.0.24 → ~57.0.26
+5 other packages may need updating. Run npx expo install --check for details.
+Logs for your project will appear below.
+Android Bundled 12817ms node_modules\expo-router\entry.js (2147 modules)
+Android Bundled 175ms node_modules\expo-router\entry.js (1 module)
+| [33m› [1m[@sentry/react-native/expo][22m Missing config for [1morganization, project[22m. Environment variables will be used as a fallback during the build. https://docs.sentry.io/platforms/react-native/manual-setup/[0m
+| [33m› [1m[@sentry/react-native/expo][22m Missing config for [1morganization, project[22m. Environment variables will be used as a fallback during the build. https://docs.sentry.io/platforms/react-native/manual-setup/[0m
+λ Bundled 44774ms node_modules\expo\node_modules\@expo\cli\node_modules\@expo\router-server\node\render.js (1688 modules)
+"shadow*" style props are deprecated. Use "boxShadow".
+Web Bundled 46536ms node_modules\expo-router\entry.js (1651 modules)
+λ Bundled 4942ms node_modules\expo\node_modules\@expo\cli\node_modules\@expo\router-server\node\render.js (1 module)
+"shadow*" style props are deprecated. Use "boxShadow".
+Web Bundled 5944ms node_modules\expo-router\entry.js (1 module)
+Android Bundled 2870ms node_modules\expo-router\entry.js (1 module)
+λ Bundled 115ms node_modules\expo\node_modules\@expo\cli\node_modules\@expo\router-server\node\render.js (1 module)
+"shadow*" style props are deprecated. Use "boxShadow".
+Web Bundled 1058ms node_modules\expo-router\entry.js (1 module)
