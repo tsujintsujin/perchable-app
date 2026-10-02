@@ -121,3 +121,15 @@ Handle each one up front; say in the Build log how (or "n/a").
 - Close the emulator (`scripts/emulator.sh stop`) as soon as device work is done and none is
   next. Left idle through reviews and builds, it ages toward the unhealthy limit and slows
   jest/Gradle, so the next test had to restart it anyway. (2026-10-02, Justin)
+- An emoji and words in one `Text` inside a fixed-height chip can wrap: the words drop to a hidden
+  second line and the chip shows only the emoji. Put the emoji in its own `Text`, and screenshot
+  every chip on a device. (Build 13 · Bug 1)
+- A shared component that adds an always-present layer (Avatar initials behind the photo) changes
+  every caller: hide decorative layers from accessibility in the component itself, and list every
+  caller in the brief. (Build 13 · round 2)
+- Check a designer's numeric fix against their own board on a device before building on it: the
+  first toast offset (inset + 96) covered other text that the board kept clear. (Build 13)
+- `TaskStop` on a background `npx expo start` leaves the Metro node process holding 8081: after
+  stopping, find the PID on 8081, confirm its command line is your Metro, and stop it. (2026-10-02)
+- After a PC restart the dev build ANRs on cold start ("failed to complete startup") until
+  `adb shell cmd package compile -m verify -f com.tsujintsujin.perchable` runs once. (2026-10-02)

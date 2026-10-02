@@ -272,3 +272,22 @@ Bugs: none. Open question for Ruby: the two app-side error lines above.
 | 1 Toast | The 96 offset put the Toast over the lounge card; DESIGN amendment moved the Toast low and gave the scroll more bottom room. | `size.detailsToastOffset` 24 and new `size.detailsBottomPad` 80 (scroll padding = inset + 80, was 32). Toast bottom (24 + inset) is inside that padding, below the card. Both Toasts use the one offset. | `movieDetails-test`: padding = inset + 80, composer and refetch Toasts at inset + 24 and less than the padding. Mutations (old padding, offset 96) each fail 1. Screenshot `logs/evidence/build-13/r2-toast-scrolled-to-end.png`. |
 | 2 Avatar a11y | Round 1 made the initials always present, so a screen reader read "J" before the name where Avatar has no accessible wrapper. | Gradient wrapper gets `importantForAccessibility="no-hide-descendants"` and `accessibilityElementsHidden`. | `Avatar-test`: the initial is not found by default and is found with `includeHiddenElements`; mutation (props removed) fails 1. Other tests that look for initials now pass `includeHiddenElements`. |
 | 3 Home title | `PosterGrid` passed the raw title, so an empty title gave an empty or ", 2021" label. | `displayTitle(item.title)`, same as details (this also gives Home the "Untitled" the round 1 note said it lacked). | `home-test`: "Untitled, 2021" and "Untitled" labels and fallback text; mutation (raw title) fails 1. |
+
+## Manager close (2026-10-02)
+- Bug round 1 (219fd90 app, 4e1d81c server tests): Ruby FIX NEEDED (2 lows) → round 2; Queenie re-test PASS.
+  The Toast offset in Dianne's first amendment covered the "Preview only" line; she corrected it to match her
+  board (5913e51: toast offset 24, details bottom pad 80).
+- Bug round 2 (027ae3f): Avatar initials hidden from accessibility; Home shows "Untitled"; new toast/bottom pad.
+  Ruby PASS. Device screenshot r2-toast-scrolled-to-end.png matches the board.
+- Manager gates on 027ae3f: tsc app + functions 0; lint clean; jest ×2 498/498, 0 `act(`, 0 console warn/error.
+- Manager spot re-run (td_emu after `ensure`): Home → The Odyssey (not opened before) → details complete
+  (backdrop, poster, meta, genres, rating, "🏆 Tier" on one line, tagline, synopsis, cast photos + roles)
+  `mgr-01-odyssey-details.png`; hardware back → Home intact `mgr-02-back-home.png`. logcat: no Fatal signal,
+  FATAL EXCEPTION, ANR or app error lines. PASS. Emulator closed; Metro stopped, 8081 free.
+- Server: tmdb details deployed in Phase 2 (bd4a702); later server commits are tests only, nothing to redeploy.
+- **NEEDS JUSTIN (by hand, not blocking):** (a) real-finger fast fling on Home never opens a poster (adb can't
+  send real touch streams); (b) cold deep link `perchable://movie/603` with the app killed → The Matrix, Back →
+  Home (dev client drops launch URLs; check on a release build); (c) signed-out deep link → sign-in, target
+  dropped; (d) TalkBack: details title is announced as a heading.
+- Open, no action: `05` accepted as id 5 (digits-only rule, same as `page`); `dangerGlow` iOS-only shadow kept.
+- **Build 13 DONE.**
