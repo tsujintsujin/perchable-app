@@ -193,6 +193,7 @@ Everything else (`surface.input`, `border.hairline*`, `border.danger`, `overlay.
 | `colors.overlay.shimmerWash` | `rgba(214,196,233,0.10)` | wash over a loading poster tile |
 | `lineHeight` | `caption/small 16` / `body 22` / `subhead 24` / `title 30` | explicit line heights for the type roles used here |
 | `motion.imageFade` | 200 (ms) | poster fade-in; the compact bar's fade is 150 |
+| `colors.overlay.topScrimStart` / `size.detailsScrimHeight` / `size.detailsToastOffset` | `rgba(18,16,22,0.72)` / 72 / 96 | details top scrim, and Toast offset above the composer (Build 13 QA amendments) |
 
 Existing and reused: `bg.elevatedFlat`, `surface.input`, `surface.goldTint`, `border.*`, `glass.hero`,
 `colors.brand.purple900`, `overlay.spinnerTrack`, `shimmerPulse`, `iconSize.lg`, `avatarSize`, `size.minTouch`,
@@ -1339,6 +1340,40 @@ cast name and character clamp to 2 lines each.
 - Contrast: `text.primary` and `text.secondary` on `bg.base` as in §1.5; gold "Tier" text on `surface.input`
   about 4.7:1 (bold 15); the placeholder `text.disabled` sits on a not-focusable composer, and the preview
   line next to it uses `text.secondary`.
+
+### Build 13 · QA amendments (Dianne, 2026-10-02)
+Decisions from QA evidence (`logs/evidence/build-13/`). No board change is needed; these are exact values for Bella's Bug round.
+
+**New tokens (add to §1.9):** `colors.overlay.topScrimStart` = `rgba(18,16,22,0.72)` (`bg.base` at 72%);
+`size.detailsScrimHeight` = 72 (added to the top inset); `size.detailsToastOffset` = 96.
+
+1. **Status bar over a bright backdrop (05p): top scrim, status bar stays light.** One fixed (non-scrolling)
+   `LinearGradient`, absolute at the top of the screen, full width, height = top inset + `size.detailsScrimHeight`
+   (72), from `colors.overlay.topScrimStart` at 0% to `colors.overlay.fadeStart` at 100% (top to bottom),
+   `pointerEvents="none"`, decorative, drawn above the scroll content and below the Back chip. It covers the
+   status bar, the Back chip (inset + 8 to inset + 44) and the 64x64 gear zone. Rendered only in the loaded state
+   (the other states have no backdrop). It fades out in the same 150 ms as the compact bar fades in (opacity 1 at
+   offsets under `size.detailsBarShowAt`, 0 after), since the solid bar then guards the status bar. Keep the
+   light status-bar style; no dark-icon switch.
+2. **Toast on details (09c): sits above the composer.** Bottom offset = bottom inset + `size.detailsToastOffset`
+   96 (32 bottom padding + 48 composer + 16 gap), so scrolled to the end it clears the composer. One rule for
+   both details Toasts (composer "coming soon" and refetch error). Same principle as the tab screens: Toast sits
+   above the bottom chrome (74 tab bar + 24 there; composer zone + 16 here).
+3. **Lounge messages (ui-lounge, 05n/05p): the board is right; the code is wrong.** Stacked, not inline. Row =
+   `Avatar sm` (32) at left, 10 gap, then a column: author on its own line (`small` 12/16, 600, `accent.gold`),
+   then the message below it (12/18, `text.primary`, wraps). Rows align to the top (`alignItems: flex-start`),
+   12 between rows. The initial-letter avatar (Avatar's `fallback-initials`) is correct for the sample authors;
+   the board's gradient circle was only a stand-in.
+4. **Skeleton bar heights (09b).** All bars radius 6, `bg.elevatedFlat`-based pulse as in Build 12. Title bars
+   24 (gap 8); meta bar 14; genre bar 12; tagline bar 14; "Synopsis" and "Cast" heading bars 24; synopsis text
+   bars 14 high with 8 between (last bar 60% wide); cast name bar 12 (72 wide) and role bar 12 (52 wide), 6
+   apart, 8 under the avatar circle. Bella's 16 / 12 / 10 are replaced by 14 / 12 / 12; 12 and 14 were already
+   the board's values.
+5. **Cast avatar while the photo loads (02b).** The slot is never blank: `Avatar` always draws its
+   `fallback-initials` look first (existing fallback fill plus initials) and the photo fades in over it
+   (`motion.imageFade` 200 ms) when `onLoad` fires. If the photo fails or `profile_path` is null the initials stay.
+   No new token or shimmer. This is a general `ui/Avatar` rule (Home avatar, Profile, Blocked users), so do it in
+   the shared component, not in the cast row.
 
 ---
 
