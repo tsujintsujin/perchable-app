@@ -256,3 +256,19 @@ Evidence: `logs/evidence/build-14/qa/r1q-*` (13 files). Dev build, Metro started
 
 VERDICT: PASS. Bugs 1, 2, 3 re-tested fine; Bug 4 withdrawn. Bug 2 could not be reproduced this round (30/30 commits), so the real-finger check stays with Justin.
 UNTESTABLE, Justin: TalkBack announcement count after a double tap and the card actions; real-finger flicks; gesture-navigation edge swipe.
+
+---
+# Bella: Bug round 2 (Ruby A and B, test flake)
+
+| Item | Cause | Fix | Test (mutation-checked) |
+|---|---|---|---|
+| Ruby A: a pan release plus a button or screen-reader action on the same card in the next frame | `runExit` lost its own guard in round 1 and the pan path never marked the card as started, so `commitFromJs` could run a second exit and re-seat `settle` in the opposite direction | `commitFromJs` also checks `exiting.get()` (set at once by the pan on this thread) and a new `isCommitted()` prop (the deck's `committedRef`, true once the pan's commit message arrived). Marking the card from the worklet side through a ref was tried and rejected by the compiler lint (ref access during render), hence the prop | quickAddScreen "a pan release followed at once by a screen-reader action": pan commits right, Skip arrives in the same tick; the card keeps flying right (fake timers) and is recorded once as an add. Without the `exiting` check it fails |
+| Ruby B: stale press start | `pressStartRef` was cleared only in `onPress`; a press the pan claimed ends with `onPressOut` and no `onPress` | `onPressOut` clears it in a microtask (Pressability runs onPressOut before onPress, so a direct clear would erase the start the press needs) | "a press the pan claimed leaves no start point behind". Fails without the clear |
+| **Flake**: movieDetails-test, 22 act() warnings under `--maxWorkers=2` | **Cause (demonstrated, not the natural trigger):** the cast row was a `FlatList`. A virtualized list answers a layout or content-size event with `setTimeout(..., 50)` that calls `setState` later. A probe test fires those events on the old row and gets two 50 ms timers and "An update ... was not wrapped in act(...)"; the details suite only flushes with a 0 ms timeout, so on a loaded machine the update lands outside act (in the same or the next test, hence a cascade). The new row has no timer. I could not make the natural trigger fire in 25 runs under heavy load, so the mechanism is shown with synthetic events. | `CastRow` is a plain horizontal `ScrollView` (the proxy sends at most `CAST_LIMIT` = 15 people; no virtualization needed), same testID and list role, items a `size.castGap` apart | `castRow-test`: no timer of 50 ms or more and no console.error after layout events (fails on the FlatList, both tests fail on revert) |
+| My own timing flakes found while proving | quickAddScreen tests that read mid-animation values with real timers (rm commit fade, returning-card fade-in, buttons disabled while flying, a returning card appears at once, reduce-motion release) could finish the 150/200 ms animation before the first read on a loaded machine | Fake timers stepped by hand for those; a `ready()` wait before Undo; both conditions inside one waitFor | all pass 4 of 4 file runs, then under load below |
+
+**Proof under load** (6 busy node processes alongside throughout):
+- movieDetails-test alone x10: 10 of 10 pass (31 tests each), 0 `act(`, 0 console warn/error.
+- Full suite x5 at `--maxWorkers=2`: 5 of 5 pass (50 suites, 650 tests), 0 `act(`, 0 console warn/error, 0 failed suites.
+- Full suite x2 at `--maxWorkers=50%`: 2 of 2 pass (50 suites, 650 tests), same.
+Device: not started this round (code and Jest only).

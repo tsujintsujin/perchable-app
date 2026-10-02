@@ -53,6 +53,8 @@ type DeckCardProps = {
   entering: Entering;
   focusSignal: number;
   onCommit: (direction: SwipeDirection) => void;
+  /** True once the deck has recorded this card's commit. */
+  isCommitted: () => boolean;
   onExitDone: () => void;
   onDragChange: (active: boolean) => void;
   onOpen: (movie: Movie) => void;
@@ -75,6 +77,7 @@ function DeckCard({
   entering,
   focusSignal,
   onCommit,
+  isCommitted,
   onExitDone,
   onDragChange,
   onOpen,
@@ -107,6 +110,8 @@ function DeckCard({
   useEffect(() => {
     if (role === "top" && focusSignal > 0 && pressRef.current) AccessibilityInfo.sendAccessibilityEvent(pressRef.current, "focus");
   }, [role, focusSignal]);
+
+  const startedRef = useRef(false);
 
   // Sends the card off (a swipe or a button): flies out in 200 ms, or fades in place with reduce motion; the stack moves up meanwhile.
   const runExit = (direction: SwipeDirection) => {
@@ -154,11 +159,12 @@ function DeckCard({
     dragP.set(withSpring(0, spring));
   };
 
-  // Buttons and screen-reader actions: one exit per card, however fast they arrive. A ref, not the shared value: the JS thread
-  // can read the shared value stale for a frame, and a second exit would advance the stack twice.
-  const startedRef = useRef(false);
+  // Buttons and screen-reader actions: one exit per card, however fast they arrive. A ref, not only the shared value: the JS
+  // thread can read the shared value stale for a frame, and a second exit would advance the stack twice.
   const commitFromJs = (direction: SwipeDirection) => {
-    if (startedRef.current) return;
+    // A pan release that already started this card's exit counts too: its shared value covers the frame before the pan's own
+    // message reaches the deck (`isCommitted`).
+    if (startedRef.current || exiting.get() || isCommitted()) return;
     startedRef.current = true;
     runExit(direction);
   };
@@ -222,6 +228,12 @@ function DeckCard({
             ref={pressRef}
             onPressIn={(event) => {
               pressStartRef.current = { x: event.nativeEvent.pageX, y: event.nativeEvent.pageY };
+            }}
+            onPressOut={() => {
+              // A press the pan claimed ends here with no onPress; clear its start once onPress (which follows at once) has read it.
+              queueMicrotask(() => {
+                pressStartRef.current = null;
+              });
             }}
             onPress={(event) => {
               // A touch that travelled past the pan slop is a drag, never a tap (a screen reader's click carries no position).
@@ -388,6 +400,7 @@ export function SwipeDeck({ ref, cards, returned, cardSize, bottomInset, reduceM
           reduceMotion={reduceMotion}
           focusSignal={focusSignal}
           onCommit={(direction) => handleCommit(item.movie, item.rank, item.key, direction)}
+          isCommitted={() => committedRef.current.has(item.key)}
           onExitDone={() => setLeaving((current) => current.filter((card) => card.key !== item.key))}
           onDragChange={onDragChange}
           onOpen={onOpen}

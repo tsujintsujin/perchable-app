@@ -532,8 +532,16 @@ describe("one swipe per action (failure mode 3)", () => {
 
   it("the buttons are disabled while a card is flying off and enabled again after", async () => {
     await renderFilled();
-    await act(async () => press("Skip Movie 100"));
-    expect(screen.getByRole("button", { name: "Skip Movie 101" }).props.accessibilityState.disabled).toBe(true);
+    jest.useFakeTimers();
+    try {
+      await act(async () => press("Skip Movie 100"));
+      expect((await screen.findByRole("button", { name: "Skip Movie 101" })).props.accessibilityState.disabled).toBe(true);
+      await act(async () => {
+        jest.advanceTimersByTime(250);
+      });
+    } finally {
+      jest.useRealTimers();
+    }
     await exitDone(100);
     await waitFor(() => expect(screen.getByRole("button", { name: "Skip Movie 101" }).props.accessibilityState.disabled).toBe(false));
   });
@@ -609,6 +617,7 @@ describe("Undo (B6)", () => {
     await renderFilled();
     await drag(100, -300);
     await exitDone(100);
+    await ready();
     await act(async () => press("Undo"));
     await screen.findByLabelText("Movie 100, 2021");
     expect(mountedCards().sort()).toEqual([100, 101]);
@@ -621,10 +630,20 @@ describe("Undo (B6)", () => {
     await renderFilled();
     await drag(100, -300);
     await exitDone(100);
-    await act(async () => press("Undo"));
-    await screen.findByLabelText("Movie 100, 2021");
-    expect(transformOf(100, "scale")).toBeCloseTo(deck.returnScale, 1);
-    await waitFor(() => expect(styleOf(100).opacity).toBe(1));
+    await ready();
+    // Fake timers: the 200 ms fade-in is stepped by hand.
+    jest.useFakeTimers();
+    try {
+      await act(async () => press("Undo"));
+      expect(screen.getByLabelText("Movie 100, 2021")).toBeTruthy();
+      expect(transformOf(100, "scale")).toBeCloseTo(deck.returnScale, 1);
+      await act(async () => {
+        jest.advanceTimersByTime(250);
+      });
+    } finally {
+      jest.useRealTimers();
+    }
+    expect(styleOf(100).opacity).toBe(1);
     expect(transformOf(100, "scale")).toBeCloseTo(1);
     expect(focusEvents).toHaveBeenCalledWith(expect.anything(), "focus");
   });
@@ -735,9 +754,18 @@ describe("reduce motion (B10, M4)", () => {
     reduceMotionStart = true;
     await renderFilled();
     await waitFor(() => expect(reduceMotionListener).toBeDefined());
-    await act(async () => press("Skip Movie 100"));
-    expect(transformOf(100, "translateX")).toBe(0);
-    expect(stampOpacity(100, "skip")).toBe(1);
+    // Fake timers: the 150 ms fade is stepped by hand, so a loaded machine cannot finish it before the first read.
+    jest.useFakeTimers();
+    try {
+      await act(async () => press("Skip Movie 100"));
+      expect(transformOf(100, "translateX")).toBe(0);
+      expect(stampOpacity(100, "skip")).toBe(1);
+      await act(async () => {
+        jest.advanceTimersByTime(250);
+      });
+    } finally {
+      jest.useRealTimers();
+    }
     await exitDone(100);
     expect(await loadSkips("u1")).toEqual([100]);
     // The next card is on top at full size straight away.
@@ -782,10 +810,20 @@ describe("reduce motion (B10, M4)", () => {
     await waitFor(() => expect(reduceMotionListener).toBeDefined());
     await act(async () => press("Skip Movie 100"));
     await exitDone(100);
-    await act(async () => press("Undo"));
-    await screen.findByLabelText("Movie 100, 2021");
-    expect(styleOf(100).opacity).toBe(1);
-    expect(transformOf(100, "scale")).toBeCloseTo(1);
+    await ready();
+    // Fake timers: "at once" means before any animation frame, so only one millisecond is allowed to pass.
+    jest.useFakeTimers();
+    try {
+      await act(async () => press("Undo"));
+      expect(screen.getByLabelText("Movie 100, 2021")).toBeTruthy();
+      await act(async () => {
+        jest.advanceTimersByTime(1);
+      });
+      expect(styleOf(100).opacity).toBe(1);
+      expect(transformOf(100, "scale")).toBeCloseTo(1);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });
 
@@ -830,6 +868,45 @@ describe("Bug round 1", () => {
     expect(mockPush).toHaveBeenCalledTimes(2);
   });
 
+  it("a pan release followed at once by a screen-reader action on the same card does not run a second, opposite exit", async () => {
+    await renderFilled();
+    jest.useFakeTimers();
+    try {
+      const top = screen.getByLabelText("Movie 100, 2021");
+      // The pan commits right; in the same tick the Skip action arrives.
+      await act(async () => {
+        pan(100).onStart();
+        pan(100).onEnd({ translationX: 0.4 * SCREEN_WIDTH, velocityX: 0 }, true);
+        pan(100).onFinalize();
+        top.props.onAccessibilityAction({ nativeEvent: { actionName: "skip" } });
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(120);
+      });
+      // Still flying to the right, and recorded once as an add.
+      expect(transformOf(100, "translateX")).toBeGreaterThan(0.4 * SCREEN_WIDTH);
+      await act(async () => {
+        jest.advanceTimersByTime(200);
+      });
+    } finally {
+      jest.useRealTimers();
+    }
+    await exitDone(100);
+    expect(getSessionAdds("u1")).toEqual([100]);
+    expect(await loadSkips("u1")).toEqual([]);
+  });
+
+  it("a press the pan claimed leaves no start point behind to swallow a later screen-reader click", async () => {
+    await renderFilled();
+    const top = screen.getByLabelText("Movie 100, 2021");
+    // Pressed down, then the pan took over: pressOut with no press.
+    await fireEvent(top, "pressIn", { nativeEvent: { pageX: 100, pageY: 400 } });
+    await fireEvent(top, "pressOut", { nativeEvent: { pageX: 300, pageY: 400 } });
+    // A later click that carries coordinates but no fresh pressIn.
+    await fireEvent.press(top, { nativeEvent: { pageX: 300, pageY: 400 } });
+    expect(mockPush).toHaveBeenCalledTimes(1);
+  });
+
   it("reduce motion switched on mid-drag still brings the next poster back: the release resets the stack coordinate too", async () => {
     await renderFilled();
     await waitFor(() => expect(reduceMotionListener).toBeDefined());
@@ -843,8 +920,10 @@ describe("Bug round 1", () => {
       pan(100).onEnd({ translationX: 0.3 * SCREEN_WIDTH, velocityX: 0 }, true);
       pan(100).onFinalize();
     });
-    await waitFor(() => expect(transformOf(101, "scale")).toBeCloseTo(0.94, 2));
-    expect(dimOpacity(101)).toBeCloseTo(1, 1);
+    await waitFor(() => {
+      expect(transformOf(101, "scale")).toBeCloseTo(0.94, 2);
+      expect(dimOpacity(101)).toBeCloseTo(1, 1);
+    });
   });
 });
 

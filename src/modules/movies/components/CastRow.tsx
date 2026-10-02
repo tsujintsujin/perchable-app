@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Avatar } from "@/ui/Avatar";
 import { colors, lineHeight, size, spacing, type } from "@/ui/tokens";
 import { IMAGE_SIZE, tmdbImage } from "../tmdbImage";
@@ -24,33 +24,22 @@ function CastItem({ person }: { person: CastMember }) {
   );
 }
 
-// Space between two cast items.
-function Gap() {
-  return <View style={styles.gap} />;
-}
-
-/** Horizontal row of cast members (not tappable). */
+/** Horizontal row of cast members (not tappable). A plain scroll view, not a virtualized list: the proxy sends at most 15 people,
+ * and a list's own 50 ms batching timer updated state outside any test's act. */
 export function CastRow({ cast }: { cast: CastMember[] }) {
   return (
-    <FlatList
-      horizontal
-      testID="cast-list"
-      accessibilityRole="list"
-      showsHorizontalScrollIndicator={false}
-      data={cast}
-      // The same person can appear twice (two roles), so the id alone is not unique.
-      keyExtractor={(person, index) => `${person.id}-${index}`}
-      renderItem={({ item }) => <CastItem person={item} />}
-      contentContainerStyle={styles.content}
-      ItemSeparatorComponent={Gap}
-    />
+    <ScrollView horizontal testID="cast-list" accessibilityRole="list" showsHorizontalScrollIndicator={false} contentContainerStyle={styles.content}>
+      {cast.map((person, index) => (
+        // The same person can appear twice (two roles), so the id alone is not unique.
+        <CastItem key={`${person.id}-${index}`} person={person} />
+      ))}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  // Row padding matches the screen edge.
-  content: { paddingHorizontal: spacing[20] },
-  gap: { width: size.castGap },
+  // Row padding matches the screen edge; the items sit a gap apart.
+  content: { paddingHorizontal: spacing[20], gap: size.castGap },
   item: { width: size.castItem },
   name: { ...type.caption, lineHeight: lineHeight.caption, color: colors.text.primary, marginTop: spacing[8] },
   character: { ...type.small, lineHeight: lineHeight.caption, color: colors.text.secondary, marginTop: spacing[4] },
