@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { avatarSize, colors, type } from "@/ui/tokens";
+import { avatarSize, colors, motion, type } from "@/ui/tokens";
 
 type Size = "sm" | "md" | "lg";
 
@@ -19,27 +19,28 @@ type Props = {
   name?: string | null;
 };
 
-/** Loaded photo, or a gradient-fill fallback-initials circle — never a
- * fabricated placeholder image. */
+/** Gradient initials circle with the photo fading in over it; the initials stay when
+ * there is no photo or it fails — never a fabricated placeholder image. */
 export function Avatar({ uri, size = "md", ringGradient = false, name }: Props) {
   const d = DIMENSIONS[size];
   const initial = name?.trim()?.[0]?.toUpperCase() ?? "?";
 
-  const circle = uri ? (
-    <Image
-      source={{ uri }}
-      style={{ width: d, height: d, borderRadius: d / 2 }}
-      contentFit="cover"
-    />
-  ) : (
-    <LinearGradient
-      colors={[colors.brand.purple700, colors.brand.gold500]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={[styles.fallback, { width: d, height: d, borderRadius: d / 2 }]}
-    >
-      <Text style={[styles.initial, { fontSize: d * 0.42 }]}>{initial}</Text>
-    </LinearGradient>
+  // The initials circle is always drawn; the photo fades in over it, so the slot is never blank and a failed photo leaves the initials.
+  const circle = (
+    <View style={{ width: d, height: d, borderRadius: d / 2, overflow: "hidden" }}>
+      <LinearGradient
+        colors={[colors.brand.purple700, colors.brand.gold500]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        // Decorative: the name next to the avatar says who it is, so a reader must not say "J" first.
+        importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden
+        style={[styles.fallback, StyleSheet.absoluteFill]}
+      >
+        <Text style={[styles.initial, { fontSize: d * 0.42 }]}>{initial}</Text>
+      </LinearGradient>
+      {uri ? <Image testID="avatar-photo" source={{ uri }} style={StyleSheet.absoluteFill} contentFit="cover" transition={motion.imageFade} /> : null}
+    </View>
   );
 
   if (!ringGradient) return circle;

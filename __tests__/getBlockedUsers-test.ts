@@ -1,5 +1,5 @@
 const mockFrom = jest.fn();
-jest.mock("@/lib/supabase", () => ({ supabase: { from: (...args: unknown[]) => mockFrom(...args) } }));
+jest.mock("@/lib/supabase", () => ({ supabase: { auth: { getSession: () => Promise.resolve({}) }, from: (...args: unknown[]) => mockFrom(...args) } }));
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: jest.fn() } }));
 
 import { getBlockedUsers } from "@/modules/moderation/api/getBlockedUsers";

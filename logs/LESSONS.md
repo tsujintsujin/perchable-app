@@ -107,3 +107,29 @@ Handle each one up front; say in the Build log how (or "n/a").
   every QA run — its GPU path degrades with uptime (launcher 90th-pct frame 48 ms fresh vs 600 ms
   after a long session). Screenshots are now 720x1600 @ 280 dpi = **1.75 px/dp** (was 2.625).
   Full setup in CLAUDE.md "Emulator setup + health". (2026-10-01)
+- Emulator lag kept recurring because every agent restarted td_emu by rule — each restart is
+  minutes of boot-storm load. Use `scripts/emulator.sh ensure` (restart only when measured
+  unhealthy, then wait to settle). Cap jest (`--maxWorkers=50%`) and never overlap a QA run with
+  a full jest suite or Gradle build. (2026-10-01, Justin: "deal with that issue that's been
+  recurring")
+- A flaky test is fixed at its cause, never by switching off the check that fails. "Not wrapped in
+  act" from React Query = its notifyManager timer firing outside act on a loaded machine: route
+  notifications through act (`notifyManager.setNotifyFunction`), keep `IS_REACT_ACT_ENVIRONMENT`
+  on. Prove a flake fix under load (busy processes alongside), not on an idle machine. (2026-10-02)
+- On a quick-boot emulator the guest `/proc/uptime` comes back from the snapshot — measure
+  emulator age from the host process, not from inside Android. (2026-10-02)
+- Close the emulator (`scripts/emulator.sh stop`) as soon as device work is done and none is
+  next. Left idle through reviews and builds, it ages toward the unhealthy limit and slows
+  jest/Gradle, so the next test had to restart it anyway. (2026-10-02, Justin)
+- An emoji and words in one `Text` inside a fixed-height chip can wrap: the words drop to a hidden
+  second line and the chip shows only the emoji. Put the emoji in its own `Text`, and screenshot
+  every chip on a device. (Build 13 · Bug 1)
+- A shared component that adds an always-present layer (Avatar initials behind the photo) changes
+  every caller: hide decorative layers from accessibility in the component itself, and list every
+  caller in the brief. (Build 13 · round 2)
+- Check a designer's numeric fix against their own board on a device before building on it: the
+  first toast offset (inset + 96) covered other text that the board kept clear. (Build 13)
+- `TaskStop` on a background `npx expo start` leaves the Metro node process holding 8081: after
+  stopping, find the PID on 8081, confirm its command line is your Metro, and stop it. (2026-10-02)
+- After a PC restart the dev build ANRs on cold start ("failed to complete startup") until
+  `adb shell cmd package compile -m verify -f com.tsujintsujin.perchable` runs once. (2026-10-02)

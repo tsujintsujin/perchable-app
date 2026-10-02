@@ -10,7 +10,9 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-google-signin/google-signin": "^16.1.5",
     "@sentry/react-native": "~7.11.0",
+    "@shopify/flash-list": "2.0.2",
     "@supabase/supabase-js": "^2.117.1",
+    "@tanstack/react-query": "^5.104.0",
     "aes-js": "^3.1.2",
     "expo": "~57.0.24",
     "expo-blur": "~57.0.3",
@@ -65,6 +67,9 @@
   "private": true,
   "jest": {
     "preset": "jest-expo",
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|standard-navigation)"
     ]

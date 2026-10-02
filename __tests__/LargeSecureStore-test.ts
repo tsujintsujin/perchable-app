@@ -5,6 +5,7 @@ const mockCapture = jest.fn();
 const mockAsyncGet = jest.fn(async (k: string) => mockAsync.get(k) ?? null);
 const mockSecureDelete = jest.fn(async (k: string) => void mockSecure.delete(k));
 const mockAsyncRemove = jest.fn(async (k: string) => void mockAsync.delete(k));
+let mockAuthOptions: { storageKey?: string };
 let mockStorage: {
   getItem: (k: string) => Promise<string | null>;
   setItem: (k: string, v: string) => Promise<void>;
@@ -28,16 +29,19 @@ jest.mock("expo-secure-store", () => ({
   deleteItemAsync: (k: string) => mockSecureDelete(k),
 }));
 jest.mock("@supabase/supabase-js", () => ({
-  createClient: (_url: string, _key: string, options: { auth: { storage: typeof mockStorage } }) => {
+  createClient: (_url: string, _key: string, options: { auth: { storage: typeof mockStorage; storageKey?: string } }) => {
     mockStorage = options.auth.storage;
+    mockAuthOptions = options.auth;
     return { auth: { startAutoRefresh: jest.fn(), stopAutoRefresh: jest.fn() } };
   },
 }));
 
+let readStoredSession: () => Promise<unknown>;
+
 beforeAll(() => {
   process.env.EXPO_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
   process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "anon";
-  require("@/lib/supabase");
+  ({ readStoredSession } = require("@/lib/supabase"));
 });
 
 beforeEach(() => {
@@ -126,5 +130,38 @@ describe("LargeSecureStore", () => {
 
     expect(mockAsync.has("sess")).toBe(false);
     expect(mockSecure.has("sess")).toBe(false);
+  });
+});
+
+describe("readStoredSession", () => {
+  it("returns the stored session", async () => {
+    const session = { access_token: "a", refresh_token: "r", expires_at: 1, user: { id: "u" } };
+    await mockStorage.setItem("sb-example-auth-token", JSON.stringify(session));
+
+    expect(await readStoredSession()).toEqual(session);
+  });
+
+  it("returns null when nothing is stored, the JSON is bad, or required fields are missing", async () => {
+    expect(await readStoredSession()).toBeNull();
+    await mockStorage.setItem("sb-example-auth-token", "{not json");
+    expect(await readStoredSession()).toBeNull();
+    await mockStorage.setItem("sb-example-auth-token", '{"access_token":"a"}');
+    expect(await readStoredSession()).toBeNull();
+  });
+
+  it.each([
+    ["no expires_at", { access_token: "a", refresh_token: "r", user: { id: "u" } }],
+    ["a string expires_at", { access_token: "a", refresh_token: "r", expires_at: "1", user: { id: "u" } }],
+    ["a user with no string id", { access_token: "a", refresh_token: "r", expires_at: 1, user: {} }],
+    ["no refresh_token", { access_token: "a", expires_at: 1, user: { id: "u" } }],
+  ])("returns null for a stored session with %s", async (_label, session) => {
+    await mockStorage.setItem("sb-example-auth-token", JSON.stringify(session));
+    expect(await readStoredSession()).toBeNull();
+  });
+
+  it("reads the same key supabase-js itself would use, and hands it to createClient", () => {
+    const real = jest.requireActual("@supabase/supabase-js").createClient("https://example.supabase.co", "anon");
+    expect(mockAuthOptions.storageKey).toBe(real.storageKey);
+    expect(mockAuthOptions.storageKey).toBe("sb-example-auth-token");
   });
 });

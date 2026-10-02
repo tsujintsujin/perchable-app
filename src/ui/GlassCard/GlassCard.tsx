@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import { BlurView } from "expo-blur";
-import { glass, opacity } from "@/ui/tokens";
+import { glass, motion, opacity } from "@/ui/tokens";
 
 type Tier = "card" | "hero" | "sheet" | "chip";
 
@@ -77,6 +77,6 @@ export function GlassCard({ tier = "card", blur = false, onPress, disabled = fal
 const styles = StyleSheet.create({
   base: { overflow: "hidden" },
   blurFill: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
-  pressed: { transform: [{ scale: 0.98 }] },
+  pressed: { transform: [{ scale: motion.pressScale }] },
   disabled: { opacity: opacity.disabled },
 });

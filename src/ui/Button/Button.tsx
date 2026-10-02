@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, radius, spacing, type } from "@/ui/tokens";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Spinner } from "@/ui/Spinner";
+import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
 
 type Variant = "primary-gold" | "secondary-glass" | "ghost" | "destructive";
 
@@ -16,6 +16,8 @@ type Props = {
   loadingLabel?: string;
   /** Screen-reader name when it should say more than the visible label. Defaults to `label`. */
   accessibilityLabel?: string;
+  /** Extra spoken context for a control whose result is not obvious from its label. */
+  accessibilityHint?: string;
   style?: object;
 };
 
@@ -28,26 +30,16 @@ export function Button({
   loading = false,
   loadingLabel = label,
   accessibilityLabel = label,
+  accessibilityHint,
   style,
 }: Props) {
-  const [spin] = useState(() => new Animated.Value(0));
   const isDisabled = disabled || loading;
-
-  useEffect(() => {
-    if (!loading) return;
-    const animation = Animated.loop(
-      Animated.timing(spin, { toValue: 1, duration: 800, easing: Easing.linear, useNativeDriver: true }),
-    );
-    animation.start();
-    return () => animation.stop();
-  }, [loading, spin]);
-
-  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: isDisabled }}
       onPress={onPress}
       disabled={isDisabled}
@@ -61,7 +53,7 @@ export function Button({
     >
       {loading ? (
         <View style={styles.loadingRow}>
-          <Animated.View style={[styles.spinner, { transform: [{ rotate }] }]} />
+          <Spinner diameter={iconSize.md} arcColor={colors.text.onGold} />
           <Text style={[styles.label, variantStyles[variant].label]}>{loadingLabel}</Text>
         </View>
       ) : (
@@ -83,14 +75,6 @@ const styles = StyleSheet.create({
   disabled: { opacity: 0.5 },
   label: { ...type.bodyStrong },
   loadingRow: { flexDirection: "row", alignItems: "center", gap: spacing[8] },
-  spinner: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: colors.overlay.spinnerTrack,
-    borderTopColor: colors.text.onGold,
-  },
 });
 
 const variantStyles: Record<Variant, { container: object; label: object }> = {

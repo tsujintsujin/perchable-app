@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { authReady } from "@/lib/requestTimeout";
 import type { TablesUpdate } from "@/lib/database.types";
 
 type Updates = { avatarUrl?: string; usertag?: string };
@@ -10,6 +11,7 @@ export async function updateProfile(userId: string, updates: Updates): Promise<v
   if (updates.avatarUrl !== undefined) payload.avatar_url = updates.avatarUrl;
   if (updates.usertag !== undefined) payload.usertag = updates.usertag;
 
+  await authReady();
   const { error } = await supabase.from("profiles").update(payload).eq("id", userId);
   if (error) throw error;
 }

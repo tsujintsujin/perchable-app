@@ -4,6 +4,7 @@ import { uploadAvatar } from "../api/uploadAvatar";
 import { updateProfile } from "../api/updateProfile";
 import { deleteAvatarObject } from "../api/deleteAvatarObject";
 import { Sentry } from "@/lib/sentry";
+import { RequestTimeoutError } from "@/lib/requestTimeout";
 
 type PhotoState = { state: "idle" } | { state: "uploading" } | { state: "error" };
 
@@ -72,7 +73,8 @@ export function useAvatarUpload(userId: string | undefined, initialAvatarUrl: st
       }
     } catch (err) {
       if (isStale()) return;
-      Sentry.captureException(err);
+      // A timeout waiting for auth is expected offline, so only other failures are reported.
+      if (!(err instanceof RequestTimeoutError)) Sentry.captureException(err);
       setPhoto({ state: "error" });
     } finally {
       inFlightRef.current = false;

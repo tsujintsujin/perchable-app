@@ -20,7 +20,7 @@ notes: `AGENTS.md`. Backend: Supabase (Auth, Postgres+RLS, Realtime, Storage, Ed
 npx expo start          # dev server (stop it when done; port 8081)
 npx tsc --noEmit        # typecheck gate
 npx expo lint
-npx jest                # test gate (jest-expo preset) — required from Build 4 on
+npx jest --maxWorkers=50%  # test gate (jest-expo preset); capped so it doesn't starve the emulator
 npx expo install <pkg>  # never plain npm install for Expo packages
 ```
 
@@ -57,11 +57,21 @@ NVIDIA GTX 1660 Ti (Justin set it); screen overridden to 720x1600 @ 280 dpi (`wm
 window/transition animations off; 16 unneeded Google apps disabled
 (`logs/emulator-disabled-apps.txt`; undo with `pm enable <pkg>`). Leave other projects' apps
 (engagia, shopmetrixosa, Expo Go) alone.
-- **The emulator's GPU path degrades with uptime** (measured: launcher 90th-pct frame 48 ms
-  fresh vs 600 ms after a long session, GPU wait ~5 s). **Restart it at the start of every
-  session and before every QA run**: `adb emu kill`, then start detached from PowerShell
-  (`Start-Process ...\emulator\emulator.exe -ArgumentList "-avd","td_emu","-gpu","host"`) —
-  a Bash `nohup &` launch dies when the tool call returns. Quick boot takes ~15 s.
+- **Before ANY emulator work run `scripts/emulator.sh ensure`** (all agents). It measures
+  first (uptime, load, launcher jank) and restarts **only if unhealthy** (90th-pct frame
+  > 100 ms, uptime > 3 h, or load ≥ 6), then waits until the post-boot storm settles
+  (load < 3) before returning. It also recovers a hung/"offline" adb. Do **not** restart by
+  habit: every restart costs minutes of heavy load (found 2026-10-01 — "restart before every
+  QA" made the lag recur). `scripts/emulator.sh health` is read-only but swipes the
+  launcher — never run it while someone else is using the emulator.
+- **Close it when device work is done** (Justin, 2026-10-02): after a QA run or spot re-run,
+  if no device work comes next (reviews, building, jest), run `scripts/emulator.sh stop`.
+  An idle emulator still ages toward the 3 h limit and takes CPU/RAM from jest and Gradle;
+  the next `ensure` then does a plain quick-boot start instead of a kill-and-restart.
+  Agents (Queenie, Bella) leave it running; the Manager decides when to close it.
+- **Don't overlap heavy work with emulator testing:** the Manager never schedules a Queenie
+  run while another agent runs the full jest suite or a Gradle build. Jest is capped:
+  `npx jest --maxWorkers=50%`.
 - Never cold-boot (`-no-snapshot-load`) unless the snapshot is broken — it triggers minutes
   of background optimisation.
 - If `adb` commands hang: `Stop-Process -Name adb -Force`, `adb start-server`.
@@ -82,4 +92,4 @@ The CLI needs `SUPABASE_ACCESS_TOKEN` (from `Credentials/perchable/.env`).
 both contain a line starting "Approved by Justin:" — which only Justin types.
 
 ## Current Build
-Build 12a — Home poster grid (Module 4). Order changed 2026-10-01: movies (12–16) before Build 11; 10a + 10b done. Modules: 1, 2 done; 3 partly (11 moved before 20). **Start with HANDOFF.md.**
+Build 14 — swipe deck (Module 5 quick-add swipe, branch `module/quick-add-swipe`). Module 4 (12a, 12b, 13 + offline-start fix) done and merged to main. Order changed 2026-10-01: movies (12–16) before Build 11; 10a + 10b done. Modules: 1, 2 done; 3 partly (11 moved before 20). **Start with HANDOFF.md.**

@@ -1,9 +1,11 @@
 import { supabase } from "@/lib/supabase";
+import { authReady } from "@/lib/requestTimeout";
 import type { BlockedUser } from "../types";
 
 /** Reads the caller's blocks (newest first), then the blocked users' profiles by id in a second query:
  * `blocked_users` points at auth.users, so there is nothing to embed. A missing profile falls back to nulls. */
 export async function getBlockedUsers(userId: string): Promise<BlockedUser[]> {
+  await authReady();
   const blocks = await supabase
     .from("blocked_users")
     .select("blocked_id")

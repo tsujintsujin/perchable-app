@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
+import { colors, iconSize, radius, size, spacing, type } from "@/ui/tokens";
 
 type Props = {
   icon: string;
@@ -16,7 +16,7 @@ export function EmptyState({ icon, title, body, action }: Props) {
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.body}>{body}</Text>
       {action && (
-        <Pressable onPress={action.onPress} style={styles.button}>
+        <Pressable onPress={action.onPress} accessibilityRole="button" style={styles.button}>
           <Text style={styles.buttonLabel}>{action.label}</Text>
         </Pressable>
       )}
@@ -40,6 +40,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: spacing[20],
+    minHeight: size.minTouch,
+    justifyContent: "center",
     paddingVertical: spacing[12],
     paddingHorizontal: spacing[24],
     borderRadius: radius.pill,

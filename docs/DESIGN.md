@@ -150,7 +150,7 @@ load, it's two small variable-adjacent weight sets.
 
 ### 1.7 Spacing, radius, elevation
 
-| Spacing | 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 |
+| Spacing | 4 · 8 · 12 · 14 · 16 · 20 · 24 · 32 · 40 · 48 (`spacing[14]` added in Build 12, used for the Roulette gap) |
 |---|---|
 | Radius | `sm 12` (chips) · `md 16` (cards) · `lg 20` (hero cards) · `xl 28` (sheets) · `pill 999` |
 | Elevation (Android `elevation` prop, opaque components only — glass surfaces use §1.4's glow/border instead of native elevation, since translucency + Android shadow looks muddy) | `card 4` · `raised 8` · `modal 12` |
@@ -177,7 +177,11 @@ Everything else (`surface.input`, `border.hairline*`, `border.danger`, `overlay.
 | `size.gridColumns` / `size.gridGap` | 3 / 10 | Home grid (sides use `spacing[20]`) |
 | `size.homeHeaderInset` | 72 | right inset of the Home header: avatar slot's right edge from the screen edge (20 + `headerTrailingInset` 44 + 8) |
 | `size.avatarSlot` | 48 | touch wrapper around the 32 Home avatar |
-| `size.footerRow` | 56 | list footer rows (loading more, end of list) |
+| `size.footerRow` | 56 | end-of-list footer row |
+| `size.footerBlock` | 88 | loading-more and next-page-error footer blocks; both share this height so Retry cannot jump under the tab bar when the state flips (Manager decision, Ruby PASS, Build 12b) |
+| `size.spinner` / `size.spinnerLg` | 20 / 32 | `ui/Spinner` diameters |
+| `size.spinnerStroke` / `size.spinnerStrokeLg` | 2 / 3 | `ui/Spinner` ring widths |
+| `spacing[14]` | 14 | Roulette gap (added to the spacing scale) |
 | `size.detailsBackdrop` | 220 | details backdrop height |
 | `size.detailsPosterWidth` / `size.detailsPosterOverlap` | 120 / 64 | details poster width (height = width x 1.5) and how far it overlaps the backdrop |
 | `size.detailsTitleOffset` | 76 | top padding of the title column beside the poster |
@@ -189,6 +193,7 @@ Everything else (`surface.input`, `border.hairline*`, `border.danger`, `overlay.
 | `colors.overlay.shimmerWash` | `rgba(214,196,233,0.10)` | wash over a loading poster tile |
 | `lineHeight` | `caption/small 16` / `body 22` / `subhead 24` / `title 30` | explicit line heights for the type roles used here |
 | `motion.imageFade` | 200 (ms) | poster fade-in; the compact bar's fade is 150 |
+| `colors.overlay.topScrimStart` / `size.detailsScrimHeight` / `size.detailsToastOffset` / `size.detailsBottomPad` | `rgba(18,16,22,0.72)` / 72 / 24 / 80 | details top scrim, and Toast offset above the composer (Build 13 QA amendments) |
 
 Existing and reused: `bg.elevatedFlat`, `surface.input`, `surface.goldTint`, `border.*`, `glass.hero`,
 `colors.brand.purple900`, `overlay.spinnerTrack`, `shimmerPulse`, `iconSize.lg`, `avatarSize`, `size.minTouch`,
@@ -206,7 +211,7 @@ small ones), `index.ts`.
 |---|---|---|
 | `GlassBackdrop` | `blobs?: ('purple'\|'gold')[]` (decorative halo blur shapes) | static |
 | `GlassCard` | `tier: 'card'\|'hero'\|'chip'`, `blur: boolean` (real BlurView vs. flat fallback — caller decides per §1.5 rule), `children` | default, pressed (scale 0.98) |
-| `PosterCard` | `posterUrl: string \| null`, `title`, `year?` (Build 12); `onPress` (Build 13); later `watched?`, `tier?`, `caption?` | loading (shimmer), loaded, error / no poster (🎬 icon + title). Pressed (scale 0.98) only once `onPress` exists (Build 13). Spec: Build 12 section |
+| `PosterCard` | `id` (movie id; the FlashList `recyclingKey`), `posterUrl: string \| null`, `title`, `year?`, `retryToken?` (a failed image retries once per pull-to-refresh) (Builds 12a/12b); no `onPress` in 12a/12b, Build 13 adds it; later `watched?`, `tier?`, `caption?` | loading (shimmer), loaded, error / no poster (🎬 icon + title). Pressed (scale 0.98) only once `onPress` exists (Build 13). Spec: Build 12 section |
 | `Button` | `variant: 'primary-gold'\|'secondary-glass'\|'ghost'\|'destructive'`, `disabled?`, `loading?` | default, pressed, disabled, loading (spinner replaces label) |
 | `TierBadge` | `tier?: 'S'\|'A'\|'B'\|'C'` (absent = the "🏆 Tier" chip on details), `size: 'sm'\|'md'`, `onPress?` | **UI shell, not functional in v1**: the details chip toggles a static legend popover (§5, Build 13); no rating is settable or stored |
 | `TabBar` | fixed 5 items: Perch / Search / Chat / Leaderboards / Profile — `activeRoute` | per-tab active/inactive; **rendered on every tab screen** (`(tabs)/_layout.tsx`, not per-screen) |
@@ -214,7 +219,8 @@ small ones), `index.ts`.
 | `SwipeDeckCard` | `movie`, `onSwipeLeft`, `onSwipeRight` | idle, dragging, exiting-left, exiting-right |
 | `Avatar` | `uri?`, `size: 'sm'\|'md'\|'lg'`, `ringGradient?: boolean` (purple→gold ring for own profile) | loaded, fallback-initials |
 | `EmptyState` | `icon`, `title`, `body`, `action?: {label, onPress}` | one component, used by every data screen's empty case; the action button is at least 48 high (`size.minTouch`, fixed in Build 12) |
-| `Toast` | `message`, `variant: 'info'\|'error'\|'coming-soon'` | shown, dismissing |
+| `Toast` | `message`, `variant: 'info'\|'error'\|'coming-soon'` | shown, dismissing. **Offset rule:** on tab screens it sits 24 dp above the tab bar (the system bottom inset is not added again inside the tabs). A Toast rendered inside a `Modal` must be given the bottom inset. |
+| `Spinner` | `size?: 'default'\|'lg'` (`size.spinner` 20 / `size.spinnerLg` 32; ring `size.spinnerStroke` 2 / `size.spinnerStrokeLg` 3) | indeterminate; track `overlay.spinnerTrack`, arc `accent.gold`. One shared component, used by `Button` (loading), Edit profile and the paging footer. `GoogleSignInButton` keeps its own spinner, per Google's branding rules (Build 5). |
 
 **Rule:** every data screen (Home feed, Search results, Collection,
 Leaderboards, Chat list, Comments) implements all four of **loading / empty
@@ -1114,8 +1120,8 @@ refresh failed). Canvas: not published (the old canvas is not reachable from thi
 6. **Footer** (12b): below.
 
 ### PosterCard (new, `src/ui/PosterCard/`; §2 updated)
-Props in 12a: `posterUrl: string | null`, `title: string`, `year?: number | null`. (`watched`, `tier`,
-`caption` arrive with later Builds; `onPress` arrives in Build 13.) Fills its parent's width, aspect 2:3,
+Props: `id` (movie id, the `recyclingKey`), `posterUrl: string | null`, `title: string`, `year?: number | null`, `retryToken?` (a failed image retries once per pull-to-refresh, 12b). (`watched`, `tier`,
+`caption` arrive with later Builds; there is no `onPress` in 12a/12b, Build 13 adds it.) Fills its parent's width, aspect 2:3,
 radius `sm` 12, 1px `border.hairline`, `overflow: hidden`, flat fill, never `BlurView`.
 - **Loading:** `bg.elevatedFlat` fill with the `usePulse` opacity (0.4 to 0.9) plus a
   `rgba(214,196,233,0.10)` wash (`colors.overlay.shimmerWash`). Not announced one by one.
@@ -1142,20 +1148,20 @@ radius `sm` 12, 1px `border.hairline`, `overflow: hidden`, flat fill, never `Blu
 about 44 high; PLAN B7 needs 48.
 
 ### 12b — paging and refresh
-- **Next page loading:** footer row `size.footerRow` (56) high, centred: 20 dp spinner (2px ring
+- **Next page loading:** footer block `size.footerBlock` (88) high (same as the error block below), centred: 20 dp `ui/Spinner` (2px ring
   `overlay.spinnerTrack`, top arc `accent.gold`), 10, "Loading more…" (`caption`, `text.secondary`). Polite
   live region "Loading more movies". Loaded posters stay.
-- **End of list** (last page = min(total_pages, 500)): footer row 56 high, "You've reached the end."
+- **End of list** (last page = min(total_pages, 500)): footer row `size.footerRow` (56) high, "You've reached the end."
   (`caption`, `text.secondary`, centred). No request after it.
-- **Next page failed:** footer: "⚠ Couldn't load more movies." (`small`, `danger`, `accessibilityRole="alert"`), 8,
+- **Next page failed:** footer block `size.footerBlock` (88) high, content centred: "⚠ Couldn't load more movies." (`small`, `danger`, `accessibilityRole="alert"`), 8,
   then `Button secondary-glass` "Retry" (48 high, padding 0/24, `accessibilityLabel` "Retry loading more
   movies"). Posters stay; never the full-screen error, never an empty footer that looks like the end.
 - **Pull to refresh:** `FlashList` `refreshControl`: `colors={[accent.gold]}`,
   `progressBackgroundColor={bg.elevatedFlat}`. Fetches page 1 only, drops later pages, returns to the top.
 - **Refresh failed while posters show:** posters stay; `Toast` variant `error`; the screen never flips to
   the error state.
-- `Toast` pins at the screen's bottom inset + 24; on a tab screen that is above the tab bar (the boards
-  draw it 98 from the phone's bottom edge).
+- `Toast` offset: 24 dp above the tab bar on tab screens (the system inset is not added again inside the tabs;
+  the boards draw it 98 from the phone's bottom edge). Inside a `Modal` the Toast is given the bottom inset.
 
 ### Copy (verbatim, Build 12)
 | Where | Text |
@@ -1249,7 +1255,7 @@ the screen draws its own chip.
   placeholder `body` `text.disabled`. The composer is **not focusable**; tapping it shows a `Toast`
   "Comments are coming soon." (never a silent tap). The sample messages are the only invented content and the
   "Preview only" line says so. Nothing is stored or fetched (Module 9 wires the panel).
-- **Bottom:** 32 padding plus the bottom inset.
+- **Bottom:** `size.detailsBottomPad` 80 padding plus the bottom inset (QA amendment 2; it leaves room for the Toast).
 - **TierBadge popover:** tapping the chip toggles a static popover under the chip row: 260 wide, left edge 90
   from the content left, radius `md` 16, padding 16, fill `bg.elevatedFlat`, 1px `border.hairlineStrong`,
   `elevation.card`. Title "Tier ratings" (`bodyStrong`), 4, body (`small`, `text.secondary`), 12, four
@@ -1335,6 +1341,45 @@ cast name and character clamp to 2 lines each.
   about 4.7:1 (bold 15); the placeholder `text.disabled` sits on a not-focusable composer, and the preview
   line next to it uses `text.secondary`.
 
+### Build 13 · QA amendments (Dianne, 2026-10-02)
+Decisions from QA evidence (`logs/evidence/build-13/`). No board change is needed; these are exact values for Bella's Bug round.
+
+**New tokens (add to §1.9):** `colors.overlay.topScrimStart` = `rgba(18,16,22,0.72)` (`bg.base` at 72%);
+`size.detailsScrimHeight` = 72 (added to the top inset); `size.detailsToastOffset` = 24; `size.detailsBottomPad` = 80.
+
+1. **Status bar over a bright backdrop (05p): top scrim, status bar stays light.** One fixed (non-scrolling)
+   `LinearGradient`, absolute at the top of the screen, full width, height = top inset + `size.detailsScrimHeight`
+   (72), from `colors.overlay.topScrimStart` at 0% to `colors.overlay.fadeStart` at 100% (top to bottom),
+   `pointerEvents="none"`, decorative, drawn above the scroll content and below the Back chip. It covers the
+   status bar, the Back chip (inset + 8 to inset + 44) and the 64x64 gear zone. Rendered only in the loaded state
+   (the other states have no backdrop). It fades out in the same 150 ms as the compact bar fades in (opacity 1 at
+   offsets under `size.detailsBarShowAt`, 0 after), since the solid bar then guards the status bar. Keep the
+   light status-bar style; no dark-icon switch.
+2. **Toast on details (09c): low, in empty space below the lounge card (revised after device check).** The toast
+   never covers the composer, its "Preview only" line or the card. Two values, both measured from the bottom
+   inset: the details scroll's bottom content padding is bottom inset + `size.detailsBottomPad` 80 (replaces the
+   old 32 in Layout "Bottom"), and the Toast sits at bottom inset + `size.detailsToastOffset` 24 (the same 24 as
+   on tab screens, no tab bar here). Scrolled to the end: the card's last 4 dp padding, then 80 of empty space
+   under it (composer bottom = inset + 84 from the screen edge); the Toast (about 42 high: 12/16/12 padding +
+   1px borders) spans inset + 24 to inset + 66, leaving 18 dp clear of the composer. One rule for both details
+   Toasts (composer "coming soon" and refetch error); mid-scroll it simply floats over content, which is
+   normal Toast behaviour.
+3. **Lounge messages (ui-lounge, 05n/05p): the board is right; the code is wrong.** Stacked, not inline. Row =
+   `Avatar sm` (32) at left, 10 gap, then a column: author on its own line (`small` 12/16, 600, `accent.gold`),
+   then the message below it (12/18, `text.primary`, wraps). Rows align to the top (`alignItems: flex-start`),
+   12 between rows. The initial-letter avatar (Avatar's `fallback-initials`) is correct for the sample authors;
+   the board's gradient circle was only a stand-in.
+4. **Skeleton bar heights (09b).** All bars radius 6, `bg.elevatedFlat`-based pulse as in Build 12. Title bars
+   24 (gap 8); meta bar 14; genre bar 12; tagline bar 14; "Synopsis" and "Cast" heading bars 24; synopsis text
+   bars 14 high with 8 between (last bar 60% wide); cast name bar 12 (72 wide) and role bar 12 (52 wide), 6
+   apart, 8 under the avatar circle. Bella's 16 / 12 / 10 are replaced by 14 / 12 / 12; 12 and 14 were already
+   the board's values.
+5. **Cast avatar while the photo loads (02b).** The slot is never blank: `Avatar` always draws its
+   `fallback-initials` look first (existing fallback fill plus initials) and the photo fades in over it
+   (`motion.imageFade` 200 ms) when `onLoad` fires. If the photo fails or `profile_path` is null the initials stay.
+   No new token or shimmer. This is a general `ui/Avatar` rule (Home avatar, Profile, Blocked users), so do it in
+   the shared component, not in the cast row.
+
 ---
 
 ## 8. Decisions (Manager, Build 0 round 1)
@@ -1356,3 +1401,9 @@ cast name and character clamp to 2 lines each.
 - **Build 12 / 13 (Dianne, 2026-10-01):** N5 = 3 columns kept; details = full-screen push, no tab bar;
   Roulette and lounge cards flat on Android; Roulette button full strength (§5 revised); `EmptyState` action
   at least 48 high. Reasons in the Build 12 and Build 13 sections.
+- **Changes, 2026-10-01 (Dianne, housekeeping from Builds 12a/12b):** (1) loading-more and next-page-error
+  footers share `size.footerBlock` 88 dp, end-of-list stays `size.footerRow` 56 (Manager decision, Ruby PASS);
+  (2) `spacing[14]` added to the scale; (3) `PosterCard` props `id` and `retryToken` recorded, `onPress` is
+  Build 13; (4) shared `ui/Spinner` with tokens `spinner`, `spinnerLg`, `spinnerStroke`, `spinnerStrokeLg`
+  (`GoogleSignInButton` keeps its own); (5) Toast offset rule: 24 dp above the tab bar on tab screens, bottom
+  inset added inside a `Modal`. Sections: 1.7, 1.9, 2, Build 12.

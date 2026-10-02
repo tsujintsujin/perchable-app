@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
-import { Animated, Easing, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { GlassBackdrop } from "@/ui/GlassBackdrop";
 import { Avatar } from "@/ui/Avatar";
 import { Button } from "@/ui/Button";
 import { ErrorCard } from "@/ui/ErrorCard";
-import { colors, iconSize, radius, spacing, type } from "@/ui/tokens";
+import { Spinner } from "@/ui/Spinner";
+import { colors, iconSize, radius, size, spacing, type } from "@/ui/tokens";
 import { updateProfile, useAvatarUpload, useOwnProfile, useUsertagAvailability } from "@/modules/profile";
 import { Sentry } from "@/lib/sentry";
+import { RequestTimeoutError } from "@/lib/requestTimeout";
 
 /** Edit profile screen — a picked photo saves on pick, independent of Save. */
 export default function EditProfile() {
@@ -67,7 +69,8 @@ export default function EditProfile() {
         // The live check missed a race — DB is the source of truth.
         setSaveError("That usertag is already taken.");
       } else {
-        Sentry.captureException(err);
+        // A timeout waiting for auth is expected offline, so only other failures are reported.
+        if (!(err instanceof RequestTimeoutError)) Sentry.captureException(err);
         setSaveError("Couldn't save. Check your connection and try again.");
       }
       setSaving(false);
@@ -97,7 +100,7 @@ export default function EditProfile() {
           <Avatar uri={avatarUpload.avatarUrl} name={loaded.displayName} size="lg" />
           {isUploading ? (
             <View style={styles.spinnerOverlay}>
-              <Spinner />
+              <Spinner diameter={size.spinnerLg} stroke={size.spinnerStrokeLg} trackColor={colors.border.hairline} />
             </View>
           ) : (
             <View style={styles.cameraBadge}>
@@ -171,20 +174,6 @@ export default function EditProfile() {
   );
 }
 
-/** Indeterminate spinner — no real progress % without bypassing supabase-js. */
-function Spinner() {
-  const [spin] = useState(() => new Animated.Value(0));
-  useEffect(() => {
-    const animation = Animated.loop(
-      Animated.timing(spin, { toValue: 1, duration: 800, easing: Easing.linear, useNativeDriver: true }),
-    );
-    animation.start();
-    return () => animation.stop();
-  }, [spin]);
-  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
-  return <Animated.View style={[styles.progressRing, { transform: [{ rotate }] }]} />;
-}
-
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg.base },
   header: {
@@ -222,14 +211,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: "center",
     justifyContent: "center",
-  },
-  progressRing: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 3,
-    borderColor: colors.border.hairline,
-    borderTopColor: colors.accent.gold,
   },
   photoCaption: {
     marginTop: spacing[12],

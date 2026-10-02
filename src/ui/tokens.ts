@@ -42,6 +42,12 @@ export const colors = {
   overlay: {
     spinnerTrack: "rgba(255,255,255,0.3)",
     scrim: "rgba(18,16,22,0.6)",
+    /** Wash over a loading poster tile. */
+    shimmerWash: "rgba(214,196,233,0.10)",
+    /** Transparent start of the details backdrop's fade into `bg.base`. */
+    fadeStart: "rgba(18,16,22,0)",
+    /** Top of the status-bar scrim over the details backdrop. */
+    topScrimStart: "rgba(18,16,22,0.72)",
   },
 } as const;
 
@@ -82,6 +88,7 @@ export const spacing = {
   8: 8,
   10: 10,
   12: 12,
+  14: 14,
   16: 16,
   20: 20,
   24: 24,
@@ -134,6 +141,72 @@ export const size = {
   detailsInput: 96,
   /** Sheets never grow taller than this share of the screen; the body scrolls instead. */
   sheetMaxHeightRatio: 0.9,
+  /** Poster width over height; every poster is 2:3. */
+  posterAspect: 2 / 3,
+  /** Home poster grid: column count and the gap between tiles (sides use `spacing[20]`). */
+  gridColumns: 3,
+  gridGap: 10,
+  /** Home header: the avatar slot's right edge, from the screen edge (clear of the dev-client gear zone). */
+  homeHeaderInset: 72,
+  /** Touch wrapper around the 32 Home avatar. */
+  avatarSlot: 48,
+  /** List footer rows (loading more, end of list). */
+  footerRow: 56,
+  /** Indeterminate spinner ring: default and large diameters, and the ring widths. */
+  spinner: 20,
+  spinnerLg: 32,
+  spinnerStroke: 2,
+  spinnerStrokeLg: 3,
+  /** Height shared by the loading-more and failed-load list footers, so the list never re-clamps when one replaces the other. */
+  footerBlock: 88,
+  /** Movie details: backdrop height, poster width and its overlap with the backdrop, title column offset, compact-bar trigger. */
+  detailsBackdrop: 220,
+  detailsPosterWidth: 120,
+  detailsPosterOverlap: 64,
+  detailsTitleOffset: 76,
+  detailsBarShowAt: 150,
+  /** Left edge of the compact top bar's title (clears the back chip). */
+  detailsBarTitleLeft: 76,
+  /** Rating and tier chips, and the S/A/B/C legend badges. */
+  chipHeight: 36,
+  /** Cast photo diameter (an `Avatar lg`) and the gap between cast items. */
+  castItem: 88,
+  castGap: 12,
+  /** Tier legend popover: width and left offset from the content edge. */
+  popoverWidth: 260,
+  popoverOffset: 90,
+  /** Spoiler-lounge composer height. */
+  composerHeight: 48,
+  /** Movie details: status-bar scrim height (added to the top inset), the Toast's offset above the bottom inset, and the scroll's bottom padding (the Toast sits inside it, below the lounge card). */
+  detailsScrimHeight: 72,
+  detailsToastOffset: 24,
+  detailsBottomPad: 80,
+} as const;
+
+/** Backdrop fade: where (0..1 of its height) the gradient starts. */
+export const backdropFade = { start: 0.4 } as const;
+
+/** Loading-skeleton block sizes on movie details. */
+export const detailsSkeleton = {
+  /** Corner radius of every bar. */
+  barRadius: 6,
+  titleBar: 24,
+  metaBar: 14,
+  genreBar: 12,
+  taglineBar: 14,
+  textBar: 14,
+  chipLong: 110,
+  chipShort: 90,
+  synopsisHeading: { width: 120, height: 24 },
+  castHeading: { width: 80, height: 24 },
+  castNameBar: { width: 72, height: 12 },
+  castRoleBar: { width: 52, height: 12 },
+  /** Widths (share of the column) of the two title bars, the meta bar, and the last synopsis bar. */
+  titleLong: "100%",
+  titleShort: "70%",
+  metaWidth: "50%",
+  genreWidth: "80%",
+  lastLineWidth: "60%",
 } as const;
 
 /** Extra touch area that grows an icon button to the minimum touch target. */
@@ -184,6 +257,25 @@ export const leading = {
   relaxed: 1.5,
 } as const;
 
+/** Explicit line heights for the type roles that need one. */
+export const lineHeight = {
+  caption: 16,
+  /** Lounge message text. */
+  bubble: 18,
+  body: 22,
+  subhead: 24,
+  title: 30,
+} as const;
+
+/** Animation durations (ms). */
+export const motion = {
+  imageFade: 200,
+  /** Compact top bar fade on movie details. */
+  barFade: 150,
+  /** Scale of a pressed tile or card. */
+  pressScale: 0.98,
+} as const;
+
 export const elevation = {
   card: 4,
   raised: 8,
@@ -206,4 +298,6 @@ export const type = {
   hero: { fontSize: 38, fontFamily: "Poppins_800ExtraBold" },
   /** Dev-only harness text. */
   mono: { fontSize: 12, fontFamily: "monospace" },
+  /** S/A/B/C tier letter. */
+  tierLetter: { fontSize: 15, fontFamily: "Poppins_800ExtraBold" },
 } as const;

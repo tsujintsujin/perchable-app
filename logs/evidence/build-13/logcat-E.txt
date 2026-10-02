@@ -1,0 +1,104 @@
+--------- beginning of main
+10-02 02:06:07.092   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:06:07.095   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:06:07.103   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 02:06:19.422   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:06:19.423   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:06:19.450   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 02:06:27.714   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:06:27.723   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:06:27.727   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+--------- beginning of kernel
+10-02 02:06:43.514     0     0 E audit   : rate limit exceeded
+10-02 02:07:25.174   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:07:25.186   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:07:25.202   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 02:07:31.975     0     0 E audit   : rate limit exceeded
+10-02 02:07:44.859     0     0 E audit   : rate limit exceeded
+10-02 02:13:10.520     0     0 E audit   : rate limit exceeded
+10-02 02:13:19.073   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:13:19.075   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:13:19.088   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+--------- beginning of system
+10-02 02:13:19.443   634   663 E DiscreteRegistry: Deleting file 1790302208145tl
+10-02 02:13:30.487     0     0 E audit   : rate limit exceeded
+10-02 02:14:11.719     0     0 E audit   : rate limit exceeded
+10-02 02:14:28.316     0     0 E audit   : rate limit exceeded
+10-02 02:16:03.598   634   824 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+10-02 02:16:03.635   634   824 E WifiStaIfaceAidlImpl: setRoamingState failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-02 02:16:04.090   634   824 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+10-02 02:16:04.655   634   824 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-02 02:16:04.675  1894 10000 E WakeLock: GCM_HB_ALARM release without a matched acquire!
+10-02 02:16:04.814  1894 10000 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+10-02 02:16:05.126   634  1229 E WifiService: Attempt to retrieve passpoint with invalid scanResult List
+10-02 02:16:08.255  1894 10224 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+10-02 02:16:11.444   634   824 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-02 02:16:11.446   397   448 E Netd    : no such netId 107
+10-02 02:16:12.406   634   824 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-02 02:16:12.427   397   448 E Netd    : no such netId 107
+10-02 02:16:12.448   397   397 E Netd    : no such netId 107
+10-02 02:16:12.798   397   397 E Netd    : no such netId 107
+10-02 02:16:12.865   634   833 E ConnectivityService: Exception in addRoute for non-gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-02 02:16:12.881   397   397 E Netd    : no such netId 107
+10-02 02:16:12.917   634   833 E ConnectivityService: Exception in addRoute for gateway: android.os.ServiceSpecificException: Machine is not on the network (code 64)
+10-02 02:16:13.674   634   824 E WifiStaIfaceAidlImpl: setRoamingMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+10-02 02:16:13.675   634   824 E WifiRoamingModeManager: Failed to set roaming mode due to unknown error.
+10-02 02:16:13.909   634   654 E WifiService: Attempt to retrieve passpoint with invalid scanResult List
+10-02 02:16:13.974   397   448 E netd    : Error adding route ::/0 -> fe80::2 wlan0 to table 1016: File exists
+10-02 02:16:14.528   397   427 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'INTERFACE' not found
+10-02 02:16:14.534   397   427 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'STATE' not found
+10-02 02:16:14.535   397   427 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'TIME_NS' not found
+10-02 02:16:14.547   397   427 E NetlinkEvent: NetlinkEvent::FindParam(): Parameter 'UID' not found
+10-02 02:16:15.578   634   824 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+10-02 02:16:16.941   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:16:16.942   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:16:16.943   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 02:16:16.952  2512 10208 E HandwritingSuperpacksUtil: HandwritingSuperpacksUtil.getPackMappingPackName():40 No pack mapping pack found in []
+10-02 02:16:21.558  1894 10224 E WakeLock: GCM_HB_ALARM release without a matched acquire!
+10-02 02:16:22.708  1894 10224 E WakeLock: GCM_CONN_ALARM release without a matched acquire!
+10-02 02:16:28.867  2512 10208 E HandwritingSuperpacksUtil: HandwritingSuperpacksUtil.getPackMappingPackName():40 No pack mapping pack found in []
+10-02 02:17:04.347     0     0 E audit   : rate limit exceeded
+10-02 02:20:18.048     0     0 E audit   : rate limit exceeded
+10-02 02:22:03.898   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:22:03.900   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:22:03.905   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 02:22:19.731     0     0 E audit   : rate limit exceeded
+10-02 02:22:46.130   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:22:46.131   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:22:46.147   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 02:25:03.285     0     0 E audit   : rate limit exceeded
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: Error while reading domain filter from WHAPI [CONTEXT service_id=121 ]
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: java.util.concurrent.ExecutionException: bhoa: Unable to read Finsky Content Filter settings
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at java.util.concurrent.FutureTask.report(FutureTask.java:122)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at java.util.concurrent.FutureTask.get(FutureTask.java:191)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at anas.get(:com.google.android.gms@242335041@24.23.35 (190800-646585959):1)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at bhsf.t(:com.google.android.gms@242335041@24.23.35 (190800-646585959):88)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at bhsf.d(:com.google.android.gms@242335041@24.23.35 (190800-646585959):73)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at bhrz.d(:com.google.android.gms@242335041@24.23.35 (190800-646585959):5)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at com.google.android.gms.instantapps.routing.DomainFilterUpdateChimeraService.a(:com.google.android.gms@242335041@24.23.35 (190800-646585959):190)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at bpjj.call(:com.google.android.gms@242335041@24.23.35 (190800-646585959):32)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at java.util.concurrent.FutureTask.run(FutureTask.java:264)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at angs.c(:com.google.android.gms@242335041@24.23.35 (190800-646585959):50)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at angs.run(:com.google.android.gms@242335041@24.23.35 (190800-646585959):76)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at anmg.run(:com.google.android.gms@242335041@24.23.35 (190800-646585959):8)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: Caused by: bhoa: Unable to read Finsky Content Filter settings
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at bhoc.b(:com.google.android.gms@242335041@24.23.35 (190800-646585959):145)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at bhnl.a(:com.google.android.gms@242335041@24.23.35 (190800-646585959):5)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	at anaq.call(:com.google.android.gms@242335041@24.23.35 (190800-646585959):3)
+10-02 02:26:14.951  1894 11026 E DomainFilterImpl: 	... 7 more
+10-02 02:27:11.187     0     0 E audit   : rate limit exceeded
+10-02 02:27:32.647     0     0 E audit   : rate limit exceeded
+10-02 02:27:55.069   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:27:55.070   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:27:55.081   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 02:28:06.098     0     0 E audit   : rate limit exceeded
+10-02 02:28:15.073   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:28:15.107   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:28:15.206   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 02:28:25.576   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 02:28:25.578   406  3273 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 02:28:25.597   406  3273 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 02:28:39.764     0     0 E audit   : rate limit exceeded
