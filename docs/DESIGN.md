@@ -17,6 +17,9 @@ published or overwritten. The boards exist as source files in `design-src/`
 Build 12 / 13 boards (2026-10-01, Module 4) are also source-only in `design-src/` (see the Build 12 and Build 13
 sections; `design-src/canvas.json` orders 14-18).
 
+Module 5 boards (2026-10-02: Quick Add swipe, Builds 14, 15, 16b) are source-only too: `design-src/build-14-*`,
+`build-15-*`, `build-16b-*` (`canvas.json` orders 19-28; listed in the Build 14 section).
+
 This is the rulebook. Bella builds from it. Ruby enforces it against every
 Build. No one-off values outside `src/ui/tokens.ts` — if a value isn't in
 section 1 or 4, it doesn't go in a component.
@@ -110,7 +113,7 @@ SDK 57 — confirmed against Expo's docs 2026-09-24), but real blur needs:
 | `ProfileSheet` (`glass.sheet`) | Yes | static, one instance, opens rarely |
 | Home hero card (Perch Roulette), spoiler-lounge panel | **Android: no, flat `glass.hero` fill + hairline** (iOS may use `BlurView` later) | the backdrop behind them is flat circles, so a blur has nothing to blur; the Roulette card is also a `FlashList` header (decided Build 12, 2026-10-01) |
 | `PosterCard` inside `FlashList` (Collection grid, Home carousels) | **No** — flat `bg.elevatedFlat`-based `rgba` fill, no blur | `expo-blur`'s own known-issue note: blur doesn't update correctly ahead of dynamic list content, and re-blurring N list rows on every scroll frame is the actual Android perf risk, not blur-on-static-chrome |
-| `SwipeDeck` top card | **No** — flat `rgba(18,16,22,0.55)` fill behind title, per the mock | swipe gesture re-renders this view every frame during a drag; blur recompute per frame is the exact case to avoid |
+| `SwipeDeck` top card | **No** — no `BlurView`. The title/meta band is a flat `overlay.cardInfo` fill (`rgba(18,16,22,0.88)`) with a 40 dp `LinearGradient` fade above it (revised Build 14: the 0.55 fill of the Build 0 mock gave about 3.6:1 under small text on a white poster; 0.88 gives about 8:1) | swipe gesture re-renders this view every frame during a drag; blur recompute per frame is the exact case to avoid |
 
 So: exactly two glass tiers ship — real `BlurView` (nav, sheets, one-off hero
 cards) and flat translucent fill using the same `rgba` tokens with zero blur
@@ -195,6 +198,37 @@ Everything else (`surface.input`, `border.hairline*`, `border.danger`, `overlay.
 | `motion.imageFade` | 200 (ms) | poster fade-in; the compact bar's fade is 150 |
 | `colors.overlay.topScrimStart` / `size.detailsScrimHeight` / `size.detailsToastOffset` / `size.detailsBottomPad` | `rgba(18,16,22,0.72)` / 72 / 24 / 80 | details top scrim, and Toast offset above the composer (Build 13 QA amendments) |
 
+#### Tokens added for Build 14 / 15 / 16b (Quick Add swipe; add to `src/ui/tokens.ts`; nothing else is new)
+
+| Token | Value | Use |
+|---|---|---|
+| `colors.overlay.cardInfo` | `rgba(18,16,22,0.88)` | deck card title/meta band; the fade above it runs `overlay.fadeStart` to this over `size.deckInfoFade` |
+| `colors.overlay.deckDim` | `rgba(18,16,22,0.45)` | dim layer on the two cards behind the top card |
+| `colors.overlay.addTint` / `colors.overlay.skipTint` | `rgba(184,134,11,0.30)` / `rgba(255,138,138,0.24)` | whole-card tint while dragging right (add) / left (skip) |
+| `size.deckSideMargin` | 24 | minimum margin each side of the card (clear of the system back-gesture edge) |
+| `size.deckStackReserve` | 20 | room under the top card for the two cards peeking behind it |
+| `size.deckToastLane` | 76 | height reserved between the deck area and the controls for a Toast (2 lines at font scale 1.3 = 68, plus 8) |
+| `size.deckInfoFade` | 40 | height of the gradient above the card's info band |
+| `size.deckButton` / `size.deckButtonSm` | 56 / 48 (= `size.minTouch`) | Skip and Add circles / Undo circle |
+| `size.deckControlsHeight` | 78 | one control column at font scale 1: circle 56, 6 gap, label 16 (`lineHeight.caption`); the layout measures the real height |
+| `size.deckControlsGap` / `size.deckControlsPad` | 28 (= `spacing[28]`) / 16 (= `spacing[16]`) | gap between control columns / space under them (above the bottom inset) |
+| `size.stampBorder` | 3 | SKIP / ADD stamp border |
+| `size.quickAddRow` / `size.quickAddIcon` | 72 / 48 | Home entry row height / its icon tile |
+| `iconSize.deckFallback` | 56 | the 🎬 on a deck card with no poster |
+| `deck.stackScale` / `deck.stackLift` | `[1, 0.95, 0.90]` / `[0, 22, 44]` | scale and downward shift (dp) of the top, next and third card |
+| `deck.tiltMaxDeg` / `deck.tiltFullFraction` | 12 / 0.5 | tilt = clamp(dx / (0.5 x screen width), -1, 1) x 12 degrees |
+| `deck.stampStart` / `deck.stampFull` | 0.15 / 0.30 | stamp and tint opacity 0 at 15% of the screen width dragged, 1 at 30% (linear) |
+| `deck.stampTiltDeg` | 14 | stamp rotation on the card: ADD -14, SKIP +14 |
+| `deck.followY` / `deck.followYMax` | 0.3 / 40 | the card follows vertical finger movement at 30%, at most 40 dp |
+| `deck.exitMargin` | 24 | the card flies to x = +/-(screen width / 2 + card width / 2 + 24), from its resting centre |
+| `deck.returnScale` | 0.92 | a returning card scales from 0.92 to 1 |
+| `motion.deckExit` / `motion.deckFade` | 200 / 150 (ms) | exit and return duration / reduced-motion fade and ease-back |
+| `motion.deckSpring` | `{ damping: 20, stiffness: 260, mass: 1 }` | spring back (one overshoot of about 8%, rests in about 400 ms) |
+
+Gesture behaviour numbers (not visual) live as named constants at the top of `quick-add/decideSwipe.ts`, the one file the
+Manager tunes: `COMMIT_FRACTION` 0.35, `FLICK_VELOCITY` 800 (dp/s), `FLICK_MIN_DISTANCE` 40 (dp), `PAN_SLOP` 10 (dp),
+`PAN_FAIL_Y` 20 (dp).
+
 Existing and reused: `bg.elevatedFlat`, `surface.input`, `surface.goldTint`, `border.*`, `glass.hero`,
 `colors.brand.purple900`, `overlay.spinnerTrack`, `shimmerPulse`, `iconSize.lg`, `avatarSize`, `size.minTouch`,
 `iconButtonHitSlop`, type roles, spacing, radius, `elevation.card`.
@@ -216,10 +250,11 @@ small ones), `index.ts`.
 | `TierBadge` | `tier?: 'S'\|'A'\|'B'\|'C'` (absent = the "🏆 Tier" chip on details), `size: 'sm'\|'md'`, `onPress?` | **UI shell, not functional in v1**: the details chip toggles a static legend popover (§5, Build 13); no rating is settable or stored |
 | `TabBar` | fixed 5 items: Perch / Search / Chat / Leaderboards / Profile — `activeRoute` | per-tab active/inactive; **rendered on every tab screen** (`(tabs)/_layout.tsx`, not per-screen) |
 | `ProfileSheet` | `userId`, `isSelf: boolean` | loading, loaded, error, not-found |
-| `SwipeDeckCard` | `movie`, `onSwipeLeft`, `onSwipeRight` | idle, dragging, exiting-left, exiting-right |
+| `SwipeDeckCard` | **Revised Build 14: presentational only, no module imports.** `posterUrl: string \| null`, `title`, `year?`, `rating?` (a number, drawn when above 0), `dragX: SharedValue<number>` (the stamp and tint opacity derive from it), `dim: SharedValue<number>` (0 to 1, the `deckDim` layer for cards behind). The gesture, the transforms (translate, tilt, scale, lift), the stack and the exit live in `quick-add/components/SwipeDeck`, which wraps each card in an animated view. Spec: Build 14 | idle, dragging (stamp and tint from `dragX`), behind (dim), poster loading, no-poster fallback |
+| `BackChip` | `onPress`, `label?` (default "Back"). **Moved to `src/ui/BackChip/` in Build 14** (it was `movies/components/BackChip`); `goBackOrHome` moves to `src/lib/navigation.ts`; details imports both. Look unchanged (Build 13) | default, pressed (opacity 0.85) |
 | `Avatar` | `uri?`, `size: 'sm'\|'md'\|'lg'`, `ringGradient?: boolean` (purple→gold ring for own profile) | loaded, fallback-initials |
 | `EmptyState` | `icon`, `title`, `body`, `action?: {label, onPress}` | one component, used by every data screen's empty case; the action button is at least 48 high (`size.minTouch`, fixed in Build 12) |
-| `Toast` | `message`, `variant: 'info'\|'error'\|'coming-soon'` | shown, dismissing. **Offset rule:** on tab screens it sits 24 dp above the tab bar (the system bottom inset is not added again inside the tabs). A Toast rendered inside a `Modal` must be given the bottom inset. |
+| `Toast` | `message`, `variant: 'info'\|'error'\|'coming-soon'` | shown, dismissing. **Build 14 additions (all screens):** `marginHorizontal: spacing[20]` so a long message wraps inside the screen instead of running edge to edge, and `maxFontSizeMultiplier` 1.3 on its text. **Offset rule:** on tab screens it sits 24 dp above the tab bar (the system bottom inset is not added again inside the tabs). A Toast rendered inside a `Modal` must be given the bottom inset. |
 | `Spinner` | `size?: 'default'\|'lg'` (`size.spinner` 20 / `size.spinnerLg` 32; ring `size.spinnerStroke` 2 / `size.spinnerStrokeLg` 3) | indeterminate; track `overlay.spinnerTrack`, arc `accent.gold`. One shared component, used by `Button` (loading), Edit profile and the paging footer. `GoogleSignInButton` keeps its own spinner, per Google's branding rules (Build 5). |
 
 **Rule:** every data screen (Home feed, Search results, Collection,
@@ -254,7 +289,10 @@ src/app/
   movie/
     [id].tsx                   Movie details (Build 13) — full-screen push, NO tab bar, own back chip; pushed from Home/Search/Collection/deck.
                                 Deep link perchable://movie/<id>; id must be a positive integer, else the not-found state
-  quick-add.tsx                Quick Add swipe deck — pushed from Home, outside the tab bar (full-screen focus)
+  quick-add.tsx                Quick Add swipe deck (Builds 14-16) — pushed from the Home "Quick Add" row, outside the tab bar
+                                (full-screen, own back chip, `headerShown: false`, inside the session-guarded group like `movie/[id]`).
+                                Deep link perchable://quick-add. Cold-start deep link: `router.canGoBack()` false means `router.replace('/')`.
+                                Opening a movie from the deck pushes `movie/[id]` over it; Back returns to the same deck and top card
   terms.tsx                    Terms & community rules (Build 11) — root-level push, outside the tabs so the
                                 gate can open it from any screen; under the session guard in root _layout.
                                 Param `gate=1` = gate mode; absent = view mode (from Settings)
@@ -306,14 +344,23 @@ src/
                                                                MovieDetailsView, CastRow, RouletteCard, LoungePanel), `tmdbImage.ts`
                                                                (base URL + the w185 / w342 / w500 / w780 size constants). Imports
                                                                only `@/ui` and `@/lib`; routes use it through `index.ts`)
-    quick-add/    api/ components/ hooks/ types.ts index.ts   (Perchable-specific: SwipeDeck logic/state)
-    collection/   api/ components/ hooks/ types.ts index.ts   (Perchable-specific: captions, collection grid)
+    quick-add/    components/ hooks/ skipMemory.ts decideSwipe.ts types.ts index.ts   (Perchable-specific; revised Build 14; no `api/`:
+                                                               it has no Supabase touchpoint. `components/`: SwipeDeck (gesture, stack, exit),
+                                                               SequencePicker (Build 15), the deck state views, QuickAddRow (the Home entry);
+                                                               `hooks/`: useQuickAddDeck(sequence), useReduceMotion (the one reduce-motion
+                                                               source: RN AccessibilityInfo + its change listener); `skipMemory.ts`: AsyncStorage
+                                                               store (skips, cursor, remembered order) + the sign-out clean-up hook;
+                                                               `decideSwipe.ts`: the pure decision + the gesture constants. Imports `movies` and
+                                                               `collection` only through their `index.ts`)
+    collection/   api/ hooks/ types.ts index.ts README.md   (Perchable-specific; Build 16: addToCollection, removeFromCollection,
+                                                               getCollectionMovieIds, useCollectionIds and the add/remove hooks. Imports nothing
+                                                               from `quick-add` or `movies`. Captions and the grid come with Builds 19-20)
     rankings/     api/ components/ hooks/ types.ts index.ts   (Perchable-specific: leaderboard views)
 
   ui/                          shared design system — no business logic, no Supabase imports
     tokens.ts                  §1 as code: colors, glass, type scale, spacing, radius
     GlassBackdrop/ GlassCard/ PosterCard/ Button/ TierBadge/ TabBar/ ProfileSheet/   (PosterCard: Build 12a; TierBadge: Build 13)
-    SwipeDeckCard/ Avatar/ EmptyState/ Toast/   (each: Component.tsx, index.ts)
+    SwipeDeckCard/ Avatar/ EmptyState/ Toast/ BackChip/   (each: Component.tsx, index.ts; BackChip: Build 14)
 
   lib/                         cross-cutting singletons, not modules
     supabase.ts                Supabase client
@@ -326,6 +373,10 @@ src/
 
 Import as `@/modules/auth`, `@/ui/GlassCard`, `@/lib/supabase` — never a deep
 relative path (`../../../modules/...`) out of `src/app/`.
+
+**Cross-module imports (clarified Build 14):** the recyclable modules (`auth`, `profile`, `social`, `moderation`) import no other
+module. A Perchable-specific module may import another module's `index.ts` (`quick-add` uses `movies` and `collection`), never
+its inner files; `collection` imports no other module. Routes compose; they do not reach into a module's folders.
 
 **Module contract:** a module's `api/` is its only Supabase touchpoint; other
 modules and routes consume it through `index.ts`'s exported hooks/components
@@ -1382,6 +1433,279 @@ Decisions from QA evidence (`logs/evidence/build-13/`). No board change is neede
 
 ---
 
+## Build 14 — Quick Add swipe deck (Module 5; also covers Builds 15, 16a, 16b)
+
+One Phase 0 for the whole Module (PLAN M11). Builds 15 and 16 have no Phase 0 of their own; their sections follow
+this one. 16a is database only.
+
+Boards (source in `design-src/`, drawn at 390 x 844 with a 28 top inset and 24 bottom inset; the numbers below come
+from the insets, not from the boards). Canvas: not published (as Builds 12 and 13).
+| File | Shows |
+|---|---|
+| `build-14-home-entry` | Home filled and error with the Quick Add row; row spec and pressed |
+| `build-14-deck-states` | deck loading, filled, error + offline, caught up |
+| `build-14-deck-states-2` | loading with the progress line, keep-going, next page failed with no cards left, filled after a swipe (Undo ready) |
+| `build-14-deck-drag` | DURING the drag: right 15% (no stamp), right 30% (ADD), left 30% (SKIP), the Add button 100 ms into the exit |
+| `build-14-deck-parts` | card with no poster and a long title, no year and no rating, rating only; the controls in every state |
+| `build-14-deck-toasts` | all five Toasts in place above the controls |
+| `build-14-deck-motion` | frames: normal exit, reduced-motion exit, spring back, reduced ease-back, card returns |
+| `build-15-picker`, `build-15-picker-states` | the order picker (3 selections, switching, caught up, spec) |
+| `build-16b-profile-count` | Profile count: loading, one, many, failed |
+
+**Decisions (Dianne, Phase 0, 2026-10-02)**
+- **The deck is a full-screen route with a plain header row**, not a floating chip over content: back chip left (the
+  Build 13 look), title "Quick Add" beside it, the top-right 64 x 64 empty (the title stops 72 from the right edge,
+  `size.homeHeaderInset`). The picker (Build 15) sits under the header, never in the corner.
+- **Posters fill the whole card**; the title, year and rating sit on a dark band at the bottom. The 0.55 fill in the
+  Build 0 mock was too thin under small text (see §1.5); the band is `overlay.cardInfo` with a fade above it.
+- **No glow on the card on Android** (a coloured shadow needs native elevation, which looks muddy, §1.7). The top card
+  has a 1px `border.hairlineStrong`; the drag tint and stamp carry the "active" feeling. iOS may add `glow.purple` later.
+- **Skip and Add buttons have visible labels** ("Skip", "Undo", "Add") under the circles, because a bare glyph is not
+  obvious; the whole column is the touch target.
+- **A toast lane is reserved** above the controls (below), so no Toast can cover the card or a button.
+- **Undo stays reachable when the deck is empty** (caught up, keep-going, next page failed) so the last swipe can be
+  taken back from there.
+
+### Home entry (Build 14, PLAN N1)
+Amends Build 12's Home layout: the list header is now 12 top space, Roulette card, **16**, **Quick Add row**, section
+title (24 above / 12 below, unchanged). `build-14-home-entry`.
+- **Row:** full content width (screen - 40), `size.quickAddRow` 72 high, radius `md` 16, flat `glass.card` fill
+  (`rgba(76,29,149,0.32)`, no `BlurView`: it is a `FlashList` header), 1px `border.hairline`. Padding left 12 / right 16.
+- **Left:** icon tile `size.quickAddIcon` 48, radius 12, fill `surface.goldTint`, 1px `border.gold`, glyph 🃏 at
+  `iconSize.emoji` 32 centred. 12 gap, then the text column.
+- **Text:** "Quick Add" (`subhead` 19/24, `text.primary`), 2, "Swipe right to add, left to skip" (`caption` 12/16,
+  `text.secondary`, wraps at large font sizes, the row grows). Right: "›" (24/30 Inter 600, `text.secondary`), 8 gap.
+- **States:** pressed = scale `motion.pressScale` 0.98 (as `GlassCard`). The row has no loading, empty or error state of
+  its own: it does not depend on the Home list, so it shows in all four Home states. In Home's empty and error states
+  the row stays and the gap to the `EmptyState` is 32 (it was 32 under the Roulette card).
+- **Behaviour:** one tap pushes `quick-add` through a double-tap-safe helper (one deck per double tap, one Back returns
+  to Home with its list and scroll unchanged). Role button, label "Quick Add", hint "Swipe through movies to add them
+  to your collection". Gear zone: nothing in it.
+
+### Deck screen layout (dp; derived from insets; `build-14-deck-states`)
+Vertical order: header, [picker, Build 15], deck area, toast lane, controls.
+1. **Header:** `paddingTop` = top inset; row 48 high. Back chip (`ui/BackChip`) left 20, top = inset + 8, 36 x 36
+   (`hitSlop` 6 = 48), label "Back". Title "Quick Add": `subhead` 19/24, `colors.brand.lavender200`, one line,
+   `accessibilityRole="header"`, left `size.detailsBarTitleLeft` 76, right `size.homeHeaderInset` 72, top = inset + 14
+   (centres it on the chip). Header bottom = inset + 48.
+2. **Picker (Build 15 only):** top = header bottom + 8, height 50. The deck area starts 8 under it. Without the picker
+   (Build 14) the area starts 8 under the header.
+3. **Controls (bottom):** one row, centred, three columns (Skip, Undo, Add), `size.deckControlsGap` 28 between, bottom =
+   bottom inset + `size.deckControlsPad` 16. Height `size.deckControlsHeight` 78 at font scale 1 (use the measured
+   height; the layout never assumes 78). Spec below.
+4. **Toast lane:** `size.deckToastLane` 76 high, directly above the controls. Empty unless a Toast shows.
+5. **Deck area:** from step 1 or 2 down to the toast lane. The card group (the top card plus `size.deckStackReserve` 20
+   for the cards behind it) is centred vertically in it.
+6. **Card size (a pure function, Jest):** `k = min(floor((screenWidth - 2 x deckSideMargin) / 2), floor((areaHeight -
+   deckStackReserve) / 3))`; card width = 2k, height = 3k (always exactly 2:3, `size.posterAspect`); x centred. The 24 dp side
+   margin keeps normal drags off the system back-gesture edge. At 390 x 844 (insets 28 / 24): Build 14 card **342 x 513
+   at (24, 100)** (area 84 to 650); with the Build 15 picker the area is 142 to 650 and the card **324 x 486 at
+   (33, 143)**. Smaller phones get a smaller card, never a scrolling screen. The top card has radius `lg` 20, 1px
+   `border.hairlineStrong`, `overflow: hidden`.
+
+### The card (`ui/SwipeDeckCard`; `build-14-deck-parts`)
+- **Poster:** `expo-image` `w780` (`IMAGE_SIZE.deck`), `contentFit="cover"`, `cachePolicy="memory-disk"`, fills the card.
+  While loading: `PosterCard`'s loading fill (`bg.elevatedFlat`, `usePulse`, `overlay.shimmerWash`), then a
+  `motion.imageFade` (200 ms) fade-in. **No poster or the image failed:** fill `colors.brand.purple900`, 🎬 at
+  `iconSize.deckFallback` 56 centred in the poster area; the title and meta stay. A card is never blank and stays swipeable.
+- **Info band** (bottom, full width): a `size.deckInfoFade` 40 dp `LinearGradient` (`overlay.fadeStart` to
+  `overlay.cardInfo`, top to bottom), then a solid `overlay.cardInfo` block with padding 0 / 16 / 16 / 16:
+  - Title: `title` 24/30 Poppins 800, `text.primary`, max 2 lines, ellipsis. Emoji and right-to-left titles must not break it.
+  - 4 below, meta row 22 high, 12 between its parts: **year** (`bodyStrong` 15/22, `text.secondary`) and **rating**
+    ("★" `accent.gold` then "8.2", `bodyStrong`, `text.primary`).
+  - Year rule as Build 12 (first four digits of `release_date`, else omitted). Rating is drawn when `vote_average` is
+    above 0, to one decimal. If both are missing the meta row is not drawn at all (never "NaN", "0" or blank); a lone part shows alone.
+- **Stamp and tint** (drag only; decorative, `importantForAccessibility="no"`):
+  - ADD: top-left of the card (left 20, top 28), rotated -14 degrees, text "ADD" in `display` 30/36 Poppins 800,
+    `letterSpacing.label`, `accent.gold`; box padding 4 / 14, `size.stampBorder` 3 border in `accent.gold`, radius `sm` 12,
+    fill `overlay.scrim` (so it reads on any poster).
+  - SKIP: top-right (right 20, top 28), rotated +14, same box in `danger`.
+  - Tint: a full-card layer, `overlay.addTint` for a right drag, `overlay.skipTint` for a left drag.
+  - Opacity of the stamp **and** the tint: `s = clamp((|dx| / screenWidth - 0.15) / (0.30 - 0.15), 0, 1)`: 0 up to 15% of
+    the screen width (58 dp at 390), 1 from 30% (117 dp), linear between. The commit threshold is 35% (136.5 dp), so
+    the stamp is already full before the card would commit.
+- **Pressed (tap):** scale 0.98 (`motion.pressScale`), the tap opens details.
+
+### The drag, the stack and the exit (`build-14-deck-drag`, `build-14-deck-motion`)
+All distances are fractions of the **screen width W** (390 in the boards). `dx` is the horizontal translation.
+- **Stack (three cards mounted at most):** top `scale 1, lift 0`; next `scale 0.95, lift 22`; third `scale 0.90, lift 44`
+  (`deck.stackScale`, `deck.stackLift`), scaled about their centres; the two behind carry a `overlay.deckDim` layer
+  (next at 1, third at 1). Visible below the top card: about 9 dp of each. Cards behind are not focusable for screen readers.
+- **While dragging** the top card follows the finger: x = `dx`; y = 0.3 x vertical movement, at most 40 (`deck.followY`,
+  `followYMax`); tilt = `clamp(dx / (0.5 W), -1, 1) x 12` degrees (about 7.2 degrees at 117 dp, 12 from 195 dp).
+  Stamp and tint as above.
+- **The cards behind come forward with `p = min(|dx| / (0.35 W), 1)`:** next card `scale 0.95 + 0.05p`, `lift 22 x (1 - p)`,
+  dim layer opacity `1 - p`; third card `scale 0.90 + 0.05p`, `lift 44 - 22p`, dim 1. (At 15%: p 0.43; at 30%: p 0.86.)
+- **Activation and commit (PLAN M4):** the pan starts after 10 dp horizontal movement and fails on 20 dp vertical
+  movement first; commit at 35% of W, or release speed at least 800 dp/s in the direction of the move **and** at least
+  40 dp moved; otherwise it springs back. The gesture constants are in `decideSwipe.ts`.
+- **Commit (swipe or button, same exit):** the card leaves in its own layer to x = +/-(W / 2 + card width / 2 + 24)
+  from its resting centre, tilt to 12 degrees, **200 ms** (`motion.deckExit`), `Easing.out(Easing.quad)` (75% of the way
+  at 100 ms), the stamp fading to 1 over the same time (so a flick and a button press both show ADD or SKIP). A button
+  starts from dx 0. At the same time the next card becomes the top (scale to 1, lift to 0, dim to 0) and the third becomes
+  the next, over the same 200 ms; **the new top card is interactive at once**. The third slot stays empty during the exit
+  (so no more than three cards are mounted: leaving, new top, new next) and the next card behind fades in over 150 ms
+  when the exit ends. A new commit while a card is still leaving jumps that card to its end position first (one leaving
+  layer at most).
+- **Below the threshold:** `withSpring` (`motion.deckSpring`: damping 20, stiffness 260, mass 1), one overshoot of
+  about 8% (10 dp from 117), at rest in about 400 ms; stamp and tint follow `dx` back to 0.
+- **Held return:** a card that comes back (Undo, a failed add) while the user is dragging another is held and shown only
+  after that drag ends. It returns on top with `motion.deckExit` 200 ms: opacity 0 to 1 and scale 0.92 to 1
+  (`deck.returnScale`); instant under reduce motion.
+- **Reduce motion** (`useReduceMotion`: RN `AccessibilityInfo.isReduceMotionEnabled` plus the change listener; every
+  animation sets `reduceMotion: ReduceMotion.Never`): the card still follows the finger; **no tilt, no fly-off, no scale
+  or lift on the cards behind** (they stay at 0.95 / 22 and 0.90 / 44). A commit fades the leaving card out in place in
+  **150 ms** (`motion.deckFade`) while the next card is already on top at full size. A release below the threshold
+  eases back in **150 ms**, `Easing.out(Easing.quad)`, no overshoot (tilt is already 0). Stamp and tint are opacity, not
+  motion, and stay. Still exactly one swipe per action. A returning card appears at once.
+- **No haptics** (PLAN N6).
+
+### Controls (`build-14-deck-parts`)
+One row under the deck: **Skip, Undo, Add**. Each is a single pressable column, 56 wide x 78 high at font scale 1
+(touch target 56 x 78, well over 48): circle, 6, label (`caption` 12/16, `text.secondary`).
+| Control | Circle | Fill and border | Glyph | Label read by TalkBack |
+|---|---|---|---|---|
+| Skip | 56 | `bg.elevatedFlat`, 1px `border.danger` | "✕" `danger`, 22/24 Inter 600 | Skip {title} |
+| Undo | 48 (centred on the same line as the 56 circles) | `surface.input`, 1px `border.hairlineStrong` | "↶" `colors.brand.lavender200` | Undo |
+| Add | 56 | `accent.gold`, 1px `accent.gold` | "✓" `text.onGold` | Add {title} to collection |
+- **Pressed:** opacity 0.85 (as `Button`). **Disabled:** opacity `opacity.disabled` 0.5 and `accessibilityState.disabled`.
+- **When enabled:** Skip and Add: there is a top card and no card is mid-exit (a double tap is one swipe). Undo: there is
+  something to undo, and the deck is filled, caught up or in the keep-going state; it is disabled while loading and on
+  the error screen, and after one Undo until the next swipe. The row is always drawn (no jump between states).
+- Glyph fallback: these are plain text glyphs like "←" and "★". If a glyph shows as a box on the emulator, Queenie
+  reports it and Bella swaps that glyph (not the layout).
+
+### Deck states (`build-14-deck-states`, `build-14-deck-states-2`)
+| State | What shows |
+|---|---|
+| Loading (first load, or a changed order) | Header (and picker). The deck area shows a **card-shaped shimmer** at the final card size with two peeking shimmer cards behind (scale 0.95 / 0.90, opacity 0.7 / 0.5), title and meta shimmer bars inside (24 x 70% and 14 x 40% wide, radius 6, `overlay.shimmerWash`). The three controls are disabled. One polite live region "Loading movies". |
+| Loading + progress line | After 3 all-seen pages in one load: the same shimmer, plus a centred `Spinner lg` and the line "Finding movies you haven't seen…" (`body` 15/22, `text.secondary`, centred, padding 24). The live region then reads the line. |
+| Filled | Stack, controls. |
+| Error (first load failed) and **offline cold start** | `EmptyState` 🦉 "Couldn't load movies" / "Check your connection and try again." / Retry, centred between the header and the controls. A double tap on Retry sends one request. Controls drawn, all disabled. This is also the offline state; there is no separate offline screen. |
+| Keep-going (15 pages in a row were all seen and more exist) | `EmptyState` 🔎 "Still looking" / "We skipped past a lot of movies you've already seen. There may be more." / action "Keep looking". Tapping it resumes where the loop stopped. Undo enabled. |
+| Next page failed, no cards left | `EmptyState` 🦉 "Couldn't load more movies" / "Check your connection and try again." / Retry (resumes). Undo enabled. While cards remain, a failed next page shows nothing and the user keeps swiping. |
+| Caught up (no cards and no next page, after the retry from page 1) | `EmptyState` 🎉 "You're all caught up" / "You've been through this whole list. Start over to see the movies you skipped again." / action "Start over" (clears the saved skips and reloads). Undo enabled. |
+| Offline mid-deck | No visible change: loaded cards keep swiping, posters not cached show the no-poster fallback, a failed add shows its Toast (16b). |
+
+### Toasts and the lane (`build-14-deck-toasts`)
+`Toast` is pinned `offset` above the bottom inset and ignores touches. On the deck its **offset = `size.deckControlsPad`
+16 + the measured controls height + 8** (102 at font scale 1), so its bottom edge is 8 dp above the top of the controls.
+`size.deckToastLane` 76 above the controls is reserved and empty, so the card group (including its 20 dp stack
+reserve) ends above the toast. A 2-line toast at font scale 1 is 58 high; at 1.3 (the Toast's text cap) 68. The Toast
+sits inside the app's 20 dp side margins (`Toast` change in §2) and lasts 2.5 s, as everywhere.
+- **{title} in any Toast** is at most 28 characters: longer titles are cut to 27 characters plus "…" (the sentence's own
+  period then follows, "…."), so the reason at the end of the sentence is never cut off.
+- Never covered: the card, its stack reserve and the three controls (checked on `build-14-deck-toasts`).
+
+### Copy (verbatim, Builds 14, 15, 16b)
+| Where | Text |
+|---|---|
+| Home row title | Quick Add |
+| Home row subline | Swipe right to add, left to skip |
+| Home row, `accessibilityLabel` / `accessibilityHint` | Quick Add / Swipe through movies to add them to your collection |
+| Deck header title | Quick Add |
+| Back chip, `accessibilityLabel` | Back |
+| Controls, labels | Skip / Undo / Add |
+| Controls, `accessibilityLabel` | Skip {title} / Undo / Add {title} to collection |
+| Stamps | ADD / SKIP |
+| Loading, live region | Loading movies |
+| Progress line (also the live region then) | Finding movies you haven't seen… |
+| Error title / body / action | Couldn't load movies / Check your connection and try again. / Retry |
+| Keep-going title / body / action | Still looking / We skipped past a lot of movies you've already seen. There may be more. / Keep looking |
+| Keep-going action, `accessibilityLabel` | Keep looking for more movies |
+| Next page failed title / body / action | Couldn't load more movies / Check your connection and try again. / Retry |
+| Caught up title / body / action | You're all caught up / You've been through this whole list. Start over to see the movies you skipped again. / Start over |
+| Caught up action, `accessibilityLabel` | Start over and show skipped movies again |
+| Toast, Build 14 right swipe or Add (`coming-soon`) | Adding to your collection is coming soon. |
+| Toast, 16b add failed, offline or timeout (`error`) | Couldn't add {title}. Check your connection. |
+| Toast, 16b add failed, anything else (`error`) | Couldn't add {title}. Try again later. |
+| Toast, 16b undo failed, offline or timeout (`error`) | Couldn't undo. Check your connection. |
+| Toast, 16b undo failed, anything else (`error`) | Couldn't undo. Try again later. |
+| Toast, a held card returns (`info`) | {title} is back |
+| Announcement, left swipe or Skip | Skipped {title} |
+| Announcement, right swipe or Add, 16b | Added {title} |
+| Announcement, Undo | Undid skip for {title} / Undid add for {title} |
+| Announcement, card returns after a failed add or a held return | {title} is back |
+| Picker group, `accessibilityLabel` | Movie order |
+| Picker options | Newest first / Oldest first / Random |
+| Profile count | {n} movies watched / 1 movie watched / — movies watched (failed) |
+| Profile count failed, `accessibilityLabel` | Movies watched, unavailable |
+
+A held return from Undo shows the info Toast "{title} is back"; a rolled-back add shows its error Toast instead (the
+reason is the news) and announces "{title} is back" for screen readers only.
+
+### Accessibility (Build 14)
+- **Card:** one accessible element, role button, label "{title}, {year}" (title only with no year), hint "Opens details".
+  `accessibilityActions`: "Open details" (opens details), "Skip", "Add" (the screen reader's actions menu runs the same
+  commit as the swipe or the button). The tap opens details through the double-tap-safe push.
+- **Controls:** labels in the table above; every column is 56 x 78. Reading order: back,
+  title, [picker], card, Skip, Undo, Add.
+- **After any commit** the result is announced (copy table) and **screen-reader focus moves to the new top card**. In
+  Build 14 a right swipe or Add announces only the Toast text (the Toast is a polite live region; no second
+  announcement). From 16b it announces "Added {title}".
+- **A returning card** takes screen-reader focus and announces "{title} is back".
+- **Cards behind and stamps:** `importantForAccessibility="no-hide-descendants"` / `"no"`.
+- **Nothing depends on colour alone:** stamps carry the words ADD and SKIP; the controls carry labels; the picker's
+  selected option has a border and brighter text.
+- **Contrast:** `text.primary` on `overlay.cardInfo` over the worst-case white poster is about 8:1, `text.secondary` about
+  6:1; `danger` glyph on `bg.elevatedFlat` about 8:1; `text.onGold` on `accent.gold` about 5.6:1; gold "★" on the band about 5:1.
+- **Font scale:** the title wraps (2 lines), the controls grow with their labels (the layout measures them), the toast
+  lane covers a 2-line toast up to 1.3; the card shrinks per the size rule instead of pushing the controls off screen.
+- **Gear zone:** the top-right 64 x 64 is empty on the deck (title right inset 72; the picker starts at y = inset + 56).
+
+---
+
+## Build 15 — Selectable swipe sequence (Module 5)
+
+Board: `build-15-picker` (Newest, Oldest, Random, switching) and `build-15-picker-states` (caught up with the picker, spec).
+**Where it lives:** under the header, above the deck; **never in the top-right corner** (PLAN M1). The deck's geometry
+changes only by the row's height: the card becomes **324 x 486 at (33, 143)** at 390 x 844.
+
+- **Picker (`quick-add/components/SequencePicker`):** a radio group, label "Movie order". Container: left 20, right 20,
+  top = header bottom + 8, **50 high** (48 segments + 1px border each side), radius `pill`, fill `surface.input`, 1px
+  `border.hairline`. Three equal segments (thirds), each **minimum 48 high**, radius `pill`, label `bodyStrong` 15/22,
+  centred, wraps to 2 lines at large font sizes (the bar grows).
+- **Options, in order:** "Newest first", "Oldest first", "Random". First use selects Newest first.
+- **Selected:** fill `surface.goldTint`, 1px `border.gold`, label `text.primary`. **Unselected:** no fill, `text.secondary`.
+  **Pressed:** opacity 0.85. Selecting the selected option does nothing.
+- **Accessibility:** role radio group; each option role radio with `selected` state and `aria-posinset` / `aria-setsize`
+  (1 of 3 and so on). If TalkBack does not read the position, add ", 1 of 3" to the label (Bella tests it). Announcement on change:
+  the new order's name selected.
+- **Switching order:** the old order's cards leave at once and the deck shows the card-shaped loading state (the picker
+  stays enabled, so a second tap is allowed; the controls are disabled). Then the new order's first card.
+- **Caught up, error, keep-going:** the picker stays visible and usable in every state; the `EmptyState` is centred between
+  the picker and the controls.
+- Copy: in the Build 14 copy table. Remembered per user on the device (PLAN M3).
+
+---
+
+## Build 16b — Add to the collection (Module 5; 16a is database only)
+
+Board: `build-16b-profile-count`, and the add feedback is on `build-14-deck-drag` (frame D) and `build-14-deck-toasts`.
+- **Added state:** there is no separate "added" screen. A right swipe or the Add button runs the Build 14 commit (the
+  ADD stamp and gold tint, the 200 ms exit) and **the card does not come back**; no success Toast (the card leaving is
+  the feedback), announcement "Added {title}". The Build 14 coming-soon Toast and its copy are deleted.
+- **Add failed (network or timeout):** the card returns on top (200 ms fade and scale-in, or held until the drag ends)
+  with the error Toast "Couldn't add {title}. Check your connection." Non-network (42501, 5xx, bad shape): "Couldn't add
+  {title}. Try again later." A duplicate (23505) is a silent success: no Toast, no card.
+- **Undo after an add:** the card returns on top; if the delete fails the add stays and the Toast says "Couldn't undo.
+  Check your connection." (or "Couldn't undo. Try again later." for a non-network failure). Undo stays enabled.
+- **First-load gate:** the deck stays in its loading state until the collection ids have loaded; a failed ids query is the
+  deck's error state (Retry retries both).
+- **Profile count (PLAN N9):** replaces the hard-coded "0 movies watched" in `(tabs)/profile/index.tsx`. Same slot and
+  style as Build 6 (`caption`, `text.secondary`, 24 under the usertag chip, 12 above the grid container).
+  | State | What shows |
+  |---|---|
+  | Count loading (profile loaded, collection ids not) | A shimmer bar `shimmerBar.line` 120 x 16 in the text's place (`bg.elevatedFlat`, `usePulse`); no layout jump. |
+  | Count 0 | "0 movies watched" (a true zero from a successful read). |
+  | Count 1 | "1 movie watched" (singular). |
+  | Count 2 or more | "{n} movies watched"; 1,000 and above with a thousands separator ("1,284 movies watched"). |
+  | Count failed | "— movies watched" (an em dash, never a number, never a false 0); `accessibilityLabel` "Movies watched, unavailable". |
+  The grid container below stays the dashed empty box until Build 19 fills it. The whole-profile loading and error states
+  (Build 6) are unchanged.
+
+---
+
 ## 8. Decisions (Manager, Build 0 round 1)
 
 - **Light theme — no light theme in v1.** §1.3's light tokens stay in this
@@ -1407,3 +1731,7 @@ Decisions from QA evidence (`logs/evidence/build-13/`). No board change is neede
   Build 13; (4) shared `ui/Spinner` with tokens `spinner`, `spinnerLg`, `spinnerStroke`, `spinnerStrokeLg`
   (`GoogleSignInButton` keeps its own); (5) Toast offset rule: 24 dp above the tab bar on tab screens, bottom
   inset added inside a `Modal`. Sections: 1.7, 1.9, 2, Build 12.
+- **Build 14 / 15 / 16b (Dianne, 2026-10-02, Module 5):** deck is a full-screen route with a header row and a reserved toast
+  lane; posters fill the card with a dark info band (0.88, §1.5 revised); `SwipeDeckCard` is presentational and the
+  gesture lives in `quick-add`; `BackChip` moves to `ui/` and `goBackOrHome` to `lib/`; `Toast` gets side margins and a 1.3
+  font cap; Perchable-specific modules may import another module's `index.ts` (§4). Sections: 1.5, 1.9, 2, 3, 4, Builds 14, 15, 16b.
