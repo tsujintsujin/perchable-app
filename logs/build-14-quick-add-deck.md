@@ -272,3 +272,22 @@ UNTESTABLE, Justin: TalkBack announcement count after a double tap and the card 
 - Full suite x5 at `--maxWorkers=2`: 5 of 5 pass (50 suites, 650 tests), 0 `act(`, 0 console warn/error, 0 failed suites.
 - Full suite x2 at `--maxWorkers=50%`: 2 of 2 pass (50 suites, 650 tests), same.
 Device: not started this round (code and Jest only).
+
+## Manager close (2026-10-03)
+- Bug round 1 (4b123c4): Queenie re-test PASS (Bug 4 withdrawn: Profile icon was already dimmed); Ruby round 1
+  findings resolved. Bug round 2 (6ea6ebf): Ruby A/B rare-path guards; movieDetails act flake fixed at the
+  cause (CastRow FlatList → ScrollView; mechanism shown, natural trigger not reproduced) + Bella's own timing
+  flakes; proof under load 10/10 + 5/5 (`--maxWorkers=2`) + 2/2. Ruby PASS. DESIGN dock-height lines synced
+  by the Manager (61b7846).
+- Manager gates on 6ea6ebf: tsc app + functions 0; lint clean; jest `--maxWorkers=2` ×2 and `50%` ×1:
+  650/650, 0 `act(`, 0 console warn/error.
+- Manager spot re-run (td_emu, fresh `ensure` + compile verify): Quick Add tab → full-bleed deck
+  (`manager/mgr-01-deck.png`); swipe left committed, Undo enabled, next card on top (`mgr-02`, poster loaded
+  1–2 s later: first swipe after a cold app start, nothing prefetched yet); three more swipes each showed the
+  next poster within 0.8 s (`mgr-04-swipe1..3`), so prefetch works once warm. No Fatal/FATAL/ANR. PASS.
+  Emulator closed; Metro stopped, 8081 free.
+- Content note for Justin: the full-bleed deck makes suggestive-but-not-adult posters more prominent
+  (e.g. "Zero Woman 2", `mgr-01-deck.png`) — the parked content-policy question.
+- **NEEDS JUSTIN (by hand):** real-finger flicks + gesture-nav edge swipe; TalkBack (card actions, one
+  announcement per double tap, "{title} is back"); font scale 1.3.
+- **Build 14 DONE.**

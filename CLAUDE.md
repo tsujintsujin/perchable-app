@@ -92,4 +92,4 @@ The CLI needs `SUPABASE_ACCESS_TOKEN` (from `Credentials/perchable/.env`).
 both contain a line starting "Approved by Justin:" — which only Justin types.
 
 ## Current Build
-Build 14 — swipe deck (Module 5 quick-add swipe, branch `module/quick-add-swipe`). Module 4 (12a, 12b, 13 + offline-start fix) done and merged to main. Order changed 2026-10-01: movies (12–16) before Build 11; 10a + 10b done. Modules: 1, 2 done; 3 partly (11 moved before 20). **Start with HANDOFF.md.**
+Fix: Home blank on fast fling (logs/fix-home-blank-scroll.md), then Build 15 — order picker + discover endpoint (Module 5, branch `module/quick-add-swipe`). Build 14 done; Module 4 merged to main. Order changed 2026-10-01: movies (12–16) before Build 11; 10a + 10b done. Modules: 1, 2 done; 3 partly (11 moved before 20). **Start with HANDOFF.md.**
