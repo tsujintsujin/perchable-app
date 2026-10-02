@@ -1,0 +1,663 @@
+--------- beginning of main
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:02:31.037  1312  5564 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:02:31.121   646   813 E IPCThreadState: Binder transaction failure. id: 7150352, BR_*: 29189, error: -3 (No such process)
+10-02 20:02:31.619   646  1288 E IPCThreadState: Binder transaction failure. id: 7150990, BR_*: 29189, error: -22 (Invalid argument)
+10-02 20:02:31.669   471   471 E BpTransactionCompletedListener: Failed to transact (-32)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: Unhandled SoftException
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: com.facebook.react.bridge.ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException(ReactHostImpl.kt:919)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException$default(ReactHostImpl.kt:910)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.onWindowFocusChange(ReactHostImpl.kt:682)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at com.facebook.react.ReactDelegate.onWindowFocusChanged(ReactDelegate.kt:229)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at com.facebook.react.ReactActivityDelegate.onWindowFocusChanged(ReactActivityDelegate.java:235)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invokeSuspend(ReactActivityDelegateWrapper.kt:320)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:8)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:4)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$launchLifecycleScopeWithLock$1.invokeSuspend(ReactActivityDelegateWrapper.kt:452)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at kotlinx.coroutines.internal.DispatchedContinuationKt.resumeCancellableWith(DispatchedContinuation.kt:375)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at kotlinx.coroutines.intrinsics.CancellableKt.startCoroutineCancellable(Cancellable.kt:26)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at kotlinx.coroutines.CoroutineStart.invoke(CoroutineStart.kt:358)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at kotlinx.coroutines.AbstractCoroutine.start(AbstractCoroutine.kt:134)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch(Builders.common.kt:53)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch(Unknown Source:1)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch$default(Builders.common.kt:44)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch$default(Unknown Source:1)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock(ReactActivityDelegateWrapper.kt:450)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock$default(ReactActivityDelegateWrapper.kt:446)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.onWindowFocusChanged(ReactActivityDelegateWrapper.kt:318)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at com.facebook.react.ReactActivity.onWindowFocusChanged(ReactActivity.java:161)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at androidx.appcompat.view.WindowCallbackWrapper.onWindowFocusChanged(WindowCallbackWrapper.java:124)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at expo.modules.devmenu.detectors.InterceptingWindowCallback.onWindowFocusChanged(Unknown Source:2)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at com.android.internal.policy.DecorView.onWindowFocusChanged(DecorView.java:1772)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.view.View.dispatchWindowFocusChanged(View.java:16743)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.view.ViewGroup.dispatchWindowFocusChanged(ViewGroup.java:1505)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.view.ViewRootImpl.dispatchFocusEvent(ViewRootImpl.java:4697)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.view.ViewRootImpl.handleWindowFocusChanged(ViewRootImpl.java:4601)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged(Unknown Source:0)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl(ViewRootImpl.java:6773)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessage(ViewRootImpl.java:6683)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.os.Looper.loop(Looper.java:317)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at java.lang.reflect.Method.invoke(Native Method)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+10-02 20:02:34.297  5572  5572 E unknown:ReactHost: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+--------- beginning of system
+10-02 20:02:35.444   646  1773 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+10-02 20:02:36.688  5572  5632 E chromium: [1002/200236.688724:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+10-02 20:03:16.929   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:03:16.929   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:03:16.930   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:03:22.334   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54455634000000, downTime=54455634000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xdbe6b86d}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:03:22.376   646  1288 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54455639000000, downTime=54455639000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xcb5fa90d}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:03:22.377   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54455632000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:03:22.377   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54455634000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:03:22.409   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54455632000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:03:22.410   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54455639000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:03:22.410  5572  5572 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:03:22.442  5572  5572 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:03:22.470   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54455634000000, downTime=54455634000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd9bb5b3d}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:03:22.504   646  1288 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54455639000000, downTime=54455639000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xcc78f40c}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:03:24.830   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54458163000000, downTime=54458163000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xfa5e7ea2}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:03:24.850   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54458163000000, downTime=54458163000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xec489ab0}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:03:24.851   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54458163000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:03:24.852   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54458163000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:03:24.883   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54458163000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:03:24.883   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54458163000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:03:24.939   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:03:24.939   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:03:24.939   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:03:24.952   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54458163000000, downTime=54458163000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xffce802c}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:03:24.999   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54458163000000, downTime=54458163000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd35c7d7b}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:03:27.415   646  1288 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54460757000000, downTime=54460757000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xcefcb468}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:03:27.474   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54460762000000, downTime=54460762000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xdb355b55}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:03:27.475   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54460755000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:03:27.476   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54460757000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:03:27.532   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54460755000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:03:27.534  5572  5572 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:03:27.536   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54460762000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:03:27.580  5572  5572 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:03:27.661   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54460755000000, downTime=54460755000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf128cf5b}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:03:27.695   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54460762000000, downTime=54460762000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc4ed01cd}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:03:30.076   646  1288 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54463421000000, downTime=54463421000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd7067903}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:03:30.105   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54463421000000, downTime=54463421000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf2edd002}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:03:30.108   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54463421000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:03:30.108   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54463421000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:03:30.131   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54463421000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:03:30.131   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54463421000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:03:30.198   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54463421000000, downTime=54463421000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc2a0a10c}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:03:30.238   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54463421000000, downTime=54463421000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xcb86eae7}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:03:58.423   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=54491774000000, downTime=54491774000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xfe54aa4d}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:03:58.424   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54491773000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:03:58.424   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54491774000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:03:58.446  5572  5572 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:03:58.477   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:03:58.477   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:03:58.480   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:03:58.486   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=54491774000000, downTime=54491774000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xce5bcf30}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:04:00.056   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=54493401000000, downTime=54493401000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xe071ee5d}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:04:00.060   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54493398000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:04:00.060   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54493401000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:04:00.090  5572  5572 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:04:00.124   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=54493401000000, downTime=54493401000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf24f3417}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:04:01.699   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54495031000000, downTime=54495031000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf5983e9f}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:04:01.700   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54495029000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:04:01.701   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54495031000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:04:01.738  5572  5572 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:04:01.793   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54495031000000, downTime=54495031000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd130fb5c}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:04:03.372   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54496721000000, downTime=54496721000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc719ed16}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:04:03.374   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54496719000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:04:03.374   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54496721000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:04:03.405  5572  5572 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:04:03.431   646  2800 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54496721000000, downTime=54496721000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd1d8666f}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:04:05.010   646  1288 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=54498351000000, downTime=54498351000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xfe729002}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:04:05.012   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54498351000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:04:05.013   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54498351000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:04:05.081   646  1288 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=54498351000000, downTime=54498351000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xe5dbdd1b}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:04:06.664   646  1288 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=54499999000000, downTime=54499999000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd03063b5}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:04:06.665   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=54499994000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:04:06.665   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=54499999000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 93446f3 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:04:06.688  5572  5572 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:04:06.747   646  1288 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=54499999000000, downTime=54499999000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc86acc77}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: java.net.SocketException: Connection reset
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:191)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:04:23.477  5572  5592 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: java.net.SocketException: Connection reset
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:191)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okio.InputStreamSource.read(JvmOkio.kt:94)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okio.AsyncTimeout$source$1.read(AsyncTimeout.kt:157)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.request(RealBufferedSource.kt:232)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:04:23.481  5572  5606 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: java.io.EOFException
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:04:23.482  5572  5617 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: Error occurred, shutting down websocket connection: Websocket exception
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: java.io.EOFException
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.require(RealBufferedSource.kt:225)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at okio.RealBufferedSource.readByte(RealBufferedSource.kt:235)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.readHeader(WebSocketReader.kt:119)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.WebSocketReader.processNextFrame(WebSocketReader.kt:102)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket.loopReader(RealWebSocket.kt:293)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.ws.RealWebSocket$connect$1.onResponse(RealWebSocket.kt:195)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:519)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:04:23.487  5572  5616 E unknown:ReconnectingWebSocket: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: Error while reading domain filter from WHAPI [CONTEXT service_id=121 ]
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: java.util.concurrent.ExecutionException: bhoa: Unable to read Finsky Content Filter settings
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at java.util.concurrent.FutureTask.report(FutureTask.java:122)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at java.util.concurrent.FutureTask.get(FutureTask.java:191)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at anas.get(:com.google.android.gms@242335041@24.23.35 (190800-646585959):1)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at bhsf.t(:com.google.android.gms@242335041@24.23.35 (190800-646585959):88)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at bhsf.d(:com.google.android.gms@242335041@24.23.35 (190800-646585959):73)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at bhrz.d(:com.google.android.gms@242335041@24.23.35 (190800-646585959):5)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at com.google.android.gms.instantapps.routing.DomainFilterUpdateChimeraService.a(:com.google.android.gms@242335041@24.23.35 (190800-646585959):190)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at bpjj.call(:com.google.android.gms@242335041@24.23.35 (190800-646585959):32)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at java.util.concurrent.FutureTask.run(FutureTask.java:264)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at angs.c(:com.google.android.gms@242335041@24.23.35 (190800-646585959):50)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at angs.run(:com.google.android.gms@242335041@24.23.35 (190800-646585959):76)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at anmg.run(:com.google.android.gms@242335041@24.23.35 (190800-646585959):8)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: Caused by: bhoa: Unable to read Finsky Content Filter settings
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at bhoc.b(:com.google.android.gms@242335041@24.23.35 (190800-646585959):145)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at bhnl.a(:com.google.android.gms@242335041@24.23.35 (190800-646585959):5)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	at anaq.call(:com.google.android.gms@242335041@24.23.35 (190800-646585959):3)
+10-02 20:06:50.861  1467  5935 E DomainFilterImpl: 	... 7 more
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:09:09.263  1312  5989 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:09:12.325  1312  5989 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:09:12.329  1467  1467 E ChimeraSrvcProxy: Proxy without impl failing onBind()
+10-02 20:09:13.509  1467  1467 E ChimeraSrvcProxy: Proxy without impl failing onBind()
+10-02 20:09:14.860  1467  1467 E ChimeraSrvcProxy: Proxy without impl failing onBind()
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:09:15.305  1312  5987 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:09:16.932  1312  5987 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:09:17.849  1467  1467 E ChimeraSrvcProxy: Proxy without impl failing onBind()
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:09:18.337  1312  5987 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:09:19.985  1312  5987 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:09:21.351  1312  5987 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:09:21.866  1467  1467 E ChimeraSrvcProxy: Proxy without impl failing onBind()
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:09:23.000  1312  5987 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:09:24.462  1312  5987 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:09:29.422  1467  1467 E ChimeraSrvcProxy: Proxy without impl failing onBind()
+10-02 20:09:40.892  1467  1467 E ChimeraSrvcProxy: Proxy without impl failing onBind()
+10-02 20:09:58.691  1467  1467 E ChimeraSrvcProxy: Proxy without impl failing onBind()
+10-02 20:10:14.869   646  1773 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: Unhandled SoftException
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: com.facebook.react.bridge.ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException(ReactHostImpl.kt:919)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException$default(ReactHostImpl.kt:910)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.onWindowFocusChange(ReactHostImpl.kt:682)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at com.facebook.react.ReactDelegate.onWindowFocusChanged(ReactDelegate.kt:229)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at com.facebook.react.ReactActivityDelegate.onWindowFocusChanged(ReactActivityDelegate.java:235)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invokeSuspend(ReactActivityDelegateWrapper.kt:320)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:8)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:4)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$launchLifecycleScopeWithLock$1.invokeSuspend(ReactActivityDelegateWrapper.kt:452)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at kotlinx.coroutines.internal.DispatchedContinuationKt.resumeCancellableWith(DispatchedContinuation.kt:375)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at kotlinx.coroutines.intrinsics.CancellableKt.startCoroutineCancellable(Cancellable.kt:26)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at kotlinx.coroutines.CoroutineStart.invoke(CoroutineStart.kt:358)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at kotlinx.coroutines.AbstractCoroutine.start(AbstractCoroutine.kt:134)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch(Builders.common.kt:53)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch(Unknown Source:1)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch$default(Builders.common.kt:44)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch$default(Unknown Source:1)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock(ReactActivityDelegateWrapper.kt:450)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock$default(ReactActivityDelegateWrapper.kt:446)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.onWindowFocusChanged(ReactActivityDelegateWrapper.kt:318)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at com.facebook.react.ReactActivity.onWindowFocusChanged(ReactActivity.java:161)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at androidx.appcompat.view.WindowCallbackWrapper.onWindowFocusChanged(WindowCallbackWrapper.java:124)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at expo.modules.devmenu.detectors.InterceptingWindowCallback.onWindowFocusChanged(Unknown Source:2)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at com.android.internal.policy.DecorView.onWindowFocusChanged(DecorView.java:1772)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.view.View.dispatchWindowFocusChanged(View.java:16743)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.view.ViewGroup.dispatchWindowFocusChanged(ViewGroup.java:1505)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.view.ViewRootImpl.dispatchFocusEvent(ViewRootImpl.java:4697)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.view.ViewRootImpl.handleWindowFocusChanged(ViewRootImpl.java:4601)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged(Unknown Source:0)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl(ViewRootImpl.java:6773)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessage(ViewRootImpl.java:6683)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.os.Looper.loop(Looper.java:317)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at java.lang.reflect.Method.invoke(Native Method)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+10-02 20:10:16.331  6122  6122 E unknown:ReactHost: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+10-02 20:10:19.321   646  1773 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+10-02 20:10:21.247  6122  6185 E chromium: [1002/201021.247502:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+10-02 20:11:48.107   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:11:48.109   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:11:48.109   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:12:38.778   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:12:38.778   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:12:38.779   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:12:45.700   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:12:45.701   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:12:45.701   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:13:03.229   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:13:03.230   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:13:03.230   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:13:10.351   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:13:10.352   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:13:10.353   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:13:17.388   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:13:17.389   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:13:17.389   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:13:24.464   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:13:24.464   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:13:24.465   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:13:31.432   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:13:31.432   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:13:31.432   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:13:38.463   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:13:38.464   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:13:38.464   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:13:45.817   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:13:45.817   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:13:45.817   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:13:52.907   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:13:52.907   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:13:52.907   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:13:59.997   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:13:59.997   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:13:59.997   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:14:07.049   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:14:07.049   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:14:07.050   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:14:14.048   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:14:14.048   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:14:14.049   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:14:21.116   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:14:21.116   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:14:21.116   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:14:47.012   646  2471 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55140359000000, downTime=55140359000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xfa0d0f8d}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:14:47.040   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55140363000000, downTime=55140363000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd9eba97d}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:14:47.041   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55140359000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:14:47.041   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55140359000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:14:47.064   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55140359000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:14:47.064   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55140363000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:14:47.085  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:14:47.126   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:14:47.126   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:14:47.127   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:14:47.128   646  2315 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55140359000000, downTime=55140359000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc9adbe5f}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:14:47.173   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55140363000000, downTime=55140363000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc243c531}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:14:55.267   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55148617000000, downTime=55148617000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xfa6ef1dc}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:14:55.293   646  2471 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55148617000000, downTime=55148617000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc0af4f6a}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:14:55.294   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55148616000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:14:55.295   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55148617000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:14:55.318   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55148616000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:14:55.318   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55148617000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:14:55.319  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:14:55.360   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:14:55.360   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:14:55.361   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:14:55.367   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55148616000000, downTime=55148616000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf9f89f00}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:14:55.409   646  2471 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55148617000000, downTime=55148617000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf650c891}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:03.518   646  1287 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55156839000000, downTime=55156839000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xdadb26f9}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:03.569   646  1953 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55156850000000, downTime=55156850000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc05028fe}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:03.574   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55156842000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:03.574   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55156839000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:03.628  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:03.631   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55156842000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:03.631   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55156850000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:03.672  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:03.703   646  1287 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55156839000000, downTime=55156839000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xe13bc35d}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:03.735   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:15:03.735   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:15:03.736   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:15:03.743   646  1953 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55156850000000, downTime=55156850000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc4458640}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:11.619   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55164969000000, downTime=55164969000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc86be9eb}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:11.620   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55164969000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:11.621   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55164969000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:11.666   646  2315 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55164973000000, downTime=55164973000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd24cf95b}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:11.667   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55164969000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:11.667   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55164973000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:11.690  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:11.709   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:15:11.709   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:15:11.709   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:15:11.735   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55164969000000, downTime=55164969000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xfaded234}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:11.775   646  2315 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55164973000000, downTime=55164973000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xefbb7d81}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:19.624   646  2315 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55172976000000, downTime=55172976000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc977d660}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:19.645   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55172977000000, downTime=55172977000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xee21f998}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:19.646   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55172976000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:19.646   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55172976000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:19.673   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55172976000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:19.676   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55172977000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:19.700  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:19.733   646  2315 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55172976000000, downTime=55172976000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc899b0ab}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:19.736   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:15:19.736   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:15:19.737   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:15:19.769   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55172977000000, downTime=55172977000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd3290d78}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:27.637   646  1953 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55180989000000, downTime=55180989000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xcf1eda6b}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:27.660   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=213, y[0]=1305, eventTime=55180990000000, downTime=55180990000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd9e49339}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:27.664   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55180989000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:27.664   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55180989000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:27.686   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55180989000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:27.686   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55180990000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (319.5, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:27.714  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:27.755   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:15:27.755   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:15:27.756   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:15:27.757   646  1953 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55180989000000, downTime=55180989000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc72e29fa}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:27.813   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=213, y[0]=1305, eventTime=55180990000000, downTime=55180990000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xdf2a303a}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:35.196   646  2471 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55188551000000, downTime=55188551000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xede7a32f}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:35.223   646  2910 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55188551000000, downTime=55188551000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xebb8e495}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:35.227   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55188551000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:35.227   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55188551000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:35.251   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55188551000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:35.251   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55188551000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:35.308   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:15:35.308   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:15:35.308   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:15:35.309   646  2471 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55188551000000, downTime=55188551000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xda8d0b16}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:35.336   646  2910 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55188551000000, downTime=55188551000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd1bb284c}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:42.382   646  2315 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55195727000000, downTime=55195727000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc089d523}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:42.408   646  1953 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55195730000000, downTime=55195730000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf7cef6d7}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:42.409   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55195726000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:42.409   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55195727000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:42.438   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55195726000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:42.438  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:42.438   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55195730000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:42.462  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:42.481   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:15:42.481   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:15:42.482   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:15:42.499   646  2315 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55195727000000, downTime=55195727000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xffbb17c3}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:42.551   646  1953 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55195730000000, downTime=55195730000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xe092a7c3}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:49.595   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55202945000000, downTime=55202945000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc824410f}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:49.597   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55202944000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:49.597   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55202945000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:49.627  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:49.655   646  2910 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55202954000000, downTime=55202954000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc63005f7}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:49.659   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55202944000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:49.660   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55202954000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:49.692  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:49.715   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:15:49.715   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:15:49.717   646  1453 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55202945000000, downTime=55202945000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xefc30c3e}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:49.718   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:15:49.770   646  2910 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55202954000000, downTime=55202954000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc575d227}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:56.693   646  1287 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55210043000000, downTime=55210043000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf8532c54}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:56.718   646  2315 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55210044000000, downTime=55210044000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xcb216e3a}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:15:56.719   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55210041000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:56.720   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55210043000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:56.758  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:56.759   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55210041000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:15:56.759   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55210044000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:15:56.795  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:15:56.828   646  1287 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55210043000000, downTime=55210043000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xcb3d6995}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:15:56.845   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:15:56.846   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:15:56.846   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:15:56.865   646  2315 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55210044000000, downTime=55210044000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf2a52549}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:16:03.851   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55217201000000, downTime=55217201000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd804f2e1}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:16:03.892   646  1287 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55217201000000, downTime=55217201000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xf56f185d}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:16:03.892   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55217198000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:16:03.893   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55217201000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:16:03.913   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55217198000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:16:03.913   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55217201000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:16:03.913  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:16:03.968   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:16:03.968   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:16:03.969   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:16:03.978   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55217201000000, downTime=55217201000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc3c2d3f9}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:16:04.013   646  1287 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55217201000000, downTime=55217201000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xdcb88f06}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:16:10.965   646  2471 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55224309000000, downTime=55224309000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xd5eebb6c}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:16:10.989   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=DOWN, id[0]=0, x[0]=506, y[0]=1305, eventTime=55224309000000, downTime=55224309000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xc40c63a6}, reason: Injection on 0: Invalid DOWN event - pointers already down for device DeviceId(-1): {DeviceId(-1): {0}}
+10-02 20:16:10.990   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55224308000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:16:10.990   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55224309000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:16:11.018   646   807 E system_server: addTouchingPointers: [Pointer(id=0, FINGER)], device -1 already in name='1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity', targetFlags=FOREGROUND | SPLIT, mDeviceStates=-1:[touchingPointers=[Pointer(id=0, FINGER)], downTimeInTarget=55224308000000, hoveringPointers=[], pilferingPointerIds=<none>]
+10-02 20:16:11.018   646   807 E InputDispatcher: Error while processing MotionEvent(deviceId=-1, eventTime=55224309000000, source=TOUCHSCREEN, displayId=0, action=DOWN, actionButton=0x00000000, flags=0x00000000, metaState=0x00000000, buttonState=0x00000000, classification=NONE, edgeFlags=0x00000000, xPrecision=1.0, yPrecision=1.0, xCursorPosition=nan, yCursorPosition=nan, pointers=[0: (759.0, 1957.5)]), policyFlags=0x6b000000 for 1abad28 com.tsujintsujin.perchable/com.tsujintsujin.perchable.MainActivity
+10-02 20:16:11.020  6122  6122 E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN
+10-02 20:16:11.076   646  2471 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55224309000000, downTime=55224309000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xdbe13ab9}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:16:11.101   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:16:11.101   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:16:11.102   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:16:11.118   646   942 E InputDispatcher: Inconsistent event: MotionEvent { action=UP, id[0]=0, x[0]=506, y[0]=1305, eventTime=55224309000000, downTime=55224309000000, deviceId=2, source=TOUCHSCREEN, displayId=0, eventId=0xe759dc0d}, reason: Injection on 0 Received ACTION_UP but no pointers are currently down for device DeviceId(-1)
+10-02 20:18:02.020   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:18:02.020   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:18:02.021   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:18:33.038   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:18:33.038   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:18:33.038   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+--------- beginning of kernel
+10-02 20:18:34.175     0     0 E audit   : rate limit exceeded
+10-02 20:18:38.893   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:18:38.894   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:18:38.894   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:18:39.919     0     0 E audit   : rate limit exceeded
+10-02 20:18:44.712   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:18:44.712   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:18:44.712   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:18:45.666     0     0 E audit   : rate limit exceeded
+10-02 20:19:01.134   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:19:01.134   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:19:01.135   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:19:02.736     0     0 E audit   : rate limit exceeded
+10-02 20:19:07.494   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:19:07.494   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:19:07.494   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:19:08.927     0     0 E audit   : rate limit exceeded
+10-02 20:19:13.776   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:19:13.776   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:19:13.776   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:19:15.326     0     0 E audit   : rate limit exceeded
+10-02 20:19:37.656     0     0 E audit   : rate limit exceeded
+10-02 20:19:42.545   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:19:42.545   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:19:42.546   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:19:45.440     0     0 E audit   : rate limit exceeded
+10-02 20:20:05.313   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:20:05.313   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:20:05.313   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:20:06.764     0     0 E audit   : rate limit exceeded
+10-02 20:20:11.509   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:20:11.509   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:20:11.509   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:20:13.436     0     0 E audit   : rate limit exceeded
+10-02 20:20:18.311   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:20:18.312   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:20:18.312   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:20:20.277     0     0 E audit   : rate limit exceeded
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNIMPLEMENTED: bindService(Intent { act=grpc.io.action.BIND cmp=com.google.android.googlequicksearchbox/com.google.android.apps.search.googleapp.search.suggest.plugins.onesearch.server.OneSearchSuggestService }) returned false
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+10-02 20:20:44.230  1312  8389 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+10-02 20:20:44.400   471   471 E BpTransactionCompletedListener: Failed to transact (-32)
+10-02 20:20:47.299  8396  8396 E unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Loading from 127.0.0.1:8081…
+10-02 20:20:47.334  8396  8396 E unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Reloading...
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: Unhandled SoftException
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: com.facebook.react.bridge.ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException(ReactHostImpl.kt:919)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException$default(ReactHostImpl.kt:910)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.onWindowFocusChange(ReactHostImpl.kt:682)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at com.facebook.react.ReactDelegate.onWindowFocusChanged(ReactDelegate.kt:229)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at com.facebook.react.ReactActivityDelegate.onWindowFocusChanged(ReactActivityDelegate.java:235)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invokeSuspend(ReactActivityDelegateWrapper.kt:320)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:8)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(Unknown Source:4)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$launchLifecycleScopeWithLock$1.invokeSuspend(ReactActivityDelegateWrapper.kt:452)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at kotlinx.coroutines.internal.DispatchedContinuationKt.resumeCancellableWith(DispatchedContinuation.kt:375)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at kotlinx.coroutines.intrinsics.CancellableKt.startCoroutineCancellable(Cancellable.kt:26)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at kotlinx.coroutines.CoroutineStart.invoke(CoroutineStart.kt:358)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at kotlinx.coroutines.AbstractCoroutine.start(AbstractCoroutine.kt:134)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch(Builders.common.kt:53)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch(Unknown Source:1)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch$default(Builders.common.kt:44)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch$default(Unknown Source:1)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock(ReactActivityDelegateWrapper.kt:450)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock$default(ReactActivityDelegateWrapper.kt:446)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.onWindowFocusChanged(ReactActivityDelegateWrapper.kt:318)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at com.facebook.react.ReactActivity.onWindowFocusChanged(ReactActivity.java:161)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at androidx.appcompat.view.WindowCallbackWrapper.onWindowFocusChanged(WindowCallbackWrapper.java:124)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at expo.modules.devmenu.detectors.InterceptingWindowCallback.onWindowFocusChanged(Unknown Source:2)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at com.android.internal.policy.DecorView.onWindowFocusChanged(DecorView.java:1772)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.view.View.dispatchWindowFocusChanged(View.java:16743)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.view.ViewGroup.dispatchWindowFocusChanged(ViewGroup.java:1505)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.view.ViewRootImpl.dispatchFocusEvent(ViewRootImpl.java:4697)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.view.ViewRootImpl.handleWindowFocusChanged(ViewRootImpl.java:4601)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged(Unknown Source:0)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl(ViewRootImpl.java:6773)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessage(ViewRootImpl.java:6683)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.os.Looper.loop(Looper.java:317)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at java.lang.reflect.Method.invoke(Native Method)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+10-02 20:20:47.969  8396  8396 E unknown:ReactHost: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+10-02 20:20:48.839   646  1773 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+10-02 20:20:50.214  8396  8456 E chromium: [1002/202050.214146:ERROR:variations_seed_loader.cc(37)] Seed missing signature.
+10-02 20:21:55.228   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:21:55.228   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:21:55.229   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:22:49.080     0     0 E audit   : rate limit exceeded
+10-02 20:23:03.295   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:23:03.296   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:23:03.296   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:23:11.278   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:23:11.278   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:23:11.280   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:23:17.708   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:23:17.708   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:23:17.709   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr
+10-02 20:23:38.664   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:181 pcm_prepare failed for nChannels=2 sampleRateHz=48000 period_count=4 period_size=544 isOut=1 with cannot prepare channel: I/O error (-1)
+10-02 20:23:38.664   409  5846 E android.hardware.audio@7.1-impl.ranchu: pcmOpen:184 failure: nullptr
+10-02 20:23:38.665   409  5846 E android.hardware.audio@7.1-impl.ranchu: create:239 failure: nullptr

@@ -235,3 +235,24 @@ worked); `[LeakChecker] Surface with id: 1 has leaked 1297 components` is the de
 reload, not app code.
 Device screenshot after a double tap: `logs/evidence/build-14/device/bug1-after-double-tap-fixed.png` (top card full-bleed,
 uiautomator top bounds [0,0][720,1420] after 7 rapid pairs of taps).
+
+---
+# QA: Bug round 1 re-test (Queenie), commit 4b123c4
+Evidence: `logs/evidence/build-14/qa/r1q-*` (13 files). Dev build, Metro started by me and stopped (PID 19364 killed, no listener on 8081). Scales set to 1 for the full-motion items, 0 for reduced motion, restored to 0/0/0. Emulator was healthy (load 0.1 to 2) so frames were not the problem this time.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Bug 1, double tap Skip x6 then Add x6 (two separate `input tap`, about 300 ms apart): top card always [0,0][720,1420]; the second bounds [22,85][698,1420] is the normal next card. Triple taps in parallel (`tap & tap & tap`) x6 Skip + x6 Add: exactly 1 swipe each (skip store delta 1 every time), top always [0,0][720,1420]. Note: in the two-tap run 2 of 6 skip pairs removed 2 cards (store 128 to 136); the taps were far enough apart (separate processes) to be two real presses, the triple-parallel run is the true double-tap and gave 1 each | PASS | r1q-01, r1q-02 |
+| 1b | Announcement not doubled | UNTESTABLE by uiautomator (Jest-proven: one announcement per burst); with TalkBack = Justin | |
+| 2 | Bug 2, 10 flicks (DOWN/MOVE/MOVE/UP, about 0.9 s spacing) x3 runs: 10, 10, 10 commits from the skip store, details never opened | PASS (30/30; the first round's 2 to 4 of 10 did not repeat) | uiautomator after each run |
+| 2 | Drag past the slop and released back over the card x3 + a left wiggle: details never opened, same card stays; plain tap opens details; Back returns to the same card | PASS | r1q-04 |
+| 3 | R2: drag right 0.3 s and 0.6 s after a Skip button exit: card follows with ADD stamp, a poster is already behind it (Pirates / Black Panther / Kingdom of the Planet of the Apes), no pop-in. A drag begun with NO gap after the tap (0.0 to 0.15 s) did not follow; logcat shows my injection overlapping (`E InputDispatcher: Error while processing MotionEvent ... action=DOWN` and `E unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN`), so I treat that as a test artefact, not a finding | PASS | r1q-05 |
+| 4 | R3 sign-out | Jest only (no sign-out per rules) | |
+| 5 | R5 reduce motion (scales 0, relaunched): drag follows flat with the next poster beside it, release below threshold: top back to [0,0][720,1420] and next at [22,85][698,1420] (its rest pose) | PASS for the rest pose; the mid-drag switch of the setting is Jest-only | r1q-08, r1q-09 |
+| 6 | Bug 3: tabs [0,1422][240,1516] = 94 px = 53.7 dp high, 137 dp wide, all three | PASS (fixed) | r1q-06, r1q-07 |
+| 7 | Bug 4: inactive Profile icon vs active, max blue channel of the glyph 141 inactive vs 210 active (dimmed about 0.6 over the bar). The same 141 was in the pre-fix screenshot (f3a4104 `rework-tab-bar-home.png`), so it was dimmed then too: my Bug 4 was a misjudgement by eye on the saturated blue bust against the dark bar, NOT a code bug. Withdrawn | PASS / Bug 4 withdrawn by QA | r1q-06 (Quick Add tab), r1q-07 (Home) |
+| 8 | Regression: right drag commits + top Toast "Adding to your collection is coming soon." (store unchanged); left drag commits (+1 skip); Undo returns the card and removes the id (delta 0); Home grid opens details from a poster; Profile tab "Justin Masiga", @tsujintsujin, signed in | PASS | r1q-10, r1q-11, r1q-12, r1q-13 |
+| 9 | logcat `*:E` (`r1q-logcat-E.txt`): no app FATAL, no ANR. App lines: `unknown:ReactNative: Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN`, `system_server: addTouchingPointers: ... already in name='... com.tsujintsujin.perchable/...MainActivity'` and `InputDispatcher: Error while processing MotionEvent ... action=DOWN` (both from my overlapping injected touches), `unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Loading from 127.0.0.1:8081…` and `message: Reloading...` (dev-client launches) | no app crash | |
+
+VERDICT: PASS. Bugs 1, 2, 3 re-tested fine; Bug 4 withdrawn. Bug 2 could not be reproduced this round (30/30 commits), so the real-finger check stays with Justin.
+UNTESTABLE, Justin: TalkBack announcement count after a double tap and the card actions; real-finger flicks; gesture-navigation edge swipe.
