@@ -25,10 +25,10 @@ export function SpoilerLounge({ onComposerPress }: Props) {
         {SAMPLES.map((sample) => (
           <View key={sample.author} style={styles.message}>
             <Avatar name={sample.author} size="sm" />
-            <Text style={styles.messageText}>
-              <Text style={styles.author}>{sample.author} </Text>
-              {sample.text}
-            </Text>
+            <View style={styles.messageColumn}>
+              <Text style={styles.author}>{sample.author}</Text>
+              <Text style={styles.messageText}>{sample.text}</Text>
+            </View>
           </View>
         ))}
         <Text style={styles.preview}>Preview only. Comments are coming soon.</Text>
@@ -65,9 +65,11 @@ const styles = StyleSheet.create({
     borderWidth: glass.hero.borderWidth,
     borderColor: colors.border.hairline,
   },
-  message: { flexDirection: "row", alignItems: "center", gap: spacing[12], marginBottom: spacing[12] },
-  messageText: { ...type.small, color: colors.text.primary, flex: 1 },
-  author: { fontFamily: type.label.fontFamily, color: colors.accent.gold },
+  // Avatar at the left, author over message in a column; rows top-aligned and 12 apart.
+  message: { flexDirection: "row", alignItems: "flex-start", gap: spacing[10], marginBottom: spacing[12] },
+  messageColumn: { flex: 1 },
+  author: { ...type.small, fontFamily: type.label.fontFamily, lineHeight: lineHeight.caption, color: colors.accent.gold },
+  messageText: { ...type.small, lineHeight: lineHeight.bubble, color: colors.text.primary },
   preview: { ...type.small, color: colors.text.secondary, marginBottom: spacing[12] },
   // Input-height pill; not focusable, it only answers with a Toast.
   composer: {

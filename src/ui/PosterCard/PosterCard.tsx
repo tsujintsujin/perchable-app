@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   // Flat fill behind the image so its fade-in runs over the loading colour, not the backdrop.
   imageTile: { backgroundColor: colors.bg.elevatedFlat },
   emphasis: { borderColor: colors.border.hairlineStrong },
-  pressed: { transform: [{ scale: 0.98 }] },
+  pressed: { transform: [{ scale: motion.pressScale }] },
   fill: { ...StyleSheet.absoluteFill },
   // Loading placeholder layers.
   shimmer: { backgroundColor: colors.bg.elevatedFlat },

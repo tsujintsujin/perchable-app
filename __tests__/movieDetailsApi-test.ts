@@ -1,7 +1,8 @@
 import { FunctionsFetchError, FunctionsHttpError } from "@supabase/supabase-js";
 
 const mockInvoke = jest.fn();
-jest.mock("@/lib/supabase", () => ({ supabase: { auth: { getSession: () => Promise.resolve({}) }, functions: { invoke: (...args: unknown[]) => mockInvoke(...args) } } }));
+const mockGetSession = jest.fn();
+jest.mock("@/lib/supabase", () => ({ supabase: { auth: { getSession: () => mockGetSession() }, functions: { invoke: (...args: unknown[]) => mockInvoke(...args) } } }));
 const mockCapture = jest.fn();
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: (...args: unknown[]) => mockCapture(...args) } }));
 
@@ -9,7 +10,7 @@ import { createQueryClient, queryClient } from "@/lib/queryClient";
 import { getMovieDetails, parseMovieIdParam } from "@/modules/movies/api/getMovieDetails";
 import { MovieApiError } from "@/modules/movies/api/MovieApiError";
 import { parseDetails } from "@/modules/movies/api/parseDetails";
-import { formatRating, formatRuntime, metaLine } from "@/modules/movies/format";
+import { displayTitle, formatRating, formatRuntime, metaLine } from "@/modules/movies/format";
 
 const BODY = {
   movie: {
@@ -33,6 +34,7 @@ const httpError = (status: number, code?: string) =>
   new FunctionsHttpError({ status, json: async () => (code ? { error: "x", code } : { error: "x" }) });
 
 beforeEach(() => {
+  mockGetSession.mockReset().mockResolvedValue({});
   mockInvoke.mockReset();
   mockCapture.mockReset();
 });
@@ -93,6 +95,25 @@ describe("getMovieDetails", () => {
       timeout: 8000,
       signal: controller.signal,
     });
+  });
+
+  it("when auth never answers, rejects with a timeout after 8 s, sends nothing and tells Sentry nothing", async () => {
+    jest.useFakeTimers();
+    try {
+      mockGetSession.mockReturnValue(new Promise(() => {}));
+      const client = createQueryClient();
+      const fetched = client.fetchQuery({ queryKey: ["movies", "details", 1], queryFn: () => getMovieDetails(1), retry: false });
+      const outcome = expect(fetched).rejects.toMatchObject({ kind: "timeout" });
+      await jest.advanceTimersByTimeAsync(7999);
+      expect(mockInvoke).not.toHaveBeenCalled();
+      await jest.advanceTimersByTimeAsync(1);
+      await outcome;
+      expect(mockInvoke).not.toHaveBeenCalled();
+      expect(mockCapture).not.toHaveBeenCalled();
+      client.clear();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it("throws a shape error for a bad body", async () => {
@@ -161,6 +182,16 @@ describe("details through the real query client", () => {
   });
 });
 
+describe("duplicate cast ids", () => {
+  it("keeps both entries when one person has two roles", () => {
+    const cast = [
+      { id: 7, name: "Actor", character: "Role A", profile_path: null },
+      { id: 7, name: "Actor", character: "Role B", profile_path: null },
+    ];
+    expect(parseDetails({ movie: { ...BODY.movie, cast } }).movie.cast.map((c) => c.character)).toEqual(["Role A", "Role B"]);
+  });
+});
+
 describe("format helpers", () => {
   it.each([
     [45, "45m"], [60, "1h"], [120, "2h"], [148, "2h 28m"], [61, "1h 1m"], [0, null], [null, null], [undefined, null], [-5, null],
@@ -182,5 +213,13 @@ describe("format helpers", () => {
     expect(metaLine(1999, null)).toBe("1999");
     expect(metaLine(null, "45m")).toBe("45m");
     expect(metaLine(null, null)).toBeNull();
+  });
+});
+
+describe("displayTitle", () => {
+  it("falls back to Untitled for an empty or blank title and trims a real one", () => {
+    expect(displayTitle("")).toBe("Untitled");
+    expect(displayTitle("   ")).toBe("Untitled");
+    expect(displayTitle("  Dune ")).toBe("Dune");
   });
 });

@@ -46,6 +46,8 @@ export const colors = {
     shimmerWash: "rgba(214,196,233,0.10)",
     /** Transparent start of the details backdrop's fade into `bg.base`. */
     fadeStart: "rgba(18,16,22,0)",
+    /** Top of the status-bar scrim over the details backdrop. */
+    topScrimStart: "rgba(18,16,22,0.72)",
   },
 } as const;
 
@@ -175,6 +177,9 @@ export const size = {
   popoverOffset: 90,
   /** Spoiler-lounge composer height. */
   composerHeight: 48,
+  /** Movie details: status-bar scrim height (added to the top inset) and the Toast's offset above the bottom inset. */
+  detailsScrimHeight: 72,
+  detailsToastOffset: 96,
 } as const;
 
 /** Backdrop fade: where (0..1 of its height) the gradient starts. */
@@ -182,17 +187,25 @@ export const backdropFade = { start: 0.4 } as const;
 
 /** Loading-skeleton block sizes on movie details. */
 export const detailsSkeleton = {
+  /** Corner radius of every bar. */
+  barRadius: 6,
   titleBar: 24,
-  textBar: 16,
+  metaBar: 14,
+  genreBar: 12,
+  taglineBar: 14,
+  textBar: 14,
   chipLong: 110,
   chipShort: 90,
   synopsisHeading: { width: 120, height: 24 },
   castHeading: { width: 80, height: 24 },
-  castNameBar: { width: 64, height: 12 },
-  castRoleBar: { width: 44, height: 10 },
-  /** Widths (share of the column) of the two title bars. */
+  castNameBar: { width: 72, height: 12 },
+  castRoleBar: { width: 52, height: 12 },
+  /** Widths (share of the column) of the two title bars, the meta bar, and the last synopsis bar. */
   titleLong: "100%",
   titleShort: "70%",
+  metaWidth: "50%",
+  genreWidth: "80%",
+  lastLineWidth: "60%",
 } as const;
 
 /** Extra touch area that grows an icon button to the minimum touch target. */
@@ -246,6 +259,8 @@ export const leading = {
 /** Explicit line heights for the type roles that need one. */
 export const lineHeight = {
   caption: 16,
+  /** Lounge message text. */
+  bubble: 18,
   body: 22,
   subhead: 24,
   title: 30,
@@ -256,6 +271,8 @@ export const motion = {
   imageFade: 200,
   /** Compact top bar fade on movie details. */
   barFade: 150,
+  /** Scale of a pressed tile or card. */
+  pressScale: 0.98,
 } as const;
 
 export const elevation = {

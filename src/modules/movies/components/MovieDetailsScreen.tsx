@@ -9,7 +9,7 @@ import { PosterCard } from "@/ui/PosterCard";
 import { TierBadge } from "@/ui/TierBadge";
 import { Toast, useToast } from "@/ui/Toast";
 import { backdropFade, colors, lineHeight, motion, radius, size, spacing, type } from "@/ui/tokens";
-import { formatRating, formatRuntime, metaLine } from "../format";
+import { displayTitle, formatRating, formatRuntime, metaLine } from "../format";
 import { useMovieDetails } from "../hooks/useMovieDetails";
 import { releaseYear } from "../releaseYear";
 import { IMAGE_SIZE, tmdbImage } from "../tmdbImage";
@@ -47,6 +47,7 @@ function DetailsContent({ movie, onComposerPress }: ContentProps) {
   const genres = movie.genres.map((genre) => genre.name).join(" · ");
   const rating = formatRating(movie.vote_average, movie.vote_count);
   const tagline = movie.tagline?.trim();
+  const title = displayTitle(movie.title);
 
   return (
     <View>
@@ -80,14 +81,14 @@ function DetailsContent({ movie, onComposerPress }: ContentProps) {
           <PosterCard
             id={movie.id}
             posterUrl={tmdbImage(movie.poster_path, IMAGE_SIZE.detailsPoster)}
-            title={movie.title}
-            accessibilityLabel={`Poster for ${movie.title}`}
+            title={title}
+            accessibilityLabel={`Poster for ${title}`}
             emphasis
           />
         </View>
         <View style={styles.titleColumn}>
           <Text accessibilityRole="header" numberOfLines={3} style={styles.title}>
-            {movie.title}
+            {title}
           </Text>
           {meta && <Text style={styles.meta}>{meta}</Text>}
           {genres !== "" && <Text style={styles.genres}>{genres}</Text>}
@@ -149,6 +150,8 @@ export function MovieDetailsScreen({ idParam }: { idParam: string | undefined })
   const { show } = toast;
   const [barVisible, setBarVisible] = useState(false);
   const [barOpacity] = useState(() => new Animated.Value(0));
+  // The scrim is fully shown while the bar is hidden and the other way round.
+  const [scrimOpacity] = useState(() => barOpacity.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }));
 
   // A failed refetch keeps the movie on screen and only says so.
   const { refetchErrorAt } = details;
@@ -207,6 +210,17 @@ export function MovieDetailsScreen({ idParam }: { idParam: string | undefined })
         <DetailsContent movie={movie} onComposerPress={() => show(COMMENTS_COMING_SOON, "coming-soon")} />
       </ScrollView>
 
+      {/* Status-bar scrim: keeps the light status icons readable over a bright backdrop; gives way to the solid bar. */}
+      <Animated.View
+        testID="top-scrim"
+        pointerEvents="none"
+        importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden
+        style={[styles.scrim, { height: insets.top + size.detailsScrimHeight, opacity: scrimOpacity }]}
+      >
+        <LinearGradient colors={[colors.overlay.topScrimStart, colors.overlay.fadeStart]} style={styles.fill} />
+      </Animated.View>
+
       {/* Compact bar: solid strip with the title once the header has scrolled away. */}
       <Animated.View
         pointerEvents="none"
@@ -215,11 +229,11 @@ export function MovieDetailsScreen({ idParam }: { idParam: string | undefined })
         style={[styles.bar, { height: insets.top + spacing[48], paddingTop: insets.top, opacity: barOpacity }]}
       >
         <Text numberOfLines={1} style={styles.barTitle}>
-          {movie.title}
+          {displayTitle(movie.title)}
         </Text>
       </Animated.View>
       <BackChip />
-      <Toast message={toast.message} variant={toast.variant} />
+      <Toast message={toast.message} variant={toast.variant} offset={size.detailsToastOffset} />
     </View>
   );
 }
@@ -274,6 +288,9 @@ const styles = StyleSheet.create({
   firstHeading: { marginTop: spacing[24], marginBottom: spacing[8] },
   castHeading: { marginTop: spacing[24], marginBottom: spacing[12], paddingHorizontal: spacing[20] },
   synopsis: { ...type.body, lineHeight: lineHeight.body, color: colors.text.primary },
+
+  // Top scrim: fixed above the scroll, below the back chip and the compact bar.
+  scrim: { position: "absolute", top: 0, left: 0, right: 0, zIndex: 1 },
 
   // Compact top bar: solid, hairline under it, title clear of the back chip and the gear corner.
   bar: {

@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, iconButtonHitSlop, radius, size, spacing, type } from "@/ui/tokens";
+import { colors, iconButtonHitSlop, iconSize, radius, size, spacing, type } from "@/ui/tokens";
 
 export type Tier = "S" | "A" | "B" | "C";
 
@@ -33,7 +33,9 @@ export function TierBadge({ tier, size: badgeSize = "md", onPress }: Props) {
         hitSlop={iconButtonHitSlop}
         style={styles.chip}
       >
-        <Text style={styles.chipLabel}>🏆 Tier</Text>
+        {/* Own Text for the emoji: in one Text the chip lays out as two lines (emoji, then "Tier") and the second is clipped. */}
+        <Text style={styles.chipIcon}>🏆</Text>
+        <Text style={styles.chipLabel}>Tier</Text>
       </Pressable>
     );
   }
@@ -54,6 +56,8 @@ const styles = StyleSheet.create({
   // Gold-outlined pill, 36 high; the hit slop makes it 48.
   chip: {
     height: size.chipHeight,
+    flexDirection: "row",
+    gap: spacing[6],
     paddingHorizontal: spacing[14],
     borderRadius: radius.pill,
     alignItems: "center",
@@ -62,6 +66,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border.gold,
   },
+  chipIcon: { fontSize: iconSize.md },
   chipLabel: { ...type.bodyStrong, color: colors.accent.gold },
   badge: { borderRadius: radius.sm, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   letter: type.tierLetter,

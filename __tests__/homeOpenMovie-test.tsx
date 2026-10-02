@@ -9,10 +9,19 @@ jest.mock("react-native-safe-area-context", () => ({
 }));
 
 const mockPush = jest.fn();
+let mockFocusCallbacks: (() => void)[] = [];
 jest.mock("expo-router", () => {
   const { Text } = jest.requireActual("react-native");
+  const { useEffect } = jest.requireActual("react");
   return {
     router: { push: (...args: unknown[]) => mockPush(...args) },
+    // Runs the callback on mount and records it so a test can simulate regaining focus.
+    useFocusEffect: (cb: () => void) => {
+      useEffect(() => {
+        mockFocusCallbacks.push(cb);
+        cb();
+      }, [cb]);
+    },
     Link: ({ children }: { children: string }) => <Text>{children}</Text>,
   };
 });
@@ -43,6 +52,9 @@ const PAGE = {
 
 const clients: ReturnType<typeof createQueryClient>[] = [];
 let consoleError: jest.SpyInstance;
+// Added to the monotonic clock the open-movie guard reads; a test advances it instead of waiting.
+let skew = 0;
+let perfNow: jest.SpyInstance;
 
 // React Query delivers results on a timer; running its notifications in React's synchronous act makes every update land inside act.
 beforeAll(() => {
@@ -64,6 +76,9 @@ beforeEach(() => {
   jest.spyOn(AccessibilityInfo, "announceForAccessibility").mockImplementation(() => {});
   mockInvoke.mockReset();
   mockPush.mockReset();
+  mockFocusCallbacks = [];
+  skew = 0;
+  perfNow = jest.spyOn(performance, "now").mockImplementation(() => Date.now() + skew);
   mockInvoke.mockResolvedValue({ data: PAGE, error: null });
   consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -77,6 +92,8 @@ afterEach(async () => {
   }
   expect(consoleError).not.toHaveBeenCalled();
   consoleError.mockRestore();
+  // React Native's jest setup makes performance.now a jest.fn; put it back to plain time instead of restoring it to undefined.
+  perfNow.mockImplementation(() => Date.now());
 });
 
 // Renders Home under a fresh query client.
@@ -90,18 +107,13 @@ async function renderHome() {
   );
 }
 
-// Presses `name` twice, `gapMs` apart by the clock the guard reads (the clock is faked only around the presses).
-async function pressTwice(name: string, gapMs: number) {
-  let clock = Date.now() + 10_000;
-  const now = jest.spyOn(Date, "now").mockImplementation(() => clock);
-  try {
-    const tile = screen.getByRole("button", { name });
-    await fireEvent.press(tile);
-    clock += gapMs;
-    await fireEvent.press(tile);
-  } finally {
-    now.mockRestore();
-  }
+// Presses `name` twice with `gapMs` of (faked) monotonic time between them.
+async function pressTwice(name: string, gapMs: number, between?: () => void) {
+  const tile = screen.getByRole("button", { name });
+  await fireEvent.press(tile);
+  skew += gapMs;
+  between?.();
+  await fireEvent.press(tile);
 }
 
 describe("Home: opening a movie", () => {
@@ -112,6 +124,7 @@ describe("Home: opening a movie", () => {
     expect(mockPush).toHaveBeenCalledWith({ pathname: "/movie/[id]", params: { id: "1" } });
 
     // A tap well after the first is a new request to open.
+    skew += 5000;
     await pressTwice("Nosferatu, 1922", 5000);
     expect(mockPush).toHaveBeenLastCalledWith({ pathname: "/movie/[id]", params: { id: "2" } });
     expect(mockPush).toHaveBeenCalledTimes(3);
@@ -120,13 +133,24 @@ describe("Home: opening a movie", () => {
   it("a double tap opens one details screen, not two", async () => {
     await renderHome();
     await screen.findByRole("button", { name: "Dune, 2021" });
+    perfNow.mockClear();
     await pressTwice("Dune, 2021", 100);
     expect(mockPush).toHaveBeenCalledTimes(1);
+    // The guard reads the monotonic clock, not Date.now.
+    expect(perfNow).toHaveBeenCalled();
   });
 
   it("opening a poster makes no new popular request", async () => {
     await renderHome();
     await fireEvent.press(await screen.findByRole("button", { name: "Dune, 2021" }));
     expect(mockInvoke).toHaveBeenCalledTimes(1);
+  });
+
+  it("tap A, Back within the window, tap B: B opens because regaining focus re-arms the guard", async () => {
+    await renderHome();
+    await screen.findByRole("button", { name: "Dune, 2021" });
+    // The second press is of the same tile 100 ms later, after Home regained focus.
+    await pressTwice("Dune, 2021", 100, () => mockFocusCallbacks.forEach((cb) => cb()));
+    expect(mockPush).toHaveBeenCalledTimes(2);
   });
 });

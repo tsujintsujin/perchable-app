@@ -9,6 +9,17 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
 }));
 
+// Home's open-movie guard re-arms on focus, which needs a navigation container; here focus is just "mounted".
+jest.mock("expo-router", () => {
+  const { useEffect } = jest.requireActual("react");
+  return {
+    ...jest.requireActual("expo-router"),
+    useFocusEffect: (cb: () => void) => {
+      useEffect(cb, [cb]);
+    },
+  };
+});
+
 // Home reads the signed-in Avatar from useOwnProfile — mocked so no Supabase session or profiles row is needed.
 jest.mock("@/modules/profile", () => ({
   useOwnProfile: () => ({

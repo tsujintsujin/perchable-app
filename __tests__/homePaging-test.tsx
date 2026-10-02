@@ -7,6 +7,17 @@ import { FunctionsHttpError } from "@supabase/supabase-js";
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
 }));
+// Home's open-movie guard re-arms on focus, which needs a navigation container; here focus is just "mounted".
+jest.mock("expo-router", () => {
+  const { useEffect } = jest.requireActual("react");
+  return {
+    ...jest.requireActual("expo-router"),
+    useFocusEffect: (cb: () => void) => {
+      useEffect(cb, [cb]);
+    },
+  };
+});
+
 jest.mock("@/modules/profile", () => ({
   useOwnProfile: () => ({ state: "loaded", refetch: jest.fn(), profile: { id: "u1", displayName: "Justin", avatarUrl: null } }),
 }));

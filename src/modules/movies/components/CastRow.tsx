@@ -38,7 +38,8 @@ export function CastRow({ cast }: { cast: CastMember[] }) {
       accessibilityRole="list"
       showsHorizontalScrollIndicator={false}
       data={cast}
-      keyExtractor={(person) => String(person.id)}
+      // The same person can appear twice (two roles), so the id alone is not unique.
+      keyExtractor={(person, index) => `${person.id}-${index}`}
       renderItem={({ item }) => <CastItem person={item} />}
       contentContainerStyle={styles.content}
       ItemSeparatorComponent={Gap}

@@ -19,3 +19,8 @@ export function metaLine(year: number | null, runtime: string | null): string | 
   const parts = [year === null ? null : String(year), runtime].filter((part): part is string => part !== null);
   return parts.length > 0 ? parts.join(" · ") : null;
 }
+
+/** The title to show: the movie's own, or "Untitled" when it is empty or blank. */
+export function displayTitle(title: string): string {
+  return title.trim() || "Untitled";
+}

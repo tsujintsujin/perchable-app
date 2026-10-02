@@ -1,5 +1,5 @@
 import { act as reactAct } from "react";
-import { AccessibilityInfo, BackHandler } from "react-native";
+import { AccessibilityInfo, BackHandler, StyleSheet } from "react-native";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { QueryClientProvider, notifyManager } from "@tanstack/react-query";
 import { FunctionsFetchError, FunctionsHttpError } from "@supabase/supabase-js";
@@ -26,6 +26,7 @@ const mockCapture = jest.fn();
 jest.mock("@/lib/sentry", () => ({ Sentry: { captureException: (...args: unknown[]) => mockCapture(...args) } }));
 
 import { createQueryClient } from "@/lib/queryClient";
+import { motion, size } from "@/ui/tokens";
 import { MovieDetailsScreen } from "@/modules/movies";
 
 const FULL = {
@@ -207,6 +208,60 @@ describe("Details: missing data never prints blanks, NaN or undefined", () => {
     mockInvoke.mockResolvedValue({ data: { ...FULL, movie: { ...FULL.movie, cast } }, error: null });
     await renderDetails();
     expect(await screen.findByLabelText("Solo")).toBeTruthy();
+  });
+});
+
+describe("Details: title, cast keys, scrim and Toast offset", () => {
+  it("shows Untitled for an empty or blank title, never an empty header", async () => {
+    mockInvoke.mockResolvedValue({ data: { ...FULL, movie: { ...FULL.movie, title: "  " } }, error: null });
+    await renderDetails();
+    expect(await screen.findByRole("header", { name: "Untitled" })).toBeTruthy();
+    expect(screen.getByRole("image", { name: "Poster for Untitled" })).toBeTruthy();
+  });
+
+  it("renders a person with two roles twice without a duplicate-key warning", async () => {
+    const cast = [
+      { id: 7, name: "Actor", character: "Role A", profile_path: null },
+      { id: 7, name: "Actor", character: "Role B", profile_path: null },
+    ];
+    mockInvoke.mockResolvedValue({ data: { ...FULL, movie: { ...FULL.movie, cast } }, error: null });
+    await renderDetails();
+    expect(await screen.findByLabelText("Actor as Role A")).toBeTruthy();
+    expect(screen.getByLabelText("Actor as Role B")).toBeTruthy();
+    // afterEach fails on any console.error, which is where React reports a duplicate key.
+  });
+
+  it("draws the status-bar scrim only when loaded: inset + 72 high, decorative, not touchable", async () => {
+    mockInvoke.mockReturnValue(new Promise(() => {}));
+    const loading = await renderDetails();
+    expect(screen.queryByTestId("top-scrim", { includeHiddenElements: true })).toBeNull();
+    await act(async () => loading.unmount());
+
+    mockInvoke.mockResolvedValue({ data: FULL, error: null });
+    await renderDetails();
+    const scrim = await screen.findByTestId("top-scrim", { includeHiddenElements: true });
+    const style = StyleSheet.flatten(scrim.props.style);
+    expect(style.height).toBe(24 + size.detailsScrimHeight);
+    expect(style.opacity).toBe(1);
+    expect(scrim.props.pointerEvents).toBe("none");
+    expect(scrim.props.importantForAccessibility).toBe("no-hide-descendants");
+  });
+
+  it("lifts the Toast above the composer by the inset plus 96 for both details Toasts", async () => {
+    mockInvoke.mockResolvedValue({ data: FULL, error: null });
+    const { client } = await renderDetails();
+    await screen.findByRole("header", { name: "The Matrix" });
+    await fireEvent.press(screen.getByRole("button", { name: "Hoot your thoughts" }));
+    const toastBottom = () => StyleSheet.flatten(screen.getByRole("alert").props.style).bottom;
+    expect(toastBottom()).toBe(16 + size.detailsToastOffset);
+
+    // The refetch-error Toast uses the same offset.
+    mockInvoke.mockResolvedValue({ data: null, error: httpError(404, "not_found") });
+    await act(async () => {
+      await client.refetchQueries({ queryKey: ["movies", "details", 603] }, { throwOnError: false });
+    });
+    expect(await screen.findByText("Couldn't refresh. Check your connection.")).toBeTruthy();
+    expect(toastBottom()).toBe(16 + size.detailsToastOffset);
   });
 });
 
@@ -417,8 +472,11 @@ describe("Details: UI-only shells", () => {
     await screen.findByRole("header", { name: "The Matrix" });
 
     expect(screen.getByText("Chat about this movie without spoilers.")).toBeTruthy();
-    expect(screen.getByText(/Just finished it\. No spoilers, but wow\./)).toBeTruthy();
-    expect(screen.getByText(/Rewatching it this weekend\. Who's in\?/)).toBeTruthy();
+    // Author over message, as separate lines.
+    expect(screen.getByText("CineOwl")).toBeTruthy();
+    expect(screen.getByText("Just finished it. No spoilers, but wow.")).toBeTruthy();
+    expect(screen.getByText("ReelMara")).toBeTruthy();
+    expect(screen.getByText("Rewatching it this weekend. Who's in?")).toBeTruthy();
     expect(screen.getByText("Preview only. Comments are coming soon.")).toBeTruthy();
     expect(screen.queryByText("Comments are coming soon.")).toBeNull();
 
