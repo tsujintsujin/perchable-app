@@ -133,3 +133,9 @@ Handle each one up front; say in the Build log how (or "n/a").
   stopping, find the PID on 8081, confirm its command line is your Metro, and stop it. (2026-10-02)
 - After a PC restart the dev build ANRs on cold start ("failed to complete startup") until
   `adb shell cmd package compile -m verify -f com.tsujintsujin.perchable` runs once. (2026-10-02)
+- Before any Manager commit, run `git diff --cached --name-only`: an agent working in the same tree may
+  have files staged, and a commit "by name" still sweeps them in (Build 14: Bella's BackChip move landed
+  in the Manager's ticket commit d457cae). (2026-10-02)
+- Android flattens views it thinks are layout-only, which can make zIndex draw a card stack over the
+  header and dock. Set `collapsable={false}` on a container whose children use zIndex, and check the
+  stacking on a device: Jest can't see it. (Build 14)
