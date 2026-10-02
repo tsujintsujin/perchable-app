@@ -30,3 +30,18 @@ PLAN.md's Build 13 failure modes apply in full. Manager additions / emphasis:
 9. **Standards + emulator rules** — tokens only, flat fills (no BlurView in lists), 1–2 line
    comments, logic in `src/modules/movies/`; `scripts/emulator.sh ensure` before device work;
    jest `--maxWorkers=50%`; never /sdcard.
+
+## Server: the `details` endpoint (commit 1, not deployed)
+`GET tmdb?endpoint=details&id=<n>` is added to `supabase/functions/_shared/tmdb.ts` (`handleDetails`,
+`parseMovieId`, `handleTmdb` router); `tmdb/index.ts` only passes `id` and calls `handleTmdb`.
+- **Flow:** validate endpoint, then `id` (`/^\d+$/` first, then 1..2147483647), then the key, then one TMDB call
+  `/movie/{id}?append_to_response=credits`. The answer is rebuilt field by field (cast first 15, genres as
+  `{id,name}`), so TMDB's budget, crew, `adult` and the rest never leave the function.
+- **Errors reuse `mapUpstreamStatus`** (401/403 -> 502 `upstream_auth`, 404 -> 404, 429, others 502). A network failure
+  is 502 `upstream_network` and the log line has the key redacted. An adult title is a 404 `not_found`, identical to a
+  missing movie, so the app cannot tell them apart. A 200 whose body lacks a numeric `id` / string `title` is 502.
+- **Refactor:** the fetch/redact/status-map block moved out of `handlePopular` into a private `callTmdb`, used by both
+  handlers, instead of copying it. Popular behaviour is unchanged (its 36 existing tests pass untouched).
+- **Cache-Control:** `DETAILS_CACHE_CONTROL` = the popular value (`public, max-age=300`), success only.
+- **Why one router (`handleTmdb`):** `index.ts` must stay wiring-only; the endpoint whitelist stays in tested code.
+- **Tests:** `__tests__/tmdbProxy-test.ts` (59 pass). Never deployed by Bella; the Manager deploys after Ruby.
