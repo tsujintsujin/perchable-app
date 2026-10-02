@@ -48,6 +48,13 @@ export const colors = {
     fadeStart: "rgba(18,16,22,0)",
     /** Top of the status-bar scrim over the details backdrop. */
     topScrimStart: "rgba(18,16,22,0.72)",
+    /** Title and meta band at the bottom of a deck card; the fade above it ends here. */
+    cardInfo: "rgba(18,16,22,0.88)",
+    /** Dim layer on the cards behind the top deck card. */
+    deckDim: "rgba(18,16,22,0.45)",
+    /** Whole-card tint while dragging right (add) and left (skip). */
+    addTint: "rgba(184,134,11,0.30)",
+    skipTint: "rgba(255,138,138,0.24)",
   },
 } as const;
 
@@ -83,6 +90,7 @@ export const glass = {
 } as const;
 
 export const spacing = {
+  2: 2,
   4: 4,
   6: 6,
   8: 8,
@@ -115,6 +123,10 @@ export const iconSize = {
   lg: 22,
   tab: 20,
   emoji: 32,
+  /** The clapperboard on a deck card with no poster. */
+  deckFallback: 56,
+  /** The chevron at the end of a tappable row. */
+  chevron: 24,
 } as const;
 
 /** Avatar circle diameters (DESIGN.md §2). */
@@ -181,6 +193,27 @@ export const size = {
   detailsScrimHeight: 72,
   detailsToastOffset: 24,
   detailsBottomPad: 80,
+  /** Quick Add deck: minimum margin each side of the card (clear of the system back-gesture edge). */
+  deckSideMargin: 24,
+  /** Room under the top card for the two cards peeking behind it. */
+  deckStackReserve: 20,
+  /** Height reserved between the deck area and the controls for a Toast. */
+  deckToastLane: 76,
+  /** Gradient above a deck card's info band. */
+  deckInfoFade: 40,
+  /** Skip and Add circles, and the Undo circle. */
+  deckButton: 56,
+  deckButtonSm: 48,
+  /** One control column at font scale 1: circle 56, 6 gap, label 16. */
+  deckControlsHeight: 78,
+  /** Gap between control columns, and the space under them (above the bottom inset). */
+  deckControlsGap: 28,
+  deckControlsPad: 16,
+  /** Border of the SKIP / ADD stamp. */
+  stampBorder: 3,
+  /** Home Quick Add row height and its icon tile. */
+  quickAddRow: 72,
+  quickAddIcon: 48,
 } as const;
 
 /** Backdrop fade: where (0..1 of its height) the gradient starts. */
@@ -243,6 +276,8 @@ export const tmdbChip = {
 
 export const opacity = {
   disabled: 0.5,
+  /** A pressed button or control. */
+  pressed: 0.85,
 } as const;
 
 /** Letter spacing for uppercase section labels. */
@@ -265,6 +300,8 @@ export const lineHeight = {
   body: 22,
   subhead: 24,
   title: 30,
+  /** The ADD / SKIP stamp text. */
+  display: 36,
 } as const;
 
 /** Animation durations (ms). */
@@ -274,6 +311,38 @@ export const motion = {
   barFade: 150,
   /** Scale of a pressed tile or card. */
   pressScale: 0.98,
+  /** Deck card exit and return (ms). */
+  deckExit: 200,
+  /** Deck reduced-motion fade and ease-back (ms). */
+  deckFade: 150,
+  /** Deck spring back to the centre: one overshoot of about 8%. */
+  deckSpring: { damping: 20, stiffness: 260, mass: 1 },
+} as const;
+
+/** Quick Add deck geometry and drag behaviour (DESIGN.md Build 14). */
+export const deck = {
+  /** Scale and downward shift (dp) of the top, next and third card. */
+  stackScale: [1, 0.95, 0.9],
+  stackLift: [0, 22, 44],
+  /** Tilt follows the drag: full tilt at this fraction of the screen width. */
+  tiltMaxDeg: 12,
+  tiltFullFraction: 0.5,
+  /** Stamp and tint opacity: 0 at 15% of the screen width dragged, 1 at 30%. */
+  stampStart: 0.15,
+  stampFull: 0.3,
+  /** Stamp rotation on the card: ADD is negative, SKIP positive. */
+  stampTiltDeg: 14,
+  /** The card follows vertical finger movement at this share, at most followYMax dp. */
+  followY: 0.3,
+  followYMax: 40,
+  /** A leaving card ends this far past the screen edge (dp). */
+  exitMargin: 24,
+  /** A returning card scales up from this. */
+  returnScale: 0.92,
+  /** Loading placeholder: opacity of the two cards behind, and the title and meta bar widths on the top one. */
+  skeletonBehindOpacity: [0.7, 0.5],
+  skeletonTitleWidth: "70%",
+  skeletonMetaWidth: "40%",
 } as const;
 
 export const elevation = {

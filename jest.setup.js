@@ -6,3 +6,8 @@ jest.mock("@shopify/flash-list/dist/recyclerview/utils/measureLayout", () => ({
   measureFirstChildLayout: jest.fn(() => ({ x: 0, y: 0, width: 400, height: 900 })),
   measureItemLayout: jest.fn(() => ({ x: 0, y: 0, width: 100, height: 100 })),
 }));
+
+// AsyncStorage's native module does not exist under Jest; the package ships an in-memory stand-in.
+jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
+// Gesture handler's own Jest stand-ins for its native module.
+require("react-native-gesture-handler/jestSetup");

@@ -14,7 +14,8 @@ import { useMovieDetails } from "../hooks/useMovieDetails";
 import { releaseYear } from "../releaseYear";
 import { IMAGE_SIZE, tmdbImage } from "../tmdbImage";
 import type { MovieDetails } from "../types";
-import { BackChip } from "./BackChip";
+import { BackChip } from "@/ui/BackChip";
+import { goBackOrHome } from "@/lib/navigation";
 import { CastRow } from "./CastRow";
 import { DetailsSkeleton } from "./DetailsSkeleton";
 import { SpoilerLounge } from "./SpoilerLounge";
@@ -170,7 +171,7 @@ export function MovieDetailsScreen({ idParam }: { idParam: string | undefined })
     return (
       <View style={styles.root}>
         <DetailsSkeleton />
-        <BackChip />
+        <BackChip onPress={goBackOrHome} />
       </View>
     );
   }
@@ -195,7 +196,7 @@ export function MovieDetailsScreen({ idParam }: { idParam: string | undefined })
             />
           )}
         </View>
-        <BackChip />
+        <BackChip onPress={goBackOrHome} />
       </View>
     );
   }
@@ -233,7 +234,7 @@ export function MovieDetailsScreen({ idParam }: { idParam: string | undefined })
           {displayTitle(movie.title)}
         </Text>
       </Animated.View>
-      <BackChip />
+      <BackChip onPress={goBackOrHome} />
       <Toast message={toast.message} variant={toast.variant} offset={size.detailsToastOffset} />
     </View>
   );

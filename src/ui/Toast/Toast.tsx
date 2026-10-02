@@ -8,6 +8,9 @@ export type ToastVariant = "info" | "error" | "coming-soon";
 
 const TOAST_DURATION_MS = 2500;
 
+// Largest font scale the text follows, so a two-line message still fits the deck's reserved lane.
+const TOAST_MAX_FONT_SCALE = 1.3;
+
 type Props = {
   /** Null hides the toast. */
   message: string | null;
@@ -33,7 +36,7 @@ export function Toast({ message, variant = "info", offset = spacing[24] }: Props
       style={[styles.wrap, { bottom: bottomInset + offset }]}
     >
       <View style={[styles.toast, variant === "error" && styles.toastError]}>
-        <Text style={[styles.text, variant === "error" && styles.textError]}>{message}</Text>
+        <Text maxFontSizeMultiplier={TOAST_MAX_FONT_SCALE} style={[styles.text, variant === "error" && styles.textError]}>{message}</Text>
       </View>
     </View>
   );
@@ -59,7 +62,7 @@ export function useToast() {
 }
 
 const styles = StyleSheet.create({
-  wrap: { position: "absolute", left: 0, right: 0, alignItems: "center" },
+  wrap: { position: "absolute", left: 0, right: 0, marginHorizontal: spacing[20], alignItems: "center" },
   toast: {
     paddingVertical: spacing[12],
     paddingHorizontal: spacing[16],

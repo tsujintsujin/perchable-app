@@ -37,6 +37,22 @@ describe("queryClient defaults", () => {
       refetchOnMount: false,
     });
   });
+
+  // A reconnect or focus must never reload or reorder the pages a user is swiping, and a retry would restart the page loop.
+  it("keeps the Quick Add deck out of reconnect, focus and automatic retries", () => {
+    expect(queryClient.getQueryDefaults(["movies", "deck", "popular"])).toMatchObject({
+      staleTime: 30 * 60 * 1000,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+      retry: 0,
+    });
+  });
+
+  it("leaves Home's Popular list on the default retry and reconnect behaviour", () => {
+    expect(queryClient.getQueryDefaults(["movies", "popular"]).refetchOnReconnect).toBeUndefined();
+    expect(queryClient.getQueryDefaults(["movies", "popular"]).retry).toBeUndefined();
+  });
 });
 
 describe("retry policy through the real error mapping", () => {

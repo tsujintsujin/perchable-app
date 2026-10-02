@@ -1,22 +1,21 @@
 import { Pressable, StyleSheet, Text } from "react-native";
-import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, iconButtonHitSlop, iconSize, radius, size, spacing } from "@/ui/tokens";
 
-/** Leaves the details screen: back when there is history, otherwise (cold deep link) Home. */
-export function goBackOrHome() {
-  if (router.canGoBack()) router.back();
-  else router.replace("/");
-}
+type Props = {
+  onPress: () => void;
+  /** What a screen reader announces; the chip itself shows only the arrow. */
+  label?: string;
+};
 
 /** Floating back chip, top-left under the status bar; always above the scrolling content. */
-export function BackChip() {
+export function BackChip({ onPress, label = "Back" }: Props) {
   const insets = useSafeAreaInsets();
   return (
     <Pressable
-      onPress={goBackOrHome}
+      onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel="Back"
+      accessibilityLabel={label}
       hitSlop={iconButtonHitSlop}
       style={[styles.chip, { top: insets.top + spacing[8] }]}
     >

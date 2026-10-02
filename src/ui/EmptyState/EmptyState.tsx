@@ -5,7 +5,12 @@ type Props = {
   icon: string;
   title: string;
   body: string;
-  action?: { label: string; onPress: () => void };
+  action?: {
+    label: string;
+    onPress: () => void;
+    /** Overrides the visible label for screen readers. */
+    accessibilityLabel?: string;
+  };
 };
 
 /** One component for every data screen's empty/error case (DESIGN.md §2). */
@@ -16,7 +21,12 @@ export function EmptyState({ icon, title, body, action }: Props) {
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.body}>{body}</Text>
       {action && (
-        <Pressable onPress={action.onPress} accessibilityRole="button" style={styles.button}>
+        <Pressable
+          onPress={action.onPress}
+          accessibilityRole="button"
+          accessibilityLabel={action.accessibilityLabel}
+          style={styles.button}
+        >
           <Text style={styles.buttonLabel}>{action.label}</Text>
         </Pressable>
       )}

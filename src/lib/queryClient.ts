@@ -27,6 +27,15 @@ export function createQueryClient() {
   });
   // The Popular list is session-long: fresh for 5 minutes and only a pull refreshes it.
   client.setQueryDefaults(["movies", "popular"], { staleTime: 5 * MINUTE_MS, refetchOnMount: false });
+  // The Quick Add deck keeps its pages 30 minutes; a failed page is retried by the user (a retry would restart the page loop), and a
+  // reconnect or focus never reorders or reloads what the user is swiping through.
+  client.setQueryDefaults(["movies", "deck"], {
+    staleTime: 30 * MINUTE_MS,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+    retry: 0,
+  });
   // A movie's details change slowly: fresh for 30 minutes.
   client.setQueryDefaults(["movies", "details"], { staleTime: 30 * MINUTE_MS });
   return client;

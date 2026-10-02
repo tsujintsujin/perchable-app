@@ -67,6 +67,7 @@
   "private": true,
   "jest": {
     "preset": "jest-expo",
+    "resolver": "react-native-worklets/jest/resolver",
     "setupFiles": [
       "<rootDir>/jest.setup.js"
     ],
