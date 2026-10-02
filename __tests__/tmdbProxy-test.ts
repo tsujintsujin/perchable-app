@@ -193,7 +193,7 @@ async function runDetails(opts: {
 
 describe("parseMovieId", () => {
   it.each([
-    [null], [""], ["abc"], ["0"], ["-1"], ["1.5"], ["1e3"], ["0x10"], [" 5"], ["5 "], ["2147483648"], ["99999999999"],
+    [null], [""], ["abc"], ["0"], ["-1"], ["1.5"], ["1.0"], ["+5"], ["1e3"], ["0x10"], [" 5"], ["5 "], ["2147483648"], ["99999999999"],
   ])("rejects %p", (raw) => {
     expect(parseMovieId(raw)).toBeNull();
   });
@@ -201,6 +201,8 @@ describe("parseMovieId", () => {
   it("accepts digits in 1..2147483647", () => {
     expect(parseMovieId("1")).toBe(1);
     expect(parseMovieId("603")).toBe(603);
+    // Leading zeros are digits-only, so they are the same id (as for page).
+    expect(parseMovieId("05")).toBe(5);
     expect(parseMovieId("2147483647")).toBe(2147483647);
   });
 });
@@ -273,11 +275,13 @@ describe("handleDetails", () => {
     expect((none.result.body as { movie: { cast: unknown[] } }).movie.cast).toEqual([]);
   });
 
-  it("answers an adult title with 404 not_found and no movie data", async () => {
-    const { result } = await runDetails({ res: upstream(200, tmdbMovie({ adult: true })) });
-    expect(result).toMatchObject({ status: 404, body: { code: "not_found" } });
-    expect(JSON.stringify(result.body)).not.toContain("Matrix");
-    expect(result.cacheControl).toBeUndefined();
+  it("answers an adult title exactly like a TMDB 404: same status, body and headers", async () => {
+    const adult = await runDetails({ res: upstream(200, tmdbMovie({ adult: true })) });
+    const missing = await runDetails({ res: upstream(404, { status_message: "not found" }) });
+    expect(adult.result).toEqual(missing.result);
+    expect(adult.result.status).toBe(404);
+    expect(adult.result.cacheControl).toBeUndefined();
+    expect(JSON.stringify(adult.result.body)).not.toContain("Matrix");
   });
 
   it.each([
