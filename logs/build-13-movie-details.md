@@ -1,6 +1,6 @@
 # Build 13 — Movie details (Module 4: Movie browse/details)
 
-Base SHA: (recorded at Phase 1 start, branch `module/movie-browse`)
+Base SHA: 485320c (Phase 1 start 2026-10-02, branch `module/movie-browse`)
 Plan: PLAN.md "Build 13" A1–A2, B1–B8, C1–C7 + Module 4 M1–M10 (final after two Ruby reviews).
 Phase 0 done: DESIGN.md "Build 13" (Dianne), boards rendered in
 `logs/evidence/build-12a/design/build-13-details-states.png` + `-variants.png`. Needs from Justin: nothing.
