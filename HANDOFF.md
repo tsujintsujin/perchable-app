@@ -16,7 +16,16 @@ Branch: **`module/movie-browse`** (pushed; PR to main at the Module 4 milestone)
 - **Watch item:** one native SIGSEGV (Fabric `MountingCoordinator::pullTransaction`) on the
   first app launch right after an emulator restart; relaunch fine, not reproduced. If it
   recurs, capture the full tombstone (`adb logcat -d`, F DEBUG lines).
-- **Next: Build 13 — movie details** (PLAN.md Module 4 "Build 13", DESIGN.md "Build 13",
+- **Build 13 — PAUSED mid Bug round 1 (2026-10-02):** Sonnet (all agents) hit its weekly limit,
+  resets Oct 5 10am. Server: deployed (bd4a702), Ruby PASS; S1+S2 test fixes committed 4e1d81c
+  (not deployed; test-only, nothing to deploy). App: Queenie FAIL (3 Bugs), Ruby FIX NEEDED;
+  Dianne's amendments 5d553a6. Bella's round-1 fixes (B1–B7, R1–R5, L1 — see the Manager's brief in
+  the transcript / the "Bug round 1" list in this file's history) are **uncommitted in the working
+  tree** (17 files + `__tests__/Avatar-test.tsx` + 2 evidence PNGs). She last said "Now the skeleton
+  and lounge rewrites". Resume: resume Bella with "review your uncommitted changes, then finish
+  B1–B7, R1–R5, L1", then gates → Ruby re-review → Queenie re-test → Manager spot re-run → close.
+  Emulator closed. Asked Justin whether to run Bella on Opus meanwhile; he dismissed it → wait.
+- **Build 13 — movie details** (original notes) (PLAN.md Module 4 "Build 13", DESIGN.md "Build 13",
   boards rendered in `logs/evidence/build-12a/design/build-13-*.png`). Failure-mode list is
   already in `logs/build-13-movie-details.md` (a0f508d). First step: record the base SHA there,
   then brief Bella. Server work: new `details` endpoint in `supabase/functions/_shared/tmdb.ts`
