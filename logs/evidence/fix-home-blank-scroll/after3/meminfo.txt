@@ -1,0 +1,5 @@
+  Native Heap   405293   405188        0        0   409204   434820   408610    18379
+           Java Heap:    27868                          56776
+         Native Heap:   405188                         409204
+            Graphics:        0                              0
+           TOTAL PSS:   642808            TOTAL RSS:   785676      TOTAL SWAP (KB):        0

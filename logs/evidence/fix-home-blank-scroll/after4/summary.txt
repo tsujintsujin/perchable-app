@@ -1,0 +1,4 @@
+point a: max 0.115 mean 0.095
+point b: max 0.317 mean 0.172
+point c: max 0.115 mean 0.093
+fully blank shots (>90%): 0 of 30

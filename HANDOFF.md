@@ -1,4 +1,4 @@
-# HANDOFF — Perchable Manager session (updated 2026-10-03, early morning, before shutdown)
+# HANDOFF — Perchable Manager session (updated 2026-10-03, night, before shutdown)
 
 Read this, then TIMELINE.md (last ~25 lines), then `logs/LESSONS.md`.
 Branch: **`module/quick-add-swipe`** (pushed). Module 5 = Builds 14, 15, 16a, 16b, 16c; milestone PR after 16c.
@@ -7,13 +7,16 @@ Branch: **`module/quick-add-swipe`** (pushed). Module 5 = Builds 14, 15, 16a, 16
 - On main: Modules 1–2, Profile rows change, Moderation 10a+10b, **Module 4** (12a, 12b, 13 + offline fix; PR #8).
 - **Build 14 DONE** (Quick Add swipe deck): a bottom tab (Perch · Quick Add · Profile), full-bleed poster,
   Skip/Undo/Add, right swipe = "coming soon" Toast (nothing stored until 16b). Log: `logs/build-14-quick-add-deck.md`.
-- **Next 1: Fix — Home blank on fast fling** (`logs/fix-home-blank-scroll.md`). Justin: the blank fills in after
-  a few seconds but looks unfriendly. Measure FlashList blank area first (baseline), then drawDistance / cheaper
-  cells / poster-frame fill; Done = a 10-fling run never shows a fully blank screen, measured before/after.
+- **Next 1: Fix — Home blank on fast fling — IN PROGRESS, resume it.** Read the "State at shutdown" section of
+  `logs/fix-home-blank-scroll.md`. Baseline 11/30 fully-blank shots → 0–1/30 with two **uncommitted, ungated**
+  src changes (`PosterGrid.tsx` drawDistance 2500; `usePulse.ts` shared ref-counted pulse). Left: the last blank
+  shot at ~0.6 s, tests for items 2 + 4, gates, Ruby, Queenie, Manager spot re-run. Scripts in `scripts/fling*`.
+- Release APK built for Justin 2026-10-03 (`builds/perchable-test-2026-10-03.apk`, Build 14 state); he is
+  checking it on his phone — ask for his findings.
 - **Next 2: Build 15** (order picker Newest/Oldest/Random + `discover` endpoint: Bella server commit → Ruby →
   Manager deploys + curls + sets `RANDOM_POOL_PAGES` = min(100, total_pages) in a one-line commit before QA).
-  Dianne's Phase 0 for the whole module is done (boards in `logs/evidence/build-14/design/`). Write the failure-mode
-  list + base SHA in `logs/build-15-*.md` first.
+  Dianne's Phase 0 for the whole module is done (boards in `logs/evidence/build-14/design/`). Failure-mode list
+  F1–F19 is written in `logs/build-15-sequence-picker.md`; set its base SHA when Phase 1 starts.
 - Then 16a (collection_items table + RLS, Manager applies via Management API after Ruby), 16b (swipe right adds,
   Profile count), **16c (Justin's "Watched" button on details, top right next to the gear zone)**. 16c still needs
   Dianne's design (Watched states + Toast action variant).

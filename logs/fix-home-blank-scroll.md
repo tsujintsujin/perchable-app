@@ -61,3 +61,27 @@ time point, and how many shots are "fully blank" (grid area > 90 % backdrop). Ke
 8. **Sentry** — nothing new sent (image load failures stay non-events).
 9. **Other callers** — `PosterCard` is also used on movie details (and the skeleton on Home loading);
    any change to the shared component is checked on those screens too.
+
+## State at shutdown (Manager, 2026-10-03 — Justin went to sleep; Bella stopped mid-task)
+Scripts: `scripts/fling-blank.sh`, `scripts/fling_blank.py`, `scripts/fling_summary.py` (10 flings × 3 shots;
+a = ~0.2 s, b = ~0.6 s, c = ~1.1 s after the swipe; value = share of grid area that is backdrop).
+
+| run | a max / mean | b max / mean | c max / mean | fully blank (>90 %) |
+|---|---|---|---|---|
+| baseline | 0.994 / 0.908 | 0.994 / 0.635 | 0.304 / 0.133 | **11 / 30** |
+| after | 0.131 / 0.104 | 0.902 / 0.203 | 0.128 / 0.102 | 1 / 30 |
+| after2 | 0.365 / 0.131 | 0.994 / 0.385 | 0.246 / 0.107 | 1 / 30 |
+| after3 | 0.186 / 0.110 | 0.994 / 0.252 | 0.312 / 0.118 | 1 / 30 |
+| after4 | 0.115 / 0.095 | 0.317 / 0.172 | 0.115 / 0.093 | 0 / 30 |
+| after5 | 0.328 / 0.119 | 0.994 / 0.236 | 0.108 / 0.093 | 1 / 30 |
+(summaries + csv + meminfo in `logs/evidence/fix-home-blank-scroll/<run>/`; `keep/` = screenshots, untracked.)
+Note: ~0.10 is the floor (margins/gaps count as backdrop), so "after" is near-clean except one ~0.6 s shot per run.
+
+**Uncommitted src changes (left in the working tree, NOT gated):**
+- `PosterGrid.tsx`: `drawDistance={DRAW_DISTANCE}` = 2500 dp.
+- `usePulse.ts`: one module-level shared `Animated.Value` + ref-counted loop (starts with the first placeholder,
+  stops with the last) instead of one loop per tile.
+Not done: the remaining single fully-blank shot at ~0.6 s (Done = 0/30); which after-run matches which code
+(Bella didn't record per-run changes); meminfo before/after comparison; tests for items 2 and 4 (shared pulse
+must be tested: two mounts → one loop, last unmount stops it); gates; Ruby; Queenie; device check of details +
+Home loading skeleton. Next session: Bella resumes from here.
